@@ -1,0 +1,167 @@
+/*
+ * Copyright 2009 Nuxeo SA <http://nuxeo.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Authors:
+ *     Florent Guillaume
+ */
+package org.apache.chemistry.atompub.server;
+
+import org.apache.abdera.protocol.Resolver;
+import org.apache.abdera.protocol.server.CollectionInfo;
+import org.apache.abdera.protocol.server.RequestContext;
+import org.apache.abdera.protocol.server.ResponseContext;
+import org.apache.abdera.protocol.server.Target;
+import org.apache.abdera.protocol.server.TargetBuilder;
+import org.apache.abdera.protocol.server.TargetType;
+import org.apache.abdera.protocol.server.WorkspaceManager;
+import org.apache.abdera.protocol.server.impl.AbstractProvider;
+import org.apache.abdera.protocol.server.impl.AbstractWorkspaceManager;
+import org.apache.abdera.protocol.server.impl.RegexTargetResolver;
+import org.apache.abdera.protocol.server.impl.SimpleWorkspaceInfo;
+import org.apache.abdera.protocol.server.impl.TemplateTargetBuilder;
+import org.apache.abdera.util.Constants;
+import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.repository.Repository;
+
+/**
+ * Abdera provider for the CMIS bindings used by Chemistry.
+ *
+ * @author Florent Guillaume
+ */
+public class CMISProvider extends AbstractProvider {
+
+    protected final Repository repository;
+
+    protected final AbstractWorkspaceManager workspaceManager;
+
+    protected final TemplateTargetBuilder targetBuilder;
+
+    protected final RegexTargetResolver targetResolver;
+
+    public CMISProvider(Repository repository) {
+        this.repository = repository;
+
+        targetBuilder = new TemplateTargetBuilder();
+        targetResolver = new RegexTargetResolver();
+
+        // service
+        targetBuilder.setTemplate(TargetType.TYPE_SERVICE,
+                "{target_base}/repository");
+        targetResolver.setPattern("/repository", TargetType.TYPE_SERVICE);
+
+        // entry
+        targetBuilder.setTemplate(TargetType.TYPE_ENTRY,
+                "{target_base}/{entrytype}/{id}");
+        targetResolver.setPattern("/object/([^/?]+)", TargetType.TYPE_ENTRY,
+                "objectid");
+        targetResolver.setPattern("/allowableactions/([^/?]+)",
+                TargetType.TYPE_ENTRY, "objectid"); // XXX entry?
+        targetResolver.setPattern("/type/([^/?]+)", TargetType.TYPE_ENTRY,
+                "typeid");
+
+        // media
+        targetBuilder.setTemplate(TargetType.TYPE_MEDIA,
+                "{target_base}/file/{objectid}");
+        targetResolver.setPattern("/file/([^/?]+)", TargetType.TYPE_MEDIA,
+                "objectid");
+
+        // collection
+        // global workpace collections
+        targetBuilder.setTemplate(TargetType.TYPE_COLLECTION,
+                "{target_base}/{collection}{-prefix|/|id}");
+        targetResolver.setPattern("/checkedout", TargetType.TYPE_COLLECTION);
+        targetResolver.setPattern("/unfiled", TargetType.TYPE_COLLECTION);
+        targetResolver.setPattern("/query", //
+                TargetType.TYPE_COLLECTION);
+        targetResolver.setPattern("/types", //
+                TargetType.TYPE_COLLECTION);
+        // per-object collections
+        targetResolver.setPattern("/parents/([^/?]+)",
+                TargetType.TYPE_COLLECTION, "objectid");
+        targetResolver.setPattern("/children/([^/?]+)",
+                TargetType.TYPE_COLLECTION, "objectid");
+        targetResolver.setPattern("/descendants/([^/?]+)",
+                TargetType.TYPE_COLLECTION, "objectid");
+        targetResolver.setPattern("/allversions/([^/?]+)",
+                TargetType.TYPE_COLLECTION, "objectid");
+        targetResolver.setPattern("/relationships/([^/?]+)",
+                TargetType.TYPE_COLLECTION, "objectid");
+        targetResolver.setPattern("/policies/([^/?]+)",
+                TargetType.TYPE_COLLECTION, "objectid");
+        // ?
+        targetResolver.setPattern("/types/([^/?]+)",
+                TargetType.TYPE_COLLECTION, "typeid");
+
+        // CMIS workspaces available
+
+        SimpleWorkspaceInfo workspaceInfo = new SimpleWorkspaceInfo();
+        workspaceInfo.setTitle(repository.getInfo().getName());
+        CollectionInfo ci;
+
+        workspaceInfo.addCollection(new CMISCollectionForChildren(
+                CMIS.COL_ROOT_CHILDREN, repository.getInfo().getRootFolderId(),
+                repository));
+
+        workspaceInfo.addCollection(new CMISCollectionForOther(
+                CMIS.COL_ROOT_DESCENDANTS, "descendants",
+                repository.getInfo().getRootFolderId(), repository));
+
+        workspaceInfo.addCollection(new CMISCollectionForOther(
+                CMIS.COL_UNFILED, "unfiled", null, repository));
+
+        workspaceInfo.addCollection(new CMISCollectionForOther(
+                CMIS.COL_CHECKED_OUT, "checkedout", null, repository));
+
+        ci = new CMISCollectionForTypes(CMIS.COL_TYPES_CHILDREN, repository);
+        workspaceInfo.addCollection(ci);
+
+        ci = new CMISCollectionForTypes(CMIS.COL_TYPES_DESCENDANTS, repository);
+        workspaceInfo.addCollection(ci);
+
+        workspaceInfo.addCollection(new CMISCollectionForOther(CMIS.COL_QUERY,
+                "query", null, repository));
+
+        workspaceManager = new CMISWorkspaceManager(this);
+        workspaceManager.addWorkspace(workspaceInfo);
+    }
+
+    public Repository getRepository() {
+        return repository;
+    }
+
+    @Override
+    protected TargetBuilder getTargetBuilder(RequestContext request) {
+        return targetBuilder;
+    }
+
+    @Override
+    protected Resolver<Target> getTargetResolver(RequestContext request) {
+        return targetResolver;
+    }
+
+    @Override
+    protected WorkspaceManager getWorkspaceManager(RequestContext request) {
+        return workspaceManager;
+    }
+
+    @Override
+    protected ResponseContext getServiceDocument(final RequestContext request) {
+        CMISServiceResponse response = new CMISServiceResponse(this, request);
+        response.setStatus(200);
+        response.setContentType(Constants.APP_MEDIA_TYPE);
+        return response;
+    }
+
+}
