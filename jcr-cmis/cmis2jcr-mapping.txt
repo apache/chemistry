@@ -1,0 +1,23 @@
+#
+# This file provides a first mapping between CMIS and JCR
+#
+
+*** Repository Info ***
+repositoryId              ->
+repositoryName            ->   REP_NAME_DESC
+repositoryRelationship    ->   SELF
+repositoryDescription     ->   REP_NAME_DESC
+vendorName                ->   REP_VENDOR_DESC
+productName               ->   REP_NAME_DESC
+productVersion            ->   REP_VERSION_DESC
+rootFolderId              ->   rootNode().getUUID()
+*** Repository Capabilities ***
+multifiling               ->   TRUE
+unfiling                  ->   TRUE
+versionSpecificFiling     ->
+PWCUpdatable              ->
+PWCSearchable             ->
+allVersionSearchable      ->
+capabilityQuery           ->   BOTH
+capabilityJoin            ->   NOJOIN
+capabilityFullText        ->   FULLTEXTANDSTRUCTURED
