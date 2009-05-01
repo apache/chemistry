@@ -35,7 +35,7 @@ public class CMIS {
         return new QName(CMIS_NS, localPart, CMIS_PREFIX);
     }
 
-    public static final String CMIS_NS = "http://www.cmis.org/2008/05";
+    public static final String CMIS_NS = "http://docs.oasis-open.org/ns/cmis/core/200901";
 
     public static final String CMIS_PREFIX = "cmis";
 
@@ -145,17 +145,17 @@ public class CMIS {
      * ----- CMIS Collection Types -----
      */
 
-    public static final String COL_ROOT_CHILDREN = "root-children";
+    public static final String COL_ROOT_CHILDREN = "rootchildren";
 
-    public static final String COL_ROOT_DESCENDANTS = "root-descendants";
+    public static final String COL_ROOT_DESCENDANTS = "rootdescendants";
 
     public static final String COL_UNFILED = "unfiled";
 
     public static final String COL_CHECKED_OUT = "checkedout";
 
-    public static final String COL_TYPES_CHILDREN = "types-children";
+    public static final String COL_TYPES_CHILDREN = "typeschildren";
 
-    public static final String COL_TYPES_DESCENDANTS = "types-descendants";
+    public static final String COL_TYPES_DESCENDANTS = "typesdescendants";
 
     public static final String COL_QUERY = "query";
 
@@ -163,32 +163,32 @@ public class CMIS {
      * ----- CMIS Link Types -----
      */
 
-    public static final String LINK_REPOSITORY = "cmis-repository";
+    public static final String LINK_REPOSITORY = "repository";
 
-    public static final String LINK_LATEST_VERSION = "cmis-latestversion";
+    public static final String LINK_LATEST_VERSION = "latestversion";
 
-    public static final String LINK_PARENT = "cmis-parent";
+    public static final String LINK_PARENT = "parent";
 
-    public static final String LINK_SOURCE = "cmis-source";
+    public static final String LINK_SOURCE = "source";
 
-    public static final String LINK_TARGET = "cmis-target";
+    public static final String LINK_TARGET = "target";
 
-    public static final String LINK_TYPE = "cmis-type";
+    public static final String LINK_TYPE = "type";
 
-    public static final String LINK_ALLOWABLE_ACTIONS = "cmis-allowableactions";
+    public static final String LINK_ALLOWABLE_ACTIONS = "allowableactions";
 
-    public static final String LINK_STREAM = "cmis-stream";
+    public static final String LINK_STREAM = "stream";
 
-    public static final String LINK_PARENTS = "cmis-parents";
+    public static final String LINK_PARENTS = "parents";
 
-    public static final String LINK_CHILDREN = "cmis-children";
+    public static final String LINK_CHILDREN = "children";
 
-    public static final String LINK_DESCENDANTS = "cmis-descendants";
+    public static final String LINK_DESCENDANTS = "descendants";
 
-    public static final String LINK_ALL_VERSIONS = "cmis-allversions";
+    public static final String LINK_ALL_VERSIONS = "allversions";
 
-    public static final String LINK_RELATIONSHIPS = "cmis-relationships";
+    public static final String LINK_RELATIONSHIPS = "relationships";
 
-    public static final String LINK_POLICIES = "cmis-policies";
+    public static final String LINK_POLICIES = "policies";
 
 }
