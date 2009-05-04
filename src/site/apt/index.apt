@@ -1,0 +1,47 @@
+                       ---------------------------
+                       Welcome to Apache Chemistry
+                       ---------------------------
+
+~~ Licensed to the Apache Software Foundation (ASF) under one or more
+~~ contributor license agreements.  See the NOTICE file distributed with
+~~ this work for additional information regarding copyright ownership.
+~~ The ASF licenses this file to You under the Apache License, Version 2.0
+~~ (the "License"); you may not use this file except in compliance with
+~~ the License.  You may obtain a copy of the License at
+~~
+~~     http://www.apache.org/licenses/LICENSE-2.0
+~~
+~~ Unless required by applicable law or agreed to in writing, software
+~~ distributed under the License is distributed on an "AS IS" BASIS,
+~~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~~ See the License for the specific language governing permissions and
+~~ limitations under the License.
+
+Welcome to Apache Chemistry
+
+    Apache Chemistry is an effort to provide a Java (and possibly others,
+    like JavaScript) implementation of the upcoming
+    {{{http://www.oasis-open.org/committees/cmis}CMIS specification}},
+    consisting of a high-level API for developers wanting to manipulate
+    documents, a low-level SPI close to the CMIS protocol for developers
+    wanting to implement a client or a server, and default implementations
+    for all of the above. Chemistry aims to cover both the AtomPub and SOAP
+    bindings defined by the CMIS specifications.
+
+    See the
+    {{{http://wiki.apache.org/incubator/ChemistryProposal}Chemistry proposal}}
+    wiki page for more background of the Chemistry project.
+
+* Incubation disclaimer
+
+    Apache Chemistry is an effort undergoing
+    {{{http://incubator.apache.org/}incubation}} at
+    {{{http://www.apache.org}The Apache Software Foundation}} (ASF), sponsored
+    by the {{{http://jackrabbit.apache.org/}Apache Jackrabbit}} project.
+    Incubation is required of all newly accepted projects until a further
+    review indicates that the infrastructure, communications, and decision
+    making process have stabilized in a manner consistent with other
+    successful ASF projects. While incubation status is not necessarily
+    a reflection of the completeness or stability of the code, it does
+    indicate that the project has yet to be fully endorsed by the ASF.
+
