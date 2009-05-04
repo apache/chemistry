@@ -16,6 +16,7 @@
    limitations under the License.
   -->
 
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -24,22 +25,45 @@
     <groupId>org.apache.chemistry</groupId>
     <artifactId>chemistry-parent</artifactId>
     <version>0.1-SNAPSHOT</version>
-    <relativePath>chemistry-parent/pom.xml</relativePath>
   </parent>
 
-  <artifactId>chemistry</artifactId>
-  <name>Chemistry</name>
-  <packaging>pom</packaging>
-  
-  <modules>
-    <module>chemistry-parent</module>
-    <module>chemistry-api</module>
-    <module>chemistry-commons</module>
-    <module>chemistry-jcr</module>
-    <module>chemistry-tests</module>
-    <module>chemistry-backups</module>
-    <module>chemistry-atompub</module>
-    <module>chemistry-atompub-server</module>
-  </modules>
+  <artifactId>chemistry-jcr</artifactId>
+  <name>Chemistry JCR Connector</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.chemistry</groupId>
+      <artifactId>chemistry-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.chemistry</groupId>
+      <artifactId>chemistry-commons</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.jcr</groupId>
+      <artifactId>jcr</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-jcr-commons</artifactId>
+      <version>1.4.2</version>
+    </dependency>
+
+  </dependencies>
 </project>
