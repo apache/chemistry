@@ -1,3 +1,19 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.chemistry.jcr;
 
 import java.io.Serializable;
@@ -42,7 +58,7 @@ public class JcrRepository implements Repository, RepositoryInfo,
     public JcrRepository(javax.jcr.Repository repository) {
         this(repository, null);
     }
-    
+
     public Connection getConnection(Map<String, Serializable> parameters) {
         // TODO pass credentials as parameters
         SimpleCredentials creds = new SimpleCredentials("admin", "admin".toCharArray());
@@ -67,13 +83,13 @@ public class JcrRepository implements Repository, RepositoryInfo,
     	try {
 	        // TODO pass credentials as parameters
 	        SimpleCredentials creds = new SimpleCredentials("admin", "admin".toCharArray());
-	        
+
 	    	Session session = repository.login(creds, workspace);
-	    	
+
 	    	// TODO fetch the types only once, include other types
 	    	NodeTypeManager ntmgr = session.getWorkspace().getNodeTypeManager();
 	    	NodeType nt = ntmgr.getNodeType(typeId);
-	    	
+
 	    	BaseType baseType = BaseType.FOLDER;
 	    	if (nt.getName().equals("nt:file")) {
 	    		baseType = BaseType.DOCUMENT;
@@ -95,15 +111,15 @@ public class JcrRepository implements Repository, RepositoryInfo,
     public List<Type> getTypes(String typeId,
                                boolean returnPropertyDefinitions, int maxItems,
                                int skipCount, boolean[] hasMoreItems) {
-    	
+
     	try {
 	        // TODO pass credentials as parameters
 	        SimpleCredentials creds = new SimpleCredentials("admin", "admin".toCharArray());
-	        
+
 	        ArrayList<Type> result = new ArrayList<Type>();
-	        
+
 	    	Session session = repository.login(creds, workspace);
-	    	
+
 	    	// TODO fetch the types only once, include other types
 	    	NodeTypeManager ntmgr = session.getWorkspace().getNodeTypeManager();
 	    	result.add(new JcrType(ntmgr.getNodeType("rep:root"), BaseType.FOLDER));
