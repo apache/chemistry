@@ -41,6 +41,7 @@ import org.apache.chemistry.type.BaseType;
 import org.apache.chemistry.type.Type;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jackrabbit.JcrConstants;
 import org.w3c.dom.Document;
 
 public class JcrRepository implements Repository, RepositoryInfo,
@@ -81,24 +82,25 @@ public class JcrRepository implements Repository, RepositoryInfo,
 
     public Type getType(String typeId) {
     	try {
-	        // TODO pass credentials as parameters
-	        SimpleCredentials creds = new SimpleCredentials("admin", "admin".toCharArray());
+            // TODO pass credentials as parameters
+            SimpleCredentials creds = new SimpleCredentials("admin", "admin"
+                    .toCharArray());
 
-	    	Session session = repository.login(creds, workspace);
+            Session session = repository.login(creds, workspace);
 
-	    	// TODO fetch the types only once, include other types
-	    	NodeTypeManager ntmgr = session.getWorkspace().getNodeTypeManager();
-	    	NodeType nt = ntmgr.getNodeType(typeId);
+            // TODO fetch the types only once, include other types
+            NodeTypeManager ntmgr = session.getWorkspace().getNodeTypeManager();
+            NodeType nt = ntmgr.getNodeType(typeId);
 
-	    	BaseType baseType = BaseType.FOLDER;
-	    	if (nt.getName().equals("nt:file")) {
-	    		baseType = BaseType.DOCUMENT;
-	    	}
-	    	return new JcrType(nt, baseType);
-    	} catch (RepositoryException e) {
-    		String msg = "Unable get type: " + typeId;
-    		log.error(msg, e);
-    	}
+            BaseType baseType = BaseType.FOLDER;
+            if (nt.getName().equals(JcrConstants.NT_FILE)) {
+                baseType = BaseType.DOCUMENT;
+            }
+            return new JcrType(nt, baseType);
+        } catch (RepositoryException e) {
+            String msg = "Unable get type: " + typeId;
+            log.error(msg, e);
+        }
     	return null;
     }
 
@@ -112,23 +114,29 @@ public class JcrRepository implements Repository, RepositoryInfo,
                                boolean returnPropertyDefinitions, int maxItems,
                                int skipCount, boolean[] hasMoreItems) {
 
+        // TODO dynamically discover and return types.
+
     	try {
-	        // TODO pass credentials as parameters
-	        SimpleCredentials creds = new SimpleCredentials("admin", "admin".toCharArray());
+            // TODO pass credentials as parameters
+            SimpleCredentials creds = new SimpleCredentials("admin", "admin"
+                    .toCharArray());
 
-	        ArrayList<Type> result = new ArrayList<Type>();
+            ArrayList<Type> result = new ArrayList<Type>();
 
-	    	Session session = repository.login(creds, workspace);
+            Session session = repository.login(creds, workspace);
 
-	    	// TODO fetch the types only once, include other types
-	    	NodeTypeManager ntmgr = session.getWorkspace().getNodeTypeManager();
-	    	result.add(new JcrType(ntmgr.getNodeType("rep:root"), BaseType.FOLDER));
-	    	result.add(new JcrType(ntmgr.getNodeType("nt:folder"), BaseType.FOLDER));
-	    	result.add(new JcrType(ntmgr.getNodeType("nt:file"), BaseType.DOCUMENT));
-	    	return result;
+            // TODO fetch the types only once, include other types
+            NodeTypeManager ntmgr = session.getWorkspace().getNodeTypeManager();
+            result.add(new JcrType(ntmgr.getNodeType("rep:root"),
+                    BaseType.FOLDER));
+            result.add(new JcrType(ntmgr.getNodeType(JcrConstants.NT_FOLDER),
+                    BaseType.FOLDER));
+            result.add(new JcrType(ntmgr.getNodeType(JcrConstants.NT_FILE),
+                    BaseType.DOCUMENT));
+            return result;
     	} catch (RepositoryException e) {
     		String msg = "Unable to retrieve node types.";
-    		log.error(msg, e);
+            log.error(msg, e);
     	}
         return null;
     }

@@ -275,16 +275,16 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         // TODO return other virtual properties and provide helper class
         properties.put(Property.TYPE_ID, new Property() {
 
-			public PropertyDefinition getDefinition() {
-				return PROP_TYPE_ID;
-			}
+            public PropertyDefinition getDefinition() {
+                return PROP_TYPE_ID;
+            }
 
-			public Serializable getValue() {
-				return getTypeId();
-			}
+            public Serializable getValue() {
+                return getTypeId();
+            }
 
-			public void setValue(Serializable value) {
-			}
+            public void setValue(Serializable value) {
+            }
         });
         return properties;
     }
@@ -368,12 +368,12 @@ public abstract class JcrObjectEntry implements ObjectEntry {
 
     public Serializable getValue(String name) {
         try {
-        	if (node.hasProperty(name)) {
-	            Value value = node.getProperty(name).getValue();
-	            if (value instanceof Serializable) {
-	                return (Serializable) value;
-	            }
-        	}
+            if (node.hasProperty(name)) {
+                Value value = node.getProperty(name).getValue();
+                if (value instanceof Serializable) {
+                    return (Serializable) value;
+                }
+            }
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {

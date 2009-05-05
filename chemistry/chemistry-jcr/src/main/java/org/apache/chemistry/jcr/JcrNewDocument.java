@@ -89,8 +89,8 @@ public class JcrNewDocument extends JcrDocument {
             if (name == null) {
             	Serializable val = getValue("title");
             	if (val != null) {
-            		name = val.toString();
-            	}
+                    name = val.toString();
+                }
             }
             if (name == null) {
             	name = "unnamed";

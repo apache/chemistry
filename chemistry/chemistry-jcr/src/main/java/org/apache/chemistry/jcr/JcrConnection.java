@@ -239,21 +239,22 @@ public class JcrConnection implements Connection, SPI {
                                  VersioningState versioningState) {
 
     	try {
-	    	JcrFolder folder = (JcrFolder) getObject(folderId, ReturnVersion.LATEST);
-	    	Document doc = folder.newDocument(null);
-	    	doc.setValues(properties);
-	    	if (contentStream != null) {
-		    	doc.setName(contentStream.getFilename());
-		    	doc.setValue("title", contentStream.getFilename());
-		    	doc.setContentStream(contentStream);
-	    	}
-	    	doc.save();
-	    	return doc.getId();
-    	} catch (IOException e) {
-    		String msg = "Unable to create document.";
-    		log.error(msg, e);
-    	}
-    	return null;
+            JcrFolder folder = (JcrFolder) getObject(folderId,
+                    ReturnVersion.LATEST);
+            Document doc = folder.newDocument(null);
+            doc.setValues(properties);
+            if (contentStream != null) {
+                doc.setName(contentStream.getFilename());
+                doc.setValue("title", contentStream.getFilename());
+                doc.setContentStream(contentStream);
+            }
+            doc.save();
+            return doc.getId();
+        } catch (IOException e) {
+            String msg = "Unable to create document.";
+            log.error(msg, e);
+        }
+        return null;
     }
 
     public String createFolder(String typeId,
