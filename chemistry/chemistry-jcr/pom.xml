@@ -25,6 +25,7 @@
     <groupId>org.apache.chemistry</groupId>
     <artifactId>chemistry-parent</artifactId>
     <version>0.1-SNAPSHOT</version>
+    <relativePath>../chemistry-parent</relativePath>
   </parent>
 
   <artifactId>chemistry-jcr</artifactId>
