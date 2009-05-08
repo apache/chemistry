@@ -1,9 +1,8 @@
-Chemistry CMIS project
+Apache Chemistry
 
 Based on source code originally developed by Nuxeo (http://nuxeo.com/).
 
-This product includes software developed at
-The Apache Software Foundation (http://www.apache.org/).
+This product includes software developed at the Apache Software Foundation (http://www.apache.org/).
 
 This product includes software developed by Day Software (http://www.day.com/).
 
