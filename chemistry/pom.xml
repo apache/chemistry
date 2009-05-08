@@ -37,7 +37,6 @@
     <module>chemistry-commons</module>
     <module>chemistry-jcr</module>
     <module>chemistry-tests</module>
-    <module>chemistry-backups</module>
     <module>chemistry-atompub</module>
     <module>chemistry-atompub-server</module>
   </modules>
