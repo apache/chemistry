@@ -24,8 +24,6 @@ import java.net.URI;
 
 /**
  * A CMIS Content Stream.
- *
- * @author Florent Guillaume
  */
 public interface ContentStream {
 

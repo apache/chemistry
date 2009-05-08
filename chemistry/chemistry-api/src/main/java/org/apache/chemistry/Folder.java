@@ -23,8 +23,6 @@ import java.util.List;
 
 /**
  * A CMIS Folder.
- *
- * @author Florent Guillaume
  */
 public interface Folder extends CMISObject {
 

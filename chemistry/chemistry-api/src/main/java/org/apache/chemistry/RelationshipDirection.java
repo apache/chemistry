@@ -21,8 +21,6 @@ package org.apache.chemistry;
 /**
  * The choice of which relationships having a given document as source or target
  * are to be included in a list of objects.
- *
- * @author Florent Guillaume
  */
 public enum RelationshipDirection {
 

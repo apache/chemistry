@@ -31,8 +31,6 @@ import org.apache.chemistry.Repository;
 
 /**
  * CMIS Collection for the XXX.
- *
- * @author Florent Guillaume
  */
 public class CMISCollectionForOther extends CMISCollection<Object> {
 

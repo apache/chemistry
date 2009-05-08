@@ -24,8 +24,6 @@ import org.apache.chemistry.atompub.CMIS;
 
 /**
  * Abdera ElementWrapper for an AtomPub cmis:allowableActions element.
- *
- * @author Florent Guillaume
  */
 public class AllowableActionsElement extends ExtensibleElementWrapper {
 

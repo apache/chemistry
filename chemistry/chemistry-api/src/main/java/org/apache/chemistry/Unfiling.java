@@ -21,8 +21,6 @@ package org.apache.chemistry;
 /**
  * Flag specifying how to unfile non-folder objects when a tree of objects is
  * deleted through {@link Connection#deleteTree}.
- *
- * @author Florent Guillaume
  */
 public enum Unfiling {
 

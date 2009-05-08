@@ -20,8 +20,6 @@ package org.apache.chemistry;
 
 /**
  * A CMIS Policy.
- *
- * @author Florent Guillaume
  */
 public interface Policy extends CMISObject {
 

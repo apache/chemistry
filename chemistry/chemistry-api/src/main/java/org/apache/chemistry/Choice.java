@@ -23,8 +23,6 @@ import java.util.List;
 
 /**
  * A CMIS Property Definition Choice.
- *
- * @author Florent Guillaume
  */
 public interface Choice {
 

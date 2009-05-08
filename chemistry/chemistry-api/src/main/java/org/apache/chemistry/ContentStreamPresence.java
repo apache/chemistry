@@ -20,8 +20,6 @@ package org.apache.chemistry;
 
 /**
  * The presence status for a content stream.
- *
- * @author Florent Guillaume
  */
 public enum ContentStreamPresence {
 

@@ -23,8 +23,6 @@ import java.util.List;
 
 /**
  * A CMIS Repository.
- *
- * @author Florent Guillaume
  */
 public interface Repository extends RepositoryEntry {
 

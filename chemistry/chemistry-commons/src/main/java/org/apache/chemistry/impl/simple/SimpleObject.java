@@ -31,8 +31,6 @@ import org.apache.chemistry.impl.base.BaseObject;
 
 /**
  * Simple implementation of a {@link CMISObject}.
- *
- * @author Florent Guillaume
  */
 public class SimpleObject extends BaseObject {
 

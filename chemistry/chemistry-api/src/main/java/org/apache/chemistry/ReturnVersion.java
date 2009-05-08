@@ -20,8 +20,6 @@ package org.apache.chemistry;
 
 /**
  * Flag specifying what version of a given document is to be returned.
- *
- * @author Florent Guillaume
  */
 public enum ReturnVersion {
 

@@ -30,8 +30,6 @@ import org.apache.chemistry.Property;
  * Simple implementation of an {@link ObjectEntry}.
  * <p>
  * This implementation doesn't do type validation when values are set.
- *
- * @author Florent Guillaume
  */
 public class SimpleObjectEntry implements ObjectEntry {
 

@@ -29,8 +29,6 @@ import org.apache.chemistry.atompub.CMIS;
 
 /**
  * Abdera ElementWrapper for an AtomPub cmis:object element.
- *
- * @author Florent Guillaume
  */
 public class ObjectElement extends ExtensibleElementWrapper {
 

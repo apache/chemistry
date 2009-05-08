@@ -28,8 +28,6 @@ import org.apache.chemistry.ContentStream;
 
 /**
  * Simple {@link ContentStream} storing the stream in memory.
- *
- * @author Florent Guillaume
  */
 public class SimpleContentStream implements ContentStream {
 

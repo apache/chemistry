@@ -20,8 +20,6 @@ package org.apache.chemistry;
 
 /**
  * State of a document when it is created.
- *
- * @author Florent Guillaume
  */
 public enum VersioningState {
 

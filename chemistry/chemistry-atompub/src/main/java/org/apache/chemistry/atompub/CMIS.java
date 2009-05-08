@@ -22,8 +22,6 @@ import javax.xml.namespace.QName;
 
 /**
  * Utility class providing CMIS constants and names for AtomPub.
- *
- * @author Florent Guillaume
  */
 public class CMIS {
 

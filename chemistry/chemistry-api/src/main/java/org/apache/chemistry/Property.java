@@ -22,8 +22,6 @@ import java.io.Serializable;
 
 /**
  * CMIS Object Property.
- *
- * @author Florent Guillaume
  */
 public interface Property {
 

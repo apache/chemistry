@@ -20,8 +20,6 @@ package org.apache.chemistry;
 
 /**
  * A reference to a CMIS object using its ID.
- *
- * @author Florent Guillaume
  */
 public interface ObjectId {
 

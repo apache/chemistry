@@ -28,8 +28,6 @@ import org.apache.chemistry.Property;
  * <p>
  * This also holds data for objects not yet saved, in this case the ID is not
  * set, and the PARENT_ID is temporarily set to the parent's ID.
- *
- * @author Florent Guillaume
  */
 public class SimpleData extends ConcurrentHashMap<String, Serializable> {
 

@@ -22,8 +22,6 @@ import java.util.Collection;
 
 /**
  * CMIS Repository Service.
- *
- * @author Florent Guillaume
  */
 public interface RepositoryService {
 

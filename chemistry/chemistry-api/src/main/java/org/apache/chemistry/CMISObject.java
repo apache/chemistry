@@ -39,7 +39,6 @@ import java.util.Map;
  * @see Document
  * @see Relationship
  * @see Policy
- * @author Florent Guillaume
  */
 public interface CMISObject extends ObjectId {
 

@@ -23,8 +23,6 @@ import java.io.InputStream;
 
 /**
  * A CMIS Document.
- *
- * @author Florent Guillaume
  */
 public interface Document extends CMISObject {
 

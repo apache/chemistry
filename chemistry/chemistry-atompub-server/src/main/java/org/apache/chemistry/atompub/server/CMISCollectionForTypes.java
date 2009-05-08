@@ -40,8 +40,6 @@ import org.apache.chemistry.atompub.CMIS;
 
 /**
  * CMIS Collection for the Types.
- *
- * @author Florent Guillaume
  */
 public class CMISCollectionForTypes extends CMISCollection<Type> {
 

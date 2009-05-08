@@ -20,8 +20,6 @@ package org.apache.chemistry;
 
 /**
  * A CMIS Relationship.
- *
- * @author Florent Guillaume
  */
 public interface Relationship extends CMISObject {
 

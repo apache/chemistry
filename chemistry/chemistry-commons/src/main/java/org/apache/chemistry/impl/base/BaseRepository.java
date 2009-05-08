@@ -40,8 +40,6 @@ import org.apache.chemistry.impl.simple.SimpleType;
 /**
  * Base implementation of a {@link Repository}. The implemented methods are
  * completely generic and base on {@link SimpleType} and {@link SimpleProperty}.
- *
- * @author Florent Guillaume
  */
 public abstract class BaseRepository implements Repository, RepositoryInfo,
         RepositoryCapabilities {

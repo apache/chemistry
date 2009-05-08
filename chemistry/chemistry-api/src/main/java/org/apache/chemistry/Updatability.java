@@ -20,8 +20,6 @@ package org.apache.chemistry;
 
 /**
  * The Updatability of a property.
- *
- * @author Florent Guillaume
  */
 public enum Updatability {
 

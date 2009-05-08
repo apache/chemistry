@@ -29,8 +29,6 @@ import java.util.Map;
  * A SPI connection to a CMIS Repository.
  * <p>
  * This API contains low-level methods that mirror the CMIS specification.
- *
- * @author Florent Guillaume
  */
 public interface SPI {
 

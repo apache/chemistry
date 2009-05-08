@@ -20,8 +20,6 @@ package org.apache.chemistry;
 
 /**
  * The CMIS base types.
- *
- * @author Florent Guillaume
  */
 public enum BaseType {
 

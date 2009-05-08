@@ -41,8 +41,6 @@ import org.apache.chemistry.atompub.CMIS;
 
 /**
  * Abdera ElementWrapper for an AtomPub cmis:properties element.
- *
- * @author Florent Guillaume
  */
 public class PropertiesElement extends ExtensibleElementWrapper {
 

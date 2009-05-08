@@ -27,8 +27,6 @@ import org.apache.chemistry.Updatability;
 
 /**
  * A live property of an object.
- *
- * @author Florent Guillaume
  */
 public class SimpleProperty implements Property {
 

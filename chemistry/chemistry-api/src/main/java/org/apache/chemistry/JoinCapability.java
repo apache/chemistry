@@ -20,8 +20,6 @@ package org.apache.chemistry;
 
 /**
  * Support for inner and outer join in query.
- *
- * @author Florent Guillaume
  */
 public enum JoinCapability {
 

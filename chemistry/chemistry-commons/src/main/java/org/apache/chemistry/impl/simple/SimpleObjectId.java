@@ -22,8 +22,6 @@ import org.apache.chemistry.ObjectId;
 
 /**
  * A wrapper for an object ID.
- *
- * @author Florent Guillaume
  */
 public class SimpleObjectId implements ObjectId {
 

@@ -37,8 +37,6 @@ import org.apache.chemistry.impl.simple.SimpleType;
 
 /**
  * Helpers to create a basic repository.
- *
- * @author Florent Guillaume
  */
 public class RepositoryCreationHelper {
 

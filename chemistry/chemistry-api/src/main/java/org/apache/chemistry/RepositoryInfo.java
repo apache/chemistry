@@ -22,8 +22,6 @@ import java.util.Collection;
 
 /**
  * Information about a CMIS Repository.
- *
- * @author Florent Guillaume
  */
 public interface RepositoryInfo extends RepositoryEntry {
 

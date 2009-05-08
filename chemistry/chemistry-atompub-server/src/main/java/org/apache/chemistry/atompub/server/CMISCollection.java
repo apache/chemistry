@@ -31,8 +31,6 @@ import org.apache.chemistry.Repository;
 
 /**
  * Base abstract class for the CMIS collections.
- *
- * @author Florent Guillaume
  */
 public abstract class CMISCollection<T> extends
         AbstractEntityCollectionAdapter<T> {

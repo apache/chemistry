@@ -26,8 +26,6 @@ import java.util.List;
  * <p>
  * The connection can be used to interact with all the services provided by the
  * CMIS repository.
- *
- * @author Florent Guillaume
  */
 public interface Connection {
 

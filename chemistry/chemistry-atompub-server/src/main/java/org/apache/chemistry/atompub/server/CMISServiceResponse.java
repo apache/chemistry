@@ -37,8 +37,6 @@ import org.w3c.dom.Document;
 /**
  * AtomPub response for the CMIS service document. This adds CMIS-specific
  * elements to the response.
- *
- * @author Florent Guillaume
  */
 public class CMISServiceResponse extends StreamWriterResponseContext {
 

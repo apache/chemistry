@@ -24,8 +24,6 @@ import java.util.List;
 
 /**
  * A CMIS Property Definition.
- *
- * @author Florent Guillaume
  */
 public interface PropertyDefinition {
 

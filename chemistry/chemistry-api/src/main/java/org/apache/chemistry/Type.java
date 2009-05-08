@@ -20,11 +20,8 @@ package org.apache.chemistry;
 
 import java.util.Collection;
 
-
 /**
  * A CMIS Type Definition.
- *
- * @author Florent Guillaume
  */
 public interface Type {
 

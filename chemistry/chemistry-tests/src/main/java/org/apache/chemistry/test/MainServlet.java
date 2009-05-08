@@ -33,8 +33,6 @@ import org.mortbay.jetty.servlet.ServletHolder;
 /**
  * Test class that runs a servlet on a memory repository initialized with a few
  * simple documents.
- *
- * @author Florent Guillaume
  */
 public class MainServlet {
 

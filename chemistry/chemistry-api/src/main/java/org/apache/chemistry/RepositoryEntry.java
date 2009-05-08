@@ -22,8 +22,6 @@ import java.net.URI;
 
 /**
  * Basic information about a CMIS Repository.
- *
- * @author Florent Guillaume
  */
 public interface RepositoryEntry {
 

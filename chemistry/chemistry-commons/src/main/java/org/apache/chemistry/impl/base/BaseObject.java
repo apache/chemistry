@@ -33,8 +33,6 @@ import org.apache.chemistry.PropertyDefinition;
 /**
  * Base implementation of a {@link CMISObject}. The implemented methods are
  * completely generic.
- *
- * @author Florent Guillaume
  */
 public abstract class BaseObject implements CMISObject {
 

@@ -23,8 +23,6 @@ import java.util.Map;
 
 /**
  * The type of a CMIS property.
- *
- * @author Florent Guillaume
  */
 public class PropertyType {
 

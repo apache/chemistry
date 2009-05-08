@@ -26,8 +26,6 @@ import org.apache.chemistry.Repository;
 /**
  * Workspace manager that correctly finds the appropriate collection adapter by
  * comparing paths, given that ci.getHref returns an absolute URI.
- *
- * @author Florent Guillaume
  */
 public class CMISWorkspaceManager extends AbstractWorkspaceManager {
 

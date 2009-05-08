@@ -37,8 +37,6 @@ import org.apache.chemistry.atompub.CMIS;
 
 /**
  * Abdera provider for the CMIS bindings used by Chemistry.
- *
- * @author Florent Guillaume
  */
 public class CMISProvider extends AbstractProvider {
 

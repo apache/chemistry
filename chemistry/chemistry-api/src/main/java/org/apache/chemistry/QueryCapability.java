@@ -20,8 +20,6 @@ package org.apache.chemistry;
 
 /**
  * Support for query on full-text or metadata.
- *
- * @author Florent Guillaume
  */
 public enum QueryCapability {
 

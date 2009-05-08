@@ -28,8 +28,6 @@ import java.util.Map;
  * This holds a subset of the properties of a CMIS object. The actual subset
  * will be determined by the method called to return this object entry, and by
  * the actual implementation.
- *
- * @author Florent Guillaume
  */
 public interface ObjectEntry extends ObjectId {
 

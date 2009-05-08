@@ -20,8 +20,6 @@ package org.apache.chemistry;
 
 /**
  * The capabilities of a CMIS Repository.
- *
- * @author Florent Guillaume
  */
 public interface RepositoryCapabilities {
 

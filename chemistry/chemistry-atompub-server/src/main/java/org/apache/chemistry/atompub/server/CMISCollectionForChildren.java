@@ -52,8 +52,6 @@ import org.apache.chemistry.atompub.abdera.ObjectElement;
 
 /**
  * CMIS Collection for the children of a Folder.
- *
- * @author Florent Guillaume
  */
 public class CMISCollectionForChildren extends CMISCollection<ObjectEntry> {
 
