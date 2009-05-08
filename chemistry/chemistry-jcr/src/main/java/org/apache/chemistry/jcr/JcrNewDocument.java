@@ -47,6 +47,7 @@ public class JcrNewDocument extends JcrDocument {
         this.parent = parent;
     }
 
+    @Override
     public ContentStream getContentStream() {
         if (!saved) {
             throw new UnsupportedOperationException();
@@ -54,6 +55,7 @@ public class JcrNewDocument extends JcrDocument {
         return super.getContentStream();
     }
 
+    @Override
     public Folder getParent() {
         if (!saved) {
             return new JcrFolder(parent);
@@ -61,6 +63,7 @@ public class JcrNewDocument extends JcrDocument {
         return super.getParent();
     }
 
+    @Override
     public InputStream getStream() throws IOException {
         if (!saved) {
             throw new UnsupportedOperationException();
@@ -68,6 +71,7 @@ public class JcrNewDocument extends JcrDocument {
         return super.getStream();
     }
 
+    @Override
     public void setContentStream(ContentStream contentStream)
             throws IOException {
 
@@ -77,6 +81,7 @@ public class JcrNewDocument extends JcrDocument {
         this.cs = contentStream;
     }
 
+    @Override
     public void save() {
         if (saved) {
             throw new UnsupportedOperationException();
@@ -87,13 +92,13 @@ public class JcrNewDocument extends JcrDocument {
                 name = cs.getFilename();
             }
             if (name == null) {
-            	Serializable val = getValue("title");
-            	if (val != null) {
+                Serializable val = getValue("title");
+                if (val != null) {
                     name = val.toString();
                 }
             }
             if (name == null) {
-            	name = "unnamed";
+                name = "unnamed";
             }
 
             Node node = parent.addNode(name, JcrConstants.NT_FILE);
@@ -124,6 +129,7 @@ public class JcrNewDocument extends JcrDocument {
         }
     }
 
+    @Override
     public void setName(String name) {
         if (saved) {
             throw new UnsupportedOperationException();
@@ -131,6 +137,7 @@ public class JcrNewDocument extends JcrDocument {
         this.name = name;
     }
 
+    @Override
     public void setValue(String name, Serializable value) {
         if (saved) {
             throw new UnsupportedOperationException();
@@ -138,6 +145,7 @@ public class JcrNewDocument extends JcrDocument {
         values.put(name, value);
     }
 
+    @Override
     public void setValues(Map<String, Serializable> values) {
         if (saved) {
             throw new UnsupportedOperationException();

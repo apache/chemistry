@@ -33,12 +33,15 @@ import javax.jcr.nodetype.NodeTypeManager;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.JoinCapability;
+import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.QueryCapability;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryEntry;
 import org.apache.chemistry.RepositoryInfo;
+import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.impl.simple.SimpleObjectId;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.JcrConstants;
@@ -58,6 +61,11 @@ public class JcrRepository implements Repository, RepositoryInfo,
 
     public JcrRepository(javax.jcr.Repository repository) {
         this(repository, null);
+    }
+
+    public SPI getSPI() {
+        // TODO parameters
+        return (SPI) getConnection(null);
     }
 
     public Connection getConnection(Map<String, Serializable> parameters) {
@@ -184,8 +192,8 @@ public class JcrRepository implements Repository, RepositoryInfo,
         return null;
     }
 
-    public String getRootFolderId() {
-        return JcrObjectEntry.escape("/");
+    public ObjectId getRootFolderId() {
+        return new SimpleObjectId(JcrObjectEntry.escape("/"));
     }
 
     public String getVendorName() {

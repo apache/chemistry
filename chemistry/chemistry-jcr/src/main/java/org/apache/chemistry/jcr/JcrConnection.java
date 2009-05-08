@@ -40,6 +40,7 @@ import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
@@ -48,6 +49,7 @@ import org.apache.chemistry.ReturnVersion;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
+import org.apache.chemistry.impl.simple.SimpleObjectId;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.JcrConstants;
@@ -64,24 +66,23 @@ public class JcrConnection implements Connection, SPI {
         this.repository = repository;
     }
 
-    public void addObjectToFolder(ObjectEntry object, ObjectEntry folder) {
+    public void addObjectToFolder(CMISObject object, Folder folder) {
         throw new UnsupportedOperationException();
     }
 
-    public void applyPolicy(Policy policy, ObjectEntry object) {
+    public void applyPolicy(Policy policy, CMISObject object) {
         throw new UnsupportedOperationException();
     }
 
-    public void cancelCheckOut(ObjectEntry document) {
+    public void cancelCheckOut(Document document) {
         throw new UnsupportedOperationException();
     }
 
-    public CMISObject checkIn(ObjectEntry document, boolean major,
-                              String comment) {
+    public Document checkIn(Document document, boolean major, String comment) {
         throw new UnsupportedOperationException();
     }
 
-    public CMISObject checkOut(ObjectEntry document) {
+    public Document checkOut(Document document) {
         throw new UnsupportedOperationException();
     }
 
@@ -89,42 +90,36 @@ public class JcrConnection implements Connection, SPI {
         session.logout();
     }
 
-    public void deleteAllVersions(ObjectEntry document) {
+    public void deleteAllVersions(Document document) {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteObject(ObjectEntry object) {
+    public void deleteObject(CMISObject object) {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<String> deleteTree(ObjectEntry folder, Unfiling unfiling,
-                                         boolean continueOnFailure) {
+    public Collection<String> deleteTree(Folder folder, Unfiling unfiling,
+            boolean continueOnFailure) {
         JcrFolder f = (JcrFolder) folder;
         f.delete();
         return Collections.emptySet();
     }
 
-    public Collection<ObjectEntry> getAllVersions(ObjectEntry document,
-                                                  String filter) {
+    public Collection<Document> getAllVersions(Document document, String filter) {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<Policy> getAppliedPolicies(ObjectEntry object) {
+    public Collection<Policy> getAppliedPolicies(CMISObject object) {
         throw new UnsupportedOperationException();
     }
 
-    public List<ObjectEntry> getChildren(ObjectEntry folder) {
-        return getChildren(folder.getId(), null, null, false, false,
-                Integer.MAX_VALUE, 0, null, new boolean[1]);
-    }
-
-    public CMISObject getLatestVersion(ObjectEntry document, boolean major) {
+    public Document getLatestVersion(Document document, boolean major) {
         throw new UnsupportedOperationException();
     }
 
-    public CMISObject getObject(String objectId, ReturnVersion returnVersion) {
+    public CMISObject getObject(ObjectId objectId, ReturnVersion returnVersion) {
         try {
-            String relPath = JcrObjectEntry.getPath(objectId).substring(1);
+            String relPath = JcrObjectEntry.getPath(objectId.getId()).substring(1);
             if (relPath.equals("")) {
                 return getRootFolder();
             } else {
@@ -142,19 +137,14 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
-    public List<ObjectEntry> getRelationships(ObjectEntry object,
-                                              RelationshipDirection direction,
-                                              String typeId,
-                                              boolean includeSubRelationshipTypes) {
+    public List<Relationship> getRelationships(CMISObject object,
+            RelationshipDirection direction, String typeId,
+            boolean includeSubRelationshipTypes) {
         throw new UnsupportedOperationException();
     }
 
     public Repository getRepository() {
         return repository;
-    }
-
-    public ObjectEntry getRootEntry() {
-        return getRootFolder();
     }
 
     public Folder getRootFolder() {
@@ -171,20 +161,20 @@ public class JcrConnection implements Connection, SPI {
         return this;
     }
 
-    public void moveObject(ObjectEntry object, ObjectEntry targetFolder,
-                           ObjectEntry sourceFolder) {
+    public void moveObject(CMISObject object, Folder targetFolder,
+            Folder sourceFolder) {
         throw new UnsupportedOperationException();
     }
 
-    public Document newDocument(String typeId, ObjectEntry folder) {
+    public Document newDocument(String typeId, Folder folder) {
         throw new UnsupportedOperationException();
     }
 
-    public Folder newFolder(String typeId, ObjectEntry folder) {
+    public Folder newFolder(String typeId, Folder folder) {
         throw new UnsupportedOperationException();
     }
 
-    public Policy newPolicy(String typeId, ObjectEntry folder) {
+    public Policy newPolicy(String typeId, Folder folder) {
         throw new UnsupportedOperationException();
     }
 
@@ -192,50 +182,65 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> query(String statement,
-                                         boolean searchAllVersions) {
-
+    public Collection<CMISObject> query(String statement,
+            boolean searchAllVersions) {
         boolean[] hasMoreItems = new boolean[1];
-        return query(statement, searchAllVersions, false, false,
-                Integer.MAX_VALUE, 0, hasMoreItems);
+        Collection<ObjectEntry> entries = query(statement, searchAllVersions,
+                false, false, Integer.MAX_VALUE, 0, hasMoreItems);
+        List<CMISObject> objects = new ArrayList<CMISObject>(entries.size());
+        for (ObjectEntry entry : entries) {
+            // cast entries, they are all JcrFolder or JcrDocument
+            objects.add((CMISObject) entry);
+        }
+        return objects;
     }
 
-    public void removeObjectFromFolder(ObjectEntry object, ObjectEntry folder) {
+    public ObjectEntry newObjectEntry(String typeId) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void removePolicy(Policy policy, ObjectEntry object) {
+    public ObjectId newObjectId(String id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void removeObjectFromFolder(CMISObject object, Folder folder) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void removePolicy(Policy policy, CMISObject object) {
         throw new UnsupportedOperationException();
     }
 
     //---------------------------------------------------------------------- SPI
 
-    public void addObjectToFolder(String objectId, String folderId) {
+    public void addObjectToFolder(ObjectId objectId, ObjectId folderId) {
         throw new UnsupportedOperationException();
     }
 
-    public void applyPolicy(String policyId, String objectId) {
+    public void applyPolicy(ObjectId policyId, ObjectId objectId) {
         throw new UnsupportedOperationException();
     }
 
-    public void cancelCheckOut(String documentId) {
+    public void cancelCheckOut(ObjectId documentId) {
         throw new UnsupportedOperationException();
     }
 
-    public String checkIn(String documentId, boolean major,
+    public ObjectId checkIn(ObjectId documentId, boolean major,
                           Map<String, Serializable> properties,
                           ContentStream contentStream, String comment) {
         throw new UnsupportedOperationException();
     }
 
-    public String checkOut(String documentId, boolean[] contentCopied) {
+    public ObjectId checkOut(ObjectId documentId, boolean[] contentCopied) {
         throw new UnsupportedOperationException();
     }
 
     // TODO add IOException to throws clause
-    public String createDocument(String typeId,
+    public ObjectId createDocument(String typeId,
                                  Map<String, Serializable> properties,
-                                 String folderId, ContentStream contentStream,
+                                 ObjectId folderId, ContentStream contentStream,
                                  VersioningState versioningState) {
 
         try {
@@ -249,7 +254,7 @@ public class JcrConnection implements Connection, SPI {
                 doc.setContentStream(contentStream);
             }
             doc.save();
-            return doc.getId();
+            return new SimpleObjectId(doc.getId());
         } catch (IOException e) {
             String msg = "Unable to create document.";
             log.error(msg, e);
@@ -257,21 +262,21 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
-    public String createFolder(String typeId,
+    public ObjectId createFolder(String typeId,
                                Map<String, Serializable> properties,
-                               String folderId) {
+                               ObjectId folderId) {
         throw new UnsupportedOperationException();
     }
 
-    public String createPolicy(String typeId,
+    public ObjectId createPolicy(String typeId,
                                Map<String, Serializable> properties,
-                               String folderId) {
+                               ObjectId folderId) {
         throw new UnsupportedOperationException();
     }
 
-    public String createRelationship(String typeId,
+    public ObjectId createRelationship(String typeId,
                                      Map<String, Serializable> properties,
-                                     String sourceId, String targetId) {
+                                     ObjectId sourceId, ObjectId targetId) {
         throw new UnsupportedOperationException();
     }
 
@@ -279,15 +284,15 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteContentStream(String documentId) {
+    public void deleteContentStream(ObjectId documentId) {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteObject(String objectId) {
+    public void deleteObject(ObjectId objectId) {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<String> deleteTree(String folderId, Unfiling unfiling,
+    public Collection<String> deleteTree(ObjectId folderId, Unfiling unfiling,
                                          boolean continueOnFailure) {
         throw new UnsupportedOperationException();
     }
@@ -297,16 +302,16 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<String> getAllowableActions(String objectId, String asUser) {
+    public Collection<String> getAllowableActions(ObjectId objectId, String asUser) {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> getAppliedPolicies(String objectId,
+    public Collection<ObjectEntry> getAppliedPolicies(ObjectId objectId,
                                                       String filter) {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> getCheckedoutDocuments(String folderId,
+    public Collection<ObjectEntry> getCheckedoutDocuments(ObjectId folderId,
                                                           String filter,
                                                           boolean includeAllowableActions,
                                                           boolean includeRelationships,
@@ -316,7 +321,7 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public List<ObjectEntry> getChildren(String folderId, BaseType type,
+    public List<ObjectEntry> getChildren(ObjectId folderId, BaseType type,
                                          String filter,
                                          boolean includeAllowableActions,
                                          boolean includeRelationships,
@@ -329,7 +334,7 @@ public class JcrConnection implements Connection, SPI {
             }
 
             Node node = session.getRootNode();
-            String relPath = JcrObjectEntry.getPath(folderId).substring(1);
+            String relPath = JcrObjectEntry.getPath(folderId.getId()).substring(1);
             if (!relPath.equals("")) {
                 node = node.getNode(relPath);
             }
@@ -367,11 +372,11 @@ public class JcrConnection implements Connection, SPI {
         return this;
     }
 
-    public InputStream getContentStream(String documentId, int offset,
+    public InputStream getContentStream(ObjectId documentId, int offset,
                                         int length) throws IOException {
 
         try {
-            String relPath = JcrObjectEntry.getPath(documentId).substring(1);
+            String relPath = JcrObjectEntry.getPath(documentId.getId()).substring(1);
             Node node = session.getRootNode().getNode(relPath);
             JcrDocument document = new JcrDocument(node);
             return document.getStream();
@@ -382,7 +387,7 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
-    public List<ObjectEntry> getDescendants(String folderId, BaseType type,
+    public List<ObjectEntry> getDescendants(ObjectId folderId, BaseType type,
                                             int depth, String filter,
                                             boolean includeAllowableActions,
                                             boolean includeRelationships,
@@ -391,7 +396,7 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
-    public List<ObjectEntry> getFolderParent(String folderId, String filter,
+    public List<ObjectEntry> getFolderParent(ObjectId folderId, String filter,
                                              boolean includeAllowableActions,
                                              boolean includeRelationships,
                                              boolean returnToRoot) {
@@ -399,7 +404,7 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
-    public Collection<ObjectEntry> getObjectParents(String objectId,
+    public Collection<ObjectEntry> getObjectParents(ObjectId objectId,
                                                     String filter,
                                                     boolean includeAllowableActions,
                                                     boolean includeRelationships) {
@@ -407,16 +412,16 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
-    public ObjectEntry getProperties(String objectId,
+    public ObjectEntry getProperties(ObjectId objectId,
                                      ReturnVersion returnVersion,
                                      String filter,
                                      boolean includeAllowableActions,
                                      boolean includeRelationships) {
 
         try {
-            String relPath = JcrObjectEntry.getPath(objectId).substring(1);
+            String relPath = JcrObjectEntry.getPath(objectId.getId()).substring(1);
             if (relPath.equals("")) {
-                return getRootFolder();
+                return (ObjectEntry) getRootFolder();
             } else {
                 Node node = session.getRootNode().getNode(relPath);
                 if (node.isNodeType(JcrConstants.NT_FOLDER)) {
@@ -439,7 +444,7 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
-    public List<ObjectEntry> getRelationships(String objectId,
+    public List<ObjectEntry> getRelationships(ObjectId objectId,
                                               RelationshipDirection direction,
                                               String typeId,
                                               boolean includeSubRelationshipTypes,
@@ -451,8 +456,13 @@ public class JcrConnection implements Connection, SPI {
         return Collections.emptyList();
     }
 
-    public void moveObject(String objectId, String targetFolderId,
-                           String sourceFolderId) {
+    public boolean hasContentStream(ObjectId document) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void moveObject(ObjectId objectId, ObjectId targetFolderId,
+            ObjectId sourceFolderId) {
 
         throw new UnsupportedOperationException();
     }
@@ -491,21 +501,22 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
-    public void removeObjectFromFolder(String objectId, String folderId) {
+    public void removeObjectFromFolder(ObjectId objectId, ObjectId folderId) {
         throw new UnsupportedOperationException();
     }
 
-    public void removePolicy(String policyId, String objectId) {
+    public void removePolicy(ObjectId policyId, ObjectId objectId) {
         throw new UnsupportedOperationException();
     }
 
-    public void setContentStream(String documentId, boolean overwrite,
+    public ObjectId setContentStream(ObjectId documentId, boolean overwrite,
                                  ContentStream contentStream) {
         throw new UnsupportedOperationException();
     }
 
-    public String updateProperties(String objectId, String changeToken,
+    public ObjectId updateProperties(ObjectId objectId, String changeToken,
                                    Map<String, Serializable> properties) {
         throw new UnsupportedOperationException();
     }
+
 }

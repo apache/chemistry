@@ -383,6 +383,15 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         return null;
     }
 
+    public Map<String, Serializable> getValues() {
+        Map<String, Serializable> values = new HashMap<String, Serializable>();
+        for (PropertyDefinition def : getType().getPropertyDefinitions()) {
+            String name = def.getName();
+            values.put(name, getValue(name));
+        }
+        return values;
+    }
+
     public String getVersionLabel() {
         // TODO Auto-generated method stub
         return null;

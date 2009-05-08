@@ -25,9 +25,9 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
-import org.apache.chemistry.ObjectEntry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.JcrConstants;
@@ -45,13 +45,15 @@ public class JcrNewFolder extends JcrFolder {
         this.parent = parent;
     }
 
-    public List<ObjectEntry> getChildren(BaseType type, String orderBy) {
+    @Override
+    public List<CMISObject> getChildren(BaseType type, String orderBy) {
         if (!saved) {
             throw new UnsupportedOperationException();
         }
         return super.getChildren(type, orderBy);
     }
 
+    @Override
     public Document newDocument(String typeId) {
         if (!saved) {
             throw new UnsupportedOperationException();
@@ -59,6 +61,7 @@ public class JcrNewFolder extends JcrFolder {
         return super.newDocument(typeId);
     }
 
+    @Override
     public Folder newFolder(String typeId) {
         if (!saved) {
             throw new UnsupportedOperationException();
@@ -66,6 +69,7 @@ public class JcrNewFolder extends JcrFolder {
         return super.newFolder(typeId);
     }
 
+    @Override
     public Folder getParent() {
         if (!saved) {
             return new JcrFolder(parent);
@@ -73,6 +77,7 @@ public class JcrNewFolder extends JcrFolder {
         return super.getParent();
     }
 
+    @Override
     public void save() {
         if (saved) {
             throw new UnsupportedOperationException();
@@ -93,6 +98,7 @@ public class JcrNewFolder extends JcrFolder {
         }
     }
 
+    @Override
     public void setName(String name) {
         if (saved) {
             throw new UnsupportedOperationException();
@@ -100,6 +106,7 @@ public class JcrNewFolder extends JcrFolder {
         this.name = name;
     }
 
+    @Override
     public void setValue(String name, Serializable value) {
         if (saved) {
             throw new UnsupportedOperationException();
@@ -107,6 +114,7 @@ public class JcrNewFolder extends JcrFolder {
         values.put(name, value);
     }
 
+    @Override
     public void setValues(Map<String, Serializable> values) {
         if (saved) {
             throw new UnsupportedOperationException();
