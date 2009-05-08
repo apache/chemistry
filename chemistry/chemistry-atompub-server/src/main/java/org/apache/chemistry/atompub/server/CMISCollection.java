@@ -27,7 +27,7 @@ import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.TargetType;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
-import org.apache.chemistry.repository.Repository;
+import org.apache.chemistry.Repository;
 
 /**
  * Base abstract class for the CMIS collections.

@@ -22,35 +22,35 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.chemistry.BaseType;
+import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Document;
-import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Folder;
-import org.apache.chemistry.type.BaseType;
 
 public class SimpleFolder extends SimpleObject implements Folder {
 
-    public SimpleFolder(SimpleData data, SimpleConnection connection) {
-        super(data, connection);
+    public SimpleFolder(SimpleObjectEntry entry) {
+        super(entry);
     }
 
-    public List<ObjectEntry> getChildren(BaseType type, String orderBy) {
+    public List<CMISObject> getChildren(BaseType type, String orderBy) {
         // TODO type and orderBy
-        Set<String> ids = connection.repository.children.get(getId());
-        List<ObjectEntry> children = new ArrayList<ObjectEntry>(ids.size());
+        Set<String> ids = entry.connection.repository.children.get(getId());
+        List<CMISObject> children = new ArrayList<CMISObject>(ids.size());
         for (String id : ids) {
-            SimpleData d = connection.repository.datas.get(id);
-            // could build a full Object, but some implementations won't
-            children.add(new SimpleObjectEntry(d, connection));
+            SimpleData d = entry.connection.repository.datas.get(id);
+            children.add(SimpleObject.construct(new SimpleObjectEntry(d,
+                    entry.connection)));
         }
         return children;
     }
 
     public Document newDocument(String typeId) {
-        return connection.newDocument(typeId, this);
+        return entry.connection.newDocument(typeId, this);
     }
 
     public Folder newFolder(String typeId) {
-        return connection.newFolder(typeId, this);
+        return entry.connection.newFolder(typeId, this);
     }
 
 }

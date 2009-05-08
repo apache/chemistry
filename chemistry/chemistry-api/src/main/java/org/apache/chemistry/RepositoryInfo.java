@@ -16,7 +16,7 @@
  * Authors:
  *     Florent Guillaume
  */
-package org.apache.chemistry.repository;
+package org.apache.chemistry;
 
 import java.util.Collection;
 
@@ -35,7 +35,7 @@ public interface RepositoryInfo extends RepositoryEntry {
     /**
      * The ID of the root Folder of the repository.
      */
-    String getRootFolderId();
+    ObjectId getRootFolderId();
 
     /**
      * The repository vendor name.

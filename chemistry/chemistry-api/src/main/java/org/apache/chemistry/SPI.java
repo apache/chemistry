@@ -25,8 +25,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.chemistry.type.BaseType;
-
 /**
  * A SPI connection to a CMIS Repository.
  * <p>
@@ -37,11 +35,36 @@ import org.apache.chemistry.type.BaseType;
 public interface SPI {
 
     /**
-     * Gets the high-level connection for this SPI connection.
+     * Gets the repository for this SPI connection.
      *
-     * @return the connection
+     * @return the repository
      */
-    Connection getConnection();
+    Repository getRepository();
+
+    /**
+     * Closes this SPI connection.
+     */
+    void close();
+
+    /*
+     * ----- Factories -----
+     */
+
+    /**
+     * Creates a new reference to a given object.
+     *
+     * @param id the object ID
+     * @return a reference to that object
+     */
+    ObjectId newObjectId(String id);
+
+    /**
+     * Creates a new empty object entry.
+     *
+     * @param typeId the object type ID
+     * @return a new object entry
+     */
+    ObjectEntry newObjectEntry(String typeId);
 
     /*
      * ----- Navigation Services -----
@@ -77,7 +100,7 @@ public interface SPI {
      * <p>
      * When returning more than one level, the objects are nested.
      *
-     * @param folderId the folder ID
+     * @param folder the folder
      * @param type the base type, or {@code null} for all types
      * @param depth the depth, or {@code -1} for all levels
      * @param filter the properties filter, or {@code null} for all properties
@@ -87,7 +110,7 @@ public interface SPI {
      * @param orderBy an {@code ORDER BY} clause, or {@code null}
      */
     // TODO return type for a tree
-    List<ObjectEntry> getDescendants(String folderId, BaseType type, int depth,
+    List<ObjectEntry> getDescendants(ObjectId folder, BaseType type, int depth,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, String orderBy);
 
@@ -121,7 +144,7 @@ public interface SPI {
      * <p>
      * The return value hasMoreItems is filled if {@code maxItems > 0}.
      *
-     * @param folderId the folder ID
+     * @param folder the folder
      * @param type the base type, or {@code null} for all types
      * @param filter the properties filter, or {@code null} for all properties
      * @param includeAllowableActions {@code true} to include allowable actions
@@ -134,7 +157,7 @@ public interface SPI {
      * @param hasMoreItems a 1-value boolean array to return a flag stating if
      *            there are more items
      */
-    List<ObjectEntry> getChildren(String folderId, BaseType type,
+    List<ObjectEntry> getChildren(ObjectId folder, BaseType type,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, int maxItems, int skipCount,
             String orderBy, boolean[] hasMoreItems);
@@ -154,7 +177,7 @@ public interface SPI {
      * include the parent and the ObjectID property in the filter to allow
      * re-ordering if necessary.
      *
-     * @param folderId the folder ID
+     * @param folder the folder
      * @param filter the properties filter, or {@code null} for all properties
      * @param includeAllowableActions {@code true} to include allowable actions
      * @param includeRelationships {@code true} if relationships should be
@@ -162,7 +185,7 @@ public interface SPI {
      * @param returnToRoot {@code true} if all ancestors must be returned
      * @return the parents and optionally relationships
      */
-    List<ObjectEntry> getFolderParent(String folderId, String filter,
+    List<ObjectEntry> getFolderParent(ObjectId folder, String filter,
             boolean includeAllowableActions, boolean includeRelationships,
             boolean returnToRoot);
 
@@ -173,7 +196,7 @@ public interface SPI {
      * <p>
      * To find the parent of a folder, use {@link #getFolderParent}.
      *
-     * @param objectId the object ID
+     * @param object the object
      * @param filter the properties filter, or {@code null} for all properties
      * @param includeAllowableActions {@code true} to include allowable actions
      * @param includeRelationships {@code true} if relationships should be
@@ -183,7 +206,7 @@ public interface SPI {
      * @param skipCount the skip count
      * @return the collection of parent folders
      */
-    Collection<ObjectEntry> getObjectParents(String objectId, String filter,
+    Collection<ObjectEntry> getObjectParents(ObjectId object, String filter,
             boolean includeAllowableActions, boolean includeRelationships);
 
     /**
@@ -194,12 +217,12 @@ public interface SPI {
      * the repository may also include checked-out objects that the calling user
      * has access to, but did not check out.
      * <p>
-     * If folderId is not {@code null}, then the results include only direct
+     * If folder is not {@code null}, then the results include only direct
      * children of that folder.
      * <p>
      * The return value hasMoreItems is filled if {@code maxItems > 0}.
      *
-     * @param folderId the folder ID, or {@code null}
+     * @param folder the folder, or {@code null}
      * @param filter
      * @param includeAllowableActions
      * @param includeRelationships {@code true} if relationships should be
@@ -209,7 +232,7 @@ public interface SPI {
      *            there are more items
      * @param skipCount
      */
-    Collection<ObjectEntry> getCheckedoutDocuments(String folderId,
+    Collection<ObjectEntry> getCheckedoutDocuments(ObjectId folder,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, int maxItems, int skipCount,
             boolean[] hasMoreItems);
@@ -229,19 +252,18 @@ public interface SPI {
      * {@link VersioningState#MINOR MINOR} version, or as a checked-in
      * {@link VersioningState#MAJOR MAJOR} version. If created in a
      * {@link VersioningState#CHECKED_OUT CHECKED_OUT} state, the object is a
-     * private working copy and there is no corresponding
-     * "checked out document".
+     * private working copy and there is no corresponding checked out document.
      *
      * @param typeId the document type ID
      * @param properties the properties
-     * @param folderId the containing folder ID, or {@code null}
+     * @param folder the containing folder, or {@code null}
      * @param contentStream the content stream, or {@code null}
      * @param versioningState the versioning state
      * @return the ID of the created document
      */
-    String createDocument(String typeId, Map<String, Serializable> properties,
-            String folderId, ContentStream contentStream,
-            VersioningState versioningState);
+    ObjectId createDocument(String typeId,
+            Map<String, Serializable> properties, ObjectId folder,
+            ContentStream contentStream, VersioningState versioningState);
 
     /**
      * Creates a folder.
@@ -250,11 +272,11 @@ public interface SPI {
      *
      * @param typeId the folder type ID
      * @param properties the properties
-     * @param folderId the containing folder ID
+     * @param folder the containing folder
      * @return the ID of the created folder
      */
-    String createFolder(String typeId, Map<String, Serializable> properties,
-            String folderId);
+    ObjectId createFolder(String typeId, Map<String, Serializable> properties,
+            ObjectId folder);
 
     /**
      * Creates a relationship.
@@ -263,13 +285,13 @@ public interface SPI {
      *
      * @param typeId the relationship type ID
      * @param properties the properties
-     * @param sourceId the source ID
-     * @param targetId the target ID
+     * @param source the source
+     * @param target the target
      * @return the ID of the created relationship
      */
-    String createRelationship(String typeId,
-            Map<String, Serializable> properties, String sourceId,
-            String targetId);
+    ObjectId createRelationship(String typeId,
+            Map<String, Serializable> properties, ObjectId source,
+            ObjectId target);
 
     /**
      * Creates a policy.
@@ -279,11 +301,11 @@ public interface SPI {
      *
      * @param typeId the relationship type ID
      * @param properties the properties
-     * @param folderId the containing folder ID, or {@code null}
+     * @param folder the containing folder, or {@code null}
      * @return the ID of the created policy
      */
-    String createPolicy(String typeId, Map<String, Serializable> properties,
-            String folderId);
+    ObjectId createPolicy(String typeId, Map<String, Serializable> properties,
+            ObjectId folder);
 
     /**
      * Gets the allowable actions.
@@ -292,12 +314,12 @@ public interface SPI {
      * user's context, subject to any access constraints that are currently
      * imposed by the repository.
      *
-     * @param objectId the object ID
+     * @param object the object
      * @param asUser the user for which the check should be made, or {@code
      *            null} for the current user
      * @return the allowable actions
      */
-    Collection<String> getAllowableActions(String objectId, String asUser);
+    Collection<String> getAllowableActions(ObjectId object, String asUser);
 
     /**
      * Gets the properties of an object.
@@ -310,29 +332,43 @@ public interface SPI {
      * <p>
      * The content stream of the object is not returned, use
      * {@link #getContentStream} for that.
+     * <p>
+     * If the passed object is an {@link ObjectEntry}, the repository
+     * implementation may fill it with additional data and return the same
+     * object.
      *
-     * @param objectId the object ID
+     * @param object the object
      * @param returnVersion the version to be returned
      * @param filter the properties filter, or {@code null} for all properties
      * @param includeAllowableActions {@code true} to include allowable actions
      * @param includeRelationships {@code true} if relationships should be
      *            included as well
-     * @return the properties of the object
+     * @return the properties of the object, or {@code null} if the object is
+     *         not found
      */
-    ObjectEntry getProperties(String objectId, ReturnVersion returnVersion,
+    ObjectEntry getProperties(ObjectId object, ReturnVersion returnVersion,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships);
 
     /**
+     * Checks if the document has an associated content stream.
+     * <p>
+     * Note that the content stream may be present but still have length 0.
+     *
+     * @return {@code true} if the document has an associated content stream
+     */
+    boolean hasContentStream(ObjectId document);
+
+    /**
      * Gets the content stream for a document.
      *
-     * @param documentId the document ID
+     * @param document the document
      * @param offset the offset into the content stream
      * @param length the length of stream to return, or {@code -1} for all
      * @return the specified part of the content stream
      * @throws IOException
      */
-    InputStream getContentStream(String documentId, int offset, int length)
+    InputStream getContentStream(ObjectId document, int offset, int length)
             throws IOException;
 
     /**
@@ -345,16 +381,18 @@ public interface SPI {
      * support updates.
      * <p>
      * Because repositories may automatically create new document versions on a
-     * user's behalf, the document ID returned may not match the one provided as
-     * a parameted to this method.
+     * user's behalf, the document returned may have a different ID from the one
+     * provided as a parameter to this method.
      *
-     * @param documentId the document ID
+     * @param document the document
      * @param overwrite {@code true} if an already-existing content stream must
      *            be overwritten
      * @param contentStream the content stream to set
-     * @return the document ID, which may differ from the passed one
+     * @return the resulting document, which may differ from the one passed as
+     *         input
      */
-    void setContentStream(String documentId, boolean overwrite,
+    // TODO return ObjectId or ObjectEntry?
+    ObjectId setContentStream(ObjectId document, boolean overwrite,
             ContentStream contentStream);
 
     /**
@@ -369,9 +407,9 @@ public interface SPI {
      * If the document is a private working copy, some repositories may not
      * support updates.
      *
-     * @param documentId the document ID
+     * @param document the document
      */
-    void deleteContentStream(String documentId);
+    void deleteContentStream(ObjectId document);
 
     /**
      * Updates the properties of an object.
@@ -387,30 +425,32 @@ public interface SPI {
      * token must be included as-is when calling this method.
      * <p>
      * Because repositories may automatically create new document versions on a
-     * user's behalf, the object ID returned may not match the one provided as a
-     * parameter to this method.
+     * user's behalf, the object returned may have a different ID from the one
+     * provided as a parameter to this method.
      *
-     * @param objectId the object ID
+     * @param object the object
      * @param changeToken the change token, or {@code null}
      * @param properties the properties to change
-     * @return the object ID, which may differ from the passed one
+     * @return the resulting object, which may differ from the one passed as
+     *         input
      */
-    String updateProperties(String objectId, String changeToken,
+    // TODO return ObjectId or ObjectEntry?
+    ObjectId updateProperties(ObjectId object, String changeToken,
             Map<String, Serializable> properties);
 
     /**
      * Moves the specified filed object from one folder to another.
      * <p>
-     * The targetFolderId is the ID of the target folder into which the object
-     * has to be moved. When the object is multi-filed, a source folder ID to be
-     * moved out of must be specified.
+     * The targetFolder is the target folder into which the object has to be
+     * moved. When the object is multi-filed, a source folder to be moved out of
+     * must be specified.
      *
-     * @param objectId the object ID
-     * @param targetFolderId the target folder ID
-     * @param sourceFolderId the source folder ID, or {@code null}
+     * @param object the object to move
+     * @param targetFolder the target folder
+     * @param sourceFolder the source folder, or {@code null}
      */
-    void moveObject(String objectId, String targetFolderId,
-            String sourceFolderId);
+    void moveObject(ObjectId object, ObjectId targetFolder,
+            ObjectId sourceFolder);
 
     /**
      * Deletes the specified object.
@@ -422,11 +462,11 @@ public interface SPI {
      * all versions, use {@link #deleteAllVersions}.
      * <p>
      * Deletion of a private working copy (checked out version) is the same as
-     * to cancel checkout.
+     * the cancelling of a checkout.
      *
-     * @param objectId the object ID
+     * @param object the object to delete
      */
-    void deleteObject(String objectId);
+    void deleteObject(ObjectId object);
 
     /**
      * Deletes a tree of objects.
@@ -459,38 +499,38 @@ public interface SPI {
      * {@code false} that single object ID is returned, otherwise all IDs of
      * objects that could not be deleted are returned.
      *
-     * @param folderId the folder ID
+     * @param folder the folder to delete
      * @param unfiling how to unfile non-folder objects, if {@code null} then
      *            same as {@link Unfiling#DELETE}
      * @param continueOnFailure {@code true} if failure to delete one object
      *            should not stop deletion of other objects
      * @return the collection of IDs of objects that could not be deleted
      */
-    Collection<String> deleteTree(String folderId, Unfiling unfiling,
+    Collection<String> deleteTree(ObjectId folder, Unfiling unfiling,
             boolean continueOnFailure);
 
     /**
      * Adds an existing non-folder, fileable object to a folder.
      *
-     * @param objectId the object ID
-     * @param folderId the folder ID
+     * @param object the object
+     * @param folder the folder
      */
-    void addObjectToFolder(String objectId, String folderId);
+    void addObjectToFolder(ObjectId object, ObjectId folder);
 
     /**
      * Removes a non-folder object from a folder or from all folders.
      * <p>
-     * If folderId is {@code null}, then the the object is removed from all
+     * If folder is {@code null}, then the the object is removed from all
      * folders.
      * <p>
      * This never deletes the object, which means that if unfiling is not
      * supported, and an object is to be removed from the last folder it exists
      * in, or is to be removed from all folders, an exception will be thrown.
      *
-     * @param objectId the object ID
-     * @param folderId the folder ID, or {@code null} for all folders
+     * @param object the object
+     * @param folder the folder, or {@code null} for all folders
      */
-    void removeObjectFromFolder(String objectId, String folderId);
+    void removeObjectFromFolder(ObjectId object, ObjectId folder);
 
     /*
      * ----- Discovery Services -----
@@ -565,11 +605,11 @@ public interface SPI {
      * is copied, {@code false} if not. Whether the content is copied on
      * check-out or not is repository-specific.
      *
-     * @param documentId the document ID
+     * @param document the document
      * @param contentCopied a return array of size 1
-     * @return ID of the private working copy
+     * @return a reference to the private working copy
      */
-    String checkOut(String documentId, boolean[] contentCopied);
+    ObjectId checkOut(ObjectId document, boolean[] contentCopied);
 
     /**
      * Cancels a check-out.
@@ -578,24 +618,24 @@ public interface SPI {
      * the checked-out document, allowing other documents in the version series
      * to be checked out again.
      *
-     * @param documentId the private working copy ID
+     * @param document the private working copy
      */
-    void cancelCheckOut(String documentId);
+    void cancelCheckOut(ObjectId document);
 
     /**
      * Checks in a private working copy.
      * <p>
      * Makes the private working copy the current version of the document.
      *
-     * @param documentId the private working copy ID
+     * @param document the private working copy
      * @param major {@code true} if the version is a major version
      * @param properties the properties to set on the document, or {@code null}
      * @param contentStream the content stream to set on the document, or
      *            {@code null}
      * @param comment a check-in comment, or {@code null}
-     * @return the ID for the new version of the document
+     * @return a reference to the new version of the document
      */
-    String checkIn(String documentId, boolean major,
+    ObjectId checkIn(ObjectId document, boolean major,
             Map<String, Serializable> properties, ContentStream contentStream,
             String comment);
 
@@ -653,7 +693,7 @@ public interface SPI {
      * <p>
      * Ordering is repository specific but consistent across requests.
      *
-     * @param objectId the object ID
+     * @param object the object
      * @param direction the direction of relationships to include
      * @param typeId the type ID, or {@code null}
      * @param includeSubRelationshipTypes {@code true} if relationships of any
@@ -667,7 +707,7 @@ public interface SPI {
      *            there are more items
      * @return the list of relationships
      */
-    List<ObjectEntry> getRelationships(String objectId,
+    List<ObjectEntry> getRelationships(ObjectId object,
             RelationshipDirection direction, String typeId,
             boolean includeSubRelationshipTypes, String filter,
             String includeAllowableActions, int maxItems, int skipCount,
@@ -682,10 +722,10 @@ public interface SPI {
      * <p>
      * The target object must be controllable.
      *
-     * @param policyId the policy ID
-     * @param objectId the target object ID
+     * @param policy the policy
+     * @param object the target object
      */
-    void applyPolicy(String policyId, String objectId);
+    void applyPolicy(ObjectId policy, ObjectId object);
 
     /**
      * Removes a policy from an object.
@@ -695,10 +735,10 @@ public interface SPI {
      * <p>
      * The target object must be controllable.
      *
-     * @param policyId the policy ID
-     * @param objectId the target object ID
+     * @param policy the policy
+     * @param object the target object
      */
-    void removePolicy(String policyId, String objectId);
+    void removePolicy(ObjectId policy, ObjectId object);
 
     /**
      * Gets the policies applied to an object.
@@ -709,9 +749,9 @@ public interface SPI {
      * <p>
      * The target object must be controllable.
      *
-     * @param objectId the target object ID
+     * @param object the target object
      * @param filter the properties filter, or {@code null} for all properties
      */
-    Collection<ObjectEntry> getAppliedPolicies(String objectId, String filter);
+    Collection<ObjectEntry> getAppliedPolicies(ObjectId object, String filter);
 
 }

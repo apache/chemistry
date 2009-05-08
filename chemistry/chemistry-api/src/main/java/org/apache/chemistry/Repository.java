@@ -16,37 +16,38 @@
  * Authors:
  *     Florent Guillaume
  */
-package org.apache.chemistry.repository;
+package org.apache.chemistry;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-
-import org.apache.chemistry.Connection;
-import org.apache.chemistry.property.PropertyDefinition;
-import org.apache.chemistry.type.Type;
 
 /**
  * A CMIS Repository.
  *
  * @author Florent Guillaume
- * @author Bogdan Stefanescu
  */
 public interface Repository extends RepositoryEntry {
 
     /**
-     * Gets a connection to the repository.
+     * Gets a new connection using the SPI for this repository.
      * <p>
-     * This connection can be used to use the other services offered by the
-     * repository.
-     * <p>
-     * The connection parameters are repository-dependent; they can be used for
-     * instance to authenticate a user.
+     * The SPI is a connection providing access to lower-level features.
      *
-     * @param parameters connection parameters, or {@code null}
+     * @return the SPI connection
      */
-    Connection getConnection(Map<String, Serializable> parameters);
+    SPI getSPI();
+
+    /**
+     * Gets an extension service on this repository.
+     * <p>
+     * This is an optional operation and may always return {@code null} if not
+     * supported.
+     *
+     * @param klass the interface for the requested extension
+     * @return the extension instance if any implementation was found, or
+     *         {@code null} if not
+     */
+    <T> T getExtension(Class<T> klass);
 
     /*
      * ----- Repository Services -----
@@ -106,14 +107,4 @@ public interface Repository extends RepositoryEntry {
      */
     Type getType(String typeId);
 
- 
-    /**
-     * Get an extension service on this repository.
-     * This is an optional operation and may always return null if not supported. 
-     * @param <T>
-     * @param klass the interface for the requested extension
-     * @return the extension instance if any implementation was found
-     */
-    <T> T getExtension(Class<T> klass);
-    
 }

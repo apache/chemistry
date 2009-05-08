@@ -21,8 +21,9 @@ package org.apache.chemistry.impl.simple;
 import java.io.Serializable;
 
 import org.apache.chemistry.ObjectEntry;
-import org.apache.chemistry.property.Property;
-import org.apache.chemistry.property.PropertyDefinition;
+import org.apache.chemistry.Property;
+import org.apache.chemistry.PropertyDefinition;
+import org.apache.chemistry.Updatability;
 
 /**
  * A live property of an object.
@@ -31,17 +32,23 @@ import org.apache.chemistry.property.PropertyDefinition;
  */
 public class SimpleProperty implements Property {
 
+    protected static final String CONTENT_BYTES_KEY = "__content__";
+
     protected final ObjectEntry entry;
 
     protected final String name;
 
-    public SimpleProperty(ObjectEntry entry, String name) {
+    private final PropertyDefinition propertyDefinition;
+
+    public SimpleProperty(ObjectEntry entry, String name,
+            PropertyDefinition propertyDefinition) {
         this.entry = entry;
         this.name = name;
+        this.propertyDefinition = propertyDefinition;
     }
 
     public PropertyDefinition getDefinition() {
-        return entry.getType().getPropertyDefinition(name);
+        return propertyDefinition;
     }
 
     public Serializable getValue() {
@@ -49,8 +56,10 @@ public class SimpleProperty implements Property {
     }
 
     public void setValue(Serializable value) {
-        // TODO XXX
-        throw new UnsupportedOperationException();
+        if (propertyDefinition.getUpdatability() == Updatability.READ_ONLY) {
+            throw new RuntimeException("Read-only property: " + name);
+        }
+        entry.setValue(name, value);
     }
 
 }

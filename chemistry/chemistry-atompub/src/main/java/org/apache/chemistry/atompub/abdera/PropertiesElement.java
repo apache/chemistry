@@ -16,7 +16,7 @@
  * Authors:
  *     Florent Guillaume
  */
-package org.apache.chemistry.atompub;
+package org.apache.chemistry.atompub.abdera;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -33,9 +33,11 @@ import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.ExtensibleElement;
 import org.apache.abdera.model.ExtensibleElementWrapper;
-import org.apache.chemistry.property.Property;
-import org.apache.chemistry.property.PropertyDefinition;
-import org.apache.chemistry.property.PropertyType;
+import org.apache.chemistry.Property;
+import org.apache.chemistry.PropertyDefinition;
+import org.apache.chemistry.PropertyType;
+import org.apache.chemistry.Type;
+import org.apache.chemistry.atompub.CMIS;
 
 /**
  * Abdera ElementWrapper for an AtomPub cmis:properties element.
@@ -66,26 +68,26 @@ public class PropertiesElement extends ExtensibleElementWrapper {
         }
     }
 
-    public void setProperties(Map<String, Property> properties) {
-        for (String name : properties.keySet()) {
-            if (Property.CONTENT_STREAM_URI.equals(name)) {
+    public void setProperties(Map<String, Serializable> values, Type type) {
+        for (PropertyDefinition propertyDefinition : type.getPropertyDefinitions()) {
+            String name = propertyDefinition.getName();
+            if (name.equals(Property.CONTENT_STREAM_URI)) {
                 // special-cased in constructor
                 continue;
             }
-            setProperty(properties.get(name));
+            setProperty(values.get(name), propertyDefinition);
         }
     }
 
     @SuppressWarnings("null")
-    public void setProperty(Property property) {
-        Serializable value = property.getValue();
+    public void setProperty(Serializable value,
+            PropertyDefinition propertyDefinition) {
         if (value == null) {
             // TODO assumes this isn't called several times
             return;
         }
-        PropertyDefinition def = property.getDefinition();
-        QName qname = propertyQName(def);
-        boolean multi = def.isMultiValued();
+        QName qname = propertyQName(propertyDefinition);
+        boolean multi = propertyDefinition.isMultiValued();
         List<String> values = null;
         if (multi) {
             if (value.getClass().isArray()) {
@@ -94,10 +96,10 @@ public class PropertiesElement extends ExtensibleElementWrapper {
                 return;
             }
         }
-        PropertyType type = def.getType();
-        switch (type) {
-        case STRING:
-        case ID:
+        PropertyType type = propertyDefinition.getType();
+        switch (type.ordinal()) {
+        case PropertyType.STRING_ORD:
+        case PropertyType.ID_ORD:
             if (multi) {
                 for (String v : (String[]) value) {
                     values.add(v);
@@ -106,7 +108,7 @@ public class PropertiesElement extends ExtensibleElementWrapper {
                 values = Collections.singletonList((String) value);
             }
             break;
-        case DECIMAL:
+        case PropertyType.DECIMAL_ORD:
             if (multi) {
                 for (BigDecimal v : (BigDecimal[]) value) {
                     values.add(v.toString());
@@ -115,7 +117,7 @@ public class PropertiesElement extends ExtensibleElementWrapper {
                 values = Collections.singletonList(((BigDecimal) value).toString());
             }
             break;
-        case INTEGER:
+        case PropertyType.INTEGER_ORD:
             if (multi) {
                 for (Number v : (Number[]) value) {
                     values.add(v.toString());
@@ -124,7 +126,7 @@ public class PropertiesElement extends ExtensibleElementWrapper {
                 values = Collections.singletonList(((Number) value).toString());
             }
             break;
-        case BOOLEAN:
+        case PropertyType.BOOLEAN_ORD:
             if (multi) {
                 for (Boolean v : (Boolean[]) value) {
                     values.add(v.toString());
@@ -133,7 +135,7 @@ public class PropertiesElement extends ExtensibleElementWrapper {
                 values = Collections.singletonList(((Boolean) value).toString());
             }
             break;
-        case DATETIME:
+        case PropertyType.DATETIME_ORD:
             if (multi) {
                 for (Calendar v : (Calendar[]) value) {
                     values.add(calendarString(v));
@@ -142,17 +144,17 @@ public class PropertiesElement extends ExtensibleElementWrapper {
                 values = Collections.singletonList(calendarString((Calendar) value));
             }
             break;
-        case URI:
+        case PropertyType.URI_ORD:
             throw new UnsupportedOperationException(type.toString());
-        case XML:
+        case PropertyType.XML_ORD:
             throw new UnsupportedOperationException(type.toString());
-        case HTML:
+        case PropertyType.HTML_ORD:
             throw new UnsupportedOperationException(type.toString());
         default:
             throw new UnsupportedOperationException(type.toString());
         }
         ExtensibleElement el = addExtension(qname);
-        el.setAttributeValue(CMIS.NAME, def.getName());
+        el.setAttributeValue(CMIS.NAME, propertyDefinition.getName());
         for (String s : values) {
             Element val = el.addExtension(CMIS.VALUE);
             // don't merge these two lines as JDK 5 has problems compiling it
@@ -161,24 +163,24 @@ public class PropertiesElement extends ExtensibleElementWrapper {
     }
 
     protected static QName propertyQName(PropertyDefinition def) {
-        switch (def.getType()) {
-        case STRING:
+        switch (def.getType().ordinal()) {
+        case PropertyType.STRING_ORD:
             return CMIS.PROPERTY_STRING;
-        case DECIMAL:
+        case PropertyType.DECIMAL_ORD:
             return CMIS.PROPERTY_DECIMAL;
-        case INTEGER:
+        case PropertyType.INTEGER_ORD:
             return CMIS.PROPERTY_INTEGER;
-        case BOOLEAN:
+        case PropertyType.BOOLEAN_ORD:
             return CMIS.PROPERTY_BOOLEAN;
-        case DATETIME:
+        case PropertyType.DATETIME_ORD:
             return CMIS.PROPERTY_DATETIME;
-        case ID:
+        case PropertyType.ID_ORD:
             return CMIS.PROPERTY_ID;
-        case URI:
+        case PropertyType.URI_ORD:
             return CMIS.PROPERTY_URI;
-        case XML:
+        case PropertyType.XML_ORD:
             return CMIS.PROPERTY_XML;
-        case HTML:
+        case PropertyType.HTML_ORD:
             return CMIS.PROPERTY_HTML;
         default:
             throw new UnsupportedOperationException(def.getType().toString());
@@ -204,5 +206,5 @@ public class PropertiesElement extends ExtensibleElementWrapper {
                 cal.get(Calendar.SECOND), //
                 sign, offset / 60, offset % 60);
     }
-    
+
 }

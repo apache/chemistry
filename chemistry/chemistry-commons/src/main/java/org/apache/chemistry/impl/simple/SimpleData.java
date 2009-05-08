@@ -21,7 +21,7 @@ package org.apache.chemistry.impl.simple;
 import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.chemistry.property.Property;
+import org.apache.chemistry.Property;
 
 /**
  * The data held in the repository for one object.

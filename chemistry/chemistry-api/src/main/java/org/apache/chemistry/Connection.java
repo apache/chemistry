@@ -21,8 +21,6 @@ package org.apache.chemistry;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.chemistry.repository.Repository;
-
 /**
  * A Connection to a CMIS Repository.
  * <p>
@@ -30,7 +28,6 @@ import org.apache.chemistry.repository.Repository;
  * CMIS repository.
  *
  * @author Florent Guillaume
- * @author Bogdan Stefanescu
  */
 public interface Connection {
 
@@ -59,21 +56,6 @@ public interface Connection {
      */
     Folder getRootFolder();
 
-    /**
-     * Gets the direct children of a folder.
-     *
-     * @return the list of children
-     */
-    List<ObjectEntry> getChildren(ObjectEntry folder);
-
-    /**
-     * The root entry. You can use this start traversing the repository and 
-     * to get the root document.
-     * 
-     * @return the root entry. Never returns null.
-     */
-    ObjectEntry getRootEntry();
-    
     /*
      * ----- Factories -----
      */
@@ -86,21 +68,24 @@ public interface Connection {
      *
      * @param typeId the type ID
      * @param folder the parent folder, or {@code null}
+     * @see CMISObject#save
      */
-    Document newDocument(String typeId, ObjectEntry folder);
+    Document newDocument(String typeId, Folder folder);
 
     /**
      * Creates a new, unsaved folder.
      *
      * @param typeId the type ID
      * @param folder the parent folder
+     * @see CMISObject#save
      */
-    Folder newFolder(String typeId, ObjectEntry folder);
+    Folder newFolder(String typeId, Folder folder);
 
     /**
      * Creates a new, unsaved relationship.
      *
      * @param typeId the type ID
+     * @see CMISObject#save
      */
     Relationship newRelationship(String typeId);
 
@@ -112,8 +97,9 @@ public interface Connection {
      *
      * @param typeId the type ID
      * @param folder the parent folder, or {@code null}
+     * @see CMISObject#save
      */
-    Policy newPolicy(String typeId, ObjectEntry folder);
+    Policy newPolicy(String typeId, Folder folder);
 
     /*
      * ----- Object Services -----
@@ -122,11 +108,11 @@ public interface Connection {
     /**
      * Gets an object given its ID.
      *
-     * @param objectId the object ID
+     * @param object the object ID
      * @param returnVersion the version to be returned
-     * @return the object
+     * @return the object, or {@code null} if it is not found
      */
-    CMISObject getObject(String objectId, ReturnVersion returnVersion);
+    CMISObject getObject(ObjectId object, ReturnVersion returnVersion);
 
     /**
      * Moves the specified filed object from one folder to another.
@@ -139,8 +125,7 @@ public interface Connection {
      * @param targetFolder the target folder
      * @param sourceFolder the source folder, or {@code null}
      */
-    void moveObject(ObjectEntry object, ObjectEntry targetFolder,
-            ObjectEntry sourceFolder);
+    void moveObject(CMISObject object, Folder targetFolder, Folder sourceFolder);
 
     /**
      * Deletes the specified object.
@@ -156,7 +141,7 @@ public interface Connection {
      *
      * @param object the object
      */
-    void deleteObject(ObjectEntry object);
+    void deleteObject(CMISObject object);
 
     /**
      * Deletes a tree of objects.
@@ -196,7 +181,7 @@ public interface Connection {
      *            should not stop deletion of other objects
      * @return the collection of IDs of objects that could not be deleted
      */
-    Collection<String> deleteTree(ObjectEntry folder, Unfiling unfiling,
+    Collection<String> deleteTree(Folder folder, Unfiling unfiling,
             boolean continueOnFailure);
 
     /**
@@ -205,7 +190,7 @@ public interface Connection {
      * @param object the object
      * @param folder the folder
      */
-    void addObjectToFolder(ObjectEntry object, ObjectEntry folder);
+    void addObjectToFolder(CMISObject object, Folder folder);
 
     /**
      * Removes a non-folder object from a folder or from all folders.
@@ -220,7 +205,7 @@ public interface Connection {
      * @param object the object
      * @param folder the folder, or {@code null} for all folders
      */
-    void removeObjectFromFolder(ObjectEntry object, ObjectEntry folder);
+    void removeObjectFromFolder(CMISObject object, Folder folder);
 
     /*
      * ----- Discovery Services -----
@@ -249,7 +234,7 @@ public interface Connection {
      * @return the matching objects
      */
     // TODO returns a result set actually, there may be computed values
-    Collection<ObjectEntry> query(String statement, boolean searchAllVersions);
+    Collection<CMISObject> query(String statement, boolean searchAllVersions);
 
     /*
      * ----- Versioning Services -----
@@ -278,7 +263,7 @@ public interface Connection {
      * @param document the document
      * @return the private working copy
      */
-    CMISObject checkOut(ObjectEntry document);
+    Document checkOut(Document document);
 
     /**
      * Cancels a check-out.
@@ -289,7 +274,7 @@ public interface Connection {
      *
      * @param document the private working copy
      */
-    void cancelCheckOut(ObjectEntry document);
+    void cancelCheckOut(Document document);
 
     /**
      * Checks in a private working copy.
@@ -301,7 +286,7 @@ public interface Connection {
      * @param comment a check-in comment, or {@code null}
      * @return the the new version of the document
      */
-    CMISObject checkIn(ObjectEntry document, boolean major, String comment);
+    Document checkIn(Document document, boolean major, String comment);
 
     /**
      * Gets the latest version.
@@ -316,7 +301,7 @@ public interface Connection {
      * @param major {@code true} if the last major version is requested
      * @return the latest version or latest major version
      */
-    CMISObject getLatestVersion(ObjectEntry document, boolean major);
+    Document getLatestVersion(Document document, boolean major);
 
     /**
      * Gets all the versions of a document.
@@ -329,7 +314,7 @@ public interface Connection {
      * @param document the document
      * @param filter the properties filter, or {@code null} for all properties
      */
-    Collection<ObjectEntry> getAllVersions(ObjectEntry document, String filter);
+    Collection<Document> getAllVersions(Document document, String filter);
 
     /**
      * Deletes all the versions of a document.
@@ -339,7 +324,7 @@ public interface Connection {
      *
      * @param document the document
      */
-    void deleteAllVersions(ObjectEntry document);
+    void deleteAllVersions(Document document);
 
     /*
      * ----- Relationship Services -----
@@ -363,7 +348,7 @@ public interface Connection {
      *            sub-type of typeId are to be returned as well
      * @return the list of relationships
      */
-    List<ObjectEntry> getRelationships(ObjectEntry object,
+    List<Relationship> getRelationships(CMISObject object,
             RelationshipDirection direction, String typeId,
             boolean includeSubRelationshipTypes);
 
@@ -379,7 +364,7 @@ public interface Connection {
      * @param policy the policy
      * @param object the target object
      */
-    void applyPolicy(Policy policy, ObjectEntry object);
+    void applyPolicy(Policy policy, CMISObject object);
 
     /**
      * Removes a policy from an object.
@@ -392,7 +377,7 @@ public interface Connection {
      * @param policy the policy
      * @param object the target object
      */
-    void removePolicy(Policy policy, ObjectEntry object);
+    void removePolicy(Policy policy, CMISObject object);
 
     /**
      * Gets the policies applied to an object.
@@ -405,6 +390,6 @@ public interface Connection {
      *
      * @param object the target object
      */
-    Collection<Policy> getAppliedPolicies(ObjectEntry object);
+    Collection<Policy> getAppliedPolicies(CMISObject object);
 
 }

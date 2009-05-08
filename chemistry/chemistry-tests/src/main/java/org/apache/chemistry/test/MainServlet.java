@@ -20,11 +20,13 @@ package org.apache.chemistry.test;
 
 import javax.servlet.Servlet;
 
+import org.apache.chemistry.Repository;
 import org.apache.chemistry.atompub.server.CMISServlet;
-import org.apache.chemistry.repository.Repository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
@@ -38,7 +40,12 @@ public class MainServlet {
 
     private static final Log log = LogFactory.getLog(MainServlet.class);
 
+    // use a fixed root id, this helps with caching in some clients
+    public static final String ROOT_ID = "b7666828-f1aa-41e1-9d0a-94a7898ae569";
+
     private static final int MINUTES = 60 * 1000; // in ms
+
+    public static final String HOST = "0.0.0.0";
 
     public static final int PORT = 8080;
 
@@ -46,16 +53,20 @@ public class MainServlet {
 
     public static final String CMIS_SERVICE = "/repository";
 
- 
     public static void main(String[] args) throws Exception {
-        Repository repository = RepositoryTestFactory.makeRepository();
-        Server server = new Server(PORT);
+        Repository repository = RepositoryCreationHelper.makeRepository(ROOT_ID);
+        Server server = new Server();
+        Connector connector = new SocketConnector();
+        connector.setHost(HOST);
+        connector.setPort(PORT);
+        server.setConnectors(new Connector[] { connector });
         Servlet servlet = new CMISServlet(repository);
         ServletHolder servletHolder = new ServletHolder(servlet);
         Context context = new Context(server, SERVLET_PATH, Context.SESSIONS);
         context.addServlet(servletHolder, "/*");
         server.start();
-        String url = "http://localhost:" + PORT + SERVLET_PATH + CMIS_SERVICE;
+        String url = "http://" + HOST + ':' + PORT + SERVLET_PATH
+                + CMIS_SERVICE;
         log.info("CMIS server started, AtomPub service url: " + url);
         Thread.sleep(60 * MINUTES);
         server.stop();

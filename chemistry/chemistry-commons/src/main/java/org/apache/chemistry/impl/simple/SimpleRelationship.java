@@ -22,8 +22,8 @@ import org.apache.chemistry.Relationship;
 
 public class SimpleRelationship extends SimpleObject implements Relationship {
 
-    public SimpleRelationship(SimpleData data, SimpleConnection connection) {
-        super(data, connection);
+    public SimpleRelationship(SimpleObjectEntry entry) {
+        super(entry);
     }
 
 }

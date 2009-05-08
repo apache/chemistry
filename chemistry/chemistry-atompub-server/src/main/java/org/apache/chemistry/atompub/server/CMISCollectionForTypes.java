@@ -21,6 +21,8 @@ package org.apache.chemistry.atompub.server;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.Content;
@@ -30,9 +32,11 @@ import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
+import org.apache.chemistry.PropertyDefinition;
+import org.apache.chemistry.PropertyType;
+import org.apache.chemistry.Repository;
+import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.CMIS;
-import org.apache.chemistry.repository.Repository;
-import org.apache.chemistry.type.Type;
 
 /**
  * CMIS Collection for the Types.
@@ -133,7 +137,97 @@ public class CMISCollectionForTypes extends CMISCollection<Type> {
         el.setText(bool(type.isControllable()));
         el = factory.newElement(CMIS.VERSIONABLE, dt);
         el.setText(bool(type.isVersionable()));
-
+        el = factory.newElement(CMIS.INCLUDED_IN_SUPERTYPE_QUERY, dt);
+        el.setText(bool(type.isIncludedInSuperTypeQuery()));
+        if ("true".equals(request.getParameter("includePropertyDefinitions"))) {
+            for (PropertyDefinition pd : type.getPropertyDefinitions()) {
+                QName qname;
+                switch (pd.getType().ordinal()) {
+                case PropertyType.STRING_ORD:
+                    qname = CMIS.PROPERTY_STRING_DEFINITION;
+                    break;
+                case PropertyType.DECIMAL_ORD:
+                    qname = CMIS.PROPERTY_DECIMAL_DEFINITION;
+                    break;
+                case PropertyType.INTEGER_ORD:
+                    qname = CMIS.PROPERTY_INTEGER_DEFINITION;
+                    break;
+                case PropertyType.BOOLEAN_ORD:
+                    qname = CMIS.PROPERTY_BOOLEAN_DEFINITION;
+                    break;
+                case PropertyType.DATETIME_ORD:
+                    qname = CMIS.PROPERTY_DATETIME_DEFINITION;
+                    break;
+                case PropertyType.URI_ORD:
+                    qname = CMIS.PROPERTY_URI_DEFINITION;
+                    break;
+                case PropertyType.ID_ORD:
+                    qname = CMIS.PROPERTY_ID_DEFINITION;
+                    break;
+                case PropertyType.XML_ORD:
+                    qname = CMIS.PROPERTY_XML_DEFINITION;
+                    break;
+                case PropertyType.HTML_ORD:
+                    qname = CMIS.PROPERTY_HTML_DEFINITION;
+                    break;
+                default:
+                    throw new AssertionError(pd.getType().name());
+                }
+                Element def = factory.newElement(qname, dt);
+                el = factory.newElement(CMIS.NAME, def);
+                el.setText(pd.getName());
+                el = factory.newElement(CMIS.ID, def);
+                el.setText(pd.getId());
+                el = factory.newElement(CMIS.PACKAGE, def);
+                el.setText("system"); // TODO package
+                el = factory.newElement(CMIS.DISPLAY_NAME, def);
+                el.setText(pd.getDisplayName());
+                el = factory.newElement(CMIS.DESCRIPTION, def);
+                el.setText(pd.getDescription());
+                el = factory.newElement(CMIS.PROPERTY_TYPE, def);
+                el.setText(pd.getType().name());
+                el = factory.newElement(CMIS.CARDINALITY, def);
+                el.setText(pd.isMultiValued() ? "multi" : "single");
+                el = factory.newElement(CMIS.UPDATABILITY, def);
+                el.setText(pd.getUpdatability().toString());
+                el = factory.newElement(CMIS.INHERITED, def);
+                el.setText(pd.isInherited() ? "true" : "false");
+                el = factory.newElement(CMIS.REQUIRED, def);
+                el.setText(pd.isRequired() ? "true" : "false");
+                el = factory.newElement(CMIS.QUERYABLE, def);
+                el.setText(pd.isQueryable() ? "true" : "false");
+                el = factory.newElement(CMIS.ORDERABLE, def);
+                el.setText(pd.isOrderable() ? "true" : "false");
+                // TODO choices
+                // TODO defaultValue
+                switch (pd.getType().ordinal()) {
+                case PropertyType.STRING_ORD:
+                    // TODO maxLength
+                    break;
+                case PropertyType.DECIMAL_ORD:
+                    // TODO precision
+                    break;
+                case PropertyType.INTEGER_ORD:
+                    // TODO minValue/maxValue
+                    break;
+                case PropertyType.BOOLEAN_ORD:
+                    break;
+                case PropertyType.DATETIME_ORD:
+                    break;
+                case PropertyType.URI_ORD:
+                    break;
+                case PropertyType.ID_ORD:
+                    break;
+                case PropertyType.XML_ORD:
+                    // TODO schemaURI
+                    break;
+                case PropertyType.HTML_ORD:
+                    break;
+                default:
+                    throw new AssertionError(pd.getType().name());
+                }
+            }
+        }
         return link;
     }
 

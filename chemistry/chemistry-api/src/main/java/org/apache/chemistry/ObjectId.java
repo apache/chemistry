@@ -16,20 +16,20 @@
  * Authors:
  *     Florent Guillaume
  */
-package org.apache.chemistry.atompub;
-
-import org.apache.abdera.factory.Factory;
-import org.apache.abdera.model.ExtensibleElementWrapper;
+package org.apache.chemistry;
 
 /**
- * Abdera ElementWrapper for an AtomPub cmis:allowableActions element.
+ * A reference to a CMIS object using its ID.
  *
  * @author Florent Guillaume
  */
-public class AllowableActionsElement extends ExtensibleElementWrapper {
+public interface ObjectId {
 
-    public AllowableActionsElement(Factory factory) {
-        super(factory, CMIS.ALLOWABLE_ACTIONS);
-    }
+    /**
+     * Gets the ID for this object.
+     *
+     * @return the object ID
+     */
+    String getId();
 
 }

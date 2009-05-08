@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *     Florent Guillaume
  */
 package org.apache.chemistry.test;
 
@@ -20,38 +20,44 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
+import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.PropertyDefinition;
+import org.apache.chemistry.PropertyType;
+import org.apache.chemistry.Repository;
+import org.apache.chemistry.Updatability;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.impl.simple.SimplePropertyDefinition;
 import org.apache.chemistry.impl.simple.SimpleRepository;
 import org.apache.chemistry.impl.simple.SimpleType;
-import org.apache.chemistry.property.PropertyType;
-import org.apache.chemistry.property.Updatability;
-import org.apache.chemistry.type.BaseType;
-import org.apache.chemistry.type.ContentStreamPresence;
 
 /**
- * @author matic
+ * Helpers to create a basic repository.
  *
+ * @author Florent Guillaume
  */
-public class RepositoryTestFactory {
+public class RepositoryCreationHelper {
+
+    private RepositoryCreationHelper() {
+    }
 
     public static final String TEST_FILE_CONTENT = "This is a test file.\nTesting, testing...\n";
 
-    public static SimpleRepository makeRepository() throws IOException {
-        SimplePropertyDefinition p1 = new SimplePropertyDefinition("title",
+    public static Repository makeRepository(String rootId) throws IOException {
+        PropertyDefinition p1 = new SimplePropertyDefinition("title",
                 "def:title", "Title", "", false, PropertyType.STRING, false,
                 null, false, false, "", Updatability.READ_WRITE, true, true, 0,
                 null, null, -1, null, null);
-        SimplePropertyDefinition p2 = new SimplePropertyDefinition(
-                "description", "def:description", "Description", "", false,
+        PropertyDefinition p2 = new SimplePropertyDefinition("description",
+                "def:description", "Description", "", false,
                 PropertyType.STRING, false, null, false, false, "",
                 Updatability.READ_WRITE, true, true, 0, null, null, -1, null,
                 null);
-        SimplePropertyDefinition p3 = new SimplePropertyDefinition("date",
+        PropertyDefinition p3 = new SimplePropertyDefinition("date",
                 "def:date", "Date", "", false, PropertyType.DATETIME, false,
                 null, false, false, null, Updatability.READ_WRITE, true, true,
                 0, null, null, -1, null, null);
@@ -64,7 +70,7 @@ public class RepositoryTestFactory {
                 false, false, ContentStreamPresence.NOT_ALLOWED, null, null,
                 Arrays.asList(p1, p2));
         SimpleRepository repo = new SimpleRepository("test", Arrays.asList(dt,
-                ft));
+                ft), rootId);
         Connection conn = repo.getConnection(null);
         Folder root = conn.getRootFolder();
 

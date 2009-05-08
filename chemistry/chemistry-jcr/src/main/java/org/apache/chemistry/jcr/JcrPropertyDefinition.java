@@ -20,10 +20,10 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.List;
 
-import org.apache.chemistry.property.Choice;
-import org.apache.chemistry.property.PropertyDefinition;
-import org.apache.chemistry.property.PropertyType;
-import org.apache.chemistry.property.Updatability;
+import org.apache.chemistry.Choice;
+import org.apache.chemistry.PropertyDefinition;
+import org.apache.chemistry.PropertyType;
+import org.apache.chemistry.Updatability;
 
 public class JcrPropertyDefinition implements PropertyDefinition {
 

@@ -16,7 +16,7 @@
  * Authors:
  *     Florent Guillaume
  */
-package org.apache.chemistry.type;
+package org.apache.chemistry;
 
 /**
  * The CMIS base types.

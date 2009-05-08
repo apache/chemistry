@@ -16,7 +16,7 @@
  * Authors:
  *     Florent Guillaume
  */
-package org.apache.chemistry.property;
+package org.apache.chemistry;
 
 import java.io.Serializable;
 import java.net.URI;

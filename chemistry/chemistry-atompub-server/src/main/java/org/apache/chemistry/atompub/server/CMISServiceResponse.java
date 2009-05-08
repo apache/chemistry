@@ -28,11 +28,10 @@ import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.WorkspaceInfo;
 import org.apache.abdera.protocol.server.context.StreamWriterResponseContext;
 import org.apache.abdera.writer.StreamWriter;
+import org.apache.chemistry.Repository;
+import org.apache.chemistry.RepositoryCapabilities;
+import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.atompub.CMIS;
-import org.apache.chemistry.repository.QueryCapability;
-import org.apache.chemistry.repository.Repository;
-import org.apache.chemistry.repository.RepositoryCapabilities;
-import org.apache.chemistry.repository.RepositoryInfo;
 import org.w3c.dom.Document;
 
 /**
@@ -42,6 +41,8 @@ import org.w3c.dom.Document;
  * @author Florent Guillaume
  */
 public class CMISServiceResponse extends StreamWriterResponseContext {
+
+    public static final String ATOMPUB_VERSION_SUPPORTED = "0.61";
 
     protected final CMISProvider provider;
 
@@ -107,7 +108,7 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
             write(CMIS.VENDOR_NAME, info.getVendorName());
             write(CMIS.PRODUCT_NAME, info.getProductName());
             write(CMIS.PRODUCT_VERSION, info.getProductVersion());
-            write(CMIS.ROOT_FOLDER_ID, info.getRootFolderId());
+            write(CMIS.ROOT_FOLDER_ID, info.getRootFolderId().getId());
 
             sw.startElement(CMIS.CAPABILITIES);
             write(CMIS.CAPABILITY_MULTIFILING, cap.hasMultifiling());
@@ -118,39 +119,11 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
             write(CMIS.CAPABILITY_PWC_SEARCHABLE, cap.isPWCSearchable());
             write(CMIS.CAPABILITY_ALL_VERSIONS_SEARCHABLE,
                     cap.isAllVersionsSearchable());
-            QueryCapability qc = cap.getQueryCapability();
-            // CMIS 0.50 query/fulltext
-            String fts;
-            String qcs;
-            switch (qc) {
-            case NONE:
-            case METADATA_ONLY:
-                qcs = qc.toString();
-                fts = "none";
-                break;
-            case FULL_TEXT_ONLY:
-                qcs = qc.toString();
-                fts = "fulltextonly";
-                break;
-            case BOTH_COMBINED:
-                qcs = "both";
-                fts = "fulltext";
-                break;
-            case BOTH_SEPARATE:
-                qcs = "both";
-                fts = "fulltextonly";
-                break;
-            default:
-                throw new UnsupportedOperationException();
-            }
-            write(CMIS.CAPABILITY_QUERY, qcs); // CMIS 0.50
+            write(CMIS.CAPABILITY_QUERY, cap.getQueryCapability().toString());
             write(CMIS.CAPABILITY_JOIN, cap.getJoinCapability().toString());
-            write(CMIS.CAPABILITY_FULL_TEXT, fts); // CMIS 0.50
             sw.endElement();
 
-            // String version = info.getVersionSupported();
-            String version = "0.5";
-            write(CMIS.VERSIONS_SUPPORTED, version);
+            write(CMIS.VERSION_SUPPORTED, ATOMPUB_VERSION_SUPPORTED);
             write(CMIS.REPOSITORY_SPECIFIC_INFORMATION,
                     info.getRepositorySpecificInformation());
             sw.endElement();

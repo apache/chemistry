@@ -33,6 +33,7 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
@@ -42,12 +43,11 @@ import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
+import org.apache.chemistry.Repository;
 import org.apache.chemistry.ReturnVersion;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
-import org.apache.chemistry.repository.Repository;
-import org.apache.chemistry.type.BaseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.JcrConstants;
@@ -238,7 +238,7 @@ public class JcrConnection implements Connection, SPI {
                                  String folderId, ContentStream contentStream,
                                  VersioningState versioningState) {
 
-    	try {
+        try {
             JcrFolder folder = (JcrFolder) getObject(folderId,
                     ReturnVersion.LATEST);
             Document doc = folder.newDocument(null);
@@ -341,7 +341,7 @@ public class JcrConnection implements Connection, SPI {
             }
             /* Problem with skipCount == 0, when there are no more elements */
             if (iter.hasNext()) {
-            	iter.skip(skipCount);
+                iter.skip(skipCount);
             }
 
             List<ObjectEntry> result = new ArrayList<ObjectEntry>();

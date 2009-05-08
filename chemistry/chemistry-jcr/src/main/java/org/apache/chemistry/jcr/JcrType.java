@@ -21,10 +21,10 @@ import java.util.Collections;
 
 import javax.jcr.nodetype.NodeType;
 
-import org.apache.chemistry.property.PropertyDefinition;
-import org.apache.chemistry.type.BaseType;
-import org.apache.chemistry.type.ContentStreamPresence;
-import org.apache.chemistry.type.Type;
+import org.apache.chemistry.BaseType;
+import org.apache.chemistry.ContentStreamPresence;
+import org.apache.chemistry.PropertyDefinition;
+import org.apache.chemistry.Type;
 
 public class JcrType implements Type {
 
@@ -47,11 +47,11 @@ public class JcrType implements Type {
     }
 
     public BaseType getBaseType() {
-    	return baseType;
+        return baseType;
     }
 
     public String getBaseTypeQueryName() {
-    	return baseType.toString();
+        return baseType.toString();
     }
 
     public ContentStreamPresence getContentStreamAllowed() {

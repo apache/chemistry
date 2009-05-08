@@ -26,29 +26,31 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
+import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Policy;
+import org.apache.chemistry.Property;
+import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
+import org.apache.chemistry.Repository;
 import org.apache.chemistry.ReturnVersion;
 import org.apache.chemistry.SPI;
+import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
-import org.apache.chemistry.property.Property;
-import org.apache.chemistry.property.PropertyDefinition;
-import org.apache.chemistry.repository.Repository;
-import org.apache.chemistry.type.BaseType;
-import org.apache.chemistry.type.ContentStreamPresence;
-import org.apache.chemistry.type.Type;
 
 public class SimpleConnection implements Connection, SPI {
 
@@ -82,41 +84,40 @@ public class SimpleConnection implements Connection, SPI {
         return rootFolder;
     }
 
-    public ObjectEntry getRootEntry() {
-        return rootFolder;
-    }
-
-    public List<ObjectEntry> getChildren(ObjectEntry folder) {
-        return getChildren(folder.getId(), null, null, false, false,
-                Integer.MAX_VALUE, 0, null, new boolean[1]);
-    }
-
     /*
      * ----- Factories -----
      */
 
-    public Document newDocument(String typeId, ObjectEntry folder) {
+    public ObjectId newObjectId(String id) {
+        return new SimpleObjectId(id);
+    }
+
+    public SimpleObjectEntry newObjectEntry(String typeId) {
+        return new SimpleObjectEntry(new SimpleData(typeId), this);
+    }
+
+    public Document newDocument(String typeId, Folder folder) {
         Type type = repository.getType(typeId);
         if (type == null || type.getBaseType() != BaseType.DOCUMENT) {
             throw new IllegalArgumentException(typeId);
         }
-        SimpleData data = new SimpleData(typeId);
+        SimpleObjectEntry entry = newObjectEntry(typeId);
         if (folder != null) {
-            data.put(Property.PARENT_ID, folder.getId());
+            entry.setValue(Property.PARENT_ID, folder.getId());
         }
-        return new SimpleDocument(data, this);
+        return new SimpleDocument(entry);
     }
 
-    public Folder newFolder(String typeId, ObjectEntry folder) {
+    public Folder newFolder(String typeId, Folder folder) {
         Type type = repository.getType(typeId);
         if (type == null || type.getBaseType() != BaseType.FOLDER) {
             throw new IllegalArgumentException(typeId);
         }
-        SimpleData data = new SimpleData(typeId);
+        SimpleObjectEntry entry = newObjectEntry(typeId);
         if (folder != null) {
-            data.put(Property.PARENT_ID, folder.getId());
+            entry.setValue(Property.PARENT_ID, folder.getId());
         }
-        return new SimpleFolder(data, this);
+        return new SimpleFolder(entry);
     }
 
     public Relationship newRelationship(String typeId) {
@@ -124,27 +125,26 @@ public class SimpleConnection implements Connection, SPI {
         if (type == null || type.getBaseType() != BaseType.RELATIONSHIP) {
             throw new IllegalArgumentException(typeId);
         }
-        SimpleData data = new SimpleData(typeId);
-        return new SimpleRelationship(data, this);
+        return new SimpleRelationship(newObjectEntry(typeId));
     }
 
-    public Policy newPolicy(String typeId, ObjectEntry folder) {
+    public Policy newPolicy(String typeId, Folder folder) {
         Type type = repository.getType(typeId);
         if (type == null || type.getBaseType() != BaseType.POLICY) {
             throw new IllegalArgumentException(typeId);
         }
-        SimpleData data = new SimpleData(typeId);
+        SimpleObjectEntry entry = newObjectEntry(typeId);
         if (folder != null) {
-            data.put(Property.PARENT_ID, folder.getId());
+            entry.setValue(Property.PARENT_ID, folder.getId());
         }
-        return new SimplePolicy(data, this);
+        return new SimplePolicy(entry);
     }
 
     /*
      * Called by save() for new objects.
      */
     protected void saveObject(SimpleObject object) {
-        SimpleData data = object.data;
+        SimpleData data = object.entry.data;
         Map<String, Serializable> update = new HashMap<String, Serializable>();
 
         // generate an ID
@@ -171,8 +171,6 @@ public class SimpleConnection implements Connection, SPI {
                 } else if (Property.LAST_MODIFICATION_DATE.equals(name)) {
                     update.put(Property.LAST_MODIFICATION_DATE,
                             Calendar.getInstance());
-                } else if (Property.CONTENT_STREAM_ALLOWED.equals(name)) {
-                    update.put(Property.CONTENT_STREAM_ALLOWED, "allowed");
                 } else if (Property.IS_LATEST_VERSION.equals(name)) {
                     update.put(Property.IS_LATEST_VERSION, Boolean.TRUE);
                 } else if (Property.IS_LATEST_MAJOR_VERSION.equals(name)) {
@@ -190,28 +188,27 @@ public class SimpleConnection implements Connection, SPI {
             }
         }
 
-        byte[] contentBytes = (byte[]) data.get(SimpleDocument.CONTENT_BYTES_KEY);
+        // content stream
+        byte[] bytes = (byte[]) data.get(SimpleProperty.CONTENT_BYTES_KEY);
         if (type.getContentStreamAllowed() == ContentStreamPresence.REQUIRED
-                && contentBytes == null) {
+                && bytes == null) {
             throw new RuntimeException("Content stream required"); // TODO
         }
+        update.put(Property.CONTENT_STREAM_LENGTH, bytes == null ? null
+                : Integer.valueOf(bytes.length)); // TODO Long
 
-        // content stream
-        if (contentBytes != null) {
-            update.put(Property.CONTENT_STREAM_LENGTH,
-                    Integer.valueOf(contentBytes.length));
-        }
         // update data once we know there's no error
-        data.putAll(update);
+        for (String key : update.keySet()) {
+            Serializable value = update.get(key);
+            if (value == null) {
+                data.remove(key);
+            } else {
+                data.put(key, value);
+            }
+        }
 
         // properties
         repository.datas.put(id, data); // TODO clone data?
-
-        if (contentBytes == null) {
-            repository.contentBytes.remove(id);
-        } else {
-            repository.contentBytes.put(id, contentBytes);
-        }
 
         // parents/children
         String parentId = (String) data.get(Property.PARENT_ID);
@@ -237,20 +234,21 @@ public class SimpleConnection implements Connection, SPI {
      * ----- Navigation Services -----
      */
 
-    public List<ObjectEntry> getDescendants(String folderId, BaseType type,
+    public List<ObjectEntry> getDescendants(ObjectId folder, BaseType type,
             int depth, String filter, boolean includeAllowableActions,
             boolean includeRelationships, String orderBy) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public List<ObjectEntry> getChildren(String folderId, BaseType type,
+    public List<ObjectEntry> getChildren(ObjectId folder, BaseType type,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, int maxItems, int skipCount,
             String orderBy, boolean[] hasMoreItems) {
         // TODO type and orderBy
-        Set<String> ids = repository.children.get(folderId);
-        List<ObjectEntry> all = new ArrayList<ObjectEntry>(ids.size());
+        Set<String> ids = repository.children.get(folder.getId());
+        int total = ids.size();
+        List<ObjectEntry> all = new ArrayList<ObjectEntry>(total);
         for (String id : ids) {
             SimpleData data = repository.datas.get(id);
             // could build a full Object, but some implementations won't
@@ -258,36 +256,40 @@ public class SimpleConnection implements Connection, SPI {
         }
 
         int fromIndex = skipCount;
-        if (fromIndex < 0 || fromIndex > all.size()) {
+        if (fromIndex < 0 || fromIndex > total) {
             hasMoreItems[0] = false;
             return Collections.emptyList();
         }
         if (maxItems == 0) {
-            maxItems = all.size();
+            maxItems = total;
         }
         int toIndex = skipCount + maxItems;
-        if (toIndex > all.size()) {
-            toIndex = all.size();
+        if (toIndex > total) {
+            toIndex = total;
         }
-        hasMoreItems[0] = toIndex < all.size();
-        return all.subList(fromIndex, toIndex);
+        hasMoreItems[0] = toIndex < total;
+        if (fromIndex == 0 && toIndex == total) {
+            return all;
+        } else {
+            return all.subList(fromIndex, toIndex);
+        }
     }
 
-    public List<ObjectEntry> getFolderParent(String folderId, String filter,
+    public List<ObjectEntry> getFolderParent(ObjectId folder, String filter,
             boolean includeAllowableActions, boolean includeRelationships,
             boolean returnToRoot) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> getObjectParents(String objectId,
+    public Collection<ObjectEntry> getObjectParents(ObjectId object,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> getCheckedoutDocuments(String folderId,
+    public Collection<ObjectEntry> getCheckedoutDocuments(ObjectId folder,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, int maxItems, int skipCount,
             boolean[] hasMoreItems) {
@@ -299,70 +301,78 @@ public class SimpleConnection implements Connection, SPI {
      * ----- Object Services -----
      */
 
-    public String createDocument(String typeId,
-            Map<String, Serializable> properties, String folderId,
+    public ObjectId createDocument(String typeId,
+            Map<String, Serializable> properties, ObjectId folder,
             ContentStream contentStream, VersioningState versioningState) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public String createFolder(String typeId,
-            Map<String, Serializable> properties, String folderId) {
+    public ObjectId createFolder(String typeId,
+            Map<String, Serializable> properties, ObjectId folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public String createRelationship(String typeId,
-            Map<String, Serializable> properties, String sourceId,
-            String targetId) {
+    public ObjectId createRelationship(String typeId,
+            Map<String, Serializable> properties, ObjectId source,
+            ObjectId target) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public String createPolicy(String typeId,
-            Map<String, Serializable> properties, String folderId) {
+    public ObjectId createPolicy(String typeId,
+            Map<String, Serializable> properties, ObjectId folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Collection<String> getAllowableActions(String objectId, String asUser) {
+    public Collection<String> getAllowableActions(ObjectId object, String asUser) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public ObjectEntry getProperties(String objectId,
+    public ObjectEntry getProperties(ObjectId object,
             ReturnVersion returnVersion, String filter,
             boolean includeAllowableActions, boolean includeRelationships) {
-        SimpleData data = repository.datas.get(objectId);
+        SimpleData data = repository.datas.get(object.getId());
         if (data == null) {
-            throw new RuntimeException("Not found: " + objectId); // TODO
+            return null;
         }
         return new SimpleObjectEntry(data, this);
     }
 
-    public CMISObject getObject(String objectId, ReturnVersion returnVersion) {
+    public CMISObject getObject(ObjectId object, ReturnVersion returnVersion) {
         // TODO returnVersion
-        SimpleData data = repository.datas.get(objectId);
+        SimpleData data = repository.datas.get(object.getId());
         if (data == null) {
-            throw new RuntimeException("Not found: " + objectId); // TODO
+            return null;
         }
         String typeId = (String) data.get(Property.TYPE_ID);
         switch (repository.getType(typeId).getBaseType()) {
         case DOCUMENT:
-            return new SimpleDocument(data, this);
+            return new SimpleDocument(new SimpleObjectEntry(data, this));
         case FOLDER:
-            return new SimpleFolder(data, this);
+            return new SimpleFolder(new SimpleObjectEntry(data, this));
         case RELATIONSHIP:
-            return new SimpleRelationship(data, this);
+            return new SimpleRelationship(new SimpleObjectEntry(data, this));
         case POLICY:
-            return new SimplePolicy(data, this);
+            return new SimplePolicy(new SimpleObjectEntry(data, this));
+        default:
+            throw new AssertionError(typeId);
         }
-        throw new RuntimeException();
     }
 
-    public InputStream getContentStream(String documentId, int offset,
+    public boolean hasContentStream(ObjectId document) {
+        SimpleData data = repository.datas.get(document.getId());
+        byte[] bytes = (byte[]) data.get(SimpleProperty.CONTENT_BYTES_KEY);
+        return bytes != null;
+    }
+
+    public InputStream getContentStream(ObjectId document, int offset,
             int length) {
-        byte[] bytes = repository.contentBytes.get(documentId);
+        SimpleData data = repository.datas.get(document.getId());
+        byte[] bytes = (byte[]) data.get(SimpleProperty.CONTENT_BYTES_KEY);
         if (bytes == null) {
             return null;
         }
@@ -372,73 +382,124 @@ public class SimpleConnection implements Connection, SPI {
         return new ByteArrayInputStream(bytes, offset, length);
     }
 
-    public void setContentStream(String documentId, boolean overwrite,
+    public ObjectId setContentStream(ObjectId document, boolean overwrite,
             ContentStream contentStream) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void deleteContentStream(String documentId) {
+    public void deleteContentStream(ObjectId document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public String updateProperties(String objectId, String changeToken,
+    public ObjectId updateProperties(ObjectId object, String changeToken,
             Map<String, Serializable> properties) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void moveObject(String objectId, String targetFolderId,
-            String sourceFolderId) {
+    public void moveObject(ObjectId object, ObjectId targetFolder,
+            ObjectId sourceFolder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void moveObject(ObjectEntry object, ObjectEntry targetFolder,
-            ObjectEntry sourceFolder) {
+    public void moveObject(CMISObject object, Folder targetFolder,
+            Folder sourceFolder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void deleteObject(String objectId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+    public void deleteObject(ObjectId object) {
+        String id = object.getId();
+        if (repository.rootId.equals(id)) {
+            throw new RuntimeException("Cannot delete root"); // TODO
+        }
+        SimpleData data = repository.datas.get(id);
+        if (data == null) {
+            throw new RuntimeException("Not found: " + object); // TODO
+        }
+        // delete children info
+        Set<String> children = repository.children.get(id);
+        if (children != null) {
+            if (children.size() > 0) {
+                throw new RuntimeException(
+                        "Cannot delete, folder has children: " + object); // TODO
+            }
+            // remove only if empty
+            repository.children.remove(id);
+        }
+        // delete parents info
+        // TODO unfiling, remove from all parents for now
+        Set<String> parents = repository.parents.remove(id);
+        if (parents != null) {
+            for (String pid : parents) {
+                // remove as child of parent
+                repository.children.get(pid).remove(id);
+            }
+        }
+        repository.datas.remove(id);
     }
 
-    public void deleteObject(ObjectEntry object) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+    public void deleteObject(CMISObject object) {
+        deleteObject((ObjectId) object);
     }
 
-    public Collection<String> deleteTree(String folderId, Unfiling unfiling,
+    public Collection<String> deleteTree(ObjectId folder, Unfiling unfiling,
             boolean continueOnFailure) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // TODO unfiling
+        // TODO continueOnFailure
+        String id = folder.getId();
+        if (repository.rootId.equals(id)) {
+            throw new RuntimeException("Cannot delete root"); // TODO
+        }
+        SimpleData data = repository.datas.get(id);
+        if (data == null) {
+            throw new RuntimeException("Not found: " + folder); // TODO
+        }
+        String typeId = (String) data.get(Property.TYPE_ID);
+        if (repository.getType(typeId).getBaseType() != BaseType.FOLDER) {
+            throw new RuntimeException("Not a folder: " + folder); // TODO
+        }
+        Set<String> deletedIds = new HashSet<String>();
+        for (String childId : repository.children.get(id)) {
+            SimpleData childData = repository.datas.get(childId);
+            String childTypeId = (String) childData.get(Property.TYPE_ID);
+            if (repository.getType(childTypeId).getBaseType() == BaseType.FOLDER) {
+                deletedIds.addAll(deleteTree(new SimpleObjectId(childId),
+                        unfiling, continueOnFailure));
+            } else {
+                deleteObject(new SimpleObjectId(childId));
+                deletedIds.add(childId);
+            }
+        }
+        deleteObject(folder);
+        deletedIds.add(id);
+        return deletedIds;
     }
 
-    public Collection<String> deleteTree(ObjectEntry folder, Unfiling unfiling,
+    public Collection<String> deleteTree(Folder folder, Unfiling unfiling,
             boolean continueOnFailure) {
+        return deleteTree((ObjectId) folder, unfiling, continueOnFailure);
+    }
+
+    public void addObjectToFolder(ObjectId object, ObjectId folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void addObjectToFolder(String objectId, String folderId) {
+    public void addObjectToFolder(CMISObject object, Folder folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void addObjectToFolder(ObjectEntry object, ObjectEntry folder) {
+    public void removeObjectFromFolder(ObjectId object, ObjectId folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void removeObjectFromFolder(String objectId, String folderId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void removeObjectFromFolder(ObjectEntry object, ObjectEntry folder) {
+    public void removeObjectFromFolder(CMISObject object, Folder folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -455,7 +516,7 @@ public class SimpleConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> query(String statement,
+    public Collection<CMISObject> query(String statement,
             boolean searchAllVersions) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
@@ -465,35 +526,34 @@ public class SimpleConnection implements Connection, SPI {
      * ----- Versioning Services -----
      */
 
-    public String checkOut(String documentId, boolean[] contentCopied) {
+    public ObjectId checkOut(ObjectId document, boolean[] contentCopied) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public CMISObject checkOut(ObjectEntry document) {
+    public Document checkOut(Document document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void cancelCheckOut(String documentId) {
+    public void cancelCheckOut(ObjectId document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void cancelCheckOut(ObjectEntry document) {
+    public void cancelCheckOut(Document document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public String checkIn(String documentId, boolean major,
+    public ObjectId checkIn(ObjectId document, boolean major,
             Map<String, Serializable> properties, ContentStream contentStream,
             String comment) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public CMISObject checkIn(ObjectEntry document, boolean major,
-            String comment) {
+    public Document checkIn(Document document, boolean major, String comment) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -504,7 +564,7 @@ public class SimpleConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public CMISObject getLatestVersion(ObjectEntry document, boolean major) {
+    public Document getLatestVersion(Document document, boolean major) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -515,8 +575,7 @@ public class SimpleConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> getAllVersions(ObjectEntry document,
-            String filter) {
+    public Collection<Document> getAllVersions(Document document, String filter) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -526,7 +585,7 @@ public class SimpleConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteAllVersions(ObjectEntry document) {
+    public void deleteAllVersions(Document document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -535,7 +594,7 @@ public class SimpleConnection implements Connection, SPI {
      * ----- Relationship Services -----
      */
 
-    public List<ObjectEntry> getRelationships(String objectId,
+    public List<ObjectEntry> getRelationships(ObjectId object,
             RelationshipDirection direction, String typeId,
             boolean includeSubRelationshipTypes, String filter,
             String includeAllowableActions, int maxItems, int skipCount,
@@ -544,7 +603,7 @@ public class SimpleConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public List<ObjectEntry> getRelationships(ObjectEntry object,
+    public List<Relationship> getRelationships(CMISObject object,
             RelationshipDirection direction, String typeId,
             boolean includeSubRelationshipTypes) {
         // TODO Auto-generated method stub
@@ -555,33 +614,33 @@ public class SimpleConnection implements Connection, SPI {
      * ----- Policy Services -----
      */
 
-    public void applyPolicy(String policyId, String objectId) {
+    public void applyPolicy(ObjectId policy, ObjectId object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void applyPolicy(Policy policy, ObjectEntry object) {
+    public void applyPolicy(Policy policy, CMISObject object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void removePolicy(String policyId, String objectId) {
+    public void removePolicy(ObjectId policy, ObjectId object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void removePolicy(Policy policy, ObjectEntry object) {
+    public void removePolicy(Policy policy, CMISObject object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> getAppliedPolicies(String policyId,
+    public Collection<ObjectEntry> getAppliedPolicies(ObjectId policy,
             String filter) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Collection<Policy> getAppliedPolicies(ObjectEntry object) {
+    public Collection<Policy> getAppliedPolicies(CMISObject object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

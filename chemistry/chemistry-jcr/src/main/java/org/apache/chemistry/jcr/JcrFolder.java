@@ -25,10 +25,10 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectEntry;
-import org.apache.chemistry.type.BaseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.JcrConstants;
@@ -124,6 +124,6 @@ public class JcrFolder extends JcrObjectEntry implements Folder {
 
     @Override
     protected BaseType getBaseType() {
-    	return BaseType.FOLDER;
+        return BaseType.FOLDER;
     }
 }

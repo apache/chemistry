@@ -20,7 +20,6 @@ package org.apache.chemistry;
 
 import java.util.List;
 
-import org.apache.chemistry.type.BaseType;
 
 /**
  * A CMIS Folder.
@@ -36,17 +35,17 @@ public interface Folder extends CMISObject {
      * @param orderBy an {@code ORDER BY} clause, or {@code null}
      * @return the list of children
      */
-    List<ObjectEntry> getChildren(BaseType type, String orderBy);
+    List<CMISObject> getChildren(BaseType type, String orderBy);
 
     // getDescendants and getParents kept on the Connection
 
     /**
-     * Creates a new, unsaved document.
+     * Creates a new, unsaved document as a child of this folder.
      */
     Document newDocument(String typeId);
 
     /**
-     * Creates a new, unsaved folder.
+     * Creates a new, unsaved folder as a child of this folder.
      */
     Folder newFolder(String typeId);
 

@@ -30,15 +30,15 @@ import javax.jcr.SimpleCredentials;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.nodetype.NodeTypeManager;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Connection;
-import org.apache.chemistry.repository.JoinCapability;
-import org.apache.chemistry.repository.QueryCapability;
-import org.apache.chemistry.repository.Repository;
-import org.apache.chemistry.repository.RepositoryCapabilities;
-import org.apache.chemistry.repository.RepositoryEntry;
-import org.apache.chemistry.repository.RepositoryInfo;
-import org.apache.chemistry.type.BaseType;
-import org.apache.chemistry.type.Type;
+import org.apache.chemistry.JoinCapability;
+import org.apache.chemistry.QueryCapability;
+import org.apache.chemistry.Repository;
+import org.apache.chemistry.RepositoryCapabilities;
+import org.apache.chemistry.RepositoryEntry;
+import org.apache.chemistry.RepositoryInfo;
+import org.apache.chemistry.Type;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.JcrConstants;
@@ -81,7 +81,7 @@ public class JcrRepository implements Repository, RepositoryInfo,
     }
 
     public Type getType(String typeId) {
-    	try {
+        try {
             // TODO pass credentials as parameters
             SimpleCredentials creds = new SimpleCredentials("admin", "admin"
                     .toCharArray());
@@ -101,13 +101,13 @@ public class JcrRepository implements Repository, RepositoryInfo,
             String msg = "Unable get type: " + typeId;
             log.error(msg, e);
         }
-    	return null;
+        return null;
     }
 
     public Collection<Type> getTypes(String typeId,
                                      boolean returnPropertyDefinitions) {
-    	boolean[] hasMoreItems = new boolean[1];
-    	return getTypes(typeId, returnPropertyDefinitions, 0, 0, hasMoreItems);
+        boolean[] hasMoreItems = new boolean[1];
+        return getTypes(typeId, returnPropertyDefinitions, 0, 0, hasMoreItems);
     }
 
     public List<Type> getTypes(String typeId,
@@ -116,7 +116,7 @@ public class JcrRepository implements Repository, RepositoryInfo,
 
         // TODO dynamically discover and return types.
 
-    	try {
+        try {
             // TODO pass credentials as parameters
             SimpleCredentials creds = new SimpleCredentials("admin", "admin"
                     .toCharArray());
@@ -134,10 +134,10 @@ public class JcrRepository implements Repository, RepositoryInfo,
             result.add(new JcrType(ntmgr.getNodeType(JcrConstants.NT_FILE),
                     BaseType.DOCUMENT));
             return result;
-    	} catch (RepositoryException e) {
-    		String msg = "Unable to retrieve node types.";
+        } catch (RepositoryException e) {
+            String msg = "Unable to retrieve node types.";
             log.error(msg, e);
-    	}
+        }
         return null;
     }
 

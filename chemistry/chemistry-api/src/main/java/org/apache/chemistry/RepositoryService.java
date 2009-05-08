@@ -16,38 +16,38 @@
  * Authors:
  *     Florent Guillaume
  */
-package org.apache.chemistry.type;
+package org.apache.chemistry;
+
+import java.util.Collection;
 
 /**
- * The presence status for a content stream.
+ * CMIS Repository Service.
  *
  * @author Florent Guillaume
  */
-public enum ContentStreamPresence {
+public interface RepositoryService {
 
     /**
-     * A content stream is not allowed.
+     * Gets a list of available repositories.
+     *
+     * @return a collection of repository entries
      */
-    NOT_ALLOWED("notallowed"),
+    Collection<RepositoryEntry> getRepositories();
 
     /**
-     * A content stream is allowed but optional.
+     * Gets the default repository, if any.
+     * <p>
+     * If not default repository is available, {@code null} is returned.
+     *
+     * @return the default repository, or {@code null}
      */
-    ALLOWED("allowed"),
+    Repository getDefaultRepository();
 
     /**
-     * A content stream is required.
+     * Gets a repository identified by its ID.
+     *
+     * @param repositoryId the repository ID
      */
-    REQUIRED("required");
+    Repository getRepository(String repositoryId);
 
-    private final String value;
-
-    private ContentStreamPresence(String value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return value;
-    }
 }

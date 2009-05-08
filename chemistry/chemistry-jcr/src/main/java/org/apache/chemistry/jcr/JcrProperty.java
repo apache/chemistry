@@ -20,8 +20,8 @@ import java.io.Serializable;
 
 import javax.jcr.RepositoryException;
 
-import org.apache.chemistry.property.Property;
-import org.apache.chemistry.property.PropertyDefinition;
+import org.apache.chemistry.Property;
+import org.apache.chemistry.PropertyDefinition;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

@@ -19,61 +19,55 @@
 package org.apache.chemistry.impl.simple;
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.Set;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
-import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
-import org.apache.chemistry.Policy;
-import org.apache.chemistry.Relationship;
-import org.apache.chemistry.property.Property;
-import org.apache.chemistry.type.BaseType;
+import org.apache.chemistry.Property;
+import org.apache.chemistry.PropertyDefinition;
+import org.apache.chemistry.Type;
+import org.apache.chemistry.impl.base.BaseObject;
 
-public class SimpleObject extends SimpleObjectEntry implements CMISObject {
+/**
+ * Simple implementation of a {@link CMISObject}.
+ *
+ * @author Florent Guillaume
+ */
+public class SimpleObject extends BaseObject {
 
-    protected SimpleObject(SimpleData data, SimpleConnection connection) {
-        super(data, connection);
+    protected final SimpleObjectEntry entry;
+
+    private final Type type;
+
+    protected SimpleObject(SimpleObjectEntry entry) {
+        this.entry = entry;
+        type = entry.connection.repository.getType(entry.getTypeId());
     }
 
-    @Override
-    public Document getDocument() {
-        if (getType().getBaseType() != BaseType.DOCUMENT) {
-            throw new RuntimeException("Not a document: " + getId());
+    protected static SimpleObject construct(SimpleObjectEntry entry) {
+        BaseType baseType = entry.connection.repository.getType(
+                entry.getTypeId()).getBaseType();
+        switch (baseType) {
+        case DOCUMENT:
+            return new SimpleDocument(entry);
+        case FOLDER:
+            return new SimpleFolder(entry);
+        case POLICY:
+            return new SimplePolicy(entry);
+        case RELATIONSHIP:
+            return new SimpleRelationship(entry);
+        default:
+            throw new AssertionError();
         }
-        return (Document) this;
     }
 
-    @Override
-    public Folder getFolder() {
-        if (getType().getBaseType() != BaseType.FOLDER) {
-            throw new RuntimeException("Not a folder: " + getId());
-        }
-        return (Folder) this;
+    public Type getType() {
+        return type;
     }
-
-    @Override
-    public Relationship getRelationship() {
-        if (getType().getBaseType() != BaseType.RELATIONSHIP) {
-            throw new RuntimeException("Not a relationship: " + getId());
-        }
-        return (Relationship) this;
-    }
-
-    @Override
-    public Policy getPolicy() {
-        if (getType().getBaseType() != BaseType.POLICY) {
-            throw new RuntimeException("Not a policy: " + getId());
-        }
-        return (Policy) this;
-    }
-
-    /*
-     * ----- CMISObject -----
-     */
 
     public Folder getParent() {
-        Set<String> parents = connection.repository.parents.get(getId());
+        Set<String> parents = entry.connection.repository.parents.get(getId());
         if (parents == SimpleRepository.NO_PARENT) {
             return null;
         }
@@ -81,51 +75,32 @@ public class SimpleObject extends SimpleObjectEntry implements CMISObject {
             throw new RuntimeException("Several parents for: " + getId()); // TODO
         }
         String pid = parents.iterator().next();
-        SimpleData data = connection.repository.datas.get(pid);
-        return new SimpleFolder(data, connection);
+        SimpleData data = entry.connection.repository.datas.get(pid);
+        return new SimpleFolder(new SimpleObjectEntry(data, entry.connection));
     }
 
-    public void setValue(String name, Serializable value) {
-        SimplePropertyDefinition pd = (SimplePropertyDefinition) getType().getPropertyDefinition(
+    public Serializable getValue(String name) {
+        PropertyDefinition propertyDefinition = getType().getPropertyDefinition(
                 name);
-        if (pd == null) {
+        if (propertyDefinition == null) {
             throw new IllegalArgumentException(name);
         }
-        String error = pd.validationError(value);
-        if (error != null) {
-            throw new RuntimeException("Property " + name + ": " + error); // TODO
-        }
-
-        _setValue(name, value);
+        return entry.data.get(name);
     }
 
-    protected void _setValue(String name, Serializable value) {
-        if (value == null) {
-            data.remove(name);
-        } else {
-            data.put(name, value);
+    public Property getProperty(String name) {
+        PropertyDefinition propertyDefinition = getType().getPropertyDefinition(
+                name);
+        if (propertyDefinition == null) {
+            throw new IllegalArgumentException(name);
         }
-    }
-
-    public void setValues(Map<String, Serializable> values) {
-        // don't use putAll as we want to do type checks
-        for (String name : values.keySet()) {
-            setValue(name, values.get(name));
-        }
+        return new SimpleProperty(entry, name, propertyDefinition);
     }
 
     public void save() {
         if (getId() == null) {
-            connection.saveObject(this);
+            entry.connection.saveObject(this);
         }
-    }
-
-    /*
-     * ----- convenience methods for specific properties -----
-     */
-
-    public void setName(String name) {
-        setValue(Property.NAME, name);
     }
 
 }

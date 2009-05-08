@@ -31,18 +31,18 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Policy;
+import org.apache.chemistry.Property;
+import org.apache.chemistry.PropertyDefinition;
+import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Relationship;
+import org.apache.chemistry.Type;
+import org.apache.chemistry.Updatability;
 import org.apache.chemistry.impl.simple.SimplePropertyDefinition;
-import org.apache.chemistry.property.Property;
-import org.apache.chemistry.property.PropertyDefinition;
-import org.apache.chemistry.property.PropertyType;
-import org.apache.chemistry.property.Updatability;
-import org.apache.chemistry.type.BaseType;
-import org.apache.chemistry.type.Type;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

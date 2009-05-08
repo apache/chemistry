@@ -39,14 +39,16 @@ import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.context.AbstractResponseContext;
 import org.apache.abdera.protocol.server.context.BaseResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.Property;
+import org.apache.chemistry.Repository;
 import org.apache.chemistry.ReturnVersion;
 import org.apache.chemistry.SPI;
+import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.CMIS;
-import org.apache.chemistry.atompub.ObjectElement;
-import org.apache.chemistry.property.Property;
-import org.apache.chemistry.repository.Repository;
-import org.apache.chemistry.type.BaseType;
+import org.apache.chemistry.atompub.abdera.ObjectElement;
 
 /**
  * CMIS Collection for the children of a Folder.
@@ -110,6 +112,7 @@ public class CMISCollectionForChildren extends CMISCollection<ObjectEntry> {
     /*
      * ----- AbstractEntityCollectionAdapter -----
      */
+
     @Override
     protected String addEntryDetails(RequestContext request, Entry entry,
             IRI feedIri, ObjectEntry object) throws ResponseContextException {
@@ -139,17 +142,13 @@ public class CMISCollectionForChildren extends CMISCollection<ObjectEntry> {
         // CMIS links
         entry.addLink(getRepositoryLink(request), CMIS.LINK_REPOSITORY);
         entry.addLink(getTypeLink(object.getTypeId(), request), CMIS.LINK_TYPE);
-        if (object.getType().getBaseType() == BaseType.FOLDER) {
+        Type objectType = repository.getType(object.getTypeId());
+        if (objectType.getBaseType() == BaseType.FOLDER) {
             String oid = object.getId();
             entry.addLink(getChildrenLink(oid, request), CMIS.LINK_CHILDREN);
             entry.addLink(getDescendantsLink(oid, request),
                     CMIS.LINK_DESCENDANTS);
             entry.addLink(getParentsLink(oid, request), CMIS.LINK_PARENTS);
-            String pid = object.getId(Property.PARENT_ID);
-            if (pid != null) {
-                // TODO unclear in spec (parent vs parents)
-                entry.addLink(getObjectLink(pid, request), CMIS.LINK_PARENT);
-            }
         }
         // entry.addLink("XXX", CMIS.LINK_ALLOWABLE_ACTIONS);
         // entry.addLink("XXX", CMIS.LINK_RELATIONSHIPS);
@@ -157,7 +156,8 @@ public class CMISCollectionForChildren extends CMISCollection<ObjectEntry> {
         // ContentStreamUri needs to know the media link
         String mediaLink = isMediaEntry(object) ? getMediaLink(object.getId(),
                 request) : null;
-        entry.addExtension(new ObjectElement(factory, object, mediaLink));
+        entry.addExtension(new ObjectElement(factory, object, objectType,
+                mediaLink));
 
         return link;
     }
@@ -169,10 +169,11 @@ public class CMISCollectionForChildren extends CMISCollection<ObjectEntry> {
     @Override
     public Iterable<ObjectEntry> getEntries(RequestContext request)
             throws ResponseContextException {
-        SPI spi = repository.getConnection(null).getSPI();
+        SPI spi = repository.getSPI(); // TODO XXX connection leak
         boolean[] hasMoreItems = new boolean[1];
-        List<ObjectEntry> children = spi.getChildren(id, null, null, false,
-                false, 0, 0, null, hasMoreItems);
+        ObjectId objectId = spi.newObjectId(id);
+        List<ObjectEntry> children = spi.getChildren(objectId, null, null,
+                false, false, 0, 0, null, hasMoreItems);
         return children;
     }
 
@@ -200,7 +201,7 @@ public class CMISCollectionForChildren extends CMISCollection<ObjectEntry> {
     public List<Person> getAuthors(ObjectEntry object, RequestContext request) {
         String author = null;
         try {
-            author = object.getString(Property.CREATED_BY);
+            author = (String) object.getValue(Property.CREATED_BY);
         } catch (Exception e) {
             // no such property or bad type
         }
@@ -215,7 +216,8 @@ public class CMISCollectionForChildren extends CMISCollection<ObjectEntry> {
     @Override
     public boolean isMediaEntry(ObjectEntry object)
             throws ResponseContextException {
-        return object.hasContentStream();
+        SPI spi = repository.getSPI(); // TODO XXX connection leak
+        return spi.hasContentStream(object);
     }
 
     @Override
@@ -225,7 +227,7 @@ public class CMISCollectionForChildren extends CMISCollection<ObjectEntry> {
         String mediaLink = getMediaLink(object.getId(), request);
         entry.setContent(new IRI(mediaLink), getContentType(object));
         entry.addLink(mediaLink, "edit-media");
-        entry.addLink(mediaLink, "cmis-stream");
+        entry.addLink(mediaLink, CMIS.LINK_STREAM);
         return mediaLink;
     }
 
@@ -238,14 +240,15 @@ public class CMISCollectionForChildren extends CMISCollection<ObjectEntry> {
 
     @Override
     public String getContentType(ObjectEntry object) {
-        return object.getString(Property.CONTENT_STREAM_MIME_TYPE);
+        return (String) object.getValue(Property.CONTENT_STREAM_MIME_TYPE);
     }
 
     @Override
     public ObjectEntry getEntry(String id, RequestContext request)
             throws ResponseContextException {
-        SPI spi = repository.getConnection(null).getSPI();
-        return spi.getProperties(id, ReturnVersion.THIS, null, false, false);
+        SPI spi = repository.getSPI(); // TODO XXX connection leak
+        return spi.getProperties(spi.newObjectId(id), ReturnVersion.THIS, null,
+                false, false);
     }
 
     @Override
@@ -263,9 +266,9 @@ public class CMISCollectionForChildren extends CMISCollection<ObjectEntry> {
     public InputStream getMediaStream(ObjectEntry object)
             throws ResponseContextException {
         // TODO entry was fetched for mostly nothing...
-        SPI spi = repository.getConnection(null).getSPI();
+        SPI spi = repository.getSPI(); // TODO XXX connection leak
         try {
-            return spi.getContentStream(object.getId(), 0, -1);
+            return spi.getContentStream(object, 0, -1);
         } catch (IOException e) {
             throw new ResponseContextException(500, e);
         }
@@ -285,12 +288,12 @@ public class CMISCollectionForChildren extends CMISCollection<ObjectEntry> {
     public String getTitle(ObjectEntry object) {
         String title = null;
         try {
-            title = object.getString("title"); // TODO improve
+            title = (String) object.getValue("title"); // TODO improve
         } catch (Exception e) {
             // no such property or bad type
         }
         if (title == null) {
-            title = object.getName();
+            title = (String) object.getValue(Property.NAME);
         }
         return title;
     }
@@ -299,7 +302,7 @@ public class CMISCollectionForChildren extends CMISCollection<ObjectEntry> {
     public Date getUpdated(ObjectEntry object) {
         Date date = null;
         try {
-            Calendar calendar = object.getDateTime(Property.LAST_MODIFICATION_DATE);
+            Calendar calendar = (Calendar) object.getValue(Property.LAST_MODIFICATION_DATE);
             if (calendar != null) {
                 date = calendar.getTime();
             }
@@ -316,7 +319,7 @@ public class CMISCollectionForChildren extends CMISCollection<ObjectEntry> {
     public Text getSummary(ObjectEntry object, RequestContext request) {
         String summary = null;
         try {
-            summary = object.getString("description"); // TODO improve
+            summary = (String) object.getValue("description"); // TODO improve
         } catch (Exception e) {
             // no such property or bad type
         }

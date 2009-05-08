@@ -16,38 +16,48 @@
  * Authors:
  *     Florent Guillaume
  */
-package org.apache.chemistry.repository;
-
-import java.util.Collection;
+package org.apache.chemistry;
 
 /**
- * CMIS Repository Service.
+ * Support for query on full-text or metadata.
  *
  * @author Florent Guillaume
  */
-public interface RepositoryService {
+public enum QueryCapability {
 
     /**
-     * Gets a list of available repositories.
-     *
-     * @return a collection of repository entries
+     * No query support.
      */
-    Collection<RepositoryEntry> getRepositories();
+    NONE("none"),
 
     /**
-     * Gets the default repository, if any.
-     * <p>
-     * If not default repository is available, {@code null} is returned.
-     *
-     * @return the default repository, or {@code null}
+     * Support only metadata queries.
      */
-    Repository getDefaultRepository();
+    METADATA_ONLY("metadataonly"),
 
     /**
-     * Gets a repository identified by its ID.
-     *
-     * @param repositoryId the repository ID
+     * Support only full-text queries.
      */
-    Repository getRepository(String repositoryId);
+    FULL_TEXT_ONLY("fulltextonly"),
 
+    /**
+     * Support both full-text and metadata queries, but not in the same query.
+     */
+    BOTH_SEPARATE("bothseparate"),
+
+    /**
+     * Support both full-text and metadata queries, in the same query.
+     */
+    BOTH_COMBINED("bothcombined");
+
+    private final String value;
+
+    private QueryCapability(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }

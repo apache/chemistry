@@ -16,36 +16,21 @@
  * Authors:
  *     Florent Guillaume
  */
-package org.apache.chemistry.atompub;
-
-import java.util.Map;
+package org.apache.chemistry.atompub.abdera;
 
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.ExtensibleElementWrapper;
-import org.apache.chemistry.ObjectEntry;
-import org.apache.chemistry.property.Property;
+import org.apache.chemistry.atompub.CMIS;
 
 /**
- * Abdera ElementWrapper for an AtomPub cmis:object element.
+ * Abdera ElementWrapper for an AtomPub cmis:allowableActions element.
  *
  * @author Florent Guillaume
  */
-public class ObjectElement extends ExtensibleElementWrapper {
+public class AllowableActionsElement extends ExtensibleElementWrapper {
 
-    public ObjectElement(Factory factory, ObjectEntry object,
-            String contentStreamURI) {
-        super(factory, CMIS.OBJECT);
-        setProperties(object.getProperties(), contentStreamURI);
+    public AllowableActionsElement(Factory factory) {
+        super(factory, CMIS.ALLOWABLE_ACTIONS);
     }
-
-    public void setProperties(Map<String, Property> properties,
-            String contentStreamURI) {
-        PropertiesElement el = new PropertiesElement(getFactory(),
-                contentStreamURI);
-        addExtension(el);
-        el.setProperties(properties);
-    }
-
-    // TODO allowable actions
 
 }

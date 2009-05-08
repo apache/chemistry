@@ -22,8 +22,8 @@ import org.apache.chemistry.Policy;
 
 public class SimplePolicy extends SimpleObject implements Policy {
 
-    public SimplePolicy(SimpleData data, SimpleConnection connection) {
-        super(data, connection);
+    public SimplePolicy(SimpleObjectEntry entry) {
+        super(entry);
     }
 
 }

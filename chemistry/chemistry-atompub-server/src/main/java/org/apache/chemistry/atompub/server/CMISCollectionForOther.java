@@ -27,7 +27,7 @@ import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
-import org.apache.chemistry.repository.Repository;
+import org.apache.chemistry.Repository;
 
 /**
  * CMIS Collection for the XXX.

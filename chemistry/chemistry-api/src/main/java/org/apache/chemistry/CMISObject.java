@@ -19,33 +19,61 @@
 package org.apache.chemistry;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.net.URI;
+import java.util.Calendar;
 import java.util.Map;
 
 /**
  * A CMIS Object.
  * <p>
- * This differs from an {@link ObjectEntry} by the fact that it is a "live"
- * object: it will automatically fetch any missing information from the
- * repository if needed, and the values set on this object will be stored into
- * the repository when the object is saved.
+ * This interface contains a lot of common functionality for the four
+ * sub-interfaces that are actually implemented: {@link Folder},
+ * {@link Document}, {@link Relationship} and {@link Policy}.
+ * <p>
+ * This is a "live" object, it will automatically fetch any missing information
+ * from the repository if needed, and the values set on this object will be
+ * stored into the repository when the object is saved.
  *
+ * @see Folder
+ * @see Document
+ * @see Relationship
+ * @see Policy
  * @author Florent Guillaume
  */
-public interface CMISObject extends ObjectEntry {
+public interface CMISObject extends ObjectId {
 
     /**
-     * The parent folder, or the single folder in which the object is filed.
-     * <p>
-     * For a folder, returns the parent folder, or {@code null} if there is no
-     * parent (for the root folder).
-     * <p>
-     * For a non-folder, if the object is single-filed then the folder in which
-     * it is filed is returned, otherwise if the folder is unfiled then {@code
-     * null} is returned. An exception is raised if the object is multi-filed.
-     *
-     * @return the parent folder, or {@code null}.
+     * The object's type definition.
      */
-    Folder getParent();
+    Type getType();
+
+    /*
+     * ----- data access -----
+     */
+
+    /**
+     * Gets a property.
+     *
+     * @param name the property name
+     * @return the property
+     */
+    Property getProperty(String name);
+
+    /**
+     * Gets all the properties.
+     *
+     * @return a map of the properties
+     */
+    Map<String, Property> getProperties();
+
+    /**
+     * Gets a property value.
+     *
+     * @param name the property name
+     * @return the property value
+     */
+    Serializable getValue(String name);
 
     /**
      * Sets a property value.
@@ -58,7 +86,6 @@ public interface CMISObject extends ObjectEntry {
      * @param name the property name
      * @param value the property value, or {@code null}
      */
-
     void setValue(String name, Serializable value);
 
     /**
@@ -77,17 +104,117 @@ public interface CMISObject extends ObjectEntry {
      * Saves the modifications done to the object through {@link #setValue},
      * {@link #setValues} and {@link Document#setContentStream}.
      * <p>
-     * Note that a repository is not required to wait until a {@code save()} is
+     * Note that a repository is not required to wait until a {@link #save} is
      * called to actually save the modifications, it may do so as soon as
-     * {@code setValue()} is called.
+     * {@link #setValue} is called.
      * <p>
-     * Calling {@code save()} is needed for objects newly created through
+     * Calling {#link #save} is needed for objects newly created through
      * {@link Connection#newDocument} and similar methods.
      */
     void save();
 
     /*
+     * ----- misc -----
+     */
+
+    /**
+     * The parent folder, or the single folder in which the object is filed.
+     * <p>
+     * For a folder, returns the parent folder, or {@code null} if there is no
+     * parent (for the root folder).
+     * <p>
+     * For a non-folder, if the object is single-filed then the folder in which
+     * it is filed is returned, otherwise if the folder is unfiled then {@code
+     * null} is returned. An exception is raised if the object is multi-filed.
+     *
+     * @return the parent folder, or {@code null}.
+     */
+    Folder getParent();
+
+    /*
+     * ----- convenience methods -----
+     */
+
+    String getString(String name);
+
+    String[] getStrings(String name);
+
+    BigDecimal getDecimal(String name);
+
+    BigDecimal[] getDecimals(String name);
+
+    Integer getInteger(String name);
+
+    Integer[] getIntegers(String name);
+
+    Boolean getBoolean(String name);
+
+    Boolean[] getBooleans(String name);
+
+    Calendar getDateTime(String name);
+
+    Calendar[] getDateTimes(String name);
+
+    URI getURI(String name);
+
+    URI[] getURIs(String name);
+
+    String getId(String name);
+
+    String[] getIds(String name);
+
+    String getXML(String name);
+
+    String[] getXMLs(String name);
+
+    String getHTML(String name);
+
+    String[] getHTMLs(String name);
+
+    /*
      * ----- convenience methods for specific properties -----
+     */
+
+    String getId();
+
+    URI getURI();
+
+    String getTypeId();
+
+    String getCreatedBy();
+
+    Calendar getCreationDate();
+
+    String getLastModifiedBy();
+
+    Calendar getLastModificationDate();
+
+    String getChangeToken();
+
+    String getName();
+
+    boolean isImmutable();
+
+    boolean isLatestVersion();
+
+    boolean isMajorVersion();
+
+    boolean isLatestMajorVersion();
+
+    String getVersionLabel();
+
+    String getVersionSeriesId();
+
+    boolean isVersionSeriesCheckedOut();
+
+    String getVersionSeriesCheckedOutBy();
+
+    String getVersionSeriesCheckedOutId();
+
+    String getCheckinComment();
+
+    /*
+     * ----- convenience methods for specific properties (setter) -----
      */
 
     void setName(String name);

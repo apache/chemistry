@@ -53,7 +53,7 @@ public interface Document extends CMISObject {
      *
      * @return the content stream
      */
-    ContentStream getContentStream();
+    ContentStream getContentStream() throws IOException;
 
     /**
      * Sets the content stream for this document.

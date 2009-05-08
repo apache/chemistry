@@ -21,6 +21,7 @@ package org.apache.chemistry.atompub.server;
 import org.apache.abdera.protocol.server.CollectionAdapter;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.impl.AbstractWorkspaceManager;
+import org.apache.chemistry.Repository;
 
 /**
  * Workspace manager that correctly finds the appropriate collection adapter by
@@ -37,27 +38,24 @@ public class CMISWorkspaceManager extends AbstractWorkspaceManager {
     }
 
     public CollectionAdapter getCollectionAdapter(RequestContext request) {
+        Repository repository = provider.getRepository();
         String path = request.getTargetPath();
         String paths = path + '/';
-        if (paths.startsWith("/types/")) {
-            return new CMISCollectionForTypes(null, provider.getRepository());
+        if (paths.startsWith("/types/") || paths.startsWith("/types?")) {
+            return new CMISCollectionForTypes(null, repository);
         }
         if (paths.startsWith("/children/")) {
-            return new CMISCollectionForChildren(null,
-                    request.getTarget().getParameter("objectid"),
-                    provider.getRepository());
+            String id = request.getTarget().getParameter("objectid");
+            return new CMISCollectionForChildren(null, id, repository);
         }
         if (paths.startsWith("/object/")) {
-            return new CMISCollectionForChildren(null, null,
-                    provider.getRepository());
+            return new CMISCollectionForChildren(null, null, repository);
         }
         if (paths.startsWith("/file/")) {
-            return new CMISCollectionForChildren(null, null,
-                    provider.getRepository());
+            return new CMISCollectionForChildren(null, null, repository);
         }
         if (paths.startsWith("/unfiled/")) {
-            return new CMISCollectionForOther(null, "unfiled", null,
-                    provider.getRepository());
+            return new CMISCollectionForOther(null, "unfiled", null, repository);
         }
         return null;
     }

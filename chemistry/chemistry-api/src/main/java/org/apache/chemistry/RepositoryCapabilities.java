@@ -16,7 +16,7 @@
  * Authors:
  *     Florent Guillaume
  */
-package org.apache.chemistry.repository;
+package org.apache.chemistry;
 
 /**
  * The capabilities of a CMIS Repository.

@@ -1,4 +1,4 @@
-package org.apache.chemistry.repository;
+package org.apache.chemistry;
 
 import java.util.Map;
 

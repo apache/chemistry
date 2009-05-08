@@ -32,8 +32,8 @@ import org.apache.abdera.protocol.server.impl.RegexTargetResolver;
 import org.apache.abdera.protocol.server.impl.SimpleWorkspaceInfo;
 import org.apache.abdera.protocol.server.impl.TemplateTargetBuilder;
 import org.apache.abdera.util.Constants;
+import org.apache.chemistry.Repository;
 import org.apache.chemistry.atompub.CMIS;
-import org.apache.chemistry.repository.Repository;
 
 /**
  * Abdera provider for the CMIS bindings used by Chemistry.
@@ -59,7 +59,8 @@ public class CMISProvider extends AbstractProvider {
         // service
         targetBuilder.setTemplate(TargetType.TYPE_SERVICE,
                 "{target_base}/repository");
-        targetResolver.setPattern("/repository", TargetType.TYPE_SERVICE);
+        targetResolver.setPattern("/repository(\\?.*)?",
+                TargetType.TYPE_SERVICE);
 
         // entry
         targetBuilder.setTemplate(TargetType.TYPE_ENTRY,
@@ -85,7 +86,7 @@ public class CMISProvider extends AbstractProvider {
         targetResolver.setPattern("/unfiled", TargetType.TYPE_COLLECTION);
         targetResolver.setPattern("/query", //
                 TargetType.TYPE_COLLECTION);
-        targetResolver.setPattern("/types", //
+        targetResolver.setPattern("/types(\\?.*)?", //
                 TargetType.TYPE_COLLECTION);
         // per-object collections
         targetResolver.setPattern("/parents/([^/?]+)",
@@ -111,12 +112,12 @@ public class CMISProvider extends AbstractProvider {
         CollectionInfo ci;
 
         workspaceInfo.addCollection(new CMISCollectionForChildren(
-                CMIS.COL_ROOT_CHILDREN, repository.getInfo().getRootFolderId(),
-                repository));
+                CMIS.COL_ROOT_CHILDREN,
+                repository.getInfo().getRootFolderId().getId(), repository));
 
         workspaceInfo.addCollection(new CMISCollectionForOther(
                 CMIS.COL_ROOT_DESCENDANTS, "descendants",
-                repository.getInfo().getRootFolderId(), repository));
+                repository.getInfo().getRootFolderId().getId(), repository));
 
         workspaceInfo.addCollection(new CMISCollectionForOther(
                 CMIS.COL_UNFILED, "unfiled", null, repository));

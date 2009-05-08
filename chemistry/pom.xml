@@ -35,10 +35,11 @@
     <module>chemistry-parent</module>
     <module>chemistry-api</module>
     <module>chemistry-commons</module>
-    <module>chemistry-jcr</module>
     <module>chemistry-tests</module>
     <module>chemistry-atompub</module>
     <module>chemistry-atompub-server</module>
+    <module>chemistry-ws</module>
+    <module>chemistry-jcr</module>
   </modules>
 
 </project>

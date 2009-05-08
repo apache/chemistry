@@ -16,7 +16,7 @@
  * Authors:
  *     Florent Guillaume
  */
-package org.apache.chemistry.property;
+package org.apache.chemistry;
 
 import java.io.Serializable;
 
@@ -72,8 +72,6 @@ public interface Property {
     String VERSION_SERIES_CHECKED_OUT_ID = "VersionSeriesCheckedOutId";
 
     String CHECKIN_COMMENT = "CheckinComment";
-
-    String CONTENT_STREAM_ALLOWED = "ContentStreamAllowed";
 
     String CONTENT_STREAM_LENGTH = "ContentStreamLength";
 

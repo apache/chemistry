@@ -16,43 +16,33 @@
  * Authors:
  *     Florent Guillaume
  */
-package org.apache.chemistry.repository;
+package org.apache.chemistry;
 
 /**
- * Support for query on full-text or metadata.
+ * The presence status for a content stream.
  *
  * @author Florent Guillaume
  */
-public enum QueryCapability {
+public enum ContentStreamPresence {
 
     /**
-     * No query support.
+     * A content stream is not allowed.
      */
-    NONE("none"),
+    NOT_ALLOWED("notallowed"),
 
     /**
-     * Support only metadata queries.
+     * A content stream is allowed but optional.
      */
-    METADATA_ONLY("metadataonly"),
+    ALLOWED("allowed"),
 
     /**
-     * Support only full-text queries.
+     * A content stream is required.
      */
-    FULL_TEXT_ONLY("fulltextonly"),
-
-    /**
-     * Support both full-text and metadata queries, but not in the same query.
-     */
-    BOTH_SEPARATE("bothseparate"),
-
-    /**
-     * Support both full-text and metadata queries, in the same query.
-     */
-    BOTH_COMBINED("bothcombined");
+    REQUIRED("required");
 
     private final String value;
 
-    private QueryCapability(String value) {
+    private ContentStreamPresence(String value) {
         this.value = value;
     }
 

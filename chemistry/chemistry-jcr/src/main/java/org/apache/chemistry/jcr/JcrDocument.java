@@ -24,11 +24,11 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
-import org.apache.chemistry.property.Property;
-import org.apache.chemistry.type.BaseType;
+import org.apache.chemistry.Property;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.JcrConstants;
@@ -124,6 +124,6 @@ public class JcrDocument extends JcrObjectEntry implements Document {
 
     @Override
     protected BaseType getBaseType() {
-    	return BaseType.DOCUMENT;
+        return BaseType.DOCUMENT;
     }
 }

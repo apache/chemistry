@@ -16,11 +16,10 @@
  * Authors:
  *     Florent Guillaume
  */
-package org.apache.chemistry.type;
+package org.apache.chemistry;
 
 import java.util.Collection;
 
-import org.apache.chemistry.property.PropertyDefinition;
 
 /**
  * A CMIS Type Definition.

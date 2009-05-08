@@ -19,177 +19,74 @@
 package org.apache.chemistry;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.net.URI;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.chemistry.property.Property;
-import org.apache.chemistry.type.Type;
-
 /**
- * A CMIS Object entry returned from a search or a listing.
+ * A CMIS object entry, returned from a search or a listing.
  * <p>
- * This is a read-only view of a subset of the properties of a CMIS object. The
- * actual subset will be determined by the method called to return this Entry,
- * and by the actual implementation.
+ * This holds a subset of the properties of a CMIS object. The actual subset
+ * will be determined by the method called to return this object entry, and by
+ * the actual implementation.
  *
  * @author Florent Guillaume
  */
-public interface ObjectEntry {
+public interface ObjectEntry extends ObjectId {
 
     /**
-     * The object's type definition.
-     */
-    Type getType();
-
-    /**
-     * Gets a property.
+     * Gets the type id for this entry.
      *
-     * @param name the property name
-     * @return the property
+     * @return the type id
      */
-    Property getProperty(String name);
-
-    /**
-     * Gets all the properties.
-     *
-     * @return a map of the properties
-     */
-    Map<String, Property> getProperties();
+    String getTypeId();
 
     /**
      * Gets a property value.
+     * <p>
+     * Returns {@code null} is the property is not set, not fetched or unknown.
      *
      * @param name the property name
-     * @return the property value
+     * @return the property value, or {@code null}
      */
     Serializable getValue(String name);
 
     /**
-     * The allowable actions, if requested.
+     * Sets a property value.
+     * <p>
+     * Setting a {@code null} value removes the property.
+     *
+     * @param name the property name
+     * @param value the property value, or {@code null}
+     */
+    void setValue(String name, Serializable value);
+
+    /**
+     * Gets all the property values known to this entry.
+     * <p>
+     * The map of properties is not necessarily complete, as some of them may
+     * not have been fetched.
+     *
+     * @return a map of the properties values
+     */
+    Map<String, Serializable> getValues();
+
+    /**
+     * Sets several property values.
+     * <p>
+     * Setting a {@code null} value removes a property.
+     *
+     * @param values the property values
+     */
+    void setValues(Map<String, Serializable> values);
+
+    /**
+     * The allowable actions, if fetched.
      */
     Collection<String> getAllowableActions();
 
     /**
-     * The relationships in relation to this document, if requested.
+     * The relationships in relation to this document, if fetched.
      */
     Collection<ObjectEntry> getRelationships();
-
-    /*
-     * ----- link to Document/Folder/etc classes -----
-     */
-
-    /**
-     * Gets the full {@link Document} corresponding to this entry.
-     */
-    Document getDocument();
-
-    /**
-     * Gets the full {@link Folder} corresponding to this entry.
-     */
-    Folder getFolder();
-
-    /**
-     * Gets the full {@link Relationship} corresponding to this entry.
-     */
-    Relationship getRelationship();
-
-    /**
-     * Gets the full {@link Policy} corresponding to this entry.
-     */
-    Policy getPolicy();
-
-    /*
-     * ----- convenience methods -----
-     */
-
-    String getString(String name);
-
-    String[] getStrings(String name);
-
-    BigDecimal getDecimal(String name);
-
-    BigDecimal[] getDecimals(String name);
-
-    Integer getInteger(String name);
-
-    Integer[] getIntegers(String name);
-
-    Boolean getBoolean(String name);
-
-    Boolean[] getBooleans(String name);
-
-    Calendar getDateTime(String name);
-
-    Calendar[] getDateTimes(String name);
-
-    URI getURI(String name);
-
-    URI[] getURIs(String name);
-
-    String getId(String name);
-
-    String[] getIds(String name);
-
-    String getXML(String name);
-
-    String[] getXMLs(String name);
-
-    String getHTML(String name);
-
-    String[] getHTMLs(String name);
-
-    /*
-     * ----- convenience methods for specific properties -----
-     */
-
-    String getId();
-
-    URI getURI();
-
-    String getTypeId();
-
-    String getCreatedBy();
-
-    Calendar getCreationDate();
-
-    String getLastModifiedBy();
-
-    Calendar getLastModificationDate();
-
-    String getChangeToken();
-
-    String getName();
-
-    boolean isImmutable();
-
-    boolean isLatestVersion();
-
-    boolean isMajorVersion();
-
-    boolean isLatestMajorVersion();
-
-    String getVersionLabel();
-
-    String getVersionSeriesId();
-
-    boolean isVersionSeriesCheckedOut();
-
-    String getVersionSeriesCheckedOutBy();
-
-    String getVersionSeriesCheckedOutId();
-
-    String getCheckinComment();
-
-    /**
-     * Checks if the entry has an associated content stream.
-     * <p>
-     * Note that the content stream may be present but still have length 0.
-     *
-     * @return {@code true} if the entry has an associated content stream
-     */
-    boolean hasContentStream();
 
 }

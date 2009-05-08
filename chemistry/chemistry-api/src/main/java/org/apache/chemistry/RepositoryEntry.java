@@ -16,38 +16,42 @@
  * Authors:
  *     Florent Guillaume
  */
-package org.apache.chemistry.repository;
+package org.apache.chemistry;
+
+import java.net.URI;
 
 /**
- * Support for inner and outer join in query.
+ * Basic information about a CMIS Repository.
  *
  * @author Florent Guillaume
  */
-public enum JoinCapability {
+public interface RepositoryEntry {
 
     /**
-     * No join support.
+     * The repository ID.
+     * <p>
+     * The ID is an opaque string.
      */
-    NO_JOIN("nojoin"),
+    String getId();
 
     /**
-     * Support inner join only.
+     * The repository name.
      */
-    INNER_ONLY("inneronly"),
+    String getName();
 
     /**
-     * Support inner and outer join.
+     * The repository URI.
      */
-    INNER_AND_OUTER("innerandouter");
+    URI getURI();
 
-    private final String value;
+    /**
+     * The relationship name to another repository.
+     * <p>
+     * This returns a value only when this basic info was returned by
+     * {@link RepositoryInfo#getRelatedRepositories}.
+     *
+     * @return a relationship name, or {@code null}
+     */
+    String getRelationshipName();
 
-    private JoinCapability(String value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return value;
-    }
 }

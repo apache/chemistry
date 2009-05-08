@@ -16,7 +16,7 @@
  * Authors:
  *     Florent Guillaume
  */
-package org.apache.chemistry.property;
+package org.apache.chemistry;
 
 /**
  * The Updatability of a property.

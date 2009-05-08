@@ -24,24 +24,22 @@ import java.io.InputStream;
 import java.net.URI;
 
 import org.apache.chemistry.ContentStream;
+import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.Document;
-import org.apache.chemistry.property.Property;
-import org.apache.chemistry.type.ContentStreamPresence;
+import org.apache.chemistry.Property;
 
 public class SimpleDocument extends SimpleObject implements Document {
 
-    public SimpleDocument(SimpleData data, SimpleConnection connection) {
-        super(data, connection);
+    public SimpleDocument(SimpleObjectEntry entry) {
+        super(entry);
     }
-
-    protected static final String CONTENT_BYTES_KEY = "__content__";
 
     protected byte[] getContentBytes() {
-        return (byte[]) data.get(CONTENT_BYTES_KEY);
+        return (byte[]) entry.data.get(SimpleProperty.CONTENT_BYTES_KEY);
     }
-    
+
     public InputStream getStream() {
-    	byte[] contentBytes = getContentBytes();
+        byte[] contentBytes = getContentBytes();
         if (contentBytes == null) {
             return null;
         }
@@ -49,7 +47,7 @@ public class SimpleDocument extends SimpleObject implements Document {
     }
 
     public ContentStream getContentStream() {
-    	byte[] contentBytes = getContentBytes();
+        byte[] contentBytes = getContentBytes();
         if (contentBytes == null) {
             return null;
         }
@@ -76,20 +74,20 @@ public class SimpleDocument extends SimpleObject implements Document {
             throw new RuntimeException("Content stream required"); // TODO
         }
         if (contentStream == null) {
-            _setValue(Property.CONTENT_STREAM_LENGTH, null);
-            _setValue(Property.CONTENT_STREAM_MIME_TYPE, null);
-            _setValue(Property.CONTENT_STREAM_FILENAME, null);
-            _setValue(Property.CONTENT_STREAM_URI, null);
-            data.remove(CONTENT_BYTES_KEY);
+            entry.setValue(Property.CONTENT_STREAM_LENGTH, null);
+            entry.setValue(Property.CONTENT_STREAM_MIME_TYPE, null);
+            entry.setValue(Property.CONTENT_STREAM_FILENAME, null);
+            entry.setValue(Property.CONTENT_STREAM_URI, null);
+            entry.setValue(SimpleProperty.CONTENT_BYTES_KEY, null);
         } else {
-            _setValue(Property.CONTENT_STREAM_LENGTH,
+            entry.setValue(Property.CONTENT_STREAM_LENGTH,
                     Integer.valueOf((int) contentStream.getLength())); // cast?
-            _setValue(Property.CONTENT_STREAM_MIME_TYPE,
+            entry.setValue(Property.CONTENT_STREAM_MIME_TYPE,
                     contentStream.getMimeType());
-            _setValue(Property.CONTENT_STREAM_FILENAME,
+            entry.setValue(Property.CONTENT_STREAM_FILENAME,
                     contentStream.getFilename());
-            _setValue(Property.CONTENT_STREAM_URI, contentStream.getURI());
-            data.put(CONTENT_BYTES_KEY,
+            entry.setValue(Property.CONTENT_STREAM_URI, contentStream.getURI());
+            entry.setValue(SimpleProperty.CONTENT_BYTES_KEY,
                     SimpleContentStream.getBytes(contentStream.getStream()));
         }
     }

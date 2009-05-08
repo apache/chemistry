@@ -31,13 +31,13 @@ public class CMIS {
     private CMIS() {
     }
 
-    public static QName CMISName(String localPart) {
-        return new QName(CMIS_NS, localPart, CMIS_PREFIX);
-    }
-
     public static final String CMIS_NS = "http://docs.oasis-open.org/ns/cmis/core/200901";
 
     public static final String CMIS_PREFIX = "cmis";
+
+    public static QName CMISName(String localPart) {
+        return new QName(CMIS_NS, localPart, CMIS_PREFIX);
+    }
 
     /*
      * ----- XML Qualified Names -----
@@ -79,9 +79,7 @@ public class CMIS {
 
     public static final QName CAPABILITY_JOIN = CMISName("capabilityJoin");
 
-    public static final QName CAPABILITY_FULL_TEXT = CMISName("capabilityFullText");
-
-    public static final QName VERSIONS_SUPPORTED = CMISName("cmisVersionsSupported");
+    public static final QName VERSION_SUPPORTED = CMISName("cmisVersionSupported");
 
     public static final QName REPOSITORY_SPECIFIC_INFORMATION = CMISName("repositorySpecificInformation");
 
@@ -113,6 +111,46 @@ public class CMIS {
 
     public static final QName VERSIONABLE = CMISName("versionable");
 
+    public static final QName INCLUDED_IN_SUPERTYPE_QUERY = CMISName("includedInSupertypeQuery");
+
+    public static final QName PROPERTY_STRING_DEFINITION = CMISName("propertyStringDefinition");
+
+    public static final QName PROPERTY_DECIMAL_DEFINITION = CMISName("propertyDecimalDefinition");
+
+    public static final QName PROPERTY_INTEGER_DEFINITION = CMISName("propertyIntegerDefinition");
+
+    public static final QName PROPERTY_BOOLEAN_DEFINITION = CMISName("propertyBooleanDefinition");
+
+    public static final QName PROPERTY_DATETIME_DEFINITION = CMISName("propertyDateTimeDefinition");
+
+    public static final QName PROPERTY_URI_DEFINITION = CMISName("propertyUriDefinition");
+
+    public static final QName PROPERTY_ID_DEFINITION = CMISName("propertyIdDefinition");
+
+    public static final QName PROPERTY_XML_DEFINITION = CMISName("propertyXmlDefinition");
+
+    public static final QName PROPERTY_HTML_DEFINITION = CMISName("propertyHtmlDefinition");
+
+    public static final QName NAME = CMISName("name");
+
+    public static final QName ID = CMISName("id");
+
+    public static final QName PACKAGE = CMISName("package");
+
+    public static final QName PROPERTY_TYPE = CMISName("propertyType");
+
+    public static final QName CARDINALITY = CMISName("cardinality");
+
+    public static final QName UPDATABILITY = CMISName("updatability");
+
+    public static final QName INHERITED = CMISName("inherited");
+
+    public static final QName REQUIRED = CMISName("required");
+
+    public static final QName ORDERABLE = CMISName("orderable");
+
+    public static final QName DEFAULT_VALUE = CMISName("defaultValue");
+
     public static final QName OBJECT = CMISName("object");
 
     public static final QName PROPERTIES = CMISName("properties");
@@ -134,8 +172,6 @@ public class CMIS {
     public static final QName PROPERTY_XML = CMISName("propertyXml");
 
     public static final QName PROPERTY_HTML = CMISName("propertyHtml");
-
-    public static final QName NAME = CMISName("name");
 
     public static final QName VALUE = CMISName("value");
 
@@ -167,8 +203,6 @@ public class CMIS {
 
     public static final String LINK_LATEST_VERSION = "latestversion";
 
-    public static final String LINK_PARENT = "parent";
-
     public static final String LINK_SOURCE = "source";
 
     public static final String LINK_TARGET = "target";
@@ -186,6 +220,8 @@ public class CMIS {
     public static final String LINK_DESCENDANTS = "descendants";
 
     public static final String LINK_ALL_VERSIONS = "allversions";
+
+    public static final String LINK_PWC = "pwc";
 
     public static final String LINK_RELATIONSHIPS = "relationships";
 
