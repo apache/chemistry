@@ -190,7 +190,7 @@ public class SimpleType implements Type {
             PropertyType.STRING, false, null, false, true, null,
             Updatability.READ_WRITE, true, true, 0, null, null, -1, null, null);
 
-    private static final PropertyDefinition[] PROPS_COMMON = new SimplePropertyDefinition[] {
+    private static final PropertyDefinition[] PROPS_COMMON = {
             PROP_ID, //
             PROP_URI, //
             PROP_TYPE_ID, //
@@ -202,7 +202,7 @@ public class SimpleType implements Type {
 
     private static List<PropertyDefinition> commonPlus(
             PropertyDefinition... array) {
-        ArrayList<PropertyDefinition> list = new ArrayList<PropertyDefinition>(
+        List<PropertyDefinition> list = new ArrayList<PropertyDefinition>(
                 PROPS_COMMON.length + array.length);
         list.addAll(Arrays.asList(PROPS_COMMON));
         list.addAll(Arrays.asList(array));

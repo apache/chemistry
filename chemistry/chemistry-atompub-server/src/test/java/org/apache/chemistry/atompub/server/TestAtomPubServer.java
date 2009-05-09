@@ -57,7 +57,7 @@ public class TestAtomPubServer extends TestCase {
 
     private static final String TEST_FILE_CONTENT = "This is a test file.\nTesting, testing...\n";
 
-    protected static AbderaClient client = new AbderaClient();
+    protected static final AbderaClient client = new AbderaClient();
 
     protected static String doc3id;
 
@@ -184,7 +184,7 @@ public class TestAtomPubServer extends TestCase {
         Element ob = resp.getDocument().getRoot();
         assertNotNull(ob);
 
-        HttpMethod method = new GetMethod((base + "/file/" + doc3id));
+        HttpMethod method = new GetMethod(base + "/file/" + doc3id);
         int status = new HttpClient().executeMethod(method);
         assertEquals(HttpStatus.SC_OK, status);
         assertEquals("text/plain",

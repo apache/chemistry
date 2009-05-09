@@ -39,9 +39,9 @@ public class JcrNewDocument extends JcrDocument {
 
     private static final Log log = LogFactory.getLog(JcrNewDocument.class);
 
-    private Node parent;
+    private final Node parent;
+    private final Map<String, Serializable> values = new HashMap<String, Serializable>();
     private String name;
-    private Map<String, Serializable> values = new HashMap<String, Serializable>();
     private ContentStream cs;
     private boolean saved;
 

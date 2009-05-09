@@ -31,7 +31,8 @@ import org.apache.jackrabbit.JcrConstants;
 public class JcrContentStream implements ContentStream {
 
     private static final Log log = LogFactory.getLog(JcrFolder.class);
-    private Node content;
+
+    private final Node content;
 
     public JcrContentStream(Node content) {
         this.content = content;

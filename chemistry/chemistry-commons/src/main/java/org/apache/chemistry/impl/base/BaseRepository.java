@@ -57,29 +57,29 @@ public abstract class BaseRepository implements Repository, RepositoryInfo,
 
     public static final String POLICY_TYPE_ID = "policy";
 
-    public static SimpleType ROOT_TYPE = new SimpleType(ROOT_TYPE_ID,
+    public static final SimpleType ROOT_TYPE = new SimpleType(ROOT_TYPE_ID,
             FOLDER_TYPE_ID, "Root", "Root Folder Type", BaseType.FOLDER, "",
             false, false, false, false, false, false,
             ContentStreamPresence.NOT_ALLOWED, null, null,
             Collections.<PropertyDefinition> emptyList());
 
-    public static SimpleType DOCUMENT_TYPE = new SimpleType(DOCUMENT_TYPE_ID,
+    public static final SimpleType DOCUMENT_TYPE = new SimpleType(DOCUMENT_TYPE_ID,
             null, "Document", "Document Type", BaseType.DOCUMENT, "", true,
             true, true, true, true, true, ContentStreamPresence.ALLOWED, null,
             null, Collections.<PropertyDefinition> emptyList());
 
-    public static SimpleType FOLDER_TYPE = new SimpleType(FOLDER_TYPE_ID, null,
+    public static final SimpleType FOLDER_TYPE = new SimpleType(FOLDER_TYPE_ID, null,
             "Folder", "Folder Type", BaseType.FOLDER, "", true, true, false,
             true, true, false, ContentStreamPresence.NOT_ALLOWED, null, null,
             Collections.<PropertyDefinition> emptyList());
 
-    public static SimpleType RELATIONSHIP_TYPE = new SimpleType(
+    public static final SimpleType RELATIONSHIP_TYPE = new SimpleType(
             RELATIONSHIP_TYPE_ID, null, "Relationship", "Relationship Type",
             BaseType.RELATIONSHIP, "", true, true, false, true, false, false,
             ContentStreamPresence.NOT_ALLOWED, null, null,
             Collections.<PropertyDefinition> emptyList());
 
-    protected static SimpleType POLICY_TYPE = new SimpleType(POLICY_TYPE_ID,
+    protected static final SimpleType POLICY_TYPE = new SimpleType(POLICY_TYPE_ID,
             null, "Policy", "Policy Type", BaseType.POLICY, "", true, true,
             false, true, false, false, ContentStreamPresence.NOT_ALLOWED, null,
             null, Collections.<PropertyDefinition> emptyList());

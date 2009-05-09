@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
 
 import javax.xml.namespace.QName;
 
@@ -99,9 +100,7 @@ public class PropertiesElement extends ExtensibleElementWrapper {
         case PropertyType.STRING_ORD:
         case PropertyType.ID_ORD:
             if (multi) {
-                for (String v : (String[]) value) {
-                    values.add(v);
-                }
+                values.addAll(Arrays.asList((String[]) value));
             } else {
                 values = Collections.singletonList((String) value);
             }

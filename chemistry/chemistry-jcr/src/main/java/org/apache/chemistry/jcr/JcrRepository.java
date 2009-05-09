@@ -51,8 +51,9 @@ public class JcrRepository implements Repository, RepositoryInfo,
         RepositoryCapabilities {
 
     private static final Log log = LogFactory.getLog(JcrRepository.class);
-    private javax.jcr.Repository repository;
-    private String workspace;
+
+    private final javax.jcr.Repository repository;
+    private final String workspace;
 
     public JcrRepository(javax.jcr.Repository repository, String workspace) {
         this.repository = repository;
@@ -129,7 +130,7 @@ public class JcrRepository implements Repository, RepositoryInfo,
             SimpleCredentials creds = new SimpleCredentials("admin", "admin"
                     .toCharArray());
 
-            ArrayList<Type> result = new ArrayList<Type>();
+            List<Type> result = new ArrayList<Type>();
 
             Session session = repository.login(creds, workspace);
 

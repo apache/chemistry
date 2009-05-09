@@ -79,13 +79,15 @@ public class TestSimpleRepository extends TestCase {
     public void testInit() throws Exception {
         assertEquals("test", repo.getId());
         assertEquals("test", repo.getName());
+
         RepositoryInfo info = repo.getInfo();
         assertNotNull(info.getRootFolderId());
         assertEquals("Apache", info.getVendorName());
         assertEquals("Chemistry Simple Repository", info.getProductName());
         assertEquals("0.1-SNAPSHOT", info.getProductVersion());
         assertEquals("0.61", info.getVersionSupported());
-        assertEquals(null, info.getRepositorySpecificInformation());
+        assertNull(info.getRepositorySpecificInformation());
+
         RepositoryCapabilities capabilities = info.getCapabilities();
         assertFalse(capabilities.hasMultifiling());
         assertFalse(capabilities.hasUnfiling());
@@ -96,6 +98,7 @@ public class TestSimpleRepository extends TestCase {
         assertEquals(JoinCapability.NO_JOIN, capabilities.getJoinCapability());
         assertEquals(QueryCapability.BOTH_COMBINED,
                 capabilities.getQueryCapability());
+
         Collection<Type> types = repo.getTypes(null, true);
         assertEquals(5 + 2, types.size()); // default types have been added
     }
@@ -103,6 +106,7 @@ public class TestSimpleRepository extends TestCase {
     public void testRoot() throws Exception {
         Connection conn = repo.getConnection(null);
         assertNotNull(conn);
+
         Folder root = conn.getRootFolder();
         assertNotNull(root);
         assertEquals(repo.getRootFolderId().getId(), root.getId());
@@ -116,13 +120,17 @@ public class TestSimpleRepository extends TestCase {
         Folder root = conn.getRootFolder();
         Folder f1 = root.newFolder("fold");
         assertEquals(12 + 1, f1.getType().getPropertyDefinitions().size());
+
         List<CMISObject> children = root.getChildren(null);
         assertEquals(0, children.size());
+
         f1.save();
         assertEquals(root.getId(), f1.getParent().getId());
+
         children = root.getChildren(null);
         assertEquals(1, children.size());
         assertTrue(children.get(0) instanceof Folder);
+
         Document d1 = root.newDocument("doc");
         d1.save();
         children = root.getChildren(null);
@@ -136,13 +144,17 @@ public class TestSimpleRepository extends TestCase {
         Folder root = conn.getRootFolder();
         Document d1 = root.newDocument("doc");
         assertEquals(22 + 3, d1.getType().getPropertyDefinitions().size());
+
         d1.save();
         assertEquals(root.getId(), d1.getParent().getId());
+
         d1.setValue("title", "Yo!");
         assertEquals("Yo!", d1.getString("title"));
         // refetch
+
         d1 = (Document) conn.getObject(d1, null);
         assertEquals("Yo!", d1.getString("title"));
+
         Property prop = d1.getProperty("title");
         assertNotNull(prop);
         assertEquals("Yo!", prop.getValue());
@@ -166,6 +178,7 @@ public class TestSimpleRepository extends TestCase {
         assertEquals("text/plain", cs.getMimeType());
         assertEquals("houston.txt", cs.getFilename());
         assertEquals(new URI("http://houston.example.com"), cs.getURI());
+
         byte[] bytes = SimpleContentStream.getBytes(cs.getStream());
         assertEquals(string, new String(bytes, "UTF-8"));
     }

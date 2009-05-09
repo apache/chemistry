@@ -42,7 +42,7 @@ public class SimpleContentStream implements ContentStream {
     protected final long length;
 
     public SimpleContentStream(byte[] bytes, String mimeType, String filename,
-            URI uri) throws IOException {
+            URI uri) {
         this.mimeType = mimeType;
         this.filename = filename;
         this.uri = uri;

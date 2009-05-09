@@ -39,9 +39,9 @@ public class JcrNewFolder extends JcrFolder {
 
     private static final Log log = LogFactory.getLog(JcrNewFolder.class);
 
-    private Node parent;
+    private final Node parent;
+    private final Map<String, Serializable> values = new HashMap<String, Serializable>();
     private String name;
-    private Map<String, Serializable> values = new HashMap<String, Serializable>();
     private boolean saved;
 
     public JcrNewFolder(Node parent) {

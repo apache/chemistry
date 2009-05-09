@@ -27,7 +27,7 @@ import org.apache.chemistry.Updatability;
 
 public class JcrPropertyDefinition implements PropertyDefinition {
 
-    private javax.jcr.nodetype.PropertyDefinition propDef;
+    private final javax.jcr.nodetype.PropertyDefinition propDef;
 
     public JcrPropertyDefinition(javax.jcr.nodetype.PropertyDefinition propDef) {
         this.propDef = propDef;

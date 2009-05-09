@@ -29,7 +29,7 @@ public class JcrProperty implements Property {
 
     private static final Log log = LogFactory.getLog(JcrProperty.class);
 
-    private javax.jcr.Property property;
+    private final javax.jcr.Property property;
 
     public JcrProperty(javax.jcr.Property property) {
         this.property = property;

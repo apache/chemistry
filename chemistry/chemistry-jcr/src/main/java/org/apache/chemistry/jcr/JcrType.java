@@ -28,8 +28,8 @@ import org.apache.chemistry.Type;
 
 public class JcrType implements Type {
 
-    private NodeType nodeType;
-    private BaseType baseType;
+    private final NodeType nodeType;
+    private final BaseType baseType;
 
     public JcrType(NodeType nodeType, BaseType baseType) {
         this.nodeType = nodeType;

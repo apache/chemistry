@@ -58,8 +58,8 @@ public class JcrConnection implements Connection, SPI {
 
     private static final Log log = LogFactory.getLog(JcrConnection.class);
 
-    private Session session;
-    private JcrRepository repository;
+    private final Session session;
+    private final JcrRepository repository;
 
     public JcrConnection(Session session, JcrRepository repository) {
         this.session = session;
