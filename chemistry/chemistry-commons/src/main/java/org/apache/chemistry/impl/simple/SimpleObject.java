@@ -19,13 +19,18 @@
 package org.apache.chemistry.impl.simple;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
+import org.apache.chemistry.Relationship;
+import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.impl.base.BaseObject;
 
@@ -60,8 +65,18 @@ public class SimpleObject extends BaseObject {
         }
     }
 
-    public Type getType() {
-        return type;
+    public void move(Folder targetFolder, Folder sourceFolder) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void delete() {
+        entry.connection.deleteObject(this);
+    }
+
+    public void unfile() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     public Folder getParent() {
@@ -75,6 +90,36 @@ public class SimpleObject extends BaseObject {
         String pid = parents.iterator().next();
         SimpleData data = entry.connection.repository.datas.get(pid);
         return new SimpleFolder(new SimpleObjectEntry(data, entry.connection));
+    }
+
+    public Collection<Folder> getParents() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public List<Relationship> getRelationships(RelationshipDirection direction,
+            String typeId, boolean includeSubRelationshipTypes) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void applyPolicy(Policy policy) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void removePolicy(Policy policy) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Collection<Policy> getPolicies() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Type getType() {
+        return type;
     }
 
     public Serializable getValue(String name) {

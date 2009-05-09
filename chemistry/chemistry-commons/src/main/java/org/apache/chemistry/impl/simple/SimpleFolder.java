@@ -19,6 +19,7 @@
 package org.apache.chemistry.impl.simple;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -26,6 +27,8 @@ import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.Unfiling;
 
 public class SimpleFolder extends SimpleObject implements Folder {
 
@@ -33,8 +36,27 @@ public class SimpleFolder extends SimpleObject implements Folder {
         super(entry);
     }
 
-    public List<CMISObject> getChildren(BaseType type, String orderBy) {
-        // TODO type and orderBy
+    public void add(CMISObject object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void remove(CMISObject object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Collection<ObjectId> deleteTree(Unfiling unfiling) {
+        return entry.connection.deleteTree(this, unfiling, true);
+    }
+
+    public List<Folder> getAncestors() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public List<CMISObject> getChildren(BaseType type) {
+        // TODO type
         Set<String> ids = entry.connection.repository.children.get(getId());
         List<CMISObject> children = new ArrayList<CMISObject>(ids.size());
         for (String id : ids) {

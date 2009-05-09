@@ -22,6 +22,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,14 +44,153 @@ import java.util.Map;
  */
 public interface CMISObject extends ObjectId {
 
-    /**
-     * The object's type definition.
+    /*
+     * ----- Object Services -----
      */
-    Type getType();
+
+    /**
+     * Moves this filed object from one folder to another.
+     * <p>
+     * The target folder is that into which the object has to be moved. When the
+     * object is multi-filed, a source folder to be moved out of must be
+     * specified.
+     *
+     * @param targetFolder the target folder
+     * @param sourceFolder the source folder, or {@code null}
+     */
+    void move(Folder targetFolder, Folder sourceFolder);
+
+    /**
+     * Deletes this object.
+     * <p>
+     * When a filed object is deleted, it is removed from all folders it is
+     * filed in.
+     * <p>
+     * This deletes a specific version of a document object. To delete all
+     * versions, use {@link #deleteAllVersions}.
+     * <p>
+     * Deletion of a private working copy (checked out version) is the same as
+     * to cancel checkout.
+     */
+    void delete();
+
+    /**
+     * Unfiles this non-folder object.
+     * <p>
+     * This removes this object from all folders it is filed in, but never
+     * deletes the object, which means that if unfiling is not supported, an
+     * exception will be thrown.
+     * <p>
+     * If this object is a folder then an exception will be thrown.
+     *
+     * @see #delete
+     * @see Folder#remove
+     */
+    void unfile();
+
+    /*
+     * ----- Navigation Services -----
+     */
+
+    /**
+     * Gets the parent folder, or the single folder in which the object is
+     * filed.
+     * <p>
+     * For a folder, returns the parent folder, or {@code null} if there is no
+     * parent (for the root folder).
+     * <p>
+     * For a non-folder, if the object is single-filed then the folder in which
+     * it is filed is returned, otherwise if the folder is unfiled then {@code
+     * null} is returned. An exception is raised if the object is multi-filed,
+     * so in doubt use {@link #getParents}.
+     *
+     * @return the parent folder, or {@code null}.
+     *
+     * @see #getParents
+     * @see Folder#getAncestors
+     */
+    Folder getParent();
+
+    /**
+     * Gets the direct parents of this object.
+     * <p>
+     * The object must be a non-folder, fileable object.
+     *
+     * @return the collection of parent folders
+     *
+     * @see #getParent
+     * @see Folder#getAncestors
+     */
+    Collection<Folder> getParents();
+
+    /*
+     * ----- Relationship Services -----
+     */
+
+    /**
+     * Gets the relationships having as source or target this object.
+     * <p>
+     * Returns a list of relationships associated with this object, optionally
+     * of a specified relationship type, and optionally in a specified
+     * direction.
+     * <p>
+     * If typeId is {@code null}, returns relationships of any type.
+     * <p>
+     * Ordering is repository specific but consistent across requests.
+     *
+     * @param direction the direction of relationships to include
+     * @param typeId the type ID, or {@code null}
+     * @param includeSubRelationshipTypes {@code true} if relationships of any
+     *            sub-type of typeId are to be returned as well
+     * @return the list of relationships
+     */
+    List<Relationship> getRelationships(RelationshipDirection direction,
+            String typeId, boolean includeSubRelationshipTypes);
+
+    /*
+     * ----- Policy Services -----
+     */
+
+    /**
+     * Applies a policy to this object.
+     * <p>
+     * The object must be controllable.
+     *
+     * @param policy the policy
+     */
+    void applyPolicy(Policy policy);
+
+    /**
+     * Removes a policy from this object.
+     * <p>
+     * Removes a previously applied policy from the object. The policy is not
+     * deleted, and may still be applied to other objects.
+     * <p>
+     * The object must be controllable.
+     *
+     * @param policy the policy
+     */
+    void removePolicy(Policy policy);
+
+    /**
+     * Gets the policies applied to this object.
+     * <p>
+     * Returns the list of policy objects currently applied to the object. Only
+     * policies that are directly (explicitly) applied to the object are
+     * returned.
+     * <p>
+     * The object must be controllable.
+     */
+    Collection<Policy> getPolicies();
 
     /*
      * ----- data access -----
      */
+
+    /**
+     * The object's type definition.
+     */
+    Type getType();
 
     /**
      * Gets a property.
@@ -111,24 +252,6 @@ public interface CMISObject extends ObjectId {
      * {@link Connection#newDocument} and similar methods.
      */
     void save();
-
-    /*
-     * ----- misc -----
-     */
-
-    /**
-     * The parent folder, or the single folder in which the object is filed.
-     * <p>
-     * For a folder, returns the parent folder, or {@code null} if there is no
-     * parent (for the root folder).
-     * <p>
-     * For a non-folder, if the object is single-filed then the folder in which
-     * it is filed is returned, otherwise if the folder is unfiled then {@code
-     * null} is returned. An exception is raised if the object is multi-filed.
-     *
-     * @return the parent folder, or {@code null}.
-     */
-    Folder getParent();
 
     /*
      * ----- convenience methods -----

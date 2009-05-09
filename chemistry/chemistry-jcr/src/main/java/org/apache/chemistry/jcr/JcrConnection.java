@@ -66,55 +66,8 @@ public class JcrConnection implements Connection, SPI {
         this.repository = repository;
     }
 
-    public void addObjectToFolder(CMISObject object, Folder folder) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void applyPolicy(Policy policy, CMISObject object) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void cancelCheckOut(Document document) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Document checkIn(Document document, boolean major, String comment) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Document checkOut(Document document) {
-        throw new UnsupportedOperationException();
-    }
-
     public void close() {
         session.logout();
-    }
-
-    public void deleteAllVersions(Document document) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void deleteObject(CMISObject object) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Collection<String> deleteTree(Folder folder, Unfiling unfiling,
-            boolean continueOnFailure) {
-        JcrFolder f = (JcrFolder) folder;
-        f.delete();
-        return Collections.emptySet();
-    }
-
-    public Collection<Document> getAllVersions(Document document, String filter) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Collection<Policy> getAppliedPolicies(CMISObject object) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Document getLatestVersion(Document document, boolean major) {
-        throw new UnsupportedOperationException();
     }
 
     public CMISObject getObject(ObjectId objectId, ReturnVersion returnVersion) {
@@ -137,12 +90,6 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
-    public List<Relationship> getRelationships(CMISObject object,
-            RelationshipDirection direction, String typeId,
-            boolean includeSubRelationshipTypes) {
-        throw new UnsupportedOperationException();
-    }
-
     public Repository getRepository() {
         return repository;
     }
@@ -159,11 +106,6 @@ public class JcrConnection implements Connection, SPI {
 
     public SPI getSPI() {
         return this;
-    }
-
-    public void moveObject(CMISObject object, Folder targetFolder,
-            Folder sourceFolder) {
-        throw new UnsupportedOperationException();
     }
 
     public Document newDocument(String typeId, Folder folder) {
@@ -202,14 +144,6 @@ public class JcrConnection implements Connection, SPI {
 
     public ObjectId newObjectId(String id) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void removeObjectFromFolder(CMISObject object, Folder folder) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void removePolicy(Policy policy, CMISObject object) {
         throw new UnsupportedOperationException();
     }
 
@@ -292,8 +226,8 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<String> deleteTree(ObjectId folderId, Unfiling unfiling,
-                                         boolean continueOnFailure) {
+    public Collection<ObjectId> deleteTree(ObjectId folderId,
+            Unfiling unfiling, boolean continueOnFailure) {
         throw new UnsupportedOperationException();
     }
 

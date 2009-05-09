@@ -18,6 +18,8 @@ package org.apache.chemistry.jcr;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +31,8 @@ import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.Unfiling;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.JcrConstants;
@@ -41,9 +45,10 @@ public class JcrFolder extends JcrObjectEntry implements Folder {
         super(node);
     }
 
-    protected JcrFolder() {}
+    protected JcrFolder() {
+    }
 
-    public List<CMISObject> getChildren(BaseType type, String orderBy) {
+    public List<CMISObject> getChildren(BaseType type) {
         try {
             List<CMISObject> result = new ArrayList<CMISObject>();
 
@@ -111,15 +116,24 @@ public class JcrFolder extends JcrObjectEntry implements Folder {
         return this;
     }
 
-    public void delete() {
-        try {
-            Node parent = node.getParent();
-            node.remove();
-            parent.save();
-        } catch (RepositoryException e) {
-            String msg = "Unable to delete folder.";
-            log.error(msg, e);
-        }
+    public void add(CMISObject object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void remove(CMISObject object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Collection<ObjectId> deleteTree(Unfiling unfiling) {
+        delete();
+        return Collections.emptySet();
+    }
+
+    public List<Folder> getAncestors() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     @Override

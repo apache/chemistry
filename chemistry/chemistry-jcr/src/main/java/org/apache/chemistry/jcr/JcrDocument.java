@@ -19,6 +19,7 @@ package org.apache.chemistry.jcr;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
 
 import javax.jcr.Node;
@@ -120,6 +121,36 @@ public class JcrDocument extends JcrObjectEntry implements Document {
             log.error(msg, e);
         }
         return false;
+    }
+
+    public void cancelCheckOut() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Document checkIn(boolean major, String comment) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Document checkOut() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void deleteAllVersions() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Collection<Document> getAllVersions() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Document getLatestVersion(boolean major) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     @Override

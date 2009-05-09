@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.apache.chemistry.ContentStream;
+import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,6 +63,64 @@ public class JcrNewDocument extends JcrDocument {
             return new JcrFolder(parent);
         }
         return super.getParent();
+    }
+
+    @Override
+    public void delete() {
+        // TODO delete of an unsaved object?
+        if (!saved) {
+            throw new UnsupportedOperationException();
+        }
+        super.delete();
+    }
+
+
+    @Override
+    public void cancelCheckOut() {
+        if (!saved) {
+            throw new UnsupportedOperationException();
+        }
+        super.cancelCheckOut();
+    }
+
+    @Override
+    public Document checkIn(boolean major, String comment) {
+        if (!saved) {
+            throw new UnsupportedOperationException();
+        }
+        return super.checkIn(major, comment);
+    }
+
+    @Override
+    public Document checkOut() {
+        if (!saved) {
+            throw new UnsupportedOperationException();
+        }
+        return super.checkOut();
+    }
+
+    @Override
+    public void deleteAllVersions() {
+        if (!saved) {
+            throw new UnsupportedOperationException();
+        }
+        super.deleteAllVersions();
+    }
+
+    @Override
+    public Collection<Document> getAllVersions() {
+        if (!saved) {
+            throw new UnsupportedOperationException();
+        }
+        return super.getAllVersions();
+    }
+
+    @Override
+    public Document getLatestVersion(boolean major) {
+        if (!saved) {
+            throw new UnsupportedOperationException();
+        }
+        return super.getLatestVersion(major);
     }
 
     @Override

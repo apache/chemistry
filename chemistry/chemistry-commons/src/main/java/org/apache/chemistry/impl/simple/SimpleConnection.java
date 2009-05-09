@@ -405,12 +405,6 @@ public class SimpleConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void moveObject(CMISObject object, Folder targetFolder,
-            Folder sourceFolder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     public void deleteObject(ObjectId object) {
         String id = object.getId();
         if (repository.rootId.equals(id)) {
@@ -442,11 +436,7 @@ public class SimpleConnection implements Connection, SPI {
         repository.datas.remove(id);
     }
 
-    public void deleteObject(CMISObject object) {
-        deleteObject((ObjectId) object);
-    }
-
-    public Collection<String> deleteTree(ObjectId folder, Unfiling unfiling,
+    public Collection<ObjectId> deleteTree(ObjectId folder, Unfiling unfiling,
             boolean continueOnFailure) {
         // TODO unfiling
         // TODO continueOnFailure
@@ -462,26 +452,22 @@ public class SimpleConnection implements Connection, SPI {
         if (repository.getType(typeId).getBaseType() != BaseType.FOLDER) {
             throw new RuntimeException("Not a folder: " + folder); // TODO
         }
-        Set<String> deletedIds = new HashSet<String>();
+        Set<ObjectId> deletedIds = new HashSet<ObjectId>();
         for (String childId : repository.children.get(id)) {
             SimpleData childData = repository.datas.get(childId);
             String childTypeId = (String) childData.get(Property.TYPE_ID);
+            ObjectId objectId = new SimpleObjectId(childId);
             if (repository.getType(childTypeId).getBaseType() == BaseType.FOLDER) {
-                deletedIds.addAll(deleteTree(new SimpleObjectId(childId),
-                        unfiling, continueOnFailure));
+                deletedIds.addAll(deleteTree(objectId, unfiling,
+                        continueOnFailure));
             } else {
-                deleteObject(new SimpleObjectId(childId));
-                deletedIds.add(childId);
+                deleteObject(objectId);
+                deletedIds.add(objectId);
             }
         }
         deleteObject(folder);
-        deletedIds.add(id);
+        deletedIds.add(new SimpleObjectId(id));
         return deletedIds;
-    }
-
-    public Collection<String> deleteTree(Folder folder, Unfiling unfiling,
-            boolean continueOnFailure) {
-        return deleteTree((ObjectId) folder, unfiling, continueOnFailure);
     }
 
     public void addObjectToFolder(ObjectId object, ObjectId folder) {
@@ -489,17 +475,7 @@ public class SimpleConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void addObjectToFolder(CMISObject object, Folder folder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     public void removeObjectFromFolder(ObjectId object, ObjectId folder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void removeObjectFromFolder(CMISObject object, Folder folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -531,17 +507,7 @@ public class SimpleConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Document checkOut(Document document) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     public void cancelCheckOut(ObjectId document) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void cancelCheckOut(Document document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -553,18 +519,8 @@ public class SimpleConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Document checkIn(Document document, boolean major, String comment) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     public Map<String, Serializable> getPropertiesOfLatestVersion(
             String versionSeriesId, boolean majorVersion, String filter) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public Document getLatestVersion(Document document, boolean major) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -575,17 +531,7 @@ public class SimpleConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<Document> getAllVersions(Document document, String filter) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     public void deleteAllVersions(String versionSeriesId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void deleteAllVersions(Document document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -603,13 +549,6 @@ public class SimpleConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public List<Relationship> getRelationships(CMISObject object,
-            RelationshipDirection direction, String typeId,
-            boolean includeSubRelationshipTypes) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     /*
      * ----- Policy Services -----
      */
@@ -619,28 +558,13 @@ public class SimpleConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void applyPolicy(Policy policy, CMISObject object) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     public void removePolicy(ObjectId policy, ObjectId object) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void removePolicy(Policy policy, CMISObject object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public Collection<ObjectEntry> getAppliedPolicies(ObjectId policy,
             String filter) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public Collection<Policy> getAppliedPolicies(CMISObject object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

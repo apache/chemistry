@@ -504,7 +504,7 @@ public interface SPI {
      *            should not stop deletion of other objects
      * @return the collection of IDs of objects that could not be deleted
      */
-    Collection<String> deleteTree(ObjectId folder, Unfiling unfiling,
+    Collection<ObjectId> deleteTree(ObjectId folder, Unfiling unfiling,
             boolean continueOnFailure);
 
     /**

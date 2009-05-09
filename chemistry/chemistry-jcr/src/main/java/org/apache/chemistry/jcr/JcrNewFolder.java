@@ -17,6 +17,7 @@
 package org.apache.chemistry.jcr;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,8 @@ import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.Unfiling;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.JcrConstants;
@@ -46,11 +49,11 @@ public class JcrNewFolder extends JcrFolder {
     }
 
     @Override
-    public List<CMISObject> getChildren(BaseType type, String orderBy) {
+    public List<CMISObject> getChildren(BaseType type) {
         if (!saved) {
             throw new UnsupportedOperationException();
         }
-        return super.getChildren(type, orderBy);
+        return super.getChildren(type);
     }
 
     @Override
@@ -75,6 +78,47 @@ public class JcrNewFolder extends JcrFolder {
             return new JcrFolder(parent);
         }
         return super.getParent();
+    }
+
+    @Override
+    public void add(CMISObject object) {
+        if (!saved) {
+            throw new UnsupportedOperationException();
+        }
+        super.add(object);
+    }
+
+    @Override
+    public void remove(CMISObject object) {
+        if (!saved) {
+            throw new UnsupportedOperationException();
+        }
+        super.remove(object);
+    }
+
+    @Override
+    public void delete() {
+        // TODO delete of an unsaved folder?
+        if (!saved) {
+            throw new UnsupportedOperationException();
+        }
+        super.delete();
+    }
+
+    @Override
+    public Collection<ObjectId> deleteTree(Unfiling unfiling) {
+        if (!saved) {
+            throw new UnsupportedOperationException();
+        }
+        return super.deleteTree(unfiling);
+    }
+
+    @Override
+    public List<Folder> getAncestors() {
+        if (!saved) {
+            throw new UnsupportedOperationException();
+        }
+        return super.getAncestors();
     }
 
     @Override

@@ -107,7 +107,7 @@ public class TestSimpleRepository extends TestCase {
         assertNotNull(root);
         assertEquals(repo.getRootFolderId().getId(), root.getId());
         assertEquals("CMIS_Root_Folder", root.getName());
-        assertEquals(0, root.getChildren(null, null).size());
+        assertEquals(0, root.getChildren(null).size());
         assertNull(root.getParent());
     }
 
@@ -116,16 +116,16 @@ public class TestSimpleRepository extends TestCase {
         Folder root = conn.getRootFolder();
         Folder f1 = root.newFolder("fold");
         assertEquals(12 + 1, f1.getType().getPropertyDefinitions().size());
-        List<CMISObject> children = root.getChildren(null, null);
+        List<CMISObject> children = root.getChildren(null);
         assertEquals(0, children.size());
         f1.save();
         assertEquals(root.getId(), f1.getParent().getId());
-        children = root.getChildren(null, null);
+        children = root.getChildren(null);
         assertEquals(1, children.size());
         assertTrue(children.get(0) instanceof Folder);
         Document d1 = root.newDocument("doc");
         d1.save();
-        children = root.getChildren(null, null);
+        children = root.getChildren(null);
         assertEquals(2, children.size());
         assertTrue(children.get(0) instanceof Document
                 || children.get(1) instanceof Document);
@@ -175,7 +175,7 @@ public class TestSimpleRepository extends TestCase {
         Folder root = conn.getRootFolder();
         Document d1 = root.newDocument("doc");
         d1.save();
-        conn.deleteObject(d1);
+        d1.delete();
         assertNull(conn.getObject(d1, ReturnVersion.THIS));
     }
 
@@ -183,7 +183,7 @@ public class TestSimpleRepository extends TestCase {
         Connection conn = repo.getConnection(null);
         Folder root = conn.getRootFolder();
         try {
-            conn.deleteObject(root);
+            root.delete();
             fail();
         } catch (Exception e) {
             // ok
@@ -197,7 +197,7 @@ public class TestSimpleRepository extends TestCase {
         Document d1 = f2.newDocument("doc");
         d1.setName("bar");
         d1.save();
-        conn.deleteTree(f2, Unfiling.UNFILE, true);
+        f2.deleteTree(Unfiling.UNFILE);
         assertEquals(f1.getId(), conn.getObject(f1, ReturnVersion.THIS).getId());
         assertNull(conn.getObject(f2, ReturnVersion.THIS));
         assertNull(conn.getObject(d1, ReturnVersion.THIS));

@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Collection;
 
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ContentStreamPresence;
@@ -36,6 +37,36 @@ public class SimpleDocument extends SimpleObject implements Document {
 
     protected byte[] getContentBytes() {
         return (byte[]) entry.data.get(SimpleProperty.CONTENT_BYTES_KEY);
+    }
+
+    public Document checkOut() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void cancelCheckOut() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Document checkIn(boolean major, String comment) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Document getLatestVersion(boolean major) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Collection<Document> getAllVersions() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void deleteAllVersions() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     public InputStream getStream() {

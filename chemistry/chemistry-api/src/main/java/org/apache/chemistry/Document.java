@@ -20,24 +20,97 @@ package org.apache.chemistry;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 
 /**
  * A CMIS Document.
  */
 public interface Document extends CMISObject {
 
-    /**
-     * The folder in which the document is filed.
-     * <p>
-     * If the document is unfiled, {@code null} is returned. If the document is
-     * filed in multiple folders, an exception is raised.
-     * <p>
-     * This is a convenience method for the common case where documents are not
-     * multi-filed.
-     *
-     * @return the parent folder, or {@code null}.
+    /*
+     * ----- Versioning Services -----
      */
-    Folder getParent();
+
+    /**
+     * Checks out this document.
+     * <p>
+     * Creates a private working copy of the document, copies the metadata and
+     * optionally content.
+     * <p>
+     * It is up to the repository to determine if updates to the current version
+     * (not private working copy) and prior versions are allowed if checked out.
+     * <p>
+     * Some repositories may not support updating of private working copies and
+     * the updates must then be supplied via {@link #checkIn}.
+     * <p>
+     * This method may remove update permission on prior versions.
+     * <p>
+     * The ID of the private working copy is returned.
+     * <p>
+     * The return value contentCopied[0] is set to {@code true} if the content
+     * is copied, {@code false} if not. Whether the content is copied on
+     * check-out or not is repository-specific.
+     *
+     * @return the private working copy
+     */
+    Document checkOut();
+
+    /**
+     * Cancels a check-out of a private working copy.
+     * <p>
+     * Reverses the effect of a check-out. Removes the private working copy of
+     * the checked-out document, allowing other documents in the version series
+     * of this document to be checked out again.
+     */
+    void cancelCheckOut();
+
+    /**
+     * Checks in a private working copy.
+     * <p>
+     * Makes the private working copy the current version of the document.
+     *
+     * @param major {@code true} if the version is a major version
+     * @param comment a check-in comment, or {@code null}
+     * @return the the new version of the document
+     */
+    Document checkIn(boolean major, String comment);
+
+    /**
+     * Gets the latest version of this document.
+     * <p>
+     * Returns the latest version, or the latest major version, of this
+     * document.
+     * <p>
+     * If the latest major version is requested and the version series of this
+     * document has no major version, an exception is thrown.
+     *
+     * @param major {@code true} if the last major version is requested
+     * @return the latest version or latest major version
+     */
+    Document getLatestVersion(boolean major);
+
+    /**
+     * Gets all the versions of this document.
+     * <p>
+     * Returns the list of all document versions for the specified version
+     * series of this document, sorted by CREATION_DATE descending. All versions
+     * that the user can access, including checked-out version and private
+     * working copy, are returned.
+     *
+     * @return the collection of all versions
+     */
+    Collection<Document> getAllVersions();
+
+    /**
+     * Deletes all the versions of this document.
+     * <p>
+     * Deletes all document versions in the version series of this document.
+     */
+    void deleteAllVersions();
+
+    /*
+     * ----- data access -----
+     */
 
     /**
      * Gets the byte stream for this document.

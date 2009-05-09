@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Item;
@@ -40,6 +41,7 @@ import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Relationship;
+import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Updatability;
 import org.apache.chemistry.impl.simple.SimplePropertyDefinition;
@@ -446,6 +448,53 @@ public abstract class JcrObjectEntry implements ObjectEntry {
     public boolean isVersionSeriesCheckedOut() {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    public void applyPolicy(Policy policy) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void delete() {
+        try {
+            Node parent = node.getParent();
+            node.remove();
+            parent.save();
+        } catch (RepositoryException e) {
+            String msg = "Unable to delete object.";
+            log.error(msg, e);
+        }
+    }
+
+    public Collection<Folder> getParents() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Collection<Policy> getPolicies() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public List<Relationship> getRelationships(RelationshipDirection direction,
+            String typeId, boolean includeSubRelationshipTypes) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void move(Folder targetFolder, Folder sourceFolder) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void removePolicy(Policy policy) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void unfile() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     public static String getItemId(Item item) throws RepositoryException {
