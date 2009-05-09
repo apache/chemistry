@@ -1,7 +1,8 @@
 Apache Chemistry
-
+================
 
 Building
+--------
 
 Using maven, build with:
 
@@ -13,6 +14,7 @@ out from the root pom.xml.
 
 
 Testing
+-------
 
 A small in-memory demo AtomPub server can then be launched with:
 

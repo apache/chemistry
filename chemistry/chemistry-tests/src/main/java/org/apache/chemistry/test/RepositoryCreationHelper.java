@@ -40,6 +40,7 @@ import org.apache.chemistry.impl.simple.SimpleType;
  */
 public class RepositoryCreationHelper {
 
+    // Utility class
     private RepositoryCreationHelper() {
     }
 

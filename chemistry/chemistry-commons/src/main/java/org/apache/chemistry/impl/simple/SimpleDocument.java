@@ -86,23 +86,17 @@ public class SimpleDocument extends SimpleObject implements Document {
         String mimeType = getString(Property.CONTENT_STREAM_MIME_TYPE);
         String filename = getString(Property.CONTENT_STREAM_FILENAME);
         URI uri = getURI(Property.CONTENT_STREAM_URI);
-        try {
-            return new SimpleContentStream(contentBytes, mimeType, filename,
-                    uri);
-        } catch (IOException e) {
-            // cannot happen, reading from ByteArrayInputStream
-            return null;
-        }
+        return new SimpleContentStream(contentBytes, mimeType, filename, uri);
     }
 
     public void setContentStream(ContentStream contentStream)
             throws IOException {
         ContentStreamPresence csa = getType().getContentStreamAllowed();
         if (csa == ContentStreamPresence.NOT_ALLOWED && contentStream != null) {
-            throw new RuntimeException("Content stream not allowed"); // TODO
+            throw new IllegalStateException("Content stream not allowed"); // TODO
         } else if (csa == ContentStreamPresence.REQUIRED
                 && contentStream == null) {
-            throw new RuntimeException("Content stream required"); // TODO
+            throw new IllegalStateException("Content stream required"); // TODO
         }
         if (contentStream == null) {
             entry.setValue(Property.CONTENT_STREAM_LENGTH, null);
