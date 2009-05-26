@@ -34,12 +34,16 @@ function start() {
 	/* instantiate cmisclient */
 	var cmisclient= new CMISClient(cmisurl);
 
-	/* get root folder */
-	var rootfolder=cmisclient.getFolder("/");
+	if (cmisclient.connected) {
+		/* get root folder */
+		var rootfolder=cmisclient.getFolder("/");
 
-	/* start traversal */
-	traverse(cmisclient, rootfolder);
+		/* start traversal */
+		traverse(cmisclient, rootfolder);
+	} else {
+		alert ("Could not connect to the repository at: "+cmisurl+" ("+ cmisclient.lastHttpStatus +")");
 	}
+}
 </script>
 <style>
 </style>

@@ -19,12 +19,12 @@
  * 	The CMIS javascript client gives access to a CMIS document management system
  *	from client-side java script code.	   
  *	 
- * @version $Rev: $, $Date: 2007-03-27 16:30:52 +0200 (Tue, 27 Mar 2007) $
  */
 
 CMISClient = function (url) {
 	this.CMIS_SERVICE_URL=url;
 	this.info = this.getRepositoryInfo();
+	this.connected = this.info?true:false;
 }
 
 CMISClient.NAME_OF_THIS_FILE = "cmisclient.js";
@@ -103,6 +103,7 @@ CMISClient.flatten = function(elem, obj) {
 	}
 	return (obj);
 }
+
 /** Processes an Atom entry into a usable js object */
 CMISClient.processEntry = function(node) {
 	var entry=new Object();
@@ -134,6 +135,11 @@ CMISClient.prototype.getFolder = function(url) {
 		url=this.info.collections["rootchildren"];
 	}
 	var htcon=this.httpGet(url);
+	this.lastHttpStatus = htcon.status;
+	if (htcon.status != 200) {
+		return null;
+	}
+	
 	var doc=htcon.responseXML;
 	var flatres=CMISClient.flatten(doc);
 
@@ -168,6 +174,13 @@ CMISClient.prototype.getFolder = function(url) {
 /** This method reads the repository Info */
 CMISClient.prototype.getRepositoryInfo = function() {
 	var htcon=this.httpGet(this.CMIS_SERVICE_URL);
+	this.lastHttpStatus = htcon.status;
+	
+	/* could not connect */
+	if (htcon.status != 200) { 
+		return null;
+		}
+		
 	var doc=htcon.responseXML;
 	var flatres=CMISClient.flatten(doc);
 	var res=new Object();
