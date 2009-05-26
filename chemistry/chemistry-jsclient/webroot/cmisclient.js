@@ -167,7 +167,7 @@ CMISClient.prototype.getFolder = function(url) {
 
 /** This method reads the repository Info */
 CMISClient.prototype.getRepositoryInfo = function() {
-	var htcon=this.httpGet(this.CMIS_URL);
+	var htcon=this.httpGet(this.CMIS_SERVICE_URL);
 	var doc=htcon.responseXML;
 	var flatres=CMISClient.flatten(doc);
 	var res=new Object();
