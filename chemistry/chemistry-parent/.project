@@ -1,0 +1,10 @@
+<projectDescription>
+  <name>chemistry-parent</name>
+  <comment/>
+  <projects/>
+  <buildSpec>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>

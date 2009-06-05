@@ -76,6 +76,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-atompub-client</artifactId>
+        <version>${version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry</groupId>
         <artifactId>chemistry-commons</artifactId>
         <version>${version}</version>
       </dependency>
@@ -99,6 +104,26 @@
         <groupId>org.apache.abdera</groupId>
         <artifactId>abdera-client</artifactId>
         <version>0.4.0-incubating</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-collections</groupId>
+        <artifactId>commons-collections</artifactId>
+        <version>3.1</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-httpclient</groupId>
+        <artifactId>commons-httpclient</artifactId>
+        <version>3.1</version>
+      </dependency>
+      <dependency>
+        <groupId>stax</groupId>
+        <artifactId>stax-api</artifactId>
+        <version>1.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.woodstox</groupId>
+        <artifactId>wstx-asl</artifactId>
+        <version>3.2.1</version>
       </dependency>
 
       <dependency>

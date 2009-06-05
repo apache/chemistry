@@ -38,6 +38,7 @@
     <module>chemistry-tests</module>
     <module>chemistry-atompub</module>
     <module>chemistry-atompub-server</module>
+    <module>chemistry-atompub-client</module>
     <module>chemistry-ws</module>
     <module>chemistry-jcr</module>
   </modules>
