@@ -150,9 +150,8 @@ public class APPRepository implements Repository {
                     throw new IllegalArgumentException(
                             "Invalid CMIS repository. No types children collection defined");
                 }
-                Request req = new Request(href);
                 // TODO lazy load property definition
-                req.setHeader("CMIS-includePropertyDefinitions", "true");
+                Request req = new Request(href + "?includePropertyDefinitions=true");
                 Response resp = cm.getConnector().get(req);
                 if (!resp.isOk()) {
                     throw new ContentManagerException(

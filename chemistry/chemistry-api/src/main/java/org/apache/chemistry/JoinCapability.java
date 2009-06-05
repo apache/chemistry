@@ -16,6 +16,9 @@
  */
 package org.apache.chemistry;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Support for inner and outer join in query.
  */
@@ -40,6 +43,21 @@ public enum JoinCapability {
 
     private JoinCapability(String value) {
         this.value = value;
+    }
+
+    private static final Map<String, JoinCapability> all = new HashMap<String, JoinCapability>();
+    static {
+        for (JoinCapability o : values()) {
+            all.put(o.value, o);
+        }
+    }
+
+    public static JoinCapability get(String value) {
+        JoinCapability o = all.get(value);
+        if (o == null) {
+            throw new IllegalArgumentException(value);
+        }
+        return o;
     }
 
     @Override

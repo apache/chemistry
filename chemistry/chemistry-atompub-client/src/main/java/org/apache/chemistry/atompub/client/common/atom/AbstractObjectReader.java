@@ -76,12 +76,11 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
             prefetch = new ArrayList<XmlProperty>();
             while (it.hasNext()) {
                 XmlProperty p = it.next();
-                // System.out.println(" prefetch >>>>> "+reader.getName()+" -> "+p.value);
                 if (Property.TYPE_ID.equals(p.value)) {
-                    entryType = ctx.getRepository().getType(
-                            (String) p.getXmlValue());
+                    String v = (String) p.getXmlValue();
+                    entryType = ctx.getRepository().getType(v);
                     if (entryType == null) {
-                        throw new ParseException("No such type: " + p.value);
+                        throw new ParseException("No such type: " + v);
                     }
                     prefetch.add(p);
                     break;

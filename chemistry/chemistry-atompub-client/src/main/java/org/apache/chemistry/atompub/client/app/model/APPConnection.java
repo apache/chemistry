@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
@@ -218,15 +220,13 @@ public class APPConnection implements Connection, SPI {
         if (returnVersion == null) {
             returnVersion = ReturnVersion.THIS;
         }
-        String href = repository.getCollectionHref("root-children");
-        int p = href.lastIndexOf("/");
-        if (p == href.length() - 1) {
-            p = href.lastIndexOf("/", href.length() - 1);
+        // TODO hardcoded URL pattern here...
+        String href = repository.getCollectionHref(CMIS.COL_ROOT_CHILDREN);
+        if (!href.matches(".*/children/[0-9a-f-]{36}")) {
+            throw new AssertionError(href);
         }
-        if (p > -1) {
-            href = href.substring(0, p + 1);
-        }
-        href += "objects/" + objectId;
+        href = href.substring(0, href.length() - "/children/".length() - 36);
+        href += "/object/" + objectId;
         Request req = new Request(href);
         Response resp = connector.get(req);
         if (!resp.isOk()) {

@@ -16,6 +16,9 @@
  */
 package org.apache.chemistry;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The presence status for a content stream.
  */
@@ -40,6 +43,21 @@ public enum ContentStreamPresence {
 
     private ContentStreamPresence(String value) {
         this.value = value;
+    }
+
+    private static final Map<String, ContentStreamPresence> all = new HashMap<String, ContentStreamPresence>();
+    static {
+        for (ContentStreamPresence o : values()) {
+            all.put(o.value, o);
+        }
+    }
+
+    public static ContentStreamPresence get(String value) {
+        ContentStreamPresence o = all.get(value);
+        if (o == null) {
+            throw new IllegalArgumentException(value);
+        }
+        return o;
     }
 
     @Override

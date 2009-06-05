@@ -16,6 +16,9 @@
  */
 package org.apache.chemistry;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Flag specifying what version of a given document is to be returned.
  */
@@ -40,6 +43,21 @@ public enum ReturnVersion {
 
     private ReturnVersion(String value) {
         this.value = value;
+    }
+
+    private static final Map<String, ReturnVersion> all = new HashMap<String, ReturnVersion>();
+    static {
+        for (ReturnVersion o : values()) {
+            all.put(o.value, o);
+        }
+    }
+
+    public static ReturnVersion get(String value) {
+        ReturnVersion o = all.get(value);
+        if (o == null) {
+            throw new IllegalArgumentException(value);
+        }
+        return o;
     }
 
     @Override

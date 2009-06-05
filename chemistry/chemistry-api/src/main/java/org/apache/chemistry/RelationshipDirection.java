@@ -16,6 +16,9 @@
  */
 package org.apache.chemistry;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The choice of which relationships having a given document as source or target
  * are to be included in a list of objects.
@@ -42,6 +45,21 @@ public enum RelationshipDirection {
 
     private RelationshipDirection(String value) {
         this.value = value;
+    }
+
+    private static final Map<String, RelationshipDirection> all = new HashMap<String, RelationshipDirection>();
+    static {
+        for (RelationshipDirection o : values()) {
+            all.put(o.value, o);
+        }
+    }
+
+    public static RelationshipDirection get(String value) {
+        RelationshipDirection o = all.get(value);
+        if (o == null) {
+            throw new IllegalArgumentException(value);
+        }
+        return o;
     }
 
     @Override

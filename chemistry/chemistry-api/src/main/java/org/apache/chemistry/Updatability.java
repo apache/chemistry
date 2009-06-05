@@ -16,6 +16,9 @@
  */
 package org.apache.chemistry;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The Updatability of a property.
  */
@@ -59,6 +62,21 @@ public enum Updatability {
 
     private Updatability(String value) {
         this.value = value;
+    }
+
+    private static final Map<String, Updatability> all = new HashMap<String, Updatability>();
+    static {
+        for (Updatability o : values()) {
+            all.put(o.value, o);
+        }
+    }
+
+    public static Updatability get(String value) {
+        Updatability o = all.get(value);
+        if (o == null) {
+            throw new IllegalArgumentException(value);
+        }
+        return o;
     }
 
     @Override

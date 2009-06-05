@@ -16,6 +16,9 @@
  */
 package org.apache.chemistry;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The CMIS base types.
  */
@@ -49,6 +52,21 @@ public enum BaseType {
 
     private BaseType(String value) {
         this.value = value;
+    }
+
+    private static final Map<String, BaseType> all = new HashMap<String, BaseType>();
+    static {
+        for (BaseType o : values()) {
+            all.put(o.value, o);
+        }
+    }
+
+    public static BaseType get(String value) {
+        BaseType o = all.get(value);
+        if (o == null) {
+            throw new IllegalArgumentException(value);
+        }
+        return o;
     }
 
     @Override

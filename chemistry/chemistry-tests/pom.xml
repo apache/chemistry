@@ -37,6 +37,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.chemistry</groupId>
+      <artifactId>chemistry-atompub-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.chemistry</groupId>
       <artifactId>chemistry-commons</artifactId>
     </dependency>
 

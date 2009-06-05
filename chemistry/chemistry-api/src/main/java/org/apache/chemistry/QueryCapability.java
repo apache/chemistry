@@ -16,6 +16,9 @@
  */
 package org.apache.chemistry;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Support for query on full-text or metadata.
  */
@@ -50,6 +53,21 @@ public enum QueryCapability {
 
     private QueryCapability(String value) {
         this.value = value;
+    }
+
+    private static final Map<String, QueryCapability> all = new HashMap<String, QueryCapability>();
+    static {
+        for (QueryCapability o : values()) {
+            all.put(o.value, o);
+        }
+    }
+
+    public static QueryCapability get(String value) {
+        QueryCapability o = all.get(value);
+        if (o == null) {
+            throw new IllegalArgumentException(value);
+        }
+        return o;
     }
 
     @Override

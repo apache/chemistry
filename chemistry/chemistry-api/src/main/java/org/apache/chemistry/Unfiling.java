@@ -16,6 +16,9 @@
  */
 package org.apache.chemistry;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Flag specifying how to unfile non-folder objects when a tree of objects is
  * deleted through {@link Connection#deleteTree}.
@@ -44,6 +47,21 @@ public enum Unfiling {
 
     private Unfiling(String value) {
         this.value = value;
+    }
+
+    private static final Map<String, Unfiling> all = new HashMap<String, Unfiling>();
+    static {
+        for (Unfiling o : values()) {
+            all.put(o.value, o);
+        }
+    }
+
+    public static Unfiling get(String value) {
+        Unfiling o = all.get(value);
+        if (o == null) {
+            throw new IllegalArgumentException(value);
+        }
+        return o;
     }
 
     @Override

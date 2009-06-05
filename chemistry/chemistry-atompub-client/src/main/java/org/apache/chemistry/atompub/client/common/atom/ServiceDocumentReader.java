@@ -107,9 +107,9 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                     } else if (localName.equals(CMIS.CAPABILITY_VERSION_SPECIFIC_FILING.getLocalPart())) {
                         caps.setHasVersionSpecificFiling(Boolean.parseBoolean(reader.getElementText()));
                     } else if (localName.equals(CMIS.CAPABILITY_QUERY.getLocalPart())) {
-                        caps.setQueryCapability(QueryCapability.valueOf(reader.getElementText()));
+                        caps.setQueryCapability(QueryCapability.get(reader.getElementText()));
                     } else if (localName.equals(CMIS.CAPABILITY_JOIN.getLocalPart())) {
-                        caps.setJoinCapability(JoinCapability.valueOf(reader.getElementText()));
+                        caps.setJoinCapability(JoinCapability.get(reader.getElementText()));
                     }
                 }
             } else if (localName.equals("repositorySpecificInformation")) {
@@ -144,9 +144,9 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                     } else if (localName.equals(CMIS.CAPABILITY_VERSION_SPECIFIC_FILING.getLocalPart())) {
                         caps.setHasVersionSpecificFiling(Boolean.parseBoolean(el2.getText()));
                     } else if (localName.equals(CMIS.CAPABILITY_QUERY.getLocalPart())) {
-                        caps.setQueryCapability(QueryCapability.valueOf(el2.getText()));
+                        caps.setQueryCapability(QueryCapability.get(el2.getText()));
                     } else if (localName.equals(CMIS.CAPABILITY_JOIN.getLocalPart())) {
-                        caps.setJoinCapability(JoinCapability.valueOf(el2.getText()));
+                        caps.setJoinCapability(JoinCapability.get(el2.getText()));
                     }
                 }
             } else if (localName.equals("repositorySpecificInformation")) {

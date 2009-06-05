@@ -20,7 +20,6 @@ package org.apache.chemistry.atompub.client.app.model;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.chemistry.BaseType;
@@ -64,7 +63,7 @@ public class APPType extends APPObjectEntry implements Type {
 
     public BaseType getBaseType() {
         if (baseType == null) {
-            baseType = BaseType.valueOf(map.get(CMIS.BASE_TYPE.getLocalPart()));
+            baseType = BaseType.get(map.get(CMIS.BASE_TYPE.getLocalPart()));
         }
         return baseType;
     }
@@ -86,9 +85,14 @@ public class APPType extends APPObjectEntry implements Type {
         return getTypeId();
     }
 
+    @Override
+    public String getTypeId() {
+        return map.get(CMIS.TYPE_ID.getLocalPart());
+    }
+
     public String getParentId() {
         if (parentId == null) {
-            parentId = map.get(CMIS.TYPE_ID.getLocalPart());
+            parentId = map.get(CMIS.PARENT_ID.getLocalPart());
         }
         return parentId;
     }
@@ -104,27 +108,27 @@ public class APPType extends APPObjectEntry implements Type {
     }
 
     public String getQueryName() {
-        return map.get(CMIS.QUERY_NAME);
+        return map.get(CMIS.QUERY_NAME.getLocalPart());
     }
 
     public boolean isControllable() {
-        return "true".equals(map.get(CMIS.CONTROLLABLE));
+        return "true".equals(map.get(CMIS.CONTROLLABLE.getLocalPart()));
     }
 
     public boolean isCreatable() {
-        return "true".equals(map.get(CMIS.CREATABLE));
+        return "true".equals(map.get(CMIS.CREATABLE.getLocalPart()));
     }
 
     public boolean isFileable() {
-        return "true".equals(map.get(CMIS.FILEABLE));
+        return "true".equals(map.get(CMIS.FILEABLE.getLocalPart()));
     }
 
     public boolean isQueryable() {
-        return "true".equals(map.get(CMIS.QUERYABLE));
+        return "true".equals(map.get(CMIS.QUERYABLE.getLocalPart()));
     }
 
     public boolean isVersionable() {
-        return "true".equals(map.get(CMIS.VERSIONABLE));
+        return "true".equals(map.get(CMIS.VERSIONABLE.getLocalPart()));
     }
 
     public boolean isIncludedInSuperTypeQuery() {
@@ -153,6 +157,6 @@ public class APPType extends APPObjectEntry implements Type {
 
     @Override
     public String toString() {
-        return getId();
+        return this.getClass().getSimpleName() + '(' + getId() + ')';
     }
 }

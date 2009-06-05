@@ -16,6 +16,9 @@
  */
 package org.apache.chemistry;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * State of a document when it is created.
  */
@@ -40,6 +43,21 @@ public enum VersioningState {
 
     private VersioningState(String value) {
         this.value = value;
+    }
+
+    private static final Map<String, VersioningState> all = new HashMap<String, VersioningState>();
+    static {
+        for (VersioningState o : values()) {
+            all.put(o.value, o);
+        }
+    }
+
+    public static VersioningState get(String value) {
+        VersioningState o = all.get(value);
+        if (o == null) {
+            throw new IllegalArgumentException(value);
+        }
+        return o;
     }
 
     @Override
