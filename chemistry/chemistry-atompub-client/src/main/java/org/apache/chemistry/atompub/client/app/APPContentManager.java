@@ -28,7 +28,6 @@ import org.apache.chemistry.atompub.client.Credentials;
 import org.apache.chemistry.atompub.client.CredentialsProvider;
 import org.apache.chemistry.atompub.client.NoSuchRepositoryException;
 import org.apache.chemistry.atompub.client.app.httpclient.HttpClientConnector;
-import org.apache.chemistry.atompub.client.common.AdapterManager;
 import org.apache.chemistry.atompub.client.common.atom.ReadContext;
 
 /**
@@ -64,10 +63,6 @@ public class APPContentManager implements ContentManager {
         if (connector == null) {
             connector = createConnector();
         }
-    }
-
-    protected AdapterManager createAdapterManager() {
-        return new AdapterManager();
     }
 
     protected Connector createConnector() {

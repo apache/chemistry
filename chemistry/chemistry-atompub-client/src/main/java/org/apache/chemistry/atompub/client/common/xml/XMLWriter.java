@@ -18,7 +18,6 @@
 package org.apache.chemistry.atompub.client.common.xml;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +27,6 @@ import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 
-import org.apache.chemistry.atompub.CMIS;
 import org.apache.chemistry.atompub.client.common.DateParser;
 
 // This file contains code from org.apache.commons.betwixt.XMLUtils
@@ -162,7 +160,7 @@ public class XMLWriter {
 
     public XMLWriter element(String name) throws IOException {
         if (element != null && !element.isContainer) { // a non closed sibling -
-                                                       // close it
+            // close it
             pop();
             writer.write("/>");
         }
@@ -198,7 +196,6 @@ public class XMLWriter {
                 } else {
                     writer.write("<?xml version=\"1.0\"?>");
                 }
-                writer.write(crlf);
             }
         } else {
             element.isContainer = true;
@@ -388,7 +385,7 @@ public class XMLWriter {
     }
 
     public static String format(Date date) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(24);
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         c.setTime(date);
         sb.append(c.get(Calendar.YEAR));
@@ -448,7 +445,7 @@ public class XMLWriter {
      * @return text with escaped delimiters
      */
     public static final String escapeBodyValue(Object value) {
-        StringBuffer buffer = new StringBuffer(value.toString());
+        StringBuilder buffer = new StringBuilder(value.toString());
         for (int i = 0, size = buffer.length(); i < size; i++) {
             switch (buffer.charAt(i)) {
             case '<':
@@ -481,7 +478,7 @@ public class XMLWriter {
      * @return text with characters restricted (for use in attributes) escaped
      */
     public static final String escapeAttributeValue(Object value) {
-        StringBuffer buffer = new StringBuffer(value.toString());
+        StringBuilder buffer = new StringBuilder(value.toString());
         for (int i = 0, size = buffer.length(); i < size; i++) {
             switch (buffer.charAt(i)) {
             case '<':
@@ -562,20 +559,6 @@ public class XMLWriter {
             }
             return null;
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-
-        StringWriter w = new StringWriter();
-        XMLWriter x = new XMLWriter(w, 4);
-
-        x.start().element("service").xmlns("cmis", CMIS.CMIS_NS).attr(
-                "version", "1.0").start().element("ws1").attr("k", "v").content(
-                "test").element("ws2").attr("key", "val").start().element(
-                CMIS.OBJECT).end().element("ws3").attr("key", "val").end().end();
-
-        System.out.println(w.toString());
-
     }
 
 }
