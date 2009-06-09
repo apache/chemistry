@@ -36,9 +36,6 @@ import org.apache.chemistry.atompub.client.ContentManagerException;
 import org.apache.chemistry.atompub.client.app.APPContentManager;
 import org.apache.chemistry.atompub.client.app.Request;
 import org.apache.chemistry.atompub.client.app.Response;
-import org.apache.chemistry.atompub.client.app.service.ServiceContext;
-import org.apache.chemistry.atompub.client.app.service.ServiceFeedReader;
-import org.apache.chemistry.atompub.client.app.service.ServiceInfo;
 import org.apache.chemistry.atompub.client.common.atom.ReadContext;
 
 /**
@@ -51,8 +48,6 @@ public class APPRepository implements Repository {
     protected RepositoryInfo info;
 
     protected String id;
-
-    protected Map<String, ServiceInfo> services;
 
     protected Map<String, Type> typeRegistry;
 
@@ -172,81 +167,16 @@ public class APPRepository implements Repository {
         }
     }
 
-    protected void loadServices() {
-        if (services == null) {
-            String href = getCollectionHref("services");
-            if (href != null) {
-                Request req = new Request(href);
-                Response resp = cm.getConnector().get(req);
-                if (!resp.isOk()) {
-                    throw new ContentManagerException(
-                            "Remote server returned error code: "
-                                    + resp.getStatusCode());
-                }
-                InputStream in = resp.getStream();
-                try {
-                    try {
-                        services = ServiceFeedReader.getBuilder().read(
-                                new ReadContext(this), in);
-                    } finally {
-                        in.close();
-                    }
-                } catch (Exception e) {
-                    throw new ContentManagerException("Failed to read response");
-                }
-            }
-            if (services == null) {
-                services = new HashMap<String, ServiceInfo>();
-            }
-        }
-    }
-
-    protected void putSingletonService(Class<?> clazz, Object service) {
-        singletons.put(clazz, service);
-    }
-
-    protected Object getSingletonService(Class<?> clazz) {
-        return singletons.get(clazz);
-    }
-
-    /**
-     * Get an extension service in repository scope
-     *
-     * @param <T>
-     * @param clazz service interface class
-     * @param repository the repository to bound the service on
-     * @return the service instance or null if none
+    /*
+     * Subclasses should override this.
      */
     public <T> T getExtension(Class<T> clazz) {
-        loadServices(); // be sure services information is loaded
-        ServiceInfo info = services.get(clazz.getName());
-        if (info != null) {
-            if (info.requiresConnection()) {
-                return null;
-            }
-            if (info.isSingleton()) {
-                Object service = getSingletonService(clazz);
-                if (service != null) {
-                    return (T) service;
-                }
-            }
-            ServiceContext ctx = new ServiceContext(info, this);
-            try {
-                Object service = info.newInstance(ctx);
-                if (info.isSingleton()) {
-                    putSingletonService(clazz, service);
-                }
-                return (T) service;
-            } catch (Exception e) {
-                // do nothing
-            }
-        }
         return null;
     }
 
     @Override
     public String toString() {
-        return getName();
+        return this.getClass().getSimpleName() + '(' + getName() + ')';
     }
 
 }
