@@ -18,9 +18,7 @@ package org.apache.chemistry.impl.simple;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.math.BigDecimal;
 import java.net.URI;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -206,34 +204,8 @@ public class SimplePropertyDefinition implements PropertyDefinition {
             return multi ? "Property is multi-valued"
                     : "Property is single-valued";
         }
-        Class<?> klass;
-        switch (type.ordinal()) {
-        case PropertyType.STRING_ORD:
-        case PropertyType.ID_ORD:
-            klass = String.class;
-            break;
-        case PropertyType.DECIMAL_ORD:
-            klass = BigDecimal.class;
-            break;
-        case PropertyType.INTEGER_ORD:
-            klass = Integer.class; // TODO Long
-            break;
-        case PropertyType.BOOLEAN_ORD:
-            klass = Boolean.class;
-            break;
-        case PropertyType.DATETIME_ORD:
-            klass = Calendar.class;
-            break;
-        case PropertyType.URI_ORD:
-            klass = URI.class;
-            break;
-        case PropertyType.XML_ORD:
-            klass = String.class; // TODO
-            break;
-        case PropertyType.HTML_ORD:
-            klass = String.class; // TODO
-            break;
-        default:
+        Class<?> klass = type.klass();
+        if (klass == null) {
             throw new UnsupportedOperationException(type.toString());
         }
         if (multi) {

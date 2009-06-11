@@ -33,6 +33,10 @@
       <groupId>org.apache.chemistry</groupId>
       <artifactId>chemistry-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>stax</groupId>
+      <artifactId>stax-api</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>

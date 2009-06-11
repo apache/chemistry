@@ -26,9 +26,9 @@ import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.Repository;
+import org.apache.chemistry.atompub.client.APPRepository;
 import org.apache.chemistry.atompub.client.ContentManager;
-import org.apache.chemistry.atompub.client.app.APPContentManager;
-import org.apache.chemistry.atompub.client.app.model.APPRepository;
+import org.apache.chemistry.atompub.client.connector.APPContentManager;
 import org.apache.chemistry.atompub.server.CMISServlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,7 +47,7 @@ public class TestAtomPubClientServer extends TestCase {
 
     public static final String HOST = "0.0.0.0";
 
-    public static final int PORT = 8080;
+    public static final int PORT = 8285;
 
     public static final String SERVLET_PATH = "/cmis";
 

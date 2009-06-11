@@ -16,6 +16,9 @@
  */
 package org.apache.chemistry;
 
+import java.math.BigDecimal;
+import java.net.URI;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,69 +51,70 @@ public class PropertyType {
      * A string property, represented as a {@link String}.
      */
     public static final PropertyType STRING = register(new PropertyType(
-            "string", STRING_ORD));
+            "string", STRING_ORD, String.class));
 
     /**
-     * A decimal property, represented as a {@link java.math.BigDecimal
-     * BigDecimal}.
+     * A decimal property, represented as a {@link BigDecimal}.
      */
     public static final PropertyType DECIMAL = register(new PropertyType(
-            "decimal", DECIMAL_ORD));
+            "decimal", DECIMAL_ORD, BigDecimal.class));
 
     /**
      * An integer property, represented as a {@link Integer}.
      */
     public static final PropertyType INTEGER = register(new PropertyType(
-            "integer", INTEGER_ORD));
+            "integer", INTEGER_ORD, Integer.class));
 
     /**
      * A boolean property, represented as a {@link Boolean}.
      */
     public static final PropertyType BOOLEAN = register(new PropertyType(
-            "boolean", BOOLEAN_ORD));
+            "boolean", BOOLEAN_ORD, Boolean.class));
 
     /**
-     * A date-time property, represented as a {@link java.util.Calendar
-     * Calendar}.
+     * A date-time property, represented as a {@link Calendar}.
      */
     public static final PropertyType DATETIME = register(new PropertyType(
-            "datetime", DATETIME_ORD));
+            "datetime", DATETIME_ORD, Calendar.class));
 
     /**
-     * A URI property, represented as a {@link java.net.URI URI}.
+     * A URI property, represented as a {@link URI}.
      */
     public static final PropertyType URI = register(new PropertyType("uri",
-            URI_ORD));
+            URI_ORD, URI.class));
 
     /**
      * An ID property, represented as a {@link String}.
      */
     public static final PropertyType ID = register(new PropertyType("id",
-            ID_ORD));
+            ID_ORD, String.class));
 
     /**
      * An XML property, represented as a String.
      */
     public static final PropertyType XML = register(new PropertyType("xml",
-            XML_ORD));
+            XML_ORD, String.class));
 
     /**
      * An HTML property, represented as a String.
      */
     public static final PropertyType HTML = register(new PropertyType("html",
-            HTML_ORD));
+            HTML_ORD, String.class));
 
     private final String name;
 
     private final int ordinal;
 
+    private final Class<?> klass;
+
     /**
      * Protected constructor. The {@link #register} static method should be used
      * by implementors to register new property types or subclasses of it.
      */
-    protected PropertyType(String name, int ordinal) {
+    protected PropertyType(String name, int ordinal, Class<?> klass) {
         this.name = name;
         this.ordinal = ordinal;
+        this.klass = klass;
     }
 
     /**
@@ -140,7 +144,9 @@ public class PropertyType {
      * @param name the name
      * @return the property type, or {@code null} if not found
      */
-    public static synchronized PropertyType get(String name) {
+    // not synchronized, for speed, as we assume this won't be called while
+    // registration is in progress
+    public static PropertyType get(String name) {
         return all.get(name);
     }
 
@@ -157,6 +163,13 @@ public class PropertyType {
      */
     public int ordinal() {
         return ordinal;
+    }
+
+    /**
+     * The Java class associated to this property type.
+     */
+    public Class<?> klass() {
+        return klass;
     }
 
     @Override
