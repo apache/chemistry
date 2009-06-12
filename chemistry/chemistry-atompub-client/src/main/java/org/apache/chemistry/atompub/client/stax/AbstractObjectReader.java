@@ -17,10 +17,12 @@
 package org.apache.chemistry.atompub.client.stax;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.chemistry.Property;
+import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.CMIS;
 import org.apache.chemistry.xml.stax.ChildrenNavigator;
@@ -67,55 +69,61 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
         }
     }
 
+    /*
+     * Reads the properties. Because the ObjectTypeId may not be known
+     * initially, the properties' types cannot be computed on the fly. So the
+     * properties are held until the type is found.
+     */
     protected void readProperties(ReadContext ctx, StaxReader reader, T object)
             throws XMLStreamException {
         PropertyIterator it = new PropertyIterator(reader);
-        ArrayList<XmlProperty> prefetch = null;
+        List<XmlProperty> incomplete = null;
         Type entryType = ctx.getType();
+        // find the type
         if (entryType == null) {
-            prefetch = new ArrayList<XmlProperty>();
+            incomplete = new ArrayList<XmlProperty>();
             while (it.hasNext()) {
                 XmlProperty p = it.next();
-                if (Property.TYPE_ID.equals(p.value)) {
+                if (Property.TYPE_ID.equals(p.getName())) {
+                    // type has been found
                     String v = (String) p.getXmlValue();
                     entryType = ctx.getRepository().getType(v);
                     if (entryType == null) {
                         throw new ParseException("No such type: " + v);
                     }
-                    prefetch.add(p);
+                    incomplete.add(p);
+                    // stop looking for type
                     break;
                 } else {
-                    prefetch.add(p);
+                    incomplete.add(p);
                 }
             }
             if (entryType == null) {
                 throw new IllegalStateException("Type not known");
             }
         }
-        if (prefetch != null) {
-            for (XmlProperty p : prefetch) {
-                p.def = entryType.getPropertyDefinition((String) p.value);
-                if (p.def == null) {
-                    throw new ParseException("No such property definition: "
-                            + p.value + " in type " + entryType);
-                }
-                p.value = XmlProperty.NULL;
-                // System.out.println("adding prefetched >>>>> "+reader.getName()+" -> "+p.getXmlValue());
-                readProperty(ctx, reader, object, p);
+        // fill in the type for incomplete properties
+        if (incomplete != null) {
+            for (XmlProperty p : incomplete) {
+                readPropertyWithType(ctx, reader, object, p, entryType);
             }
         }
         // consume the rest of the stream
         while (it.hasNext()) {
             XmlProperty p = it.next();
-            p.def = entryType.getPropertyDefinition((String) p.value);
-            if (p.def == null) {
-                throw new ParseException("No such property definition: "
-                        + p.value + " in type " + entryType);
-            }
-            p.value = XmlProperty.NULL;
-            // System.out.println("adding non prefetched >>>>> "+reader.getName()+" -> "+p.getXmlValue());
-            readProperty(ctx, reader, object, p);
+            readPropertyWithType(ctx, reader, object, p, entryType);
         }
+    }
+
+    protected void readPropertyWithType(ReadContext ctx, StaxReader reader,
+            T object, XmlProperty p, Type entryType) {
+        PropertyDefinition def = entryType.getPropertyDefinition(p.getName());
+        if (def == null) {
+            throw new ParseException("No such property definition: "
+                    + p.getName() + " in type: " + entryType);
+        }
+        p.setDefinition(def);
+        readProperty(ctx, reader, object, p);
     }
 
     protected void readAllowableActions(ReadContext ctx, StaxReader reader,

@@ -146,7 +146,12 @@ public class JcrPropertyDefinition implements PropertyDefinition {
     }
 
     public boolean validates(Serializable value) {
-        // TODO Auto-generated method stub
-        return false;
+        return validationError(value) == null;
     }
+
+    public String validationError(Serializable value) {
+        // TODO Auto-generated method stub
+        return "error TODO";
+    }
+
 }

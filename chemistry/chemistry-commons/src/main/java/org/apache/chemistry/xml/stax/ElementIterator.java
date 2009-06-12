@@ -22,20 +22,22 @@ import java.util.NoSuchElementException;
 import javax.xml.stream.XMLStreamException;
 
 /**
- * An iterator over the XML elements in the stream that create element objects
- * each time next method is called.
+ * An iterator over the XML elements in the stream that creates objects each
+ * time {@link #next} method is called.
  */
 public abstract class ElementIterator<T> implements Iterator<T> {
 
     protected StaxReader reader;
 
+    /** If null, then the state is not known. */
     protected Boolean hasNext;
 
     public ElementIterator(StaxReader sr) {
         this.reader = sr;
     }
 
-    protected abstract T createValue() throws XMLStreamException;
+    /** Gets the value from the element in the reader. */
+    protected abstract T getValue() throws XMLStreamException;
 
     protected boolean forward() throws XMLStreamException {
         return reader.fwd();
@@ -60,21 +62,17 @@ public abstract class ElementIterator<T> implements Iterator<T> {
             hasNext = Boolean.FALSE;
             return false;
         }
-
         return hasNext.booleanValue();
     }
 
     public T next() {
-        if (hasNext == null) {
-            hasNext();
-        }
-        if (!hasNext) {
+        if (!hasNext()) {
             throw new NoSuchElementException("No more elements in stream");
         }
-        hasNext = null;
+        hasNext = null; // value will be consumed by getValue()
         try {
-            return createValue();
-        } catch (Exception e) {
+            return getValue();
+        } catch (XMLStreamException e) {
             throw new ParseException(e);
         }
     }

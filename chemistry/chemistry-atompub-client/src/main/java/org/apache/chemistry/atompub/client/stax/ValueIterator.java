@@ -23,7 +23,7 @@ import org.apache.chemistry.xml.stax.ChildrenIterator;
 import org.apache.chemistry.xml.stax.StaxReader;
 
 /**
- *
+ * Iterator whose {@link #next} method returns the element's text.
  */
 public class ValueIterator extends ChildrenIterator<String> {
 
@@ -38,7 +38,7 @@ public class ValueIterator extends ChildrenIterator<String> {
     }
 
     @Override
-    protected String createValue() throws XMLStreamException {
+    protected String getValue() throws XMLStreamException {
         return reader.getElementText();
     }
 

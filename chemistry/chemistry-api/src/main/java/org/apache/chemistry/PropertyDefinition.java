@@ -258,4 +258,13 @@ public interface PropertyDefinition {
      */
     boolean validates(Serializable value);
 
+    /**
+     * Checks if a value can be set in this property, and returns an error
+     * message if not.
+     *
+     * @param value the candidate value
+     * @return null if the value can be set, an error message if not
+     */
+    String validationError(Serializable value);
+
 }

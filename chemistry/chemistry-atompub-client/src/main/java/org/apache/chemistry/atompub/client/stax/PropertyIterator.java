@@ -17,6 +17,7 @@
 package org.apache.chemistry.atompub.client.stax;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -50,7 +51,7 @@ public class PropertyIterator extends ChildrenIterator<XmlProperty> {
     }
 
     @Override
-    protected XmlProperty createValue() throws XMLStreamException {
+    protected XmlProperty getValue() throws XMLStreamException {
         String key = reader.getAttributeValue(CMIS.NAME);
         if (key == null) {
             throw new XMLStreamException(
@@ -59,24 +60,19 @@ public class PropertyIterator extends ChildrenIterator<XmlProperty> {
                             + ". No name specified");
         }
         ValueIterator vi = new ValueIterator(reader);
-        XmlProperty xp = new XmlProperty();
-        xp.value = key; // use value to temporary store the key
         if (!vi.hasNext()) {
-            return xp;
+            return new XmlProperty(key);
         }
         String val = vi.next();
         if (!vi.hasNext()) {
-            xp.xmlValue = val;
-            return xp;
+            return new XmlProperty(key, val);
         }
-        ArrayList<String> vals = new ArrayList<String>();
+        List<String> vals = new ArrayList<String>();
         vals.add(val);
         do {
-            val = vi.next();
-            vals.add(val);
+            vals.add(vi.next());
         } while (vi.hasNext());
-        xp.xmlValue = vals;
-        return xp;
+        return new XmlProperty(key, vals);
     }
 
 }

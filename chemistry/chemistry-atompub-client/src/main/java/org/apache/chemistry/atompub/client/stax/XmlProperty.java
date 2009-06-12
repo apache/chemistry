@@ -33,40 +33,58 @@ import org.apache.chemistry.PropertyType;
 public class XmlProperty implements Property {
 
     private static enum NoValue {
-        @SuppressWarnings("hiding")
-        NULL
+        NO_VALUE
     };
 
-    public static final Serializable NULL = NoValue.NULL;
+    public static final Serializable NULL = NoValue.NO_VALUE;
 
-    protected PropertyDefinition def;
+    private PropertyDefinition def;
 
-    protected Serializable value = NULL;
+    /**
+     * The internal state can be:
+     * <ol>
+     * <li>if def is null, then value hold the property name,
+     * <li>if def is not null, then value is either {@link NULL} if not yet
+     * computed from xmlValue, or it holds the actual Java value.
+     * </ol>
+     */
+    private Serializable value;
 
-    protected Object xmlValue;
+    /**
+     * The XML value, either a {@code String} or a {@code List<String>}.
+     */
+    private Object xmlValue;
 
-    public XmlProperty() {
+    public XmlProperty(String name) {
+        value = name;
+    }
+
+    public XmlProperty(String name, String xmlValue) {
+        value = name;
+        this.xmlValue = xmlValue;
+    }
+
+    public XmlProperty(String name, List<String> xmlValue) {
+        value = name;
+        this.xmlValue = xmlValue;
     }
 
     public XmlProperty(PropertyDefinition def) {
         this.def = def;
+        value = NULL;
     }
 
-    public XmlProperty(PropertyDefinition def, String value) {
+    public XmlProperty(PropertyDefinition def, String xmlValue) {
         this.def = def;
-        this.xmlValue = value;
-    }
-
-    public XmlProperty(PropertyDefinition def, List<String> value) {
-        this.def = def;
-        this.xmlValue = value;
+        this.xmlValue = xmlValue;
+        value = NULL;
     }
 
     /**
      * Gets the property name.
      */
     public String getName() {
-        return def.getName();
+        return def == null ? (String) value : def.getName();
     }
 
     /**
@@ -140,14 +158,12 @@ public class XmlProperty implements Property {
     }
 
     public void setValue(Serializable value) {
-        if (!def.validates(value)) {
-            throw new IllegalArgumentException("Not a valid value: " + value);
+        String error = def.validationError(value);
+        if (error != null) {
+            throw new IllegalArgumentException(this + " cannot receive value: "
+                    + value + ": " + error);
             // TODO use custom exceptions
         }
-        this.value = value;
-    }
-
-    public void setValueUnsafe(Serializable value) {
         this.value = value;
     }
 
@@ -155,18 +171,9 @@ public class XmlProperty implements Property {
         return xmlValue;
     }
 
-    public void setXmlValue(String value) {
-        this.xmlValue = value;
-        this.value = NULL;
-    }
-
-    public void setXmlValue(List<String> value) {
-        this.xmlValue = value;
-        this.value = NULL;
-    }
-
     public void setDefinition(PropertyDefinition def) {
         this.def = def;
+        value = NULL;
     }
 
     public PropertyDefinition getDefinition() {

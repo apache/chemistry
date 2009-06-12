@@ -17,7 +17,6 @@
  */
 package org.apache.chemistry.atompub.client.stax;
 
-import java.io.Serializable;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -26,8 +25,6 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.apache.chemistry.atompub.CMIS;
-import org.apache.chemistry.atompub.client.stax.PropertyIterator;
-import org.apache.chemistry.atompub.client.stax.XmlProperty;
 import org.apache.chemistry.xml.stax.StaxReader;
 
 /**
@@ -42,9 +39,7 @@ public class TestPropertyIterator extends TestCase {
         PropertyIterator pi = new PropertyIterator(sr);
         List<String> names = new LinkedList<String>();
         while (pi.hasNext()) {
-            XmlProperty p = pi.next();
-            Serializable value = p.value;
-            names.add(value.toString());
+            names.add(pi.next().getName());
         }
         assertEquals(Arrays.asList("string_null", "string", "date",
                 "string_array", "date_array"), names);
