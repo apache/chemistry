@@ -42,7 +42,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class APPPropertyDefinition implements PropertyDefinition {
 
-    public final static Log log = LogFactory.getLog(APPPropertyDefinition.class);
+    public static final Log log = LogFactory.getLog(APPPropertyDefinition.class);
 
     protected Map<String, Object> map;
 

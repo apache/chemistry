@@ -266,7 +266,7 @@ public abstract class ValueAdapter {
 
     public static final ValueAdapter HTML = new HtmlValueAdapter();
 
-    private final static Map<Integer, ValueAdapter> adapters = new HashMap<Integer, ValueAdapter>();
+    private static final Map<Integer, ValueAdapter> adapters = new HashMap<Integer, ValueAdapter>();
     static {
         adapters.put(Integer.valueOf(PropertyType.STRING_ORD), STRING);
         adapters.put(Integer.valueOf(PropertyType.DECIMAL_ORD), DECIMAL);

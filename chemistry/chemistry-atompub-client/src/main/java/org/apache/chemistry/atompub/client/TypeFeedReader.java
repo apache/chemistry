@@ -29,7 +29,7 @@ import org.apache.chemistry.xml.stax.StaxReader;
 public class TypeFeedReader extends
         AbstractFeedReader<Map<String, Type>, APPType> {
 
-    public final static TypeFeedReader INSTANCE = new TypeFeedReader();
+    public static final TypeFeedReader INSTANCE = new TypeFeedReader();
 
     public TypeFeedReader() {
         super(TypeEntryReader.INSTANCE);

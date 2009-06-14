@@ -34,7 +34,7 @@ import org.apache.chemistry.xml.stax.StaxReader;
  */
 public class TypeEntryReader extends AbstractEntryReader<APPType> {
 
-    public final static TypeEntryReader INSTANCE = new TypeEntryReader();
+    public static final TypeEntryReader INSTANCE = new TypeEntryReader();
 
     @Override
     protected APPType createObject(ReadContext ctx) {

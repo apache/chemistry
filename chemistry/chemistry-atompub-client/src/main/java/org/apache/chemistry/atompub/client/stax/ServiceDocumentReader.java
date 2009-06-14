@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -56,7 +57,7 @@ public abstract class ServiceDocumentReader<T extends Repository> {
             if (!reader.fwdTag("service")) {
                 throw new IOException("Invalid APP service document");
             }
-            ArrayList<Repository> repos = new ArrayList<Repository>();
+            List<Repository> repos = new ArrayList<Repository>();
             ChildrenNavigator workspaces = reader.getChildren("workspace");
             while (workspaces.next()) {
                 T repo = createRepository(context);

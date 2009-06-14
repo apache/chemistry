@@ -32,7 +32,7 @@ import javax.xml.stream.util.StreamReaderDelegate;
  */
 public class StaxReader extends StreamReaderDelegate {
 
-    protected final static XMLInputFactory factory = XMLInputFactory.newInstance();
+    protected static final XMLInputFactory factory = XMLInputFactory.newInstance();
     static {
         factory.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES,
                 Boolean.FALSE);

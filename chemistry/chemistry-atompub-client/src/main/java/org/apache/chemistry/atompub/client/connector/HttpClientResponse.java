@@ -37,9 +37,9 @@ import org.apache.commons.httpclient.HttpMethod;
  */
 public class HttpClientResponse implements Response {
 
-    final static int MIN_BUF_LEN = 32 * 1024;
+    static final int MIN_BUF_LEN = 32 * 1024;
 
-    final static int MAX_BUF_LEN = 128 * 1024;
+    static final int MAX_BUF_LEN = 128 * 1024;
 
     protected HttpMethod method;
 

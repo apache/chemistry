@@ -38,8 +38,9 @@ public class FilteredChildrenNavigator extends ChildrenNavigator {
     @Override
     public boolean next() throws XMLStreamException {
         while (super.next()) {
-            if (accept())
+            if (accept()) {
                 return true;
+            }
         }
         return false;
     }

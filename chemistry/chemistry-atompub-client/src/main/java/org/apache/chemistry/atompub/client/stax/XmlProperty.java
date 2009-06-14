@@ -34,7 +34,7 @@ public class XmlProperty implements Property {
 
     private static enum NoValue {
         NO_VALUE
-    };
+    }
 
     public static final Serializable NULL = NoValue.NO_VALUE;
 
