@@ -249,7 +249,6 @@ public class SimpleConnection implements Connection, SPI {
         List<ObjectEntry> all = new ArrayList<ObjectEntry>(total);
         for (String id : ids) {
             SimpleData data = repository.datas.get(id);
-            // could build a full Object, but some implementations won't
             all.add(new SimpleObjectEntry(data, this));
         }
 
@@ -283,8 +282,15 @@ public class SimpleConnection implements Connection, SPI {
     public Collection<ObjectEntry> getObjectParents(ObjectId object,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // TODO includeAllowableActions and includeRelationships
+        // TODO filter
+        Set<String> ids = repository.parents.get(object.getId());
+        List<ObjectEntry> parents = new ArrayList<ObjectEntry>(ids.size());
+        for (String id : ids) {
+            SimpleData data = repository.datas.get(id);
+            parents.add(new SimpleObjectEntry(data, this));
+        }
+        return parents;
     }
 
     public Collection<ObjectEntry> getCheckedoutDocuments(ObjectId folder,

@@ -50,7 +50,7 @@ public class MainServlet {
     public static final String CMIS_SERVICE = "/repository";
 
     public static void main(String[] args) throws Exception {
-        Repository repository = RepositoryCreationHelper.makeRepository(ROOT_ID);
+        Repository repository = BasicHelper.makeRepository(ROOT_ID);
         Server server = new Server();
         Connector connector = new SocketConnector();
         connector.setHost(HOST);

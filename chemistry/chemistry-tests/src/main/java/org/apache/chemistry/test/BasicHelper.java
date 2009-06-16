@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -37,12 +37,12 @@ import org.apache.chemistry.impl.simple.SimpleRepository;
 import org.apache.chemistry.impl.simple.SimpleType;
 
 /**
- * Helpers to create a basic repository.
+ * Helpers to create a basic repository for use in tests.
  */
-public class RepositoryCreationHelper {
+public class BasicHelper {
 
     // Utility class
-    private RepositoryCreationHelper() {
+    private BasicHelper() {
     }
 
     public static final String TEST_FILE_CONTENT = "This is a test file.\nTesting, testing...\n";

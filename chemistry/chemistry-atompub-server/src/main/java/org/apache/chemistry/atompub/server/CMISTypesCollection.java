@@ -39,9 +39,9 @@ import org.apache.chemistry.atompub.CMIS;
 /**
  * CMIS Collection for the Types.
  */
-public class CMISCollectionForTypes extends CMISCollection<Type> {
+public class CMISTypesCollection extends CMISCollection<Type> {
 
-    public CMISCollectionForTypes(String type, Repository repository) {
+    public CMISTypesCollection(String type, Repository repository) {
         super(type, "types", null, repository);
     }
 

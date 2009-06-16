@@ -108,6 +108,11 @@ public class APPObjectEntry implements ObjectEntry {
         return p == null ? null : p.getValue();
     }
 
+    // not in API
+    public XmlProperty getProperty(String name) {
+        return properties.get(name);
+    }
+
     public Map<String, Serializable> getValues() {
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         for (Entry<String, XmlProperty> e : properties.entrySet()) {

@@ -39,7 +39,6 @@ import org.apache.abdera.protocol.server.context.BaseResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ObjectEntry;
-import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.ReturnVersion;
@@ -49,13 +48,13 @@ import org.apache.chemistry.atompub.CMIS;
 import org.apache.chemistry.atompub.abdera.ObjectElement;
 
 /**
- * CMIS Collection for the children of a Folder.
+ * CMIS Collection for object entries.
  */
-public class CMISCollectionForChildren extends CMISCollection<ObjectEntry> {
+public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> {
 
-    public CMISCollectionForChildren(String type, String id,
+    public CMISObjectsCollection(String type, String name, String id,
             Repository repository) {
-        super(type, "children", id, repository);
+        super(type, name, id, repository);
     }
 
     /*
@@ -162,16 +161,7 @@ public class CMISCollectionForChildren extends CMISCollection<ObjectEntry> {
         return bool ? "true" : "false";
     }
 
-    @Override
-    public Iterable<ObjectEntry> getEntries(RequestContext request)
-            throws ResponseContextException {
-        SPI spi = repository.getSPI(); // TODO XXX connection leak
-        boolean[] hasMoreItems = new boolean[1];
-        ObjectId objectId = spi.newObjectId(id);
-        List<ObjectEntry> children = spi.getChildren(objectId, null, null,
-                false, false, 0, 0, null, hasMoreItems);
-        return children;
-    }
+    // getEntries is abstract, must be implemented
 
     @Override
     public ObjectEntry postEntry(String title, IRI id, String summary,

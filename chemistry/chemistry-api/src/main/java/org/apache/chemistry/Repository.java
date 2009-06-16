@@ -16,13 +16,22 @@
  */
 package org.apache.chemistry;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A CMIS Repository.
  */
 public interface Repository extends RepositoryEntry {
+
+    /**
+     * Gets a new connection to this repository.
+     *
+     * @return the connection
+     */
+    Connection getConnection(Map<String, Serializable> parameters);
 
     /**
      * Gets a new connection using the SPI for this repository.

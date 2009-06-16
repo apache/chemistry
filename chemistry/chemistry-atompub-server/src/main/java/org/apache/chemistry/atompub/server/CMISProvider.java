@@ -106,7 +106,7 @@ public class CMISProvider extends AbstractProvider {
         SimpleWorkspaceInfo workspaceInfo = new SimpleWorkspaceInfo();
         workspaceInfo.setTitle(repository.getInfo().getName());
 
-        workspaceInfo.addCollection(new CMISCollectionForChildren(
+        workspaceInfo.addCollection(new CMISChildrenCollection(
                 CMIS.COL_ROOT_CHILDREN,
                 repository.getInfo().getRootFolderId().getId(), repository));
 
@@ -121,10 +121,10 @@ public class CMISProvider extends AbstractProvider {
                 CMIS.COL_CHECKED_OUT, "checkedout", null, repository));
 
         CollectionInfo ci;
-        ci = new CMISCollectionForTypes(CMIS.COL_TYPES_CHILDREN, repository);
+        ci = new CMISTypesCollection(CMIS.COL_TYPES_CHILDREN, repository);
         workspaceInfo.addCollection(ci);
 
-        ci = new CMISCollectionForTypes(CMIS.COL_TYPES_DESCENDANTS, repository);
+        ci = new CMISTypesCollection(CMIS.COL_TYPES_DESCENDANTS, repository);
         workspaceInfo.addCollection(ci);
 
         workspaceInfo.addCollection(new CMISCollectionForOther(CMIS.COL_QUERY,

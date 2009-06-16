@@ -38,17 +38,22 @@ public class CMISWorkspaceManager extends AbstractWorkspaceManager {
         String path = request.getTargetPath();
         String paths = path + '/';
         if (paths.startsWith("/types/") || paths.startsWith("/types?")) {
-            return new CMISCollectionForTypes(null, repository);
+            return new CMISTypesCollection(null, repository);
         }
         if (paths.startsWith("/children/")) {
             String id = request.getTarget().getParameter("objectid");
-            return new CMISCollectionForChildren(null, id, repository);
+            return new CMISChildrenCollection(null, id, repository);
+        }
+        if (paths.startsWith("/parents/")) {
+            String id = request.getTarget().getParameter("objectid");
+            return new CMISParentsCollection(null, id, repository);
         }
         if (paths.startsWith("/object/")) {
-            return new CMISCollectionForChildren(null, null, repository);
+            // TODO has a different feed type than children
+            return new CMISChildrenCollection(null, null, repository);
         }
         if (paths.startsWith("/file/")) {
-            return new CMISCollectionForChildren(null, null, repository);
+            return new CMISChildrenCollection(null, null, repository);
         }
         if (paths.startsWith("/unfiled/")) {
             return new CMISCollectionForOther(null, "unfiled", null, repository);

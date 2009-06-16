@@ -28,11 +28,11 @@ import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
+import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.CMIS;
-import org.apache.chemistry.atompub.client.connector.Connector;
 import org.apache.chemistry.atompub.client.connector.Request;
 import org.apache.chemistry.atompub.client.connector.Response;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
@@ -102,8 +102,11 @@ public abstract class APPObject extends BaseObject {
             return null;
         }
         APPObjectEntry e = (APPObjectEntry) entry.connection.getConnector().getObject(
-                new ReadContext(entry.getConnection()), href);
-        Type t = entry.getConnection().getRepository().getType(e.getTypeId());
+                new ReadContext(entry.connection), href);
+        if (e == null) {
+            return null; // no parent
+        }
+        Type t = entry.connection.getRepository().getType(e.getTypeId());
         APPFolder f = new APPFolder(e, t);
         return f;
     }
@@ -151,13 +154,23 @@ public abstract class APPObject extends BaseObject {
     }
 
     public Property getProperty(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        PropertyDefinition propertyDefinition = getType().getPropertyDefinition(
+                name);
+        if (propertyDefinition == null) {
+            throw new IllegalArgumentException(name);
+        }
+        // TODO deal with unfetched properties
+        return entry.getProperty(name);
     }
 
     public Serializable getValue(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        PropertyDefinition propertyDefinition = getType().getPropertyDefinition(
+                name);
+        if (propertyDefinition == null) {
+            throw new IllegalArgumentException(name);
+        }
+        // TODO deal with unfetched properties
+        return entry.getValue(name);
     }
 
     public void save() {

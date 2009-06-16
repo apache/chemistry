@@ -16,17 +16,9 @@
  */
 package org.apache.chemistry.test;
 
-import java.util.List;
-
 import javax.servlet.Servlet;
 
-import junit.framework.TestCase;
-
-import org.apache.chemistry.CMISObject;
-import org.apache.chemistry.Connection;
-import org.apache.chemistry.Folder;
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.atompub.client.APPRepository;
 import org.apache.chemistry.atompub.client.ContentManager;
 import org.apache.chemistry.atompub.client.connector.APPContentManager;
 import org.apache.chemistry.atompub.server.CMISServlet;
@@ -41,7 +33,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 /**
  * Tests the AtomPub client with the AtomPub server.
  */
-public class TestAtomPubClientServer extends TestCase {
+public class TestAtomPubClientServer extends BasicTestCase {
 
     private static final Log log = LogFactory.getLog(MainServlet.class);
 
@@ -55,10 +47,8 @@ public class TestAtomPubClientServer extends TestCase {
 
     public Server server;
 
-    public String serverUrl;
-
-    public void startServer() throws Exception {
-        Repository repository = RepositoryCreationHelper.makeRepository(null);
+    public String startServer() throws Exception {
+        Repository repository = BasicHelper.makeRepository(null);
         server = new Server();
         Connector connector = new SocketConnector();
         connector.setHost(HOST);
@@ -69,8 +59,10 @@ public class TestAtomPubClientServer extends TestCase {
         Context context = new Context(server, SERVLET_PATH, Context.SESSIONS);
         context.addServlet(servletHolder, "/*");
         server.start();
-        serverUrl = "http://" + HOST + ':' + PORT + SERVLET_PATH + CMIS_SERVICE;
+        String serverUrl = "http://" + HOST + ':' + PORT + SERVLET_PATH
+                + CMIS_SERVICE;
         log.info("CMIS server started, AtomPub service url: " + serverUrl);
+        return serverUrl;
     }
 
     public void stopServer() throws Exception {
@@ -81,23 +73,14 @@ public class TestAtomPubClientServer extends TestCase {
 
     @Override
     public void setUp() throws Exception {
-        startServer();
+        String serverUrl = startServer();
+        ContentManager cm = new APPContentManager(serverUrl);
+        repository = cm.getDefaultRepository();
     }
 
     @Override
     public void tearDown() throws Exception {
         stopServer();
-    }
-
-    public void testBasic() {
-        ContentManager cm = new APPContentManager(serverUrl);
-
-        Repository repo = cm.getDefaultRepository();
-        Connection conn = ((APPRepository) repo).getConnection(null);
-
-        Folder root = conn.getRootFolder();
-        List<CMISObject> entries = root.getChildren(null);
-        assertEquals(1, entries.size());
     }
 
 }
