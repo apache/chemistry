@@ -119,6 +119,11 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
             T object, XmlProperty p, Type entryType) {
         PropertyDefinition def = entryType.getPropertyDefinition(p.getName());
         if (def == null) {
+            if (p.getName().equals("ContentStreamURI")) {
+                // ignore, old Alfresco compat
+                // see org.apache.chemistry.atompub.abdera.PropertiesElement
+                return;
+            }
             throw new ParseException("No such property definition: "
                     + p.getName() + " in type: " + entryType);
         }

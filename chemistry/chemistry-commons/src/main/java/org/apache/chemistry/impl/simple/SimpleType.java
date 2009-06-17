@@ -318,7 +318,7 @@ public class SimpleType implements Type {
         }
     }
 
-    protected static List<PropertyDefinition> getBasePropertyDefinitions(
+    public static List<PropertyDefinition> getBasePropertyDefinitions(
             BaseType baseType) {
         switch (baseType) {
         case DOCUMENT:

@@ -58,6 +58,9 @@ public class CMISWorkspaceManager extends AbstractWorkspaceManager {
         if (paths.startsWith("/unfiled/")) {
             return new CMISCollectionForOther(null, "unfiled", null, repository);
         }
+        if (paths.startsWith("/query/")) {
+            return new CMISQueryFeed(repository);
+        }
         return null;
     }
 

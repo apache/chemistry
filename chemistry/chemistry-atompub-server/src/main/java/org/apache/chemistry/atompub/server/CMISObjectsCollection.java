@@ -84,10 +84,6 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         return "urn:x-children:" + id;
     }
 
-    public String getTitle(RequestContext request) {
-        return "Children";
-    }
-
     @Override
     public String getAuthor(RequestContext request) {
         return "system";
@@ -102,6 +98,14 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
                 entryDoc);
         rc.setEntityTag(ProviderHelper.calculateEntityTag(entry));
         return rc;
+    }
+
+    /*
+     * ----- CollectionInfo -----
+     */
+
+    public String getTitle(RequestContext request) {
+        return name + " collection";
     }
 
     /*

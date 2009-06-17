@@ -173,6 +173,16 @@ public class CMIS {
 
     public static final QName ALLOWABLE_ACTIONS = CMISName("allowableActions");
 
+    public static final QName QUERY = CMISName("query");
+
+    public static final QName STATEMENT = CMISName("statement");
+
+    public static final QName SEARCH_ALL_VERSIONS = CMISName("searchAllVersions");
+
+    public static final QName PAGE_SIZE = CMISName("pageSize");
+
+    public static final QName SKIP_COUNT = CMISName("skipCount");
+
     /*
      * ----- CMIS Collection Types -----
      */

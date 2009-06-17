@@ -80,8 +80,8 @@ public class CMISProvider extends AbstractProvider {
                 "{target_base}/{collection}{-prefix|/|id}");
         targetResolver.setPattern("/checkedout", TargetType.TYPE_COLLECTION);
         targetResolver.setPattern("/unfiled", TargetType.TYPE_COLLECTION);
-        targetResolver.setPattern("/query", //
-                TargetType.TYPE_COLLECTION);
+        targetResolver.setPattern("/query",
+                CMISQueryFeed.TARGET_TYPE_CMIS_QUERY);
         targetResolver.setPattern("/types(\\?.*)?", //
                 TargetType.TYPE_COLLECTION);
         // per-object collections
@@ -127,8 +127,7 @@ public class CMISProvider extends AbstractProvider {
         ci = new CMISTypesCollection(CMIS.COL_TYPES_DESCENDANTS, repository);
         workspaceInfo.addCollection(ci);
 
-        workspaceInfo.addCollection(new CMISCollectionForOther(CMIS.COL_QUERY,
-                "query", null, repository));
+        workspaceInfo.addCollection(new CMISQueryFeed(repository));
 
         workspaceManager = new CMISWorkspaceManager(this);
         workspaceManager.addWorkspace(workspaceInfo);

@@ -28,6 +28,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
@@ -245,13 +247,20 @@ public class SimpleConnection implements Connection, SPI {
             String orderBy, boolean[] hasMoreItems) {
         // TODO type and orderBy
         Set<String> ids = repository.children.get(folder.getId());
-        int total = ids.size();
-        List<ObjectEntry> all = new ArrayList<ObjectEntry>(total);
+        List<ObjectEntry> all = new ArrayList<ObjectEntry>(ids.size());
         for (String id : ids) {
             SimpleData data = repository.datas.get(id);
             all.add(new SimpleObjectEntry(data, this));
         }
+        return subList(all, maxItems, skipCount, hasMoreItems);
+    }
 
+    /**
+     * Extracts part of a list according to given parameters.
+     */
+    protected static List<ObjectEntry> subList(List<ObjectEntry> all,
+            int maxItems, int skipCount, boolean[] hasMoreItems) {
+        int total = all.size();
         int fromIndex = skipCount;
         if (fromIndex < 0 || fromIndex > total) {
             hasMoreItems[0] = false;
@@ -492,14 +501,43 @@ public class SimpleConnection implements Connection, SPI {
             boolean searchAllVersions, boolean includeAllowableActions,
             boolean includeRelationships, int maxItems, int skipCount,
             boolean[] hasMoreItems) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+
+        // TODO temporary implementation for unit testing of protocols
+
+        Matcher m = Pattern.compile("SELECT\\s+([*\\w, ]+)\\s+FROM\\s+(\\w+)",
+                Pattern.CASE_INSENSITIVE).matcher(statement);
+        if (!m.matches()) {
+            throw new RuntimeException("Cannot parse query: " + statement);
+        }
+        String props = m.group(1);
+        if (!"*".equals(props)) {
+            throw new RuntimeException(
+                    "Invalid query, must select all properties: " + statement);
+        }
+        String type = m.group(2);
+
+        List<ObjectEntry> all = new ArrayList<ObjectEntry>();
+        for (SimpleData data : repository.datas.values()) {
+            // TODO type inheritance not taken into account
+            String t = (String) data.get(SimpleProperty.TYPE_ID);
+            if (!t.equalsIgnoreCase(type)) {
+                continue;
+            }
+            all.add(new SimpleObjectEntry(data, this));
+        }
+        return subList(all, maxItems, skipCount, hasMoreItems);
     }
 
     public Collection<CMISObject> query(String statement,
             boolean searchAllVersions) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        boolean[] hasMoreItems = new boolean[1];
+        Collection<ObjectEntry> res = query(statement, searchAllVersions,
+                false, false, 0, 0, hasMoreItems);
+        List<CMISObject> objects = new ArrayList<CMISObject>(res.size());
+        for (ObjectEntry e : res) {
+            objects.add(SimpleObject.construct((SimpleObjectEntry) e));
+        }
+        return objects;
     }
 
     /*

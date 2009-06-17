@@ -20,6 +20,7 @@ package org.apache.chemistry.atompub.client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -350,14 +351,27 @@ public class APPConnection implements Connection, SPI {
             boolean searchAllVersions, boolean includeAllowableActions,
             boolean includeRelationships, int maxItems, int skipCount,
             boolean[] hasMoreItems) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        String href = repository.getCollectionHref(CMIS.COL_QUERY);
+        Response resp = connector.postQuery(new Request(href), statement);
+        if (!resp.isOk()) {
+            throw new ContentManagerException(
+                    "Remote server returned error code: "
+                            + resp.getStatusCode());
+        }
+        List<ObjectEntry> objects = resp.getObjectFeed(new ReadContext(this));
+        return objects;
     }
 
     public Collection<CMISObject> query(String statement,
             boolean searchAllVersions) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        boolean[] hasMoreItems = new boolean[1];
+        Collection<ObjectEntry> res = query(statement, searchAllVersions,
+                false, false, 0, 0, hasMoreItems);
+        List<CMISObject> objects = new ArrayList<CMISObject>(res.size());
+        for (ObjectEntry e : res) {
+            objects.add(APPObject.construct((APPObjectEntry) e));
+        }
+        return objects;
     }
 
     /*

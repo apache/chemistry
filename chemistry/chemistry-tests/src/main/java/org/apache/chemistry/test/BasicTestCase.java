@@ -16,6 +16,7 @@
  */
 package org.apache.chemistry.test;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +57,15 @@ public abstract class BasicTestCase extends TestCase {
 
         List<CMISObject> entries = root.getChildren(null);
         assertEquals(1, entries.size());
+    }
+
+    public void testQuery() {
+        Connection conn = repository.getConnection(null);
+        Collection<CMISObject> res = conn.query("SELECT * FROM doc", false);
+        assertNotNull(res);
+        assertEquals(4, res.size());
+        res = conn.query("SELECT * FROM fold", false);
+        assertEquals(2, res.size());
     }
 
 }

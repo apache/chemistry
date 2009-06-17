@@ -27,6 +27,7 @@ import org.apache.chemistry.atompub.client.APPObjectFeedReader;
 import org.apache.chemistry.atompub.client.APPServiceDocumentReader;
 import org.apache.chemistry.atompub.client.TypeEntryReader;
 import org.apache.chemistry.atompub.client.TypeFeedReader;
+import org.apache.chemistry.atompub.client.stax.QueryWriter;
 import org.apache.chemistry.atompub.client.stax.EntryReader;
 import org.apache.chemistry.atompub.client.stax.FeedReader;
 import org.apache.chemistry.atompub.client.stax.ServiceDocumentReader;
@@ -49,6 +50,8 @@ public class DefaultIOProvider implements IOProvider {
     protected APPServiceDocumentReader serviceDocumentReader = new APPServiceDocumentReader();
 
     protected APPObjectEntryWriter objectWriter = new APPObjectEntryWriter();
+
+    protected QueryWriter queryWriter = new QueryWriter();
 
     public EntryReader<? extends ObjectEntry> getObjectEntryReader() {
         return objectReader;
@@ -75,7 +78,7 @@ public class DefaultIOProvider implements IOProvider {
     }
 
     public XmlObjectWriter<String> getQueryWriter() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return queryWriter;
     }
 
 }

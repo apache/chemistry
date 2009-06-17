@@ -121,7 +121,9 @@ public class HttpClientConnector implements Connector {
             PostMethod method = new PostMethod(request.getUrl());
             setMethodParams(method, request);
             setMethodHeaders(method, request);
-            method.setRequestEntity(new ObjectRequestEntity<T>(writer, object));
+            method.setRequestEntity(new XmlObjectWriterRequestEntity<T>(writer,
+                    object));
+            method.setContentChunked(true);
             client.executeMethod(method);
             return new HttpClientResponse(method, io);
         } catch (Exception e) {
@@ -135,7 +137,8 @@ public class HttpClientConnector implements Connector {
             PutMethod method = new PutMethod(request.getUrl());
             setMethodParams(method, request);
             setMethodHeaders(method, request);
-            method.setRequestEntity(new ObjectRequestEntity<T>(writer, object));
+            method.setRequestEntity(new XmlObjectWriterRequestEntity<T>(writer,
+                    object));
             client.executeMethod(method);
             return new HttpClientResponse(method, io);
         } catch (Exception e) {
@@ -221,13 +224,14 @@ public class HttpClientConnector implements Connector {
         return post(req, io.getQueryWriter(), query);
     }
 
-    public static class ObjectRequestEntity<T> implements RequestEntity {
+    public static class XmlObjectWriterRequestEntity<T> implements
+            RequestEntity {
 
         protected XmlObjectWriter<T> writer;
 
         protected T obj;
 
-        public ObjectRequestEntity(XmlObjectWriter<T> writer, T obj) {
+        public XmlObjectWriterRequestEntity(XmlObjectWriter<T> writer, T obj) {
             this.writer = writer;
             this.obj = obj;
         }
