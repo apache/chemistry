@@ -12,7 +12,6 @@
  * limitations under the License.
  *
  * Authors:
- *     Bogdan Stefanescu, Nuxeo
  *     Florent Guillaume, Nuxeo
  */
 package org.apache.chemistry.atompub.server.jaxrs;
