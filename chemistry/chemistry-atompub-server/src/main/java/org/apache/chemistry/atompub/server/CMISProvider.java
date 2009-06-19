@@ -148,12 +148,12 @@ public class CMISProvider extends AbstractProvider {
     }
 
     @Override
-    protected WorkspaceManager getWorkspaceManager(RequestContext request) {
+    public WorkspaceManager getWorkspaceManager(RequestContext request) {
         return workspaceManager;
     }
 
     @Override
-    protected ResponseContext getServiceDocument(final RequestContext request) {
+    public ResponseContext getServiceDocument(final RequestContext request) {
         CMISServiceResponse response = new CMISServiceResponse(this, request);
         response.setStatus(200);
         response.setContentType(Constants.APP_MEDIA_TYPE);

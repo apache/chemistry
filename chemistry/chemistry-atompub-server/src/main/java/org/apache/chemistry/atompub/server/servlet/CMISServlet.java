@@ -14,7 +14,7 @@
  * Authors:
  *     Florent Guillaume, Nuxeo
  */
-package org.apache.chemistry.atompub.server;
+package org.apache.chemistry.atompub.server.servlet;
 
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -28,6 +28,7 @@ import org.apache.abdera.protocol.server.Provider;
 import org.apache.abdera.protocol.server.servlet.AbderaServlet;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryFactory;
+import org.apache.chemistry.atompub.server.CMISProvider;
 
 public class CMISServlet extends AbderaServlet {
 

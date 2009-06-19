@@ -19,8 +19,6 @@ package org.apache.chemistry.atompub.server;
 import java.io.IOException;
 import java.util.Arrays;
 
-import javax.servlet.Servlet;
-
 import junit.framework.TestCase;
 
 import org.apache.abdera.model.Element;
@@ -48,12 +46,10 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
 
-public class TestAtomPubServer extends TestCase {
+public abstract class AtomPubServerTestCase extends TestCase {
 
-    private static final String TEST_FILE_CONTENT = "This is a test file.\nTesting, testing...\n";
+    public static final String TEST_FILE_CONTENT = "This is a test file.\nTesting, testing...\n";
 
     protected static final AbderaClient client = new AbderaClient();
 
@@ -80,14 +76,7 @@ public class TestAtomPubServer extends TestCase {
         stopServer();
     }
 
-    public void startServer() throws Exception {
-        server = new Server(PORT);
-        Servlet servlet = new CMISServlet(repository);
-        ServletHolder servletHolder = new ServletHolder(servlet);
-        Context context = new Context(server, SERVLET_PATH, Context.SESSIONS);
-        context.addServlet(servletHolder, "/*");
-        server.start();
-    }
+    public abstract void startServer() throws Exception;
 
     public void stopServer() throws Exception {
         server.stop();

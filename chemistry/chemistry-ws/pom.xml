@@ -28,10 +28,6 @@
   <artifactId>chemistry-ws</artifactId>
   <name>Chemistry WebServices</name>
 
-  <properties>
-    <cxf.version>2.2.1</cxf.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.apache.chemistry</groupId>
@@ -64,7 +60,6 @@
       <plugin>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-codegen-plugin</artifactId>
-        <version>${cxf.version}</version>
         <executions>
           <execution>
             <id>generate-sources</id>

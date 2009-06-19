@@ -21,7 +21,7 @@ import javax.servlet.Servlet;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.atompub.client.ContentManager;
 import org.apache.chemistry.atompub.client.connector.APPContentManager;
-import org.apache.chemistry.atompub.server.CMISServlet;
+import org.apache.chemistry.atompub.server.servlet.CMISServlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.Connector;
