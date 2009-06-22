@@ -35,7 +35,9 @@ public class CMISWorkspaceManager extends AbstractWorkspaceManager {
 
     public CollectionAdapter getCollectionAdapter(RequestContext request) {
         Repository repository = provider.getRepository();
-        String path = request.getTargetPath();
+        String uri = request.getUri().toString();
+        String spath = request.getTargetBasePath();
+        String path = spath == null ? uri : uri.substring(spath.length());
         String paths = path + '/';
         if (paths.startsWith("/types/") || paths.startsWith("/types?")) {
             return new CMISTypesCollection(null, repository);

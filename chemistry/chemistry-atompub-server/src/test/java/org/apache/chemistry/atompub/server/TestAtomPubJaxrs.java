@@ -39,7 +39,7 @@ public class TestAtomPubJaxrs extends AtomPubServerTestCase {
     public void startServer() throws Exception {
         AbderaResource.repository = repository; // TODO inject differently
         server = new Server(PORT);
-        server.setHandler(new WebAppContext(server, makeWar(), SERVLET_PATH));
+        server.setHandler(new WebAppContext(server, makeWar(), CONTEXT_PATH));
         server.start();
     }
 

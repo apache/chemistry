@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -28,16 +29,24 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.abdera.protocol.server.ResponseContext;
+import org.apache.chemistry.atompub.server.SizedMediaResponseContext;
 
 /**
  * A JAX-RS MessageBodyWriter that knows how to write an Abdera ResponseContext.
  */
+// @Produces of text/plain is needed otherwise RESTEasy will use its
+// DefaultTextPlain writer to write text/plain objects and the ResponseContext
+// is not written correctly.
 @Provider
+@Produces( { "*/*", "text/plain" })
 public class AbderaResponseProvider implements
         MessageBodyWriter<ResponseContext> {
 
     public long getSize(ResponseContext responseContext, Class<?> type,
             Type genericType, Annotation[] annotations, MediaType mediaType) {
+        if (responseContext instanceof SizedMediaResponseContext) {
+            return ((SizedMediaResponseContext) responseContext).getSize();
+        }
         return -1;
     }
 

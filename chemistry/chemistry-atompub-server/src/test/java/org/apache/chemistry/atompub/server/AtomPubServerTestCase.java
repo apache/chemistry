@@ -61,9 +61,10 @@ public abstract class AtomPubServerTestCase extends TestCase {
 
     protected static final int PORT = (int) (8500 + System.currentTimeMillis() % 100);
 
-    protected static final String SERVLET_PATH = "/cmis";
+    protected static final String CONTEXT_PATH = "/ctx";
 
-    protected static final String CMIS_SERVICE = "/repository";
+    // also in web.xml for JAX-RS
+    protected static final String SERVLET_PATH = "/cmis";
 
     @Override
     public void setUp() throws Exception {
@@ -144,10 +145,10 @@ public abstract class AtomPubServerTestCase extends TestCase {
     }
 
     public void testConnect() throws Exception {
-        String base = "http://localhost:" + PORT + SERVLET_PATH;
+        String base = "http://localhost:" + PORT + CONTEXT_PATH + SERVLET_PATH;
         ClientResponse resp;
 
-        resp = client.get(base + CMIS_SERVICE);
+        resp = client.get(base + "/repository");
         assertEquals(200, resp.getStatus());
         Service root = (Service) resp.getDocument().getRoot();
         Workspace workspace = root.getWorkspaces().get(0);

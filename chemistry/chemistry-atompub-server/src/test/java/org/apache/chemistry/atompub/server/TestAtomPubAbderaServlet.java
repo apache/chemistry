@@ -33,8 +33,8 @@ public class TestAtomPubAbderaServlet extends AtomPubServerTestCase {
         server = new Server(PORT);
         Servlet servlet = new CMISServlet(repository);
         ServletHolder servletHolder = new ServletHolder(servlet);
-        Context context = new Context(server, SERVLET_PATH, Context.SESSIONS);
-        context.addServlet(servletHolder, "/*");
+        Context context = new Context(server, CONTEXT_PATH, Context.SESSIONS);
+        context.addServlet(servletHolder, SERVLET_PATH + "/*");
         server.start();
     }
 

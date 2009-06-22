@@ -36,9 +36,6 @@ public class CMISServlet extends AbderaServlet {
 
     private Repository repository;
 
-    public CMISServlet() {
-    }
-
     public CMISServlet(Repository repository) {
         this.repository = repository;
     }

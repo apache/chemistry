@@ -50,7 +50,7 @@ public class CMISProvider extends AbstractProvider {
         this.repository = repository;
 
         targetBuilder = new TemplateTargetBuilder();
-        targetResolver = new RegexTargetResolver();
+        targetResolver = new ServletRegexTargetResolver();
 
         // service
         targetBuilder.setTemplate(TargetType.TYPE_SERVICE,

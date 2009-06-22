@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.i18n.iri.IRI;
+import org.apache.abdera.model.AtomDate;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Entry;
@@ -37,6 +38,7 @@ import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.context.AbstractResponseContext;
 import org.apache.abdera.protocol.server.context.BaseResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
+import org.apache.abdera.util.EntityTag;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Property;
@@ -228,6 +230,11 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         return null;
     }
 
+    public long getContentSize(ObjectEntry object) {
+        Integer value = (Integer) object.getValue(Property.CONTENT_STREAM_LENGTH);
+        return value == null ? -1 : value.longValue();
+    }
+
     @Override
     public String getContentType(ObjectEntry object) {
         return (String) object.getValue(Property.CONTENT_STREAM_MIME_TYPE);
@@ -262,6 +269,19 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         } catch (IOException e) {
             throw new ResponseContextException(500, e);
         }
+    }
+
+    // override to use a custom SizedMediaResponseContext
+    @Override
+    protected ResponseContext buildGetMediaResponse(String id,
+            ObjectEntry entryObj) throws ResponseContextException {
+        Date updated = getUpdated(entryObj);
+        SizedMediaResponseContext ctx = new SizedMediaResponseContext(
+                getMediaStream(entryObj), updated, 200);
+        ctx.setSize(getContentSize(entryObj));
+        ctx.setContentType(getContentType(entryObj));
+        ctx.setEntityTag(EntityTag.generate(id, AtomDate.format(updated)));
+        return ctx;
     }
 
     @Override

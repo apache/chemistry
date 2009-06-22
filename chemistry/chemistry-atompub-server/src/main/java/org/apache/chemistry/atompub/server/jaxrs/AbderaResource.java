@@ -19,11 +19,14 @@ package org.apache.chemistry.atompub.server.jaxrs;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.abdera.protocol.server.CollectionAdapter;
 import org.apache.abdera.protocol.server.RequestContext;
@@ -39,6 +42,9 @@ import org.apache.commons.logging.LogFactory;
 /**
  * A JAX-RS Resource that dispatches to the underlying Abdera
  * {@link CMISProvider}.
+ * <p>
+ * In some contexts (Nuxeo WebEngine), the path of this resource is injected by
+ * the framework, so no @Path annotation must be specified.
  */
 public class AbderaResource {
 
@@ -48,6 +54,9 @@ public class AbderaResource {
 
     @Context
     protected HttpServletRequest httpRequest;
+
+    @Context
+    protected UriInfo ui;
 
     // TODO inject repository somehow
     public static Repository repository;
@@ -63,8 +72,40 @@ public class AbderaResource {
         }
     }
 
-    protected ServletRequestContext getRequestContext() {
-        return new ServletRequestContext(provider, httpRequest);
+    /**
+     * Gets a {@link ServletRequestContext} wrapping the httpRequest but
+     * pretending that this Resource's path is part of the servlet path.
+     *
+     * @param segments the number of segments of the method invoking this, used
+     *            to determine the Resource path
+     */
+    protected ServletRequestContext getRequestContext(int segments) {
+        // actual servlet path
+        String spath = httpRequest.getServletPath();
+        // find this Resource path (remove some segments from it)
+        String rpath = ui.getPath();
+        while (segments > 0) {
+            segments--;
+            if (rpath.contains("/")) {
+                rpath = rpath.substring(0, rpath.lastIndexOf('/'));
+            }
+        }
+        HttpServletRequest wrapper;
+        if (rpath.length() == 0) {
+            // no resource path to fake
+            wrapper = httpRequest;
+        } else {
+            // this gives the pretend servlet path
+            final String pspath = spath + rpath;
+            // wrap HttpServletRequest to pretend to have this servlet path
+            wrapper = new HttpServletRequestWrapper(httpRequest) {
+                @Override
+                public String getServletPath() {
+                    return pspath;
+                }
+            };
+        }
+        return new ServletRequestContext(provider, wrapper);
     }
 
     protected CollectionAdapter getAbderaCollectionAdapter(
@@ -73,14 +114,14 @@ public class AbderaResource {
                 requestContext);
     }
 
-    protected Response getAbderaFeed() {
-        RequestContext requestContext = getRequestContext();
+    protected Response getAbderaFeed(int skipSegments) {
+        RequestContext requestContext = getRequestContext(skipSegments);
         CollectionAdapter adapter = getAbderaCollectionAdapter(requestContext);
         return Response.ok(adapter.getFeed(requestContext)).build();
     }
 
-    protected Response getAbderaEntry() {
-        RequestContext requestContext = getRequestContext();
+    protected Response getAbderaEntry(int skipSegments) {
+        RequestContext requestContext = getRequestContext(skipSegments);
         CollectionAdapter adapter = getAbderaCollectionAdapter(requestContext);
         return Response.ok(adapter.getEntry(requestContext)).build();
     }
@@ -89,7 +130,7 @@ public class AbderaResource {
     @Produces("application/atomsvc+xml")
     @Path("repository")
     public Response doGetRepository(@Context HttpServletRequest httpRequest) {
-        RequestContext requestContext = getRequestContext();
+        RequestContext requestContext = getRequestContext(1);
         ResponseContext responseContext = provider.getServiceDocument(requestContext);
         return Response.ok(responseContext).build();
     }
@@ -98,7 +139,7 @@ public class AbderaResource {
     @Produces("application/atom+xml;type=feed")
     @Path("types")
     public Response doGetTypes() {
-        return getAbderaFeed();
+        return getAbderaFeed(1);
     }
 
     @GET
@@ -106,7 +147,7 @@ public class AbderaResource {
     @Path("children/{objectid}")
     public Response doGetChildren() {
         // objectid decoded by Abdera getCollectionAdapter
-        return getAbderaFeed();
+        return getAbderaFeed(2);
     }
 
     @GET
@@ -114,25 +155,18 @@ public class AbderaResource {
     @Path("object/{objectid}")
     public Response doGetObject() {
         // objectid decoded by Abdera getCollectionAdapter
-        return getAbderaEntry();
+        return getAbderaEntry(2);
     }
 
     @GET
     @Path("file/{objectid}")
     public Response doGetFile() {
         // objectid decoded by Abdera getCollectionAdapter
-        RequestContext requestContext = getRequestContext();
+        RequestContext requestContext = getRequestContext(2);
         AbstractCollectionAdapter adapter = (AbstractCollectionAdapter) getAbderaCollectionAdapter(requestContext);
         ResponseContext responseContext = adapter.getMedia(requestContext);
         String contentType = responseContext.getHeader("Content-Type");
         return Response.ok(responseContext).type(contentType).build();
     }
-
-    // @PUT
-    // @Path("object/{objectid}}")
-    // @Consumes("application/atom+xml;type=entry")
-    // public Response doPut(@PathParam("objectid") String objectid) {
-    // return AbderaProvider.putEntry(ctx, getCollectionAdapter());
-    // }
 
 }
