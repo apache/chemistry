@@ -43,10 +43,8 @@ import org.apache.commons.logging.LogFactory;
 /**
  * A JAX-RS Resource that dispatches to the underlying Abdera
  * {@link CMISProvider}.
- * <p>
- * In some contexts (Nuxeo WebEngine), the path of this resource is injected by
- * the framework, so no @Path annotation must be specified.
  */
+@Path("cmis")
 public class AbderaResource {
 
     private static final Log log = LogFactory.getLog(AbderaResource.class);
@@ -78,6 +76,10 @@ public class AbderaResource {
      * <p>
      * Wrapping is needed to fixup the servlet path to take include this
      * Resource's path.
+     * <p>
+     * We need to pass an explicit number of segments because
+     * UriInfo.getMatchedURIs is buggy for RESTEasy
+     * (https://jira.jboss.org/jira/browse/RESTEASY-100)
      *
      * @param segments the number of segments of the method invoking this, used
      *            to determine the Resource path

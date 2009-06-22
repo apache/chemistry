@@ -14,6 +14,6 @@
 
   <servlet-mapping>
     <servlet-name>cxfjaxrs</servlet-name>
-    <url-pattern>/cmis/*</url-pattern> <!-- also in AtomPubServerTestCase -->
+    <url-pattern>/srv/*</url-pattern> <!-- also in AtomPubServerTestCase -->
   </servlet-mapping>
 </web-app>

@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.ws.rs.Path;
+
 import org.apache.chemistry.atompub.server.jaxrs.AbderaResource;
 import org.apache.cxf.helpers.FileUtils;
 import org.apache.cxf.helpers.IOUtils;
@@ -34,6 +36,19 @@ import org.mortbay.jetty.webapp.WebAppContext;
 public class TestAtomPubJaxrs extends AtomPubServerTestCase {
 
     private File tmpDir;
+
+    @Override
+    protected String getResourcePath() {
+        Path pa = AbderaResource.class.getAnnotation(Path.class);
+        if (pa == null) {
+            return "";
+        }
+        String path = pa.value();
+        if (!path.startsWith("/")) {
+            path = '/' + path;
+        }
+        return path;
+    }
 
     @Override
     public void startServer() throws Exception {

@@ -67,7 +67,12 @@ public abstract class AtomPubServerTestCase extends TestCase {
     protected static final String CONTEXT_PATH = "/ctx";
 
     // also in web.xml for JAX-RS
-    protected static final String SERVLET_PATH = "/cmis";
+    protected static final String SERVLET_PATH = "/srv";
+
+    // additional path to use after the servlet, used by JAX-RS
+    protected String getResourcePath() {
+        return "";
+    }
 
     @Override
     public void setUp() throws Exception {
@@ -148,7 +153,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
     }
 
     public void testConnect() throws Exception {
-        String base = "http://localhost:" + PORT + CONTEXT_PATH + SERVLET_PATH;
+        String base = "http://localhost:" + PORT + CONTEXT_PATH + SERVLET_PATH + getResourcePath();
         ClientResponse resp;
 
         resp = client.get(base + "/repository");
