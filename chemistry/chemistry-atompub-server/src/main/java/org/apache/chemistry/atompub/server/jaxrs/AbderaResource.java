@@ -20,6 +20,7 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -73,8 +74,10 @@ public class AbderaResource {
     }
 
     /**
-     * Gets a {@link ServletRequestContext} wrapping the httpRequest but
-     * pretending that this Resource's path is part of the servlet path.
+     * Gets a {@link ServletRequestContext} wrapping the httpRequest.
+     * <p>
+     * Wrapping is needed to fixup the servlet path to take include this
+     * Resource's path.
      *
      * @param segments the number of segments of the method invoking this, used
      *            to determine the Resource path
@@ -126,6 +129,12 @@ public class AbderaResource {
         return Response.ok(adapter.getEntry(requestContext)).build();
     }
 
+    protected Response getAbderaPostFeed(int skipSegments) {
+        RequestContext requestContext = getRequestContext(skipSegments);
+        CollectionAdapter adapter = getAbderaCollectionAdapter(requestContext);
+        return Response.ok(adapter.postEntry(requestContext)).build();
+    }
+
     @GET
     @Produces("application/atomsvc+xml")
     @Path("repository")
@@ -167,6 +176,14 @@ public class AbderaResource {
         ResponseContext responseContext = adapter.getMedia(requestContext);
         String contentType = responseContext.getHeader("Content-Type");
         return Response.ok(responseContext).type(contentType).build();
+    }
+
+    @POST
+    @Consumes("application/cmisquery+xml")
+    @Produces("application/atom+xml;type=feed")
+    @Path("query")
+    public Response doPostQuery() {
+        return getAbderaPostFeed(1);
     }
 
 }

@@ -24,8 +24,11 @@ import junit.framework.TestCase;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Service;
 import org.apache.abdera.model.Workspace;
+import org.apache.abdera.protocol.EntityProvider;
 import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
+import org.apache.abdera.protocol.util.AbstractEntityProvider;
+import org.apache.abdera.writer.StreamWriter;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
@@ -177,8 +180,50 @@ public abstract class AtomPubServerTestCase extends TestCase {
         assertEquals(HttpStatus.SC_OK, status);
         assertEquals("text/plain",
                 method.getResponseHeader("Content-Type").getValue());
+        assertEquals(String.valueOf(TEST_FILE_CONTENT.getBytes().length),
+                method.getResponseHeader("Content-Length").getValue());
         byte[] body = method.getResponseBody();
         assertEquals(TEST_FILE_CONTENT, new String(body, "UTF-8"));
         method.releaseConnection();
+
+        EntityProvider provider = new QueryEntityProvider("SELECT * FROM doc");
+        resp = client.post(base + "/query", provider);
+        assertEquals(200, resp.getStatus());
+        Element res = resp.getDocument().getRoot();
+        assertNotNull(res);
     }
+
+    public static class QueryEntityProvider extends AbstractEntityProvider {
+
+        public String statement;
+
+        public QueryEntityProvider(String statement) {
+            this.statement = statement;
+        }
+
+        @Override
+        public String getContentType() {
+            return "application/cmisquery+xml";
+        }
+
+        public boolean isRepeatable() {
+            return true;
+        }
+
+        public void writeTo(StreamWriter sw) {
+            sw.startDocument();
+            sw.startElement("query", CMIS.CMIS_NS, CMIS.CMIS_PREFIX);
+            sw.startElement("statement", CMIS.CMIS_NS, CMIS.CMIS_PREFIX).writeElementText(
+                    statement).endElement();
+            sw.startElement("searchAllVersions", CMIS.CMIS_NS, CMIS.CMIS_PREFIX).writeElementText(
+                    "false").endElement();
+            sw.startElement("pageSize", CMIS.CMIS_NS, CMIS.CMIS_PREFIX).writeElementText(
+                    0).endElement();
+            sw.startElement("skipCount", CMIS.CMIS_NS, CMIS.CMIS_PREFIX).writeElementText(
+                    0).endElement();
+            sw.endElement(); // query
+            sw.endDocument();
+        }
+    }
+
 }
