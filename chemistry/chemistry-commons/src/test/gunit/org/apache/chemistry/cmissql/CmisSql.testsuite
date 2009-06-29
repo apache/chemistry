@@ -13,6 +13,7 @@
  *
  * Authors:
  *     Stefane Fermigier, Nuxeo
+ *     Florent Guillaume, Nuxeo
  */
 gunit CmisSql;
 
@@ -59,9 +60,9 @@ literal:
 "'abc'" OK
 
 order_by_clause:
-"ORDER BY toto" -> (ORDER BY toto)
-"ORDER BY titi ASC" -> (ORDER BY titi ASC)
-"ORDER BY tutu DESC" -> (ORDER BY tutu DESC)
+"ORDER BY toto" -> (ORDER_BY toto)
+"ORDER BY titi ASC" -> (ORDER_BY titi ASC)
+"ORDER BY tutu DESC" -> (ORDER_BY tutu DESC)
 
 column_reference:
 "toto" -> "toto"
@@ -92,7 +93,7 @@ search_condition:
 query:
 "SELECT * FROM Document" -> (SELECT * (FROM Document))
 "SELECT a, b, c FROM Document" -> (SELECT (a b c) (FROM Document))
-"SELECT a, b, c FROM Document ORDER BY a, b, c" -> (SELECT (a b c) (FROM Document)) (ORDER BY a b c)
+"SELECT a, b, c FROM Document ORDER BY a, b, c" -> (SELECT (a b c) (FROM Document)) (ORDER_BY a b c)
 
 
 // Examples from the specs.

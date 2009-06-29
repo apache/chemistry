@@ -76,6 +76,15 @@
           </execution>
         </executions>
       </plugin>
+      <!-- maven resources plugin 2.3 has the new copy-resources goal -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <encoding>UTF-8</encoding>
+          <filtering>false</filtering>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
