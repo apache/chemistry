@@ -21,6 +21,15 @@
 lexer grammar CmisSqlLexer;
 
 tokens {
+    COL;
+    LIST;
+    FUNC;
+    UN_OP;
+    BIN_OP;
+    BIN_OP_ANY;
+    NOT_IN;
+    IS_NULL;
+    IS_NOT_NULL;
     ORDER_BY;
 }
 
@@ -94,21 +103,13 @@ GT : '>';
 LTEQ : '<=';
 GTEQ : '>=';
 
-ID
-    : ('a'..'z'|'A'..'Z'|'_')('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
+ID :
+    ('a'..'z'|'A'..'Z'|'_')
+    ('a'..'z'|'A'..'Z'|'_'|'0'..'9'|':')*
     ;
 
-SIGNED_NUMERIC_LITERAL
-    : '0'
-    | '-'? ('1'..'9')('0'..'9')*
-    ;
+NUM_LIT : '0' | '-'? ('1'..'9')('0'..'9')*;
 
-CHARACTER_STRING_LITERAL
-    : '\'' ( ~'\'' | '\'\'')* '\''
-    ;
+STRING_LIT : '\'' (~'\''|'\'\'')* '\'';
 
-WS  : ( ' ' | '\t' | '\r'? '\n' )+ { $channel=HIDDEN; }
-    ;
-
-
-
+WS : ( ' ' | '\t' | '\r'? '\n' )+ { $channel=HIDDEN; };

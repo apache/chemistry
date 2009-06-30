@@ -22,7 +22,6 @@ parser grammar CmisSqlParser;
 
 options {
     tokenVocab = CmisSqlLexer;
-    language = Java;
     output = AST;
 }
 
@@ -59,9 +58,8 @@ simple_table
 
 select_list
     : STAR
-      -> STAR
     | select_sublist ( COMMA select_sublist )*
-      -> ^(select_sublist select_sublist*)
+      -> ^(LIST select_sublist+)
     ;
 
 select_sublist
@@ -77,23 +75,27 @@ value_expression:
     ;
 
 column_reference:
-    ( qualifier DOT )? column_name;
+    ( qualifier DOT )? column_name
+      -> ^(COL qualifier? column_name)
+    ;
 
 multi_valued_column_reference:
-    ( qualifier DOT )? multi_valued_column_name;
+    ( qualifier DOT )? multi_valued_column_name
+      -> ^(COL qualifier? multi_valued_column_name)
+    ;
 
 string_value_function:
-    ( UPPER | LOWER )? LPAR! column_reference RPAR!;
+    ( f=UPPER | f=LOWER ) LPAR column_reference RPAR
+      -> ^(FUNC $f column_reference)
+    ;
 
 numeric_value_function:
-    SCORE LPAR RPAR;
+    f=SCORE LPAR RPAR -> ^(FUNC $f);
 
 qualifier:
       table_name
     //| correlation_name
     ;
-
-// FROM stuff
 
 from_clause: FROM^ table_reference;
 
@@ -114,16 +116,14 @@ join_type: INNER | LEFT OUTER?;
 join_specification:
     ON^ LPAR! column_reference EQ! column_reference RPAR!;
 
-// WHERE stuff
-
 where_clause: WHERE^ search_condition;
 
-// Rewritten from the spec to avoid left-recursion
 search_condition:
+    // not a BIN_OP
     boolean_term ( OR^ boolean_term )*;
 
-// Rewritten from the spec to avoid left-recursion
 boolean_term:
+    // not a BIN_OP
     boolean_factor ( AND^ boolean_factor )*;
 
 boolean_factor:
@@ -146,42 +146,63 @@ predicate:
     ;
 
 comparison_predicate:
-    value_expression comp_op^ literal;
+    value_expression comp_op literal
+      -> ^(BIN_OP comp_op value_expression literal)
+    ;
 
 comp_op:
     EQ | NEQ | LT | GT | LTEQ | GTEQ;
 
 literal:
-      SIGNED_NUMERIC_LITERAL
-    | CHARACTER_STRING_LITERAL
+      NUM_LIT
+    | STRING_LIT
     ;
 
 in_predicate:
-    column_reference NOT? IN^ LPAR! in_value_list RPAR!;
+      column_reference IN LPAR in_value_list RPAR
+        -> ^(BIN_OP IN column_reference in_value_list)
+    | column_reference NOT IN LPAR in_value_list RPAR
+        -> ^(BIN_OP NOT_IN column_reference in_value_list)
+    ;
 
 in_value_list:
-    literal ( COMMA! literal )*;
+    literal ( COMMA literal )*
+      -> ^(LIST literal+)
+    ;
 
 like_predicate:
-    column_reference NOT? LIKE^ CHARACTER_STRING_LITERAL;
+    column_reference NOT? LIKE^ STRING_LIT;
 
-null_predicate
+null_predicate:
     // second alternative commented out to remove left recursion for now.
     //( column_reference | multi_valued_column_reference ) 'IS' 'NOT'? 'NULL';
-    : column_reference IS^ NOT? NULL
+    column_reference IS
+      ( NOT NULL -> ^(UN_OP IS_NOT_NULL column_reference)
+      | NULL     -> ^(UN_OP IS_NULL     column_reference)
+      )
     ;
 
 quantified_comparison_predicate:
-    literal comp_op^ ANY multi_valued_column_reference;
+    literal comp_op ANY multi_valued_column_reference
+      -> ^(BIN_OP_ANY comp_op literal multi_valued_column_reference)
+    ;
 
 quantified_in_predicate:
-    ANY multi_valued_column_reference NOT? IN^ LPAR! in_value_list RPAR!;
+    ANY multi_valued_column_reference
+      ( NOT IN LPAR in_value_list RPAR
+          -> ^(BIN_OP_ANY NOT_IN multi_valued_column_reference in_value_list)
+      | IN     LPAR in_value_list RPAR
+          -> ^(BIN_OP_ANY IN     multi_valued_column_reference in_value_list)
+      )
+    ;
 
 text_search_predicate:
     CONTAINS^ LPAR! qualifier? COMMA! text_search_expression RPAR!;
 
 folder_predicate:
-    ( IN_FOLDER | IN_TREE )^ LPAR qualifier? COMMA folder_id RPAR;
+    ( f=IN_FOLDER | f=IN_TREE ) LPAR qualifier? COMMA? folder_id RPAR
+      -> ^(FUNC $f qualifier? folder_id)
+    ;
 
 order_by_clause:
     ORDER BY sort_specification ( COMMA sort_specification )*
@@ -189,7 +210,9 @@ order_by_clause:
     ;
 
 sort_specification:
-    column_name ( ASC | DESC )?;
+      column_name                        -> ASC  column_name
+    | column_name ( ord=ASC | ord=DESC ) -> $ord column_name
+    ;
 
 correlation_name:
     ID;
@@ -204,7 +227,7 @@ multi_valued_column_name:
     ID;
 
 folder_id:
-    CHARACTER_STRING_LITERAL;
+    STRING_LIT;
 
 text_search_expression:
-    CHARACTER_STRING_LITERAL;
+    STRING_LIT;

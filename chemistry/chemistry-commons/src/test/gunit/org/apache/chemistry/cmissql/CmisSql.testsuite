@@ -21,7 +21,7 @@ gunit CmisSql;
 package org.apache.chemistry.cmissql;
 }
 
-// Lexer tests
+// ----- Lexer tests -----
 
 ID:
 "a" OK
@@ -29,12 +29,15 @@ ID:
 "toto" OK
 "toto123" OK
 "toto123_" OK
+"_foo" OK
+"foo:bar" OK
 "123" FAIL
 "123abc" FAIL
 
-SIGNED_NUMERIC_LITERAL:
+NUM_LIT:
 "123" OK
 "0" OK
+"-0" FAIL
 "1" OK
 "-1" OK
 "-123" OK
@@ -42,13 +45,14 @@ SIGNED_NUMERIC_LITERAL:
 "-0123" FAIL
 "123abc" FAIL
 
-CHARACTER_STRING_LITERAL:
+STRING_LIT:
 "'abc'" OK
 "'a''bc'" OK
 "'abc" FAIL
 "abc'" FAIL
+"'ab'c'" FAIL
 
-// Parser tests
+// ----- Parser tests -----
 
 literal:
 "123" OK
@@ -60,40 +64,50 @@ literal:
 "'abc'" OK
 
 order_by_clause:
-"ORDER BY toto" -> (ORDER_BY toto)
-"ORDER BY titi ASC" -> (ORDER_BY titi ASC)
-"ORDER BY tutu DESC" -> (ORDER_BY tutu DESC)
+"ORDER BY foo" -> (ORDER_BY ASC foo)
+"ORDER BY foo ASC" -> (ORDER_BY ASC foo)
+"ORDER BY foo DESC" -> (ORDER_BY DESC foo)
+"ORDER BY foo, bar DESC" -> (ORDER_BY ASC foo DESC bar)
 
 column_reference:
-"toto" -> "toto"
-"toto.titi" -> "toto . titi"
+"foo" -> (COL foo)
+"bar.foo" -> (COL bar foo)
 
 in_predicate:
-"toto IN ( 'a', 'b', 'c')" -> (IN toto 'a' 'b' 'c')
-"toto IN ( 1, 2, 3)" -> (IN toto 1 2 3)
+"foo IN ( 'a', 'b', 'c')" -> (BIN_OP IN (COL foo) (LIST 'a' 'b' 'c'))
+"foo NOT IN ( 1, 2, 3)" -> (BIN_OP NOT_IN (COL foo) (LIST 1 2 3))
+
+quantified_in_predicate:
+"ANY foo IN ('a', 1)" -> (BIN_OP_ANY IN (COL foo) (LIST 'a' 1))
 
 comparison_predicate:
-"a = 1" -> (= a 1)
-"a <> 1" -> (<> a 1)
+"foo = 1" -> (BIN_OP = (COL foo) 1)
+"foo <> 1" -> (BIN_OP <> (COL foo) 1)
 
 predicate:
-"a = 1" -> (= a 1)
-"b IN ('test')" -> (IN b 'test')
-"c IS NULL" -> (IS c NULL)
-"c IS NOT NULL" -> (IS c NOT NULL)
-"1 = ANY d" -> (= 1 ANY d)
-"LOWER(type) = 'email'" -> (= LOWER type 'email')
+"foo = 1" -> (BIN_OP = (COL foo) 1)
+"foo IN ('bar')" -> (BIN_OP IN (COL foo) (LIST 'bar'))
+"foo IS NULL" -> (UN_OP IS_NULL (COL foo))
+"foo IS NOT NULL" -> (UN_OP IS_NOT_NULL (COL foo))
+"1 = ANY foo" -> (BIN_OP_ANY = 1 (COL foo))
+"LOWER(foo) = 'bar'" -> (BIN_OP = (FUNC LOWER (COL foo)) 'bar')
+
+folder_predicate:
+"IN_FOLDER(foo,'ID123')" -> (FUNC IN_FOLDER foo 'ID123')
+"IN_FOLDER(,'ID123')" -> (FUNC IN_FOLDER 'ID123')
+"IN_FOLDER('ID123')" -> (FUNC IN_FOLDER 'ID123')
+"IN_TREE(foo,'ID123')" -> (FUNC IN_TREE foo 'ID123')
+"IN_TREE(,'ID123')" -> (FUNC IN_TREE 'ID123')
+"IN_TREE('ID123')" -> (FUNC IN_TREE 'ID123')
 
 search_condition:
-"toto = 1" -> (= toto 1)
-"a = 1 AND b <> 2 OR c >= 3 AND NOT d <= 4" -> (OR (AND (= a 1) (<> b 2)) (AND (>= c 3) (NOT (<= d 4))))
-
-// ---------------------------------------------------------------
+"foo = 1" -> (BIN_OP = (COL foo) 1)
+"a = 1 AND b <> 2 OR c >= 3 AND NOT d <= 4" -> (OR (AND (BIN_OP = (COL a) 1) (BIN_OP <> (COL b) 2)) (AND (BIN_OP >= (COL c) 3) (NOT (BIN_OP <= (COL d) 4))))
 
 query:
 "SELECT * FROM Document" -> (SELECT * (FROM Document))
-"SELECT a, b, c FROM Document" -> (SELECT (a b c) (FROM Document))
-"SELECT a, b, c FROM Document ORDER BY a, b, c" -> (SELECT (a b c) (FROM Document)) (ORDER_BY a b c)
+"SELECT a, b, c FROM Document" -> (SELECT (LIST (COL a) (COL b) (COL c)) (FROM Document))
+"SELECT a, b FROM Document ORDER BY a, b" -> (SELECT (LIST (COL a) (COL b)) (FROM Document)) (ORDER_BY ASC a ASC b)
 
 
 // Examples from the specs.
@@ -102,7 +116,7 @@ query:
 SELECT TITLE, AUTHORS, DATE
 FROM WHITE_PAPER
 WHERE ( IN_TREE( , 'ID00093854763') ) AND ( 'SMITH' = ANY AUTHORS )
->> -> (SELECT (TITLE AUTHORS DATE) (FROM WHITE_PAPER) (WHERE (AND (IN_TREE ( , 'ID00093854763' )) (= 'SMITH' ANY AUTHORS))))
+>> -> (SELECT (LIST (COL TITLE) (COL AUTHORS) (COL DATE)) (FROM WHITE_PAPER) (WHERE (AND (FUNC IN_TREE 'ID00093854763') (BIN_OP_ANY = 'SMITH' (COL AUTHORS)))))
 
 <<
 SELECT OBJECT_ID, SCORE() AS X, DESTINATION, DEPARTURE_DATES
