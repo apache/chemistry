@@ -214,4 +214,25 @@ public class TestSimpleRepository extends TestCase {
         assertNull(conn.getObject(d1, ReturnVersion.THIS));
     }
 
+    public void testBasicQuery() {
+        Connection conn = repo.getConnection(null);
+        Folder root = conn.getRootFolder();
+        Document d1 = root.newDocument("doc");
+        d1.save();
+
+        Collection<CMISObject> res = conn.query("SELECT * FROM Folder", false);
+        assertEquals(1, res.size()); // the root
+        res = conn.query("SELECT * FROM fold", false);
+        assertEquals(0, res.size());
+        res = conn.query("SELECT * FROM doc", false);
+        assertEquals(1, res.size());
+        res = conn.query("SELECT * FROM Folder WHERE Name = 'CMIS_Root_Folder'",
+                false);
+        assertEquals(1, res.size());
+        res = conn.query("SELECT * FROM doc WHERE ObjectId = 'nosuchid'", false);
+        assertEquals(0, res.size());
+        res = conn.query("SELECT * FROM doc WHERE ObjectId <> '123'", false);
+        assertEquals(1, res.size());
+    }
+
 }

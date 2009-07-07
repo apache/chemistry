@@ -27,6 +27,8 @@ import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 
+import org.apache.chemistry.util.GregorianCalendar;
+
 // This file contains code from org.apache.commons.betwixt.XMLUtils
 /**
  *
@@ -393,7 +395,7 @@ public class XMLWriter {
      */
     public static String formatDate(Date date) {
         StringBuilder sb = new StringBuilder(24);
-        Calendar c = Calendar.getInstance(TIMEZONE_UTC);
+        Calendar c = GregorianCalendar.getInstance(TIMEZONE_UTC);
         c.setTime(date);
         sb.append(c.get(Calendar.YEAR));
         sb.append('-');

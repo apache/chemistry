@@ -64,14 +64,19 @@ literal:
 "'abc'" OK
 
 order_by_clause:
-"ORDER BY foo" -> (ORDER_BY ASC foo)
-"ORDER BY foo ASC" -> (ORDER_BY ASC foo)
-"ORDER BY foo DESC" -> (ORDER_BY DESC foo)
-"ORDER BY foo, bar DESC" -> (ORDER_BY ASC foo DESC bar)
+"ORDER BY foo" -> (ORDER_BY foo ASC)
+"ORDER BY foo ASC" -> (ORDER_BY foo ASC)
+"ORDER BY foo DESC" -> (ORDER_BY foo DESC)
+"ORDER BY foo, bar DESC" -> (ORDER_BY foo ASC bar DESC)
 
 column_reference:
 "foo" -> (COL foo)
 "bar.foo" -> (COL bar foo)
+
+table_reference:
+"foo" -> "foo"
+"foo bar" -> (TABLE foo bar)
+"foo AS bar" -> (TABLE foo bar)
 
 in_predicate:
 "foo IN ( 'a', 'b', 'c')" -> (BIN_OP IN (COL foo) (LIST 'a' 'b' 'c'))
@@ -107,7 +112,7 @@ search_condition:
 query:
 "SELECT * FROM Document" -> (SELECT * (FROM Document))
 "SELECT a, b, c FROM Document" -> (SELECT (LIST (COL a) (COL b) (COL c)) (FROM Document))
-"SELECT a, b FROM Document ORDER BY a, b" -> (SELECT (LIST (COL a) (COL b)) (FROM Document)) (ORDER_BY ASC a ASC b)
+"SELECT a, b FROM Document ORDER BY a, b" -> (SELECT (LIST (COL a) (COL b)) (FROM Document) (ORDER_BY a ASC b ASC))
 
 
 // Examples from the specs.

@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +30,7 @@ import javax.jcr.RepositoryException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.util.GregorianCalendar;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.JcrConstants;
@@ -172,7 +172,8 @@ public class JcrNewDocument extends JcrDocument {
                 content.setProperty(JcrConstants.JCR_MIMETYPE, "application/octet-stream");
                 content.setProperty(JcrConstants.JCR_DATA, new ByteArrayInputStream(new byte[0]));
             }
-            content.setProperty(JcrConstants.JCR_LASTMODIFIED, Calendar.getInstance());
+            content.setProperty(JcrConstants.JCR_LASTMODIFIED,
+                    GregorianCalendar.getInstance());
 
             for (String key : values.keySet()) {
                 node.setProperty(key, values.get(key).toString());

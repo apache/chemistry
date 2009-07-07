@@ -50,11 +50,7 @@ options {
 package org.apache.chemistry.cmissql;
 }
 
-query: simple_table order_by_clause?;
-
-simple_table
-    : SELECT^ select_list from_clause where_clause?
-    ;
+query: SELECT^ select_list from_clause where_clause? order_by_clause?;
 
 select_list
     : STAR
@@ -99,10 +95,10 @@ qualifier:
 
 from_clause: FROM^ table_reference;
 
-// Use same trick as http://antlr.org/grammar/1057936474293/DmlSQL2.g to
-// remove left recursion.
-table_reference
-    : table_name ( AS!? correlation_name )?
+table_reference:
+      table_name
+    | table_name AS? correlation_name
+      -> ^(TABLE table_name correlation_name)
     | joined_table
     ;
 
@@ -171,7 +167,11 @@ in_value_list:
     ;
 
 like_predicate:
-    column_reference NOT? LIKE^ STRING_LIT;
+      column_reference LIKE STRING_LIT
+        -> ^(BIN_OP LIKE column_reference STRING_LIT)
+    | column_reference NOT LIKE STRING_LIT
+        -> ^(BIN_OP NOT_LIKE column_reference STRING_LIT)
+    ;
 
 null_predicate:
     // second alternative commented out to remove left recursion for now.
@@ -210,8 +210,8 @@ order_by_clause:
     ;
 
 sort_specification:
-      column_name                        -> ASC  column_name
-    | column_name ( ord=ASC | ord=DESC ) -> $ord column_name
+      column_name -> column_name ASC
+    | column_name ( ASC | DESC )
     ;
 
 correlation_name:

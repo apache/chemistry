@@ -17,10 +17,10 @@
 package org.apache.chemistry.impl.simple;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,9 +28,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import org.antlr.runtime.ANTLRInputStream;
+import org.antlr.runtime.CharStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.TokenSource;
+import org.antlr.runtime.TokenStream;
+import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
@@ -51,6 +57,9 @@ import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
+import org.apache.chemistry.cmissql.CmisSqlLexer;
+import org.apache.chemistry.cmissql.CmisSqlParser;
+import org.apache.chemistry.util.GregorianCalendar;
 
 public class SimpleConnection implements Connection, SPI {
 
@@ -165,12 +174,13 @@ public class SimpleConnection implements Connection, SPI {
                 } else if (Property.CREATED_BY.equals(name)) {
                     update.put(Property.CREATED_BY, "system"); // TODO
                 } else if (Property.CREATION_DATE.equals(name)) {
-                    update.put(Property.CREATION_DATE, Calendar.getInstance());
+                    update.put(Property.CREATION_DATE,
+                            GregorianCalendar.getInstance());
                 } else if (Property.LAST_MODIFIED_BY.equals(name)) {
                     update.put(Property.LAST_MODIFIED_BY, "system"); // TODO
                 } else if (Property.LAST_MODIFICATION_DATE.equals(name)) {
                     update.put(Property.LAST_MODIFICATION_DATE,
-                            Calendar.getInstance());
+                            GregorianCalendar.getInstance());
                 } else if (Property.IS_LATEST_VERSION.equals(name)) {
                     update.put(Property.IS_LATEST_VERSION, Boolean.TRUE);
                 } else if (Property.IS_LATEST_MAJOR_VERSION.equals(name)) {
@@ -501,31 +511,59 @@ public class SimpleConnection implements Connection, SPI {
             boolean searchAllVersions, boolean includeAllowableActions,
             boolean includeRelationships, int maxItems, int skipCount,
             boolean[] hasMoreItems) {
-
-        // TODO temporary implementation for unit testing of protocols
-
-        Matcher m = Pattern.compile("SELECT\\s+([*\\w, ]+)\\s+FROM\\s+(\\w+)",
-                Pattern.CASE_INSENSITIVE).matcher(statement);
-        if (!m.matches()) {
-            throw new RuntimeException("Cannot parse query: " + statement);
-        }
-        String props = m.group(1);
-        if (!"*".equals(props)) {
-            throw new RuntimeException(
-                    "Invalid query, must select all properties: " + statement);
-        }
-        String type = m.group(2);
-
+        // this implementation doesn't try to be very efficient...
         List<ObjectEntry> all = new ArrayList<ObjectEntry>();
+        String tableName = null;
         for (SimpleData data : repository.datas.values()) {
-            // TODO type inheritance not taken into account
-            String t = (String) data.get(SimpleProperty.TYPE_ID);
-            if (!t.equalsIgnoreCase(type)) {
-                continue;
+            if (tableName != null) {
+                // type already available: check early
+                if (!typeMatches(tableName, (String) data.get(Property.TYPE_ID))) {
+                    continue;
+                }
             }
-            all.add(new SimpleObjectEntry(data, this));
+            CmisSqlSimpleWalker.query_return ret = queryData(statement, data);
+            if (tableName == null) {
+                // first time: check late
+                tableName = ret.tableName.toLowerCase();
+                if (!typeMatches(tableName, (String) data.get(Property.TYPE_ID))) {
+                    continue;
+                }
+            }
+            if (ret.matches) {
+                all.add(new SimpleObjectEntry(data, this));
+            }
         }
         return subList(all, maxItems, skipCount, hasMoreItems);
+    }
+
+    protected boolean typeMatches(String tableName, String typeId) {
+        do {
+            Type type = repository.getType(typeId);
+            if (tableName.equals(type.getQueryName().toLowerCase())) {
+                return true;
+            }
+            // check parent type
+            typeId = type.getParentId();
+        } while (typeId != null);
+        return false;
+    }
+
+    protected CmisSqlSimpleWalker.query_return queryData(String statement,
+            SimpleData data) {
+        try {
+            CharStream input = new ANTLRInputStream(new ByteArrayInputStream(
+                    statement.getBytes("UTF-8")));
+            TokenSource lexer = new CmisSqlLexer(input);
+            TokenStream tokens = new CommonTokenStream(lexer);
+            CommonTree tree = (CommonTree) new CmisSqlParser(tokens).query().getTree();
+            CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
+            nodes.setTokenStream(tokens);
+            return new CmisSqlSimpleWalker(nodes).query(data);
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        } catch (RecognitionException e) {
+            throw new RuntimeException("Cannot parse query: " + statement, e);
+        }
     }
 
     public Collection<CMISObject> query(String statement,

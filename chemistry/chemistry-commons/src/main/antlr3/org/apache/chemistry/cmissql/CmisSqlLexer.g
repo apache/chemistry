@@ -21,6 +21,7 @@
 lexer grammar CmisSqlLexer;
 
 tokens {
+    TABLE;
     COL;
     LIST;
     FUNC;
@@ -28,6 +29,7 @@ tokens {
     BIN_OP;
     BIN_OP_ANY;
     NOT_IN;
+    NOT_LIKE;
     IS_NULL;
     IS_NOT_NULL;
     ORDER_BY;
