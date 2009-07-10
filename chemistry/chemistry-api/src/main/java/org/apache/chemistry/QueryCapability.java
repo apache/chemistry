@@ -70,6 +70,14 @@ public enum QueryCapability {
         return o;
     }
 
+    public static QueryCapability get(String value, QueryCapability def) {
+        QueryCapability o = all.get(value);
+        if (o == null) {
+            o = def;
+        }
+        return o;
+    }
+
     @Override
     public String toString() {
         return value;

@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -51,6 +51,7 @@ public abstract class ServiceDocumentReader<T extends Repository> {
 
     protected abstract void setInfo(T repo, RepositoryInfo info);
 
+    @SuppressWarnings("unchecked")
     public T[] read(ReadContext context, InputStream in) throws IOException {
         try {
             StaxReader reader = StaxReader.newReader(in);
@@ -109,9 +110,11 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                     } else if (localName.equals(CMIS.CAPABILITY_VERSION_SPECIFIC_FILING.getLocalPart())) {
                         caps.setHasVersionSpecificFiling(Boolean.parseBoolean(reader.getElementText()));
                     } else if (localName.equals(CMIS.CAPABILITY_QUERY.getLocalPart())) {
-                        caps.setQueryCapability(QueryCapability.get(reader.getElementText()));
+                        caps.setQueryCapability(QueryCapability.get(
+                                reader.getElementText(), QueryCapability.NONE));
                     } else if (localName.equals(CMIS.CAPABILITY_JOIN.getLocalPart())) {
-                        caps.setJoinCapability(JoinCapability.get(reader.getElementText()));
+                        caps.setJoinCapability(JoinCapability.get(
+                                reader.getElementText(), JoinCapability.NO_JOIN));
                     }
                 }
             } else if (localName.equals("repositorySpecificInformation")) {
@@ -146,9 +149,11 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                     } else if (localName.equals(CMIS.CAPABILITY_VERSION_SPECIFIC_FILING.getLocalPart())) {
                         caps.setHasVersionSpecificFiling(Boolean.parseBoolean(el2.getText()));
                     } else if (localName.equals(CMIS.CAPABILITY_QUERY.getLocalPart())) {
-                        caps.setQueryCapability(QueryCapability.get(el2.getText()));
+                        caps.setQueryCapability(QueryCapability.get(
+                                el2.getText(), QueryCapability.NONE));
                     } else if (localName.equals(CMIS.CAPABILITY_JOIN.getLocalPart())) {
-                        caps.setJoinCapability(JoinCapability.get(el2.getText()));
+                        caps.setJoinCapability(JoinCapability.get(
+                                el2.getText(), JoinCapability.NO_JOIN));
                     }
                 }
             } else if (localName.equals("repositorySpecificInformation")) {

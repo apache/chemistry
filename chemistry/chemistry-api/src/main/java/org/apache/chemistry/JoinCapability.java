@@ -60,6 +60,14 @@ public enum JoinCapability {
         return o;
     }
 
+    public static JoinCapability get(String value, JoinCapability def) {
+        JoinCapability o = all.get(value);
+        if (o == null) {
+            o = def;
+        }
+        return o;
+    }
+
     @Override
     public String toString() {
         return value;
