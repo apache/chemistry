@@ -18,7 +18,6 @@
 package org.apache.chemistry.atompub.client;
 
 import org.apache.chemistry.Repository;
-import org.apache.commons.httpclient.auth.CredentialsProvider;
 
 /**
  * The entry point to CMIS repositories exposed by a server.
@@ -42,8 +41,6 @@ public interface ContentManager {
     Repository getDefaultRepository() throws ContentManagerException;
 
     Repository getRepository(String id) throws ContentManagerException;
-
-    CredentialsProvider getCredentialsProvider();
 
     /**
      * Logs-in as the given user. All the subsequent connections made by this

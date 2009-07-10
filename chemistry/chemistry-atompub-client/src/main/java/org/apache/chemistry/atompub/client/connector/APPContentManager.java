@@ -24,7 +24,6 @@ import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScheme;
-import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 
 /**
@@ -38,7 +37,7 @@ public class APPContentManager implements ContentManager {
 
     protected Repository[] repos;
 
-    protected CredentialsProvider credentialsProvider;
+    protected String username;
 
     public APPContentManager(String url) {
         this(url, null);
@@ -47,7 +46,7 @@ public class APPContentManager implements ContentManager {
     protected APPContentManager(String url, Connector connector) {
         this.baseUrl = url;
         if (connector == null) {
-            connector = new HttpClientConnector(new DefaultIOProvider(), this);
+            connector = new HttpClientConnector(new DefaultIOProvider());
         }
         this.connector = connector;
     }
@@ -75,8 +74,7 @@ public class APPContentManager implements ContentManager {
         return repos;
     }
 
-    public Repository getRepository(String id)
-            throws ContentManagerException {
+    public Repository getRepository(String id) throws ContentManagerException {
         for (Repository repository : getRepositories()) {
             if (repository.getId().equals(id)) {
                 return repository;
@@ -101,31 +99,19 @@ public class APPContentManager implements ContentManager {
 
     // TODO have another login method with more generic Credentials
     public void login(String username, String password) {
-        credentialsProvider = new UsernamePasswordCredentialsProvider(username,
-                password);
+        this.username = username;
+        CredentialsProvider cp = new UsernamePasswordCredentialsProvider(
+                username, password);
+        connector.setCredentialsProvider(cp);
     }
 
     public void logout() {
-        credentialsProvider = null;
-    }
-
-    public CredentialsProvider getCredentialsProvider() {
-        return credentialsProvider;
+        username = null;
+        connector.setCredentialsProvider(null);
     }
 
     public String getCurrentLogin() {
-        Credentials credentials;
-        try {
-            credentials = credentialsProvider.getCredentials(null, null, 0,
-                    false);
-        } catch (CredentialsNotAvailableException e) {
-            // cannot happen, our SimpleCredentialsProvider doesn't throw it
-            return null;
-        }
-        if (!(credentials instanceof UsernamePasswordCredentials)) {
-            return null;
-        }
-        return ((UsernamePasswordCredentials) credentials).getUserName();
+        return username;
     }
 
     /**

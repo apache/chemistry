@@ -24,11 +24,14 @@ import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.client.ContentManagerException;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.XmlObjectWriter;
+import org.apache.commons.httpclient.auth.CredentialsProvider;
 
 /**
  * A Connector abstracts the HTTP or AtomPub operations.
  */
 public interface Connector {
+
+    void setCredentialsProvider(CredentialsProvider credentialsProvider);
 
     <T> Response post(Request operation, XmlObjectWriter<T> writer, T object)
             throws ContentManagerException;

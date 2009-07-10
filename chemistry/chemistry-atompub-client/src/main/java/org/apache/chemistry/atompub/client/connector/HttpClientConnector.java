@@ -23,13 +23,13 @@ import java.util.List;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
-import org.apache.chemistry.atompub.client.ContentManager;
 import org.apache.chemistry.atompub.client.ContentManagerException;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.XmlObjectWriter;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
@@ -46,13 +46,14 @@ public class HttpClientConnector implements Connector {
 
     protected final IOProvider io;
 
-    public HttpClientConnector(IOProvider io, ContentManager cm) {
+    public HttpClientConnector(IOProvider io) {
         this.io = io;
-        this.client = new HttpClient();
-        this.client.getParams().setAuthenticationPreemptive(true);
-        this.client.getParams().setParameter(
-                org.apache.commons.httpclient.auth.CredentialsProvider.PROVIDER,
-                cm.getCredentialsProvider());
+        client = new HttpClient();
+    }
+
+    public void setCredentialsProvider(CredentialsProvider cp) {
+        client.getParams().setAuthenticationPreemptive(true);
+        client.getParams().setParameter(CredentialsProvider.PROVIDER, cp);
     }
 
     protected void setMethodParams(HttpMethod method, Request request) {
