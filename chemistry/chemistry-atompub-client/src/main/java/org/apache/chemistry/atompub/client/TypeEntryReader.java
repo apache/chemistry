@@ -13,6 +13,8 @@
  *
  * Authors:
  *     Bogdan Stefanescu, Nuxeo
+ *     Ugo Cei, Sourcesense
+ *     Florent Guillaume, Nuxeo
  */
 package org.apache.chemistry.atompub.client;
 
@@ -28,11 +30,15 @@ import org.apache.chemistry.atompub.client.stax.AbstractEntryReader;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.xml.stax.ChildrenNavigator;
 import org.apache.chemistry.xml.stax.StaxReader;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
  */
 public class TypeEntryReader extends AbstractEntryReader<APPType> {
+
+    private static final Log log = LogFactory.getLog(TypeEntryReader.class);
 
     public static final TypeEntryReader INSTANCE = new TypeEntryReader();
 
@@ -56,12 +62,17 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
     @Override
     protected void readCmisElement(ReadContext context, StaxReader reader,
             APPType entry) throws XMLStreamException {
-        if (CMIS.DOCUMENT_TYPE.getLocalPart().equals(reader.getLocalName())) {
+        String localName = reader.getLocalName();
+        if (CMIS.DOCUMENT_TYPE.getLocalPart().equals(localName)
+                || CMIS.FOLDER_TYPE.getLocalPart().equals(localName)
+                || CMIS.RELATIONSHIP_TYPE.getLocalPart().equals(localName)
+                || CMIS.POLICY_TYPE.getLocalPart().equals(localName)) {
             ChildrenNavigator children = reader.getChildren();
             Map<String, String> map = new HashMap<String, String>();
             Map<String, PropertyDefinition> pdefs = null;
             while (children.next()) {
-                if (reader.getLocalName().startsWith("property")) {
+                String name = reader.getLocalName();
+                if (name.startsWith("property")) {
                     if (pdefs == null) {
                         pdefs = new HashMap<String, PropertyDefinition>();
                     }
@@ -72,11 +83,24 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
                     }
                     pdefs.put(pdef.getName(), pdef);
                 } else {
+                    String text;
                     try {
-                        map.put(reader.getLocalName(), reader.getElementText());
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        text = reader.getElementText();
+                    } catch (XMLStreamException e) {
+                        log.error("Cannot read text element for: " + name, e);
+                        continue;
                     }
+                    if (name.equals(CMIS.BASE_TYPE.getLocalPart())) {
+                        // check base type coherent with base element
+                        // eg "folder" for a <cmis:folderType>
+                        if (!localName.startsWith(text)) {
+                            throw new IllegalArgumentException(
+                                    String.format(
+                                            "Type element <cmis:%s> cannot have base type: %s",
+                                            localName, text));
+                        }
+                    }
+                    map.put(name, text);
                 }
             }
             entry.init(map, pdefs);

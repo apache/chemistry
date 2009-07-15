@@ -13,6 +13,7 @@
  *
  * Authors:
  *     Bogdan Stefanescu, Nuxeo
+ *     Florent Guillaume, Nuxeo
  */
 package org.apache.chemistry.atompub.client.stax;
 
@@ -53,20 +54,12 @@ public class ReadContext {
     public ReadContext(Repository repository, Type type) {
         this.type = type;
         this.repository = repository;
-        if (repository == null) {
-            throw new IllegalArgumentException(
-                    "A BuildContext must be bound to a repository");
-        }
     }
 
     public ReadContext(Connection connection, Type type) {
         this.connection = connection;
         this.type = type;
         this.repository = connection.getRepository();
-        if (repository == null) {
-            throw new IllegalArgumentException(
-                    "A BuildContext must be bound to a repository");
-        }
     }
 
     public Repository getRepository() {

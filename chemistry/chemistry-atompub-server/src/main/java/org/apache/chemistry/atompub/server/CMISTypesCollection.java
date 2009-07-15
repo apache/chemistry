@@ -105,7 +105,24 @@ public class CMISTypesCollection extends CMISCollection<Type> {
 
         // CMIS-specific
         // TODO refactor this to be a proper ExtensibleElement
-        Element dt = factory.newElement(CMIS.DOCUMENT_TYPE, entry);
+        QName typeElementQName;
+        switch (type.getBaseType()) {
+        case DOCUMENT:
+            typeElementQName = CMIS.DOCUMENT_TYPE;
+            break;
+        case FOLDER:
+            typeElementQName = CMIS.FOLDER_TYPE;
+            break;
+        case RELATIONSHIP:
+            typeElementQName = CMIS.RELATIONSHIP_TYPE;
+            break;
+        case POLICY:
+            typeElementQName = CMIS.POLICY_TYPE;
+            break;
+        default:
+            throw new AssertionError(type.getBaseType().toString());
+        }
+        Element dt = factory.newElement(typeElementQName, entry);
         Element el;
         // note: setText is called in a separate statement as JDK 5 has problems
         // compiling when it's on one line (compiler generics bug)

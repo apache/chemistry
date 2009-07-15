@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='utf-8'?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200901">
+  <id>urn:x-id:types</id>
+  <title type="text">Types</title>
+  <author>
+    <name>system</name>
+  </author>
+  <updated>2009-07-15T11:20:19.389Z</updated>
+  <entry>
+    <id>urn:x-tid:document</id>
+    <title type="text">Document Type</title>
+    <updated>2009-07-15T11:20:19.421Z</updated>
+    <link href="http://127.0.0.1:8080/cmis/type/document" rel="self" />
+    <link href="http://127.0.0.1:8080/cmis/type/document" rel="edit" />
+    <link href="http://127.0.0.1:8080/cmis/type/document" rel="alternate" />
+    <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
+    <cmis:documentType>
+      <cmis:typeId>document</cmis:typeId>
+      <cmis:queryName>Document</cmis:queryName>
+      <cmis:displayName>Document Type</cmis:displayName>
+      <cmis:baseType>document</cmis:baseType>
+      <cmis:baseTypeQueryName>Document</cmis:baseTypeQueryName>
+      <cmis:parentId />
+      <cmis:description></cmis:description>
+      <cmis:creatable>true</cmis:creatable>
+      <cmis:fileable>true</cmis:fileable>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:controllable>true</cmis:controllable>
+      <cmis:versionable>true</cmis:versionable>
+      <cmis:includedInSupertypeQuery>true</cmis:includedInSupertypeQuery>
+    </cmis:documentType>
+  </entry>
+  <entry>
+    <id>urn:x-tid:folder</id>
+    <title type="text">Folder Type</title>
+    <updated>2009-07-15T11:20:19.431Z</updated>
+    <link href="http://127.0.0.1:8080/cmis/type/folder" rel="self" />
+    <link href="http://127.0.0.1:8080/cmis/type/folder" rel="edit" />
+    <link href="http://127.0.0.1:8080/cmis/type/folder" rel="alternate" />
+    <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
+    <cmis:folderType>
+      <cmis:typeId>folder</cmis:typeId>
+      <cmis:queryName>Folder</cmis:queryName>
+      <cmis:displayName>Folder Type</cmis:displayName>
+      <cmis:baseType>folder</cmis:baseType>
+      <cmis:baseTypeQueryName>Folder</cmis:baseTypeQueryName>
+      <cmis:parentId />
+      <cmis:description></cmis:description>
+      <cmis:creatable>true</cmis:creatable>
+      <cmis:fileable>true</cmis:fileable>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:controllable>false</cmis:controllable>
+      <cmis:versionable>false</cmis:versionable>
+      <cmis:includedInSupertypeQuery>true</cmis:includedInSupertypeQuery>
+    </cmis:folderType>
+  </entry>
+  <entry>
+    <id>urn:x-tid:relationship</id>
+    <title type="text">Relationship Type</title>
+    <updated>2009-07-15T11:20:19.437Z</updated>
+    <link href="http://127.0.0.1:8080/cmis/type/relationship" rel="self" />
+    <link href="http://127.0.0.1:8080/cmis/type/relationship" rel="edit" />
+    <link href="http://127.0.0.1:8080/cmis/type/relationship" rel="alternate" />
+    <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
+    <cmis:relationshipType>
+      <cmis:typeId>relationship</cmis:typeId>
+      <cmis:queryName>Relationship</cmis:queryName>
+      <cmis:displayName>Relationship Type</cmis:displayName>
+      <cmis:baseType>relationship</cmis:baseType>
+      <cmis:baseTypeQueryName>Relationship</cmis:baseTypeQueryName>
+      <cmis:parentId />
+      <cmis:description></cmis:description>
+      <cmis:creatable>true</cmis:creatable>
+      <cmis:fileable>false</cmis:fileable>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:controllable>false</cmis:controllable>
+      <cmis:versionable>false</cmis:versionable>
+      <cmis:includedInSupertypeQuery>true</cmis:includedInSupertypeQuery>
+    </cmis:relationshipType>
+  </entry>
+  <entry>
+    <id>urn:x-tid:policy</id>
+    <title type="text">Policy Type</title>
+    <updated>2009-07-15T11:20:19.403Z</updated>
+    <link href="http://127.0.0.1:8080/cmis/type/policy" rel="self" />
+    <link href="http://127.0.0.1:8080/cmis/type/policy" rel="edit" />
+    <link href="http://127.0.0.1:8080/cmis/type/policy" rel="alternate" />
+    <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
+    <cmis:policyType>
+      <cmis:typeId>policy</cmis:typeId>
+      <cmis:queryName>Policy</cmis:queryName>
+      <cmis:displayName>Policy Type</cmis:displayName>
+      <cmis:baseType>policy</cmis:baseType>
+      <cmis:baseTypeQueryName>Policy</cmis:baseTypeQueryName>
+      <cmis:parentId />
+      <cmis:description></cmis:description>
+      <cmis:creatable>true</cmis:creatable>
+      <cmis:fileable>false</cmis:fileable>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:controllable>false</cmis:controllable>
+      <cmis:versionable>false</cmis:versionable>
+      <cmis:includedInSupertypeQuery>true</cmis:includedInSupertypeQuery>
+    </cmis:policyType>
+  </entry>
+  <entry>
+    <id>urn:x-tid:Root</id>
+    <title type="text">Root Folder Type</title>
+    <updated>2009-07-15T11:20:19.427Z</updated>
+    <link href="http://127.0.0.1:8080/cmis/type/Root" rel="self" />
+    <link href="http://127.0.0.1:8080/cmis/type/Root" rel="edit" />
+    <link href="http://127.0.0.1:8080/cmis/type/Root" rel="alternate" />
+    <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
+    <cmis:folderType>
+      <cmis:typeId>Root</cmis:typeId>
+      <cmis:queryName>Root</cmis:queryName>
+      <cmis:displayName>Root Folder Type</cmis:displayName>
+      <cmis:baseType>folder</cmis:baseType>
+      <cmis:baseTypeQueryName>Folder</cmis:baseTypeQueryName>
+      <cmis:parentId>folder</cmis:parentId>
+      <cmis:description></cmis:description>
+      <cmis:creatable>false</cmis:creatable>
+      <cmis:fileable>false</cmis:fileable>
+      <cmis:queryable>false</cmis:queryable>
+      <cmis:controllable>false</cmis:controllable>
+      <cmis:versionable>false</cmis:versionable>
+      <cmis:includedInSupertypeQuery>false</cmis:includedInSupertypeQuery>
+    </cmis:folderType>
+  </entry>
+</feed>
