@@ -24,6 +24,8 @@ public class TestSimpleDirect extends BasicTestCase {
     @Override
     public void setUp() throws Exception {
         repository = BasicHelper.makeRepository(null);
+        conn = repository.getConnection(null);
+        spi = conn.getSPI();
     }
 
 }

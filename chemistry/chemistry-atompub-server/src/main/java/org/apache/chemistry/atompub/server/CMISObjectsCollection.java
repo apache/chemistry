@@ -143,13 +143,13 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         // CMIS links
         entry.addLink(getRepositoryLink(request), CMIS.LINK_REPOSITORY);
         entry.addLink(getTypeLink(object.getTypeId(), request), CMIS.LINK_TYPE);
+        String oid = object.getId();
+        entry.addLink(getParentsLink(oid, request), CMIS.LINK_PARENTS);
         Type objectType = repository.getType(object.getTypeId());
         if (objectType.getBaseType() == BaseType.FOLDER) {
-            String oid = object.getId();
             entry.addLink(getChildrenLink(oid, request), CMIS.LINK_CHILDREN);
             entry.addLink(getDescendantsLink(oid, request),
                     CMIS.LINK_DESCENDANTS);
-            entry.addLink(getParentsLink(oid, request), CMIS.LINK_PARENTS);
         }
         // entry.addLink("XXX", CMIS.LINK_ALLOWABLE_ACTIONS);
         // entry.addLink("XXX", CMIS.LINK_RELATIONSHIPS);

@@ -81,4 +81,10 @@ public class SimpleObjectEntry implements ObjectEntry {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + getTypeId() + ',' + getId()
+                + ')';
+    }
+
 }

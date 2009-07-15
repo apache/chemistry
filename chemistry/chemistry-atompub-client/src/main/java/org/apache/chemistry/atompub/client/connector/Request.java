@@ -31,6 +31,9 @@ public class Request {
     protected List<String> params;
 
     public Request(String url) {
+        if (url == null) {
+            throw new NullPointerException("Null url");
+        }
         this.url = url;
     }
 

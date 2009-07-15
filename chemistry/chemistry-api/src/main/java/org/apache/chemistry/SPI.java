@@ -72,7 +72,7 @@ public interface SPI {
      * Returns the descendant objects contained at one or more levels in the
      * tree rooted at the specified folder. The ordering and tree walk algorithm
      * is repository-specific, but should be consistent. A depth of 1 means
-     * returning only the direct children (same as {@link #getChildren}
+     * returning only the direct children (same as {@link #getChildren}).
      * <p>
      * Only the filter-selected properties associated with each object are
      * returned. The content stream is not returned.

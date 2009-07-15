@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -244,11 +245,37 @@ public class SimpleConnection implements Connection, SPI {
      * ----- Navigation Services -----
      */
 
+    /**
+     * Accumulates the descendants into a list recursively.
+     */
+    protected void accumulateDescendants(ObjectId folder, BaseType type,
+            int depth, String filter, boolean includeAllowableActions,
+            boolean includeRelationships, String orderBy, List<ObjectEntry> list) {
+        // TODO deal with paging properly
+        List<ObjectEntry> children = getChildren(folder, type, filter,
+                includeAllowableActions, includeRelationships,
+                Integer.MAX_VALUE, 0, orderBy, new boolean[1]);
+        for (ObjectEntry child : children) {
+            BaseType childType = repository.getType(child.getTypeId()).getBaseType();
+            if (type == null || childType.equals(type)) {
+                list.add(child);
+            }
+            if (depth > 1 && childType == BaseType.FOLDER) {
+                accumulateDescendants(child, type, depth - 1, filter,
+                        includeAllowableActions, includeRelationships, orderBy,
+                        list);
+            }
+        }
+    }
+
     public List<ObjectEntry> getDescendants(ObjectId folder, BaseType type,
             int depth, String filter, boolean includeAllowableActions,
             boolean includeRelationships, String orderBy) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // TODO includeRelationship, includeAllowableActions, orderBy
+        List<ObjectEntry> list = new ArrayList<ObjectEntry>();
+        accumulateDescendants(folder, type, depth, filter,
+                includeAllowableActions, includeRelationships, orderBy, list);
+        return list;
     }
 
     public List<ObjectEntry> getChildren(ObjectId folder, BaseType type,
@@ -294,8 +321,32 @@ public class SimpleConnection implements Connection, SPI {
     public List<ObjectEntry> getFolderParent(ObjectId folder, String filter,
             boolean includeAllowableActions, boolean includeRelationships,
             boolean returnToRoot) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // TODO filter, includeRelationship, includeAllowableActions
+        List<ObjectEntry> result = new LinkedList<ObjectEntry>();
+        SimpleData data = repository.datas.get(folder.getId());
+        if (data == null) {
+            throw new RuntimeException("No such folder: " + folder);
+        }
+        String typeId = (String) data.get(Property.TYPE_ID);
+        Type type = repository.getType(typeId);
+        if (!type.getBaseType().equals(BaseType.FOLDER)) {
+            throw new IllegalArgumentException("Not a folder: " + folder);
+        }
+        String currentId = (String) data.get(Property.ID);
+        do {
+            Set<String> parents = repository.parents.get(currentId);
+            if (parents == null || parents.isEmpty()) {
+                break;
+            }
+            if (parents.size() > 1) {
+                throw new AssertionError(currentId + " has " + parents.size()
+                        + " parents");
+            }
+            currentId = parents.iterator().next();
+            data = repository.datas.get(currentId);
+            result.add(new SimpleObjectEntry(data, this));
+        } while (returnToRoot);
+        return result;
     }
 
     public Collection<ObjectEntry> getObjectParents(ObjectId object,

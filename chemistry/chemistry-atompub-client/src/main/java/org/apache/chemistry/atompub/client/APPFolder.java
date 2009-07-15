@@ -63,7 +63,6 @@ public class APPFolder extends APPDocument implements Folder {
     }
 
     public List<CMISObject> getChildren(BaseType type) {
-        // TODO type
         String href = entry.getLink(CMIS.LINK_CHILDREN);
         Response resp = entry.connection.getConnector().get(new Request(href));
         if (!resp.isOk()) {
@@ -74,8 +73,14 @@ public class APPFolder extends APPDocument implements Folder {
         List<ObjectEntry> feed = resp.getObjectFeed(new ReadContext(
                 entry.connection));
         List<CMISObject> children = new ArrayList<CMISObject>(feed.size());
-        for (ObjectEntry e : feed) {
-            children.add(APPObject.construct((APPObjectEntry) e));
+        APPRepository repository = entry.connection.repository;
+        for (ObjectEntry child : feed) {
+            if (type != null
+                    && !repository.getType(child.getTypeId()).getBaseType().equals(
+                            type)) {
+                continue;
+            }
+            children.add(APPObject.construct((APPObjectEntry) child));
         }
         return children;
     }

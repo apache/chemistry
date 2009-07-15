@@ -26,6 +26,7 @@ import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.Property;
 import org.apache.chemistry.Unfiling;
 
 public class SimpleFolder extends SimpleObject implements Folder {
@@ -54,11 +55,16 @@ public class SimpleFolder extends SimpleObject implements Folder {
     }
 
     public List<CMISObject> getChildren(BaseType type) {
-        // TODO type
-        Set<String> ids = entry.connection.repository.children.get(getId());
+        SimpleRepository repository = entry.connection.repository;
+        Set<String> ids = repository.children.get(getId());
         List<CMISObject> children = new ArrayList<CMISObject>(ids.size());
         for (String id : ids) {
-            SimpleData d = entry.connection.repository.datas.get(id);
+            SimpleData d = repository.datas.get(id);
+            if (type != null
+                    && !repository.getType((String) d.get(Property.TYPE_ID)).getBaseType().equals(
+                            type)) {
+                continue;
+            }
             children.add(SimpleObject.construct(new SimpleObjectEntry(d,
                     entry.connection)));
         }

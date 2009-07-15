@@ -76,10 +76,13 @@ public class TestAtomPubClientServer extends BasicTestCase {
         String serverUrl = startServer();
         ContentManager cm = new APPContentManager(serverUrl);
         repository = cm.getDefaultRepository();
+        conn = repository.getConnection(null);
+        spi = conn.getSPI();
     }
 
     @Override
     public void tearDown() throws Exception {
+        super.tearDown();
         stopServer();
     }
 

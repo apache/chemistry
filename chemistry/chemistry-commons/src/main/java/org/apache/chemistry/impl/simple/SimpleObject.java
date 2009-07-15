@@ -144,4 +144,10 @@ public class SimpleObject extends BaseObject {
         }
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + getTypeId() + ',' + getId()
+                + ')';
+    }
+
 }

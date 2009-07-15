@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -57,6 +58,8 @@ import org.apache.chemistry.atompub.client.stax.XmlProperty;
  *
  */
 public class APPConnection implements Connection, SPI {
+
+    public static final int DEFAULT_MAX_CHILDREN = 20;
 
     protected APPFolder root;
 
@@ -167,33 +170,132 @@ public class APPConnection implements Connection, SPI {
      * ----- Navigation Services -----
      */
 
+    /**
+     * Accumulates the descendants into a list recursively.
+     */
+    protected void accumulateDescendants(ObjectId folder, BaseType type,
+            int depth, String filter, boolean includeAllowableActions,
+            boolean includeRelationships, String orderBy, List<ObjectEntry> list) {
+        // TODO deal with paging properly
+        List<ObjectEntry> children = getChildren(folder, type, filter,
+                includeAllowableActions, includeRelationships,
+                Integer.MAX_VALUE, 0, orderBy, new boolean[1]);
+        for (ObjectEntry child : children) {
+            BaseType childType = repository.getType(child.getTypeId()).getBaseType();
+            if (type == null || childType.equals(type)) {
+                list.add(child);
+            }
+            if (depth > 1 && childType == BaseType.FOLDER) {
+                accumulateDescendants(child, type, depth - 1, filter,
+                        includeAllowableActions, includeRelationships, orderBy,
+                        list);
+            }
+        }
+    }
+
     public List<ObjectEntry> getDescendants(ObjectId folder, BaseType type,
             int depth, String filter, boolean includeAllowableActions,
             boolean includeRelationships, String orderBy) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // TODO includeRelationship, includeAllowableActions, orderBy
+        List<ObjectEntry> list = new ArrayList<ObjectEntry>();
+        accumulateDescendants(folder, type, depth, filter,
+                includeAllowableActions, includeRelationships, orderBy, list);
+        return list;
     }
 
     public List<ObjectEntry> getChildren(ObjectId folder, BaseType type,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, int maxItems, int skipCount,
             String orderBy, boolean[] hasMoreItems) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // TODO filter, includeRelationship, includeAllowableActions, orderBy
+        if (maxItems <= 0) {
+            maxItems = DEFAULT_MAX_CHILDREN;
+        }
+        if (skipCount < 0) {
+            skipCount = 0;
+        }
+
+        String href = getObjectEntry(folder).getLink(CMIS.LINK_CHILDREN);
+        Response resp = connector.get(new Request(href));
+        if (!resp.isOk()) {
+            throw new ContentManagerException(
+                    "Remote server returned error code: "
+                            + resp.getStatusCode());
+        }
+        List<ObjectEntry> feed = resp.getObjectFeed(new ReadContext(this));
+
+        List<ObjectEntry> result = new LinkedList<ObjectEntry>();
+        hasMoreItems[0] = false;
+        boolean done = false;
+        for (ObjectEntry entry : feed) {
+            // type filtering
+            if (type != null
+                    && !repository.getType(entry.getTypeId()).getBaseType().equals(
+                            type)) {
+                continue;
+            }
+            // skip
+            if (skipCount > 0) {
+                skipCount--;
+                continue;
+            }
+            // entry is ok
+            if (done) {
+                hasMoreItems[0] = true;
+                break;
+            }
+            result.add(entry);
+            if (result.size() >= maxItems) {
+                done = true;
+                // don't break now, we still have to find out if there are more
+                // non-filtered entries to fill in hasMoreItems
+            }
+        }
+        return result;
     }
 
     public List<ObjectEntry> getFolderParent(ObjectId folder, String filter,
             boolean includeAllowableActions, boolean includeRelationships,
             boolean returnToRoot) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // TODO filter, includeRelationship, includeAllowableActions
+        List<ObjectEntry> result = new LinkedList<ObjectEntry>();
+        APPObjectEntry current = getObjectEntry(folder);
+        Type type = repository.getType(current.getTypeId());
+        if (!type.getBaseType().equals(BaseType.FOLDER)) {
+            throw new IllegalArgumentException("Not a folder: " + folder);
+        }
+        String rootId = current.connection.getRootFolder().getId();
+        ReadContext ctx = new ReadContext(this);
+        do {
+            if (current.getId().equals(rootId)) {
+                break;
+            }
+            String href = current.getLink(CMIS.LINK_PARENTS);
+            Response resp = connector.get(new Request(href));
+            if (!resp.isOk()) {
+                throw new ContentManagerException(
+                        "Remote server returned error code: "
+                                + resp.getStatusCode());
+            }
+            current = (APPObjectEntry) resp.getObject(ctx);
+            result.add(current);
+        } while (returnToRoot);
+        return result;
     }
 
     public Collection<ObjectEntry> getObjectParents(ObjectId object,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // TODO filter, includeRelationship, includeAllowableActions
+        APPObjectEntry current = getObjectEntry(object);
+        String href = current.getLink(CMIS.LINK_PARENTS);
+        Response resp = connector.get(new Request(href));
+        if (!resp.isOk()) {
+            throw new ContentManagerException(
+                    "Remote server returned error code: "
+                            + resp.getStatusCode());
+        }
+        return resp.getObjectFeed(new ReadContext(this));
     }
 
     public Collection<ObjectEntry> getCheckedoutDocuments(ObjectId folder,
@@ -208,32 +310,40 @@ public class APPConnection implements Connection, SPI {
      * ----- Object Services -----
      */
 
-    /**
-     * TODO temporary implementation to have something working until search is
-     * implemented Versions not yet supported
+    /*
+     * TODO hardcoded Chemistry URL pattern here...
+     *
+     * Will use URI templates (or, failing that, search) in future versions.
      */
-    public CMISObject getObject(ObjectId object, ReturnVersion returnVersion) {
-        String objectId = object.getId();
-        if (returnVersion == null) {
-            returnVersion = ReturnVersion.THIS;
+    protected APPObjectEntry getObjectEntry(ObjectId objectId) {
+        if (objectId instanceof APPObjectEntry) {
+            return ((APPObjectEntry) objectId);
         }
-        // TODO hardcoded URL pattern here...
         String href = repository.getCollectionHref(CMIS.COL_ROOT_CHILDREN);
-        if (!href.matches(".*/children/[0-9a-f-]{36}")) {
-            throw new AssertionError(href);
+        if (href.matches(".*/children/[0-9a-f-]{36}")) {
+            href = href.substring(0, href.length() - "/children/".length() - 36);
+        } else {
+            if (href.matches(".*/children$")) {
+                href = href.substring(0, href.length() - "/children".length());
+            } else {
+                throw new AssertionError(href);
+            }
         }
-        href = href.substring(0, href.length() - "/children/".length() - 36);
-        href += "/object/" + objectId;
-        Request req = new Request(href);
-        Response resp = connector.get(req);
+        href += "/object/" + objectId.getId();
+        Response resp = connector.get(new Request(href));
         if (!resp.isOk()) {
             throw new ContentManagerException(
                     "Remote server returned error code: "
                             + resp.getStatusCode());
         }
+        return (APPObjectEntry) resp.getObject(new ReadContext(this));
+    }
 
-        APPObjectEntry entry = (APPObjectEntry) resp.getObject(new ReadContext(
-                this));
+    public CMISObject getObject(ObjectId object, ReturnVersion returnVersion) {
+        if (returnVersion == null) {
+            returnVersion = ReturnVersion.THIS;
+        }
+        APPObjectEntry entry = getObjectEntry(object);
         Type type = getRepository().getType(entry.getTypeId());
         switch (type.getBaseType()) {
         case DOCUMENT:
