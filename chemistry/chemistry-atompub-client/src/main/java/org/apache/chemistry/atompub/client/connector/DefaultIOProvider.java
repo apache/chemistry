@@ -13,6 +13,8 @@
  *
  * Authors:
  *     Bogdan Stefanescu, Nuxeo
+ *     Florent Guillaume, Nuxeo
+ *     Ugo Cei, Sourcesense
  */
 package org.apache.chemistry.atompub.client.connector;
 
@@ -51,8 +53,6 @@ public class DefaultIOProvider implements IOProvider {
 
     protected APPObjectEntryWriter objectWriter = new APPObjectEntryWriter();
 
-    protected QueryWriter queryWriter = new QueryWriter();
-
     public EntryReader<? extends ObjectEntry> getObjectEntryReader() {
         return objectReader;
     }
@@ -77,7 +77,13 @@ public class DefaultIOProvider implements IOProvider {
         return objectWriter;
     }
 
-    public XmlObjectWriter<String> getQueryWriter() {
+    public XmlObjectWriter<String> getQueryWriter(boolean searchAllVersions,
+            long maxItems, long skipCount, boolean includeAllowableActions) {
+        QueryWriter queryWriter = new QueryWriter();
+        queryWriter.setSearchAllVersions(searchAllVersions);
+        queryWriter.setMaxItems(maxItems);
+        queryWriter.setSkipCount(skipCount);
+        queryWriter.setIncludeAllowableActions(includeAllowableActions);
         return queryWriter;
     }
 

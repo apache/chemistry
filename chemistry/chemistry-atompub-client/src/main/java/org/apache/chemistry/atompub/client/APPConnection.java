@@ -14,6 +14,7 @@
  * Authors:
  *     Bogdan Stefanescu, Nuxeo
  *     Florent Guillaume, Nuxeo
+ *     Ugo Cei, Sourcesense
  */
 package org.apache.chemistry.atompub.client;
 
@@ -352,7 +353,8 @@ public class APPConnection implements Connection, SPI {
             boolean includeRelationships, int maxItems, int skipCount,
             boolean[] hasMoreItems) {
         String href = repository.getCollectionHref(CMIS.COL_QUERY);
-        Response resp = connector.postQuery(new Request(href), statement);
+        Response resp = connector.postQuery(new Request(href), statement,
+                searchAllVersions, maxItems, skipCount, includeAllowableActions);
         if (!resp.isOk()) {
             throw new ContentManagerException(
                     "Remote server returned error code: "
@@ -366,7 +368,7 @@ public class APPConnection implements Connection, SPI {
             boolean searchAllVersions) {
         boolean[] hasMoreItems = new boolean[1];
         Collection<ObjectEntry> res = query(statement, searchAllVersions,
-                false, false, 0, 0, hasMoreItems);
+                false, false, -1, 0, hasMoreItems);
         List<CMISObject> objects = new ArrayList<CMISObject>(res.size());
         for (ObjectEntry e : res) {
             objects.add(APPObject.construct((APPObjectEntry) e));

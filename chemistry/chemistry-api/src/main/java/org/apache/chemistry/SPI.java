@@ -197,9 +197,6 @@ public interface SPI {
      * @param includeAllowableActions {@code true} to include allowable actions
      * @param includeRelationships {@code true} if relationships should be
      *            included as well
-     * @param maxItems the maximum number of objects to returned, or {@code 0}
-     *            for a repository-specific default
-     * @param skipCount the skip count
      * @return the collection of parent folders
      */
     Collection<ObjectEntry> getObjectParents(ObjectId object, String filter,

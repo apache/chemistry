@@ -62,12 +62,15 @@ public interface Connector {
     Response putObject(Request req, ObjectEntry entry)
             throws ContentManagerException;
 
-    Response putQuery(Request req, String query) throws ContentManagerException;
+    Response putQuery(Request req, String query, boolean searchAllVersions,
+            long maxItems, long skipCount, boolean includeAllowableActions)
+            throws ContentManagerException;
 
     Response postObject(Request req, ObjectEntry entry)
             throws ContentManagerException;
 
-    Response postQuery(Request req, String query)
+    Response postQuery(Request req, String query, boolean searchAllVersions,
+            long maxItems, long skipCount, boolean includeAllowableActions)
             throws ContentManagerException;
 
 }

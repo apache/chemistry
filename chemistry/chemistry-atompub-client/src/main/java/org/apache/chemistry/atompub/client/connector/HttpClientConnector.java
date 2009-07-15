@@ -13,6 +13,7 @@
  *
  * Authors:
  *     Bogdan Stefanescu, Nuxeo
+ *     Ugo Cei, Sourcesense
  */
 package org.apache.chemistry.atompub.client.connector;
 
@@ -210,9 +211,11 @@ public class HttpClientConnector implements Connector {
         return put(req, io.getObjectEntryWriter(), entry);
     }
 
-    public Response putQuery(Request req, String query)
-            throws ContentManagerException {
-        return put(req, io.getQueryWriter(), query);
+    public Response putQuery(Request req, String query,
+            boolean searchAllVersions, long maxItems, long skipCount,
+            boolean includeAllowableActions) throws ContentManagerException {
+        return put(req, io.getQueryWriter(searchAllVersions, maxItems,
+                skipCount, includeAllowableActions), query);
     }
 
     public Response postObject(Request req, ObjectEntry entry)
@@ -220,9 +223,11 @@ public class HttpClientConnector implements Connector {
         return post(req, io.getObjectEntryWriter(), entry);
     }
 
-    public Response postQuery(Request req, String query)
-            throws ContentManagerException {
-        return post(req, io.getQueryWriter(), query);
+    public Response postQuery(Request req, String query,
+            boolean searchAllVersions, long maxItems, long skipCount,
+            boolean includeAllowableActions) throws ContentManagerException {
+        return post(req, io.getQueryWriter(searchAllVersions, maxItems,
+                skipCount, includeAllowableActions), query);
     }
 
     public static class XmlObjectWriterRequestEntity<T> implements

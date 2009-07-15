@@ -13,6 +13,7 @@
  *
  * Authors:
  *     Bogdan Stefanescu, Nuxeo
+ *     Ugo Cei, Sourcesense
  */
 package org.apache.chemistry.atompub.client.connector;
 
@@ -27,7 +28,8 @@ import org.apache.chemistry.atompub.client.stax.ServiceDocumentReader;
 import org.apache.chemistry.atompub.client.stax.XmlObjectWriter;
 
 /**
- * This abstracts the operations used to read and write objects from XML streams.
+ * This abstracts the operations used to read and write objects from XML
+ * streams.
  */
 public interface IOProvider {
 
@@ -43,6 +45,7 @@ public interface IOProvider {
 
     XmlObjectWriter<ObjectEntry> getObjectEntryWriter();
 
-    XmlObjectWriter<String> getQueryWriter();
+    XmlObjectWriter<String> getQueryWriter(boolean searchAllVersions,
+            long maxItems, long skipCount, boolean includeAllowableActions);
 
 }

@@ -14,6 +14,8 @@
  * Authors:
  *     Original org.apache.commons.betwixt.XMLUtils authors
  *     Bogdan Stefanescu, Nuxeo
+ *     Florent Guillaume, Nuxeo
+ *     Ugo Cei, Sourcesense
  */
 package org.apache.chemistry.xml.stax;
 
@@ -244,6 +246,14 @@ public class XMLWriter {
 
     public XMLWriter content(Date value) throws IOException {
         return content(formatDate(value));
+    }
+
+    public XMLWriter content(int value) throws IOException {
+        return content(String.valueOf(value));
+    }
+
+    public XMLWriter content(long value) throws IOException {
+        return content(String.valueOf(value));
     }
 
     public XMLWriter text(String text) throws IOException {

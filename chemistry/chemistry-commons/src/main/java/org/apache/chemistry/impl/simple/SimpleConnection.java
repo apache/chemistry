@@ -276,7 +276,7 @@ public class SimpleConnection implements Connection, SPI {
             hasMoreItems[0] = false;
             return Collections.emptyList();
         }
-        if (maxItems == 0) {
+        if (maxItems <= 0) {
             maxItems = total;
         }
         int toIndex = skipCount + maxItems;

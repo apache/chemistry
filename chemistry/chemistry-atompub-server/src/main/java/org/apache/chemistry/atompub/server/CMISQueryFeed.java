@@ -96,7 +96,7 @@ public class CMISQueryFeed extends CMISObjectsCollection {
         boolean searchAllVersions = false;
         boolean includeAllowableActions = false;
         boolean includeRelationships = false;
-        int maxItems = 0;
+        int maxItems = -1;
         int skipCount = 0;
         boolean[] hasMoreItems = new boolean[1];
         Collection<ObjectEntry> results = spi.query(statement,

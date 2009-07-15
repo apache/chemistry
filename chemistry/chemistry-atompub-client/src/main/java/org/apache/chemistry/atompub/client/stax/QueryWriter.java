@@ -13,6 +13,7 @@
  *
  * Authors:
  *     Florent Guillaume, Nuxeo
+ *     Ugo Cei, Sourcesense
  */
 package org.apache.chemistry.atompub.client.stax;
 
@@ -26,6 +27,44 @@ import org.apache.chemistry.xml.stax.XMLWriter;
  */
 public class QueryWriter extends AbstractXmlObjectWriter<String> {
 
+    protected boolean searchAllVersions;
+
+    protected long maxItems = -1;
+
+    protected long skipCount;
+
+    protected boolean includeAllowableActions;
+
+    public void setSearchAllVersions(boolean searchAllVersions) {
+        this.searchAllVersions = searchAllVersions;
+    }
+
+    /**
+     * Sets the max number of items to return.
+     * <p>
+     * The default, {@code -1}, means that no max number will be sent
+     *
+     * @param maxItems the max number of items
+     */
+    public void setMaxItems(long maxItems) {
+        this.maxItems = maxItems;
+    }
+
+    /**
+     * Sets the skip count.
+     * <p>
+     * The default is {@code 0}.
+     *
+     * @param skipCount the skip count
+     */
+    public void setSkipCount(long skipCount) {
+        this.skipCount = skipCount;
+    }
+
+    public void setIncludeAllowableActions(boolean includeAllowableActions) {
+        this.includeAllowableActions = includeAllowableActions;
+    }
+
     @Override
     public String getContentType() {
         return "application/cmisquery+xml";
@@ -37,9 +76,13 @@ public class QueryWriter extends AbstractXmlObjectWriter<String> {
         xw.element(CMIS.QUERY);
         xw.start();
         xw.element(CMIS.STATEMENT).econtent(statement);
-        xw.element(CMIS.SEARCH_ALL_VERSIONS).content("false");
-        xw.element(CMIS.PAGE_SIZE).content("0");
-        xw.element(CMIS.SKIP_COUNT).content("0");
+        xw.element(CMIS.SEARCH_ALL_VERSIONS).content(searchAllVersions);
+        if (maxItems > -1) {
+            xw.element(CMIS.PAGE_SIZE).content(maxItems);
+        }
+        xw.element(CMIS.SKIP_COUNT).content(skipCount);
+        xw.element(CMIS.INCLUDE_ALLOWABLE_ACTIONS).content(
+                includeAllowableActions);
         xw.end();
         xw.end();
     }

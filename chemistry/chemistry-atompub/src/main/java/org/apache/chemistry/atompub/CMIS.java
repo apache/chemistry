@@ -185,9 +185,11 @@ public class CMIS {
 
     public static final QName SEARCH_ALL_VERSIONS = CMISName("searchAllVersions");
 
-    public static final QName PAGE_SIZE = CMISName("pageSize");
+    public static final QName PAGE_SIZE = CMISName("pageSize"); // TODO rename to maxItems
 
     public static final QName SKIP_COUNT = CMISName("skipCount");
+
+    public static final QName INCLUDE_ALLOWABLE_ACTIONS = CMISName("includeAllowableActions");
 
     /*
      * ----- CMIS Collection Types -----
