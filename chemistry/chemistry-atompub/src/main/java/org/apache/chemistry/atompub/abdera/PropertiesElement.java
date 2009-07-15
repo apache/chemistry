@@ -56,7 +56,7 @@ public class PropertiesElement extends ExtensibleElementWrapper {
             // don't merge these two lines as JDK 5 has problems compiling it
             val.setText(contentStreamURI);
 
-            // Alfresco compat (incorrect property name and type):
+            // Alfresco COMPAT (incorrect property name and type):
             el = addExtension(CMIS.PROPERTY_STRING);
             el.setAttributeValue(CMIS.NAME, "ContentStreamURI");
             val = el.addExtension(CMIS.VALUE);
@@ -73,6 +73,16 @@ public class PropertiesElement extends ExtensibleElementWrapper {
                 continue;
             }
             setProperty(values.get(name), propertyDefinition);
+
+            // Alfresco COMPAT (BaseType not in 0.6)
+            if (name.equals(Property.TYPE_ID)) {
+                // emit BaseType as well
+                ExtensibleElement el = addExtension(CMIS.PROPERTY_STRING);
+                el.setAttributeValue(CMIS.NAME, "BaseType");
+                Element val = el.addExtension(CMIS.VALUE);
+                // don't merge these two lines
+                val.setText(type.getBaseType().toString());
+            }
         }
     }
 

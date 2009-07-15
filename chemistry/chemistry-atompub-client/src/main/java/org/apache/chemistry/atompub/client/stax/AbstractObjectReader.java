@@ -13,6 +13,8 @@
  *
  * Authors:
  *     Bogdan Stefanescu, Nuxeo
+ *     Florent Guillaume, Nuxeo
+ *     Ugo Cei, Sourcesense
  */
 package org.apache.chemistry.atompub.client.stax;
 
@@ -117,15 +119,16 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
 
     protected void readPropertyWithType(ReadContext ctx, StaxReader reader,
             T object, XmlProperty p, Type entryType) {
-        PropertyDefinition def = entryType.getPropertyDefinition(p.getName());
+        String name = p.getName();
+        PropertyDefinition def = entryType.getPropertyDefinition(name);
         if (def == null) {
-            if (p.getName().equals("ContentStreamURI")) {
-                // ignore, old Alfresco compat
+            if (name.equals("ContentStreamURI") || name.equals("BaseType")) {
+                // Alfresco COMPAT
                 // see org.apache.chemistry.atompub.abdera.PropertiesElement
                 return;
             }
-            throw new ParseException("No such property definition: "
-                    + p.getName() + " in type: " + entryType);
+            throw new ParseException("No such property definition: " + name
+                    + " in type: " + entryType);
         }
         p.setDefinition(def);
         readProperty(ctx, reader, object, p);
