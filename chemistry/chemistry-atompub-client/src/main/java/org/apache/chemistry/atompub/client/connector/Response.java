@@ -37,6 +37,13 @@ public interface Response {
 
     InputStream getStream() throws ContentManagerException;
 
+    /**
+     * Gets the stream length.
+     *
+     * @return the stream length, or -1 if not know
+     */
+    long getStreamLength() throws ContentManagerException;
+
     byte[] getBytes() throws ContentManagerException;
 
     String getString() throws ContentManagerException;

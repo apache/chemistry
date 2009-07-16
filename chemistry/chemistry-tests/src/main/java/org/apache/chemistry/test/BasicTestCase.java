@@ -17,6 +17,7 @@
  */
 package org.apache.chemistry.test;
 
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import junit.framework.TestCase;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
+import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectEntry;
@@ -34,6 +36,7 @@ import org.apache.chemistry.Property;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Basic test on a repository created with {@link BasicHelper#makeRepository}.
@@ -140,6 +143,38 @@ public abstract class BasicTestCase extends TestCase {
         Collection<ObjectEntry> parents = spi.getObjectParents(doc, null,
                 false, false);
         assertEquals(1, parents.size());
+    }
+
+    @SuppressWarnings("null")
+    public void testGetStream() throws Exception {
+        Folder f1 = (Folder) conn.getRootFolder().getChildren(BaseType.FOLDER).get(
+                0);
+        Folder f2 = (Folder) f1.getChildren(BaseType.FOLDER).get(0);
+        Document other = null;
+        Document dog = null;
+        for (CMISObject child : f2.getChildren(null)) {
+            String name = child.getName();
+            if (name.equals("doc 2")) {
+                other = (Document) child;
+            } else if (name.equals("dog.jpg")) {
+                dog = (Document) child;
+            }
+        }
+        assertNotNull("doc 2 not found", other);
+        assertNull(other.getContentStream());
+        assertNull(other.getStream());
+
+        assertNotNull("dog not found", dog);
+        ContentStream cs = dog.getContentStream();
+        assertTrue(cs.getLength() != 0);
+        assertEquals("dog.jpg", cs.getFilename());
+        assertEquals("image/jpeg", cs.getMimeType());
+        assertNotNull(cs.getStream());
+        InputStream in = dog.getStream();
+        assertNotNull(in);
+        byte[] array = IOUtils.toByteArray(in);
+        assertTrue(array.length != 0);
+        assertEquals(array.length, cs.getLength());
     }
 
 }

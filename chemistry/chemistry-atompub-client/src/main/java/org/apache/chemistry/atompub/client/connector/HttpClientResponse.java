@@ -31,6 +31,7 @@ import org.apache.chemistry.atompub.client.ContentManagerException;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpMethodBase;
 
 /**
  *
@@ -70,6 +71,13 @@ public class HttpClientResponse implements Response {
             throw new ContentManagerException("Failed to get response stream",
                     e);
         }
+    }
+
+    public long getStreamLength() {
+        if (method instanceof HttpMethodBase) {
+            return ((HttpMethodBase) method).getResponseContentLength();
+        }
+        return -1;
     }
 
     public String getString() throws ContentManagerException {

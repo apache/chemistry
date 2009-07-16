@@ -104,7 +104,8 @@ public class SimpleDocument extends SimpleObject implements Document {
             entry.setValue(SimpleProperty.CONTENT_BYTES_KEY, null);
         } else {
             entry.setValue(Property.CONTENT_STREAM_LENGTH,
-                    Integer.valueOf((int) contentStream.getLength())); // cast?
+                    Integer.valueOf((int) contentStream.getLength())); // TODO
+                                                                       // Long
             entry.setValue(Property.CONTENT_STREAM_MIME_TYPE,
                     contentStream.getMimeType());
             entry.setValue(Property.CONTENT_STREAM_FILENAME,
