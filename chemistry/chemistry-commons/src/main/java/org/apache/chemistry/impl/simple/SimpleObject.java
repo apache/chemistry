@@ -121,12 +121,15 @@ public class SimpleObject extends BaseObject {
     }
 
     public Serializable getValue(String name) {
-        PropertyDefinition propertyDefinition = getType().getPropertyDefinition(
-                name);
-        if (propertyDefinition == null) {
+        PropertyDefinition pd = getType().getPropertyDefinition(name);
+        if (pd == null) {
             throw new IllegalArgumentException(name);
         }
-        return entry.data.get(name);
+        Serializable value = entry.data.get(name);
+        if (value == null) {
+            value = pd.getDefaultValue();
+        }
+        return value;
     }
 
     public Property getProperty(String name) {

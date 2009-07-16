@@ -16,6 +16,7 @@
  */
 package org.apache.chemistry.atompub.server;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +36,7 @@ import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.abdera.PropertiesElement;
 
 /**
  * CMIS Collection for the Types.
@@ -211,8 +213,16 @@ public class CMISTypesCollection extends CMISCollection<Type> {
                 el.setText(pd.isQueryable() ? "true" : "false");
                 el = factory.newElement(CMIS.ORDERABLE, def);
                 el.setText(pd.isOrderable() ? "true" : "false");
+                Serializable defaultValue = pd.getDefaultValue();
+                if (defaultValue != null) {
+                    Element dv = factory.newElement(CMIS.DEFAULT_VALUE, def);
+                    for (String s : PropertiesElement.getStringsForValue(
+                            defaultValue, pd)) {
+                        el = factory.newElement(CMIS.VALUE, dv);
+                        el.setText(s);
+                    }
+                }
                 // TODO choices
-                // TODO defaultValue
                 switch (pd.getType().ordinal()) {
                 case PropertyType.STRING_ORD:
                     // TODO maxLength

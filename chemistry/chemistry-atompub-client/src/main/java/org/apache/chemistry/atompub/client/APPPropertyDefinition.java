@@ -14,6 +14,7 @@
  * Authors:
  *     Florent Guillaume, Nuxeo
  *     Bogdan Stefanescu, Nuxeo
+ *     Ugo Cei, Sourcesense
  */
 package org.apache.chemistry.atompub.client;
 
@@ -21,6 +22,7 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +55,8 @@ public class APPPropertyDefinition implements PropertyDefinition {
     protected boolean multiValued;
 
     protected Updatability updatability;
+
+    protected Serializable defaultValue;
 
     protected APPPropertyDefinition(Map<String, Object> map) {
         this.map = map;
@@ -114,29 +118,23 @@ public class APPPropertyDefinition implements PropertyDefinition {
     }
 
     public Serializable getDefaultValue() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return defaultValue;
     }
 
     public Updatability getUpdatability() {
         if (updatability == null) {
-            String text = (String) map.get("updateability");
-            if ("readonly".equals(text)) {
-                updatability = Updatability.READ_ONLY;
-            } else if ("whencheckedout".equals(text)) {
-                updatability = Updatability.WHEN_CHECKED_OUT;
-            } else {
-                updatability = Updatability.READ_WRITE;
-            }
+            String text = (String) map.get(CMIS.UPDATABILITY.getLocalPart());
+            updatability = Updatability.get(text, Updatability.READ_WRITE);
         }
         return updatability;
     }
 
     public boolean isQueryable() {
-        return getBooleanValue("queryable");
+        return getBooleanValue(CMIS.QUERYABLE.getLocalPart());
     }
 
     public boolean isOrderable() {
-        return getBooleanValue("orderable");
+        return getBooleanValue(CMIS.ORDERABLE.getLocalPart());
     }
 
     public int getPrecision() {
@@ -212,17 +210,25 @@ public class APPPropertyDefinition implements PropertyDefinition {
     public static APPPropertyDefinition fromXml(StaxReader reader)
             throws XMLStreamException {
         HashMap<String, Object> map = new HashMap<String, Object>();
+        List<String> defaultValues = null;
         APPPropertyDefinition pd = new APPPropertyDefinition(map);
         ChildrenNavigator nav = reader.getChildren();
         while (nav.next()) {
             String tag = reader.getLocalName();
-            if ("name".equals(tag)) {
+            if (tag.equals(CMIS.NAME.getLocalPart())) {
                 pd.name = reader.getElementText();
-            } else if ("cardinality".equals(tag)) {
+            } else if (tag.equals(CMIS.CARDINALITY.getLocalPart())) {
                 String text = reader.getElementText();
                 pd.multiValued = isMultiValued(text);
-            } else if ("defaultValue".equals(tag)) {
-                // TODO not yet implemented
+            } else if (tag.equals(CMIS.DEFAULT_VALUE.getLocalPart())) {
+                defaultValues = new LinkedList<String>();
+                ChildrenNavigator nav2 = reader.getChildren();
+                while (nav2.next()) {
+                    String tag2 = reader.getLocalName();
+                    if (tag2.equals(CMIS.VALUE.getLocalPart())) {
+                        defaultValues.add(reader.getElementText());
+                    }
+                }
             } else if (tag.startsWith("choice")) {
                 // TODO not yet implemented
             } else {
@@ -234,6 +240,32 @@ public class APPPropertyDefinition implements PropertyDefinition {
                     val = adapter.readValue(reader.getElementText());
                 }
                 map.put(tag, val);
+            }
+        }
+        // set default value now that we know if we're multi-valued
+        if (defaultValues != null) {
+            ValueAdapter va = ValueAdapter.getAdapter(pd.getType());
+            if (pd.isMultiValued()) {
+                Serializable[] ar = va.createArray(defaultValues.size());
+                if (pd.getType() == PropertyType.STRING) {
+                    // optimization for string lists
+                    pd.defaultValue = defaultValues.toArray(ar);
+                } else {
+                    int i = 0;
+                    for (String s : defaultValues) {
+                        ar[i++] = va.readValue(s);
+                    }
+                    pd.defaultValue = ar;
+                }
+            } else {
+                if (defaultValues.size() != 1) {
+                    log.error("Single-valued property " + pd.getName()
+                            + " got a defaultValue of size: "
+                            + defaultValues.size());
+                }
+                if (!defaultValues.isEmpty()) {
+                    pd.defaultValue = va.readValue(defaultValues.get(0));
+                }
             }
         }
         return pd;

@@ -49,8 +49,8 @@ public class BasicHelper {
     public static Repository makeRepository(String rootId) throws IOException {
         PropertyDefinition p1 = new SimplePropertyDefinition("title",
                 "def:title", "Title", "", false, PropertyType.STRING, false,
-                null, false, false, "", Updatability.READ_WRITE, true, true, 0,
-                null, null, -1, null, null);
+                null, false, false, "(no title)", Updatability.READ_WRITE,
+                true, true, 0, null, null, -1, null, null);
         PropertyDefinition p2 = new SimplePropertyDefinition("description",
                 "def:description", "Description", "", false,
                 PropertyType.STRING, false, null, false, false, "",
@@ -99,8 +99,7 @@ public class BasicHelper {
 
         Document doc3 = folder2.newDocument("doc");
         doc3.setName("doc 3");
-        doc3.setValue("title", "doc 3 title");
-        doc3.setValue("description", "The doc 3 descr");
+        // no title, description or date
         ContentStream cs = new SimpleContentStream(
                 TEST_FILE_CONTENT.getBytes("UTF-8"), "text/plain", "doc3.txt",
                 null);

@@ -18,6 +18,7 @@
 package org.apache.chemistry.test;
 
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +77,29 @@ public abstract class BasicTestCase extends TestCase {
 
         List<CMISObject> entries = root.getChildren(null);
         assertEquals(1, entries.size());
+    }
+
+    public void testDefaultValues() {
+        Folder root = conn.getRootFolder();
+        Folder f1 = (Folder) root.getChildren(BaseType.FOLDER).get(0);
+        Folder f2 = (Folder) f1.getChildren(BaseType.FOLDER).get(0);
+        List<CMISObject> children = f2.getChildren(null);
+        assertEquals(3, children.size());
+        // check default values
+        for (CMISObject child : children) {
+            String name = child.getName();
+            String title = (String) child.getValue("title");
+            String descr = (String) child.getValue("description");
+            Calendar date = (Calendar) child.getValue("date");
+            if (name.equals("doc 3")) {
+                assertEquals("(no title)", title); // uses defaultValue
+                assertEquals("", descr); // emptry string defaultValue
+            } else {
+                assertNotSame("", title);
+                assertNotNull(descr);
+            }
+            assertNull(date);
+        }
     }
 
     public void testQuery() {

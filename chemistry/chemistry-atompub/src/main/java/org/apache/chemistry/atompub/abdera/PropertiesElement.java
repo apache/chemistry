@@ -86,7 +86,6 @@ public class PropertiesElement extends ExtensibleElementWrapper {
         }
     }
 
-    @SuppressWarnings("null")
     public void setProperty(Serializable value,
             PropertyDefinition propertyDefinition) {
         if (value == null) {
@@ -94,13 +93,35 @@ public class PropertiesElement extends ExtensibleElementWrapper {
             return;
         }
         QName qname = propertyQName(propertyDefinition);
+        List<String> values = getStringsForValue(value, propertyDefinition);
+        ExtensibleElement el = addExtension(qname);
+        el.setAttributeValue(CMIS.NAME, propertyDefinition.getName());
+        for (String s : values) {
+            Element val = el.addExtension(CMIS.VALUE);
+            // don't merge these two lines as JDK 5 has problems compiling it
+            val.setText(s);
+        }
+    }
+
+    /**
+     * Finds the list of Strings that are the XML form for the value.
+     *
+     * @param value the native value
+     * @param propertyDefinition the property definition
+     * @return the list of serialized strings
+     */
+    // TODO move this to a helper somewhere else
+    @SuppressWarnings("null")
+    public static List<String> getStringsForValue(Serializable value,
+            PropertyDefinition propertyDefinition) {
         boolean multi = propertyDefinition.isMultiValued();
         List<String> values = null;
         if (multi) {
             if (value.getClass().isArray()) {
                 values = new ArrayList<String>(Array.getLength(value));
-            } else { // TODO: complex property don't know how to handle skip it
-                return;
+            } else {
+                // TODO: complex property don't know how to handle skip it
+                return null;
             }
         }
         PropertyType type = propertyDefinition.getType();
@@ -158,13 +179,7 @@ public class PropertiesElement extends ExtensibleElementWrapper {
         default:
             throw new UnsupportedOperationException(type.toString());
         }
-        ExtensibleElement el = addExtension(qname);
-        el.setAttributeValue(CMIS.NAME, propertyDefinition.getName());
-        for (String s : values) {
-            Element val = el.addExtension(CMIS.VALUE);
-            // don't merge these two lines as JDK 5 has problems compiling it
-            val.setText(s);
-        }
+        return values;
     }
 
     protected static QName propertyQName(PropertyDefinition def) {

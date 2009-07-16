@@ -79,6 +79,14 @@ public enum Updatability {
         return o;
     }
 
+    public static Updatability get(String value, Updatability def) {
+        Updatability o = all.get(value);
+        if (o == null) {
+            o = def;
+        }
+        return o;
+    }
+
     @Override
     public String toString() {
         return value;
