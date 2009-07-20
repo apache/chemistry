@@ -36,6 +36,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.chemistry</groupId>
+      <artifactId>chemistry-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.chemistry</groupId>
       <artifactId>chemistry-atompub</artifactId>
     </dependency>
 
@@ -50,12 +54,6 @@
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.chemistry</groupId>
-      <artifactId>chemistry-commons</artifactId>
-      <scope>test</scope>
     </dependency>
 
     <dependency>

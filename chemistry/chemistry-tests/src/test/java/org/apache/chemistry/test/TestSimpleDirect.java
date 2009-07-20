@@ -22,10 +22,8 @@ package org.apache.chemistry.test;
 public class TestSimpleDirect extends BasicTestCase {
 
     @Override
-    public void setUp() throws Exception {
+    public void makeRepository() throws Exception {
         repository = BasicHelper.makeRepository(null);
-        conn = repository.getConnection(null);
-        spi = conn.getSPI();
     }
 
 }

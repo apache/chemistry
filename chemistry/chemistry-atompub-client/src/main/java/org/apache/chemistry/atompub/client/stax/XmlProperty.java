@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
+import org.apache.chemistry.atompub.ValueAdapter;
 
 /**
  * Implementation of a CMIS property to be used when reading data from XML.

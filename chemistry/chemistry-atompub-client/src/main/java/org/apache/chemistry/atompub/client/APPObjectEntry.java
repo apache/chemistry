@@ -32,7 +32,7 @@ import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.atompub.CMIS;
-import org.apache.chemistry.atompub.client.stax.ValueAdapter;
+import org.apache.chemistry.atompub.ValueAdapter;
 import org.apache.chemistry.atompub.client.stax.XmlProperty;
 import org.apache.chemistry.xml.stax.XMLWriter;
 
@@ -95,6 +95,10 @@ public class APPObjectEntry implements ObjectEntry {
         return connection;
     }
 
+    protected boolean isCreation() {
+        return getId() == null;
+    }
+
     public String getId() {
         return (String) getValue(Property.ID);
     }
@@ -109,8 +113,18 @@ public class APPObjectEntry implements ObjectEntry {
     }
 
     // not in API
-    public XmlProperty getProperty(String name) {
-        return properties.get(name);
+    public XmlProperty getProperty(PropertyDefinition pd) {
+        XmlProperty p = properties.get(pd.getName());
+        if (p != null) {
+            return p;
+        }
+        if (isCreation()) {
+            p = new XmlProperty(pd);
+            properties.put(pd.getName(), p);
+        } else {
+            // TODO not fetched...
+        }
+        return p;
     }
 
     public Map<String, Serializable> getValues() {
@@ -178,7 +192,7 @@ public class APPObjectEntry implements ObjectEntry {
         xw.start();
         for (XmlProperty p : properties.values()) {
             ValueAdapter va = p.getAdapter();
-            xw.element(va.getPropertyName()).attr(CMIS.NAME, p.getName());
+            xw.element(va.getPropertyQName()).attr(CMIS.NAME, p.getName());
             xw.start();
             if (p.isValueLoaded()) {
                 Serializable v = p.getValue();

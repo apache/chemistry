@@ -18,16 +18,19 @@ package org.apache.chemistry.atompub.server;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.AtomDate;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Document;
+import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Person;
@@ -37,17 +40,22 @@ import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.context.AbstractResponseContext;
 import org.apache.abdera.protocol.server.context.BaseResponseContext;
+import org.apache.abdera.protocol.server.context.EmptyResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.util.EntityTag;
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.ReturnVersion;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.atompub.CMIS;
 import org.apache.chemistry.atompub.abdera.ObjectElement;
+import org.apache.chemistry.impl.simple.SimpleObjectId;
 
 /**
  * CMIS Collection for object entries.
@@ -169,6 +177,46 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
 
     // getEntries is abstract, must be implemented
 
+    @Override
+    public ResponseContext postEntry(RequestContext request) {
+        // TODO parameter sourceFolderId
+        // TODO parameter versioningState
+        Entry entry;
+        try {
+            entry = getEntryFromRequest(request);
+        } catch (ResponseContextException e) {
+            return createErrorResponse(e);
+        }
+        if (entry == null || !ProviderHelper.isValidEntry(entry)) {
+            return new EmptyResponseContext(400);
+        }
+        Element obb = entry.getFirstChild(CMIS.OBJECT);
+        ObjectElement objectElement = new ObjectElement(obb, repository);
+        Map<String, Serializable> properties;
+        try {
+            properties = objectElement.getProperties();
+        } catch (Exception e) { // TODO proper exception
+            return createErrorResponse(new ResponseContextException(500, e));
+        }
+        ContentStream contentStream = null;
+        VersioningState versioningState = null;
+        String typeId = (String) properties.get(Property.TYPE_ID);
+        // not null, already checked in getProperties
+
+        SPI spi = repository.getSPI(); // TODO XXX connection leak
+        ObjectId objectId = spi.createDocument(typeId, properties,
+                new SimpleObjectId(id), contentStream, versioningState);
+        ObjectEntry object = spi.getProperties(objectId, null, null, false,
+                false);
+
+        entry.setUpdated(new Date());
+        entry.getIdElement().setValue(getId(object));
+        String link = getObjectLink(object.getId(), request);
+        entry.addLink(link, "edit");
+        return buildCreateEntryResponse(link, entry);
+    }
+
+    // unused but abstract in parent...
     @Override
     public ObjectEntry postEntry(String title, IRI id, String summary,
             Date updated, List<Person> authors, Content content,

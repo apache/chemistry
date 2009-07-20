@@ -15,11 +15,12 @@
  *     Bogdan Stefanescu, Nuxeo
  *     Florent Guillaume, Nuxeo
  */
-package org.apache.chemistry.atompub.client.stax;
+package org.apache.chemistry.atompub;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,7 +30,6 @@ import javax.xml.namespace.QName;
 
 import org.apache.abdera.model.AtomDate;
 import org.apache.chemistry.PropertyType;
-import org.apache.chemistry.atompub.CMIS;
 
 /**
  * Adapter between a Java value and a XML String representation.
@@ -42,7 +42,9 @@ public abstract class ValueAdapter {
 
     public abstract Serializable[] createArray(int size);
 
-    public abstract QName getPropertyName();
+    public abstract QName getPropertyQName();
+
+    public abstract PropertyType getPropertyType();
 
     protected static final class StringValueAdapter extends ValueAdapter {
         @Override
@@ -61,8 +63,13 @@ public abstract class ValueAdapter {
         }
 
         @Override
-        public QName getPropertyName() {
+        public QName getPropertyQName() {
             return CMIS.PROPERTY_STRING;
+        }
+
+        @Override
+        public PropertyType getPropertyType() {
+            return PropertyType.STRING;
         }
     }
 
@@ -83,8 +90,13 @@ public abstract class ValueAdapter {
         }
 
         @Override
-        public QName getPropertyName() {
+        public QName getPropertyQName() {
             return CMIS.PROPERTY_DECIMAL;
+        }
+
+        @Override
+        public PropertyType getPropertyType() {
+            return PropertyType.DECIMAL;
         }
     }
 
@@ -105,8 +117,13 @@ public abstract class ValueAdapter {
         }
 
         @Override
-        public QName getPropertyName() {
+        public QName getPropertyQName() {
             return CMIS.PROPERTY_INTEGER;
+        }
+
+        @Override
+        public PropertyType getPropertyType() {
+            return PropertyType.INTEGER;
         }
     }
 
@@ -127,8 +144,13 @@ public abstract class ValueAdapter {
         }
 
         @Override
-        public QName getPropertyName() {
+        public QName getPropertyQName() {
             return CMIS.PROPERTY_BOOLEAN;
+        }
+
+        @Override
+        public PropertyType getPropertyType() {
+            return PropertyType.BOOLEAN;
         }
     }
 
@@ -151,8 +173,13 @@ public abstract class ValueAdapter {
         }
 
         @Override
-        public QName getPropertyName() {
+        public QName getPropertyQName() {
             return CMIS.PROPERTY_DATETIME;
+        }
+
+        @Override
+        public PropertyType getPropertyType() {
+            return PropertyType.DATETIME;
         }
     }
 
@@ -177,8 +204,13 @@ public abstract class ValueAdapter {
         }
 
         @Override
-        public QName getPropertyName() {
+        public QName getPropertyQName() {
             return CMIS.PROPERTY_URI;
+        }
+
+        @Override
+        public PropertyType getPropertyType() {
+            return PropertyType.URI;
         }
     }
 
@@ -199,8 +231,13 @@ public abstract class ValueAdapter {
         }
 
         @Override
-        public QName getPropertyName() {
+        public QName getPropertyQName() {
             return CMIS.PROPERTY_ID;
+        }
+
+        @Override
+        public PropertyType getPropertyType() {
+            return PropertyType.ID;
         }
     }
 
@@ -221,8 +258,13 @@ public abstract class ValueAdapter {
         }
 
         @Override
-        public QName getPropertyName() {
+        public QName getPropertyQName() {
             return CMIS.PROPERTY_XML;
+        }
+
+        @Override
+        public PropertyType getPropertyType() {
+            return PropertyType.XML;
         }
     }
 
@@ -243,8 +285,13 @@ public abstract class ValueAdapter {
         }
 
         @Override
-        public QName getPropertyName() {
+        public QName getPropertyQName() {
             return CMIS.PROPERTY_HTML;
+        }
+
+        @Override
+        public PropertyType getPropertyType() {
+            return PropertyType.HTML;
         }
     }
 
@@ -266,21 +313,33 @@ public abstract class ValueAdapter {
 
     public static final ValueAdapter HTML = new HtmlValueAdapter();
 
-    private static final Map<Integer, ValueAdapter> adapters = new HashMap<Integer, ValueAdapter>();
+    protected static final Map<PropertyType, ValueAdapter> byPropertyType = new HashMap<PropertyType, ValueAdapter>();
+
+    protected static final Map<QName, ValueAdapter> byQName = new HashMap<QName, ValueAdapter>();
+
     static {
-        adapters.put(Integer.valueOf(PropertyType.STRING_ORD), STRING);
-        adapters.put(Integer.valueOf(PropertyType.DECIMAL_ORD), DECIMAL);
-        adapters.put(Integer.valueOf(PropertyType.INTEGER_ORD), INTEGER);
-        adapters.put(Integer.valueOf(PropertyType.BOOLEAN_ORD), BOOLEAN);
-        adapters.put(Integer.valueOf(PropertyType.DATETIME_ORD), DATETIME);
-        adapters.put(Integer.valueOf(PropertyType.URI_ORD), URI);
-        adapters.put(Integer.valueOf(PropertyType.ID_ORD), ID);
-        adapters.put(Integer.valueOf(PropertyType.XML_ORD), XML);
-        adapters.put(Integer.valueOf(PropertyType.HTML_ORD), HTML);
+        for (ValueAdapter va : Arrays.asList( //
+                STRING, //
+                DECIMAL, //
+                INTEGER, //
+                BOOLEAN, //
+                DATETIME, //
+                URI, //
+                ID, //
+                XML, //
+                HTML //
+        )) {
+            byPropertyType.put(va.getPropertyType(), va);
+            byQName.put(va.getPropertyQName(), va);
+        }
     }
 
     public static ValueAdapter getAdapter(PropertyType type) {
-        return adapters.get(Integer.valueOf(type.ordinal()));
+        return byPropertyType.get(type);
+    }
+
+    public static ValueAdapter getAdapter(QName qname) {
+        return byQName.get(qname);
     }
 
 }

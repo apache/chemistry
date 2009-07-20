@@ -33,7 +33,7 @@ import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Updatability;
 import org.apache.chemistry.atompub.CMIS;
-import org.apache.chemistry.atompub.client.stax.ValueAdapter;
+import org.apache.chemistry.atompub.ValueAdapter;
 import org.apache.chemistry.xml.stax.ChildrenNavigator;
 import org.apache.chemistry.xml.stax.StaxReader;
 import org.apache.commons.logging.Log;

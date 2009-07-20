@@ -149,18 +149,26 @@ public abstract class APPObject extends BaseObject {
      * ----- data access -----
      */
 
+    @Override
+    public String getId() {
+        return entry.getId();
+    }
+
+    @Override
+    public String getTypeId() {
+        return entry.getTypeId();
+    }
+
     public Type getType() {
         return type;
     }
 
     public Property getProperty(String name) {
-        PropertyDefinition propertyDefinition = getType().getPropertyDefinition(
-                name);
-        if (propertyDefinition == null) {
+        PropertyDefinition pd = getType().getPropertyDefinition(name);
+        if (pd == null) {
             throw new IllegalArgumentException(name);
         }
-        // TODO deal with unfetched properties
-        return entry.getProperty(name);
+        return entry.getProperty(pd);
     }
 
     public Serializable getValue(String name) {
@@ -178,7 +186,7 @@ public abstract class APPObject extends BaseObject {
 
     public void save() {
         try {
-            if (getId() == null) {
+            if (entry.isCreation()) {
                 create();
             } else {
                 update();
@@ -194,6 +202,9 @@ public abstract class APPObject extends BaseObject {
             throw new IllegalArgumentException(
                     "Cannot create entry: no 'cmis-parents' link is present");
         }
+        // TODO in 0.5 the parents link (entry or feed) wasn't defined clearly
+        // TODO hardcoded Chemistry URL pattern here...
+        href = href.replaceAll("/object/([0-9a-f-]{36}$)", "/children/$1");
         Request req = new Request(href);
         req.setHeader("Content-Type", "application/atom+xml;type=entry");
         Response resp = entry.connection.getConnector().postObject(req, entry);

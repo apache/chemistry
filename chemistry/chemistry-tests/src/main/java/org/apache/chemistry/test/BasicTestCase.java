@@ -54,10 +54,29 @@ public abstract class BasicTestCase extends TestCase {
 
     public SPI spi;
 
+    public abstract void makeRepository() throws Exception;
+
+    @Override
+    public void setUp() throws Exception {
+        makeRepository();
+        openConn();
+    }
+
     @Override
     public void tearDown() throws Exception {
-        conn.close();
+        closeConn();
         super.tearDown();
+    }
+
+    protected void openConn() {
+        conn = repository.getConnection(null);
+        spi = conn.getSPI();
+    }
+
+    protected void closeConn() {
+        conn.close();
+        conn = null;
+        spi = null;
     }
 
     public void testBasic() {
@@ -88,9 +107,9 @@ public abstract class BasicTestCase extends TestCase {
         // check default values
         for (CMISObject child : children) {
             String name = child.getName();
-            String title = (String) child.getValue("title");
-            String descr = (String) child.getValue("description");
-            Calendar date = (Calendar) child.getValue("date");
+            String title = child.getString("title");
+            String descr = child.getString("description");
+            Calendar date = child.getDateTime("date");
             if (name.equals("doc 3")) {
                 assertEquals("(no title)", title); // uses defaultValue
                 assertEquals("", descr); // emptry string defaultValue
@@ -199,6 +218,24 @@ public abstract class BasicTestCase extends TestCase {
         byte[] array = IOUtils.toByteArray(in);
         assertTrue(array.length != 0);
         assertEquals(array.length, cs.getLength());
+    }
+
+    public void testNewDocument() {
+        Folder root = conn.getRootFolder();
+        assertEquals(0, root.getChildren(BaseType.DOCUMENT).size());
+        Document doc = root.newDocument("doc");
+        doc.setName("mydoc");
+        doc.setValue("title", "mytitle");
+        doc.save();
+        // new connection
+        closeConn();
+        openConn();
+        root = conn.getRootFolder();
+        List<CMISObject> children = root.getChildren(BaseType.DOCUMENT);
+        assertEquals(1, children.size());
+        doc = (Document) children.get(0);
+        assertEquals("mydoc", doc.getName());
+        assertEquals("mytitle", doc.getString("title"));
     }
 
 }

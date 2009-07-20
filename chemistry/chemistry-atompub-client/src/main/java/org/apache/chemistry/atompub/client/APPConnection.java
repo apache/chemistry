@@ -121,7 +121,6 @@ public class APPConnection implements Connection, SPI {
         }
         APPObjectEntry entry = newObjectEntry(typeId);
         if (folder != null) {
-            entry.setValue(Property.PARENT_ID, folder.getId());
             entry.addLink(CMIS.LINK_PARENTS,
                     ((APPFolder) folder).entry.getEditLink());
         }

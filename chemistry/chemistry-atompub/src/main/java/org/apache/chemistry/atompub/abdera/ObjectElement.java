@@ -17,11 +17,14 @@
 package org.apache.chemistry.atompub.abdera;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 
 import org.apache.abdera.factory.Factory;
+import org.apache.abdera.model.Element;
 import org.apache.abdera.model.ExtensibleElementWrapper;
 import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.CMIS;
 
@@ -30,18 +33,38 @@ import org.apache.chemistry.atompub.CMIS;
  */
 public class ObjectElement extends ExtensibleElementWrapper {
 
+    protected final PropertiesElement properties;
+
+    /**
+     * Constructor used when parsing XML.
+     * @param repository
+     */
+    public ObjectElement(Element internal, Repository repository) {
+        super(internal);
+        Element propsel = getFirstChild(CMIS.PROPERTIES);
+        properties = propsel == null ? null : new PropertiesElement(propsel, repository);
+    }
+
+    /**
+     * Constructor used when generating XML.
+     */
     public ObjectElement(Factory factory, ObjectEntry object, Type type,
             String contentStreamURI) {
         super(factory, CMIS.OBJECT);
-        setProperties(object.getValues(), type, contentStreamURI);
+        properties = new PropertiesElement(getFactory(), contentStreamURI);
+        addExtension(properties);
+        setProperties(object.getValues(), type);
     }
 
-    public void setProperties(Map<String, Serializable> values, Type type,
-            String contentStreamURI) {
-        PropertiesElement el = new PropertiesElement(getFactory(),
-                contentStreamURI);
-        addExtension(el);
-        el.setProperties(values, type);
+    public Map<String, Serializable> getProperties() {
+        if (properties == null) {
+            return Collections.emptyMap();
+        }
+        return properties.getProperties();
+    }
+
+    public void setProperties(Map<String, Serializable> values, Type type) {
+        properties.setProperties(values, type);
     }
 
     // TODO allowable actions

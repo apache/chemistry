@@ -20,11 +20,14 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Arrays;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -35,20 +38,35 @@ import org.apache.abdera.model.ExtensibleElementWrapper;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
+import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.ValueAdapter;
 
 /**
  * Abdera ElementWrapper for an AtomPub cmis:properties element.
  */
 public class PropertiesElement extends ExtensibleElementWrapper {
 
+    protected final Repository repository;
+
     /**
-     * Constructor. ContentStreamUri is special-cased as it depends on the
-     * server context (base URL).
+     * Constructor used when parsing XML.
+     */
+    public PropertiesElement(Element internal, Repository repository) {
+        super(internal);
+        this.repository = repository;
+    }
+
+    /**
+     * Constructor used when generating XML.
+     * <p>
+     * ContentStreamUri is special-cased as it depends on the server context
+     * (base URL).
      */
     public PropertiesElement(Factory factory, String contentStreamURI) {
         super(factory, CMIS.PROPERTIES);
+        repository = null;
         if (contentStreamURI != null) {
             ExtensibleElement el = addExtension(CMIS.PROPERTY_URI);
             el.setAttributeValue(CMIS.NAME, Property.CONTENT_STREAM_URI);
@@ -63,6 +81,76 @@ public class PropertiesElement extends ExtensibleElementWrapper {
             // don't merge these two lines
             val.setText(contentStreamURI);
         }
+    }
+
+    public Map<String, Serializable> getProperties() {
+        // collector raw values
+        Map<String, List<Serializable>> raw = new HashMap<String, List<Serializable>>();
+        Map<String, ValueAdapter> adapters = new HashMap<String, ValueAdapter>();
+        String typeId = null;
+        for (Element element : getElements()) {
+            ValueAdapter va = ValueAdapter.getAdapter(element.getQName());
+            if (va == null) {
+                continue;
+            }
+            String name = element.getAttributeValue(CMIS.NAME);
+            adapters.put(name, va);
+            List<Serializable> list = new LinkedList<Serializable>();
+            for (Element el : element.getElements()) {
+                if (!el.getQName().equals(CMIS.VALUE)) {
+                    continue;
+                }
+                Serializable value = va.readValue(el.getText());
+                list.add(value);
+                if (name.equals(Property.TYPE_ID)) {
+                    typeId = (String) value;
+                }
+            }
+            raw.put(name, list);
+        }
+        if (typeId == null) {
+            // TODO proper exception
+            throw new RuntimeException("Invalid object with no "
+                    + Property.TYPE_ID);
+        }
+        Type type = repository.getType(typeId);
+        if (type == null) {
+            // TODO proper exception
+            throw new RuntimeException("Unknown type: " + typeId);
+        }
+        // now we have the type, build actual values
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        for (Entry<String, List<Serializable>> e : raw.entrySet()) {
+            String name = e.getKey();
+            PropertyDefinition pd = type.getPropertyDefinition(name);
+            if (pd == null) {
+                // TODO proper exception
+                throw new RuntimeException("Illegal property: " + name
+                        + " for type: " + typeId);
+            }
+            // check type matches qname
+            ValueAdapter va = adapters.get(name);
+            if (va.getPropertyType() != pd.getType()) {
+                throw new RuntimeException("Property: " + name + " has type: "
+                        + typeId + " but used element: "
+                        + va.getPropertyQName());
+            }
+            // put multi-value in array
+            List<Serializable> list = e.getValue();
+            Serializable value;
+            if (pd.isMultiValued()) {
+                value = list.toArray(va.createArray(list.size()));
+            } else {
+                if (list.size() != 1) {
+                    throw new RuntimeException("Property: " + name
+                            + " for type: " + typeId
+                            + " cannot have multi-values: " + list);
+                }
+                value = list.get(0);
+            }
+            properties.put(name, value);
+        }
+        return properties;
     }
 
     public void setProperties(Map<String, Serializable> values, Type type) {

@@ -72,12 +72,10 @@ public class TestAtomPubClientServer extends BasicTestCase {
     }
 
     @Override
-    public void setUp() throws Exception {
+    public void makeRepository() throws Exception {
         String serverUrl = startServer();
         ContentManager cm = new APPContentManager(serverUrl);
         repository = cm.getDefaultRepository();
-        conn = repository.getConnection(null);
-        spi = conn.getSPI();
     }
 
     @Override

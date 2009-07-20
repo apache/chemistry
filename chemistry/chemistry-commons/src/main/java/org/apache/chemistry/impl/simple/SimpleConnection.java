@@ -151,97 +151,6 @@ public class SimpleConnection implements Connection, SPI {
     }
 
     /*
-     * Called by save() for new objects.
-     */
-    protected void saveObject(SimpleObject object) {
-        SimpleData data = object.entry.data;
-        Map<String, Serializable> update = new HashMap<String, Serializable>();
-
-        // generate an ID
-        String id = repository.generateId();
-        update.put(Property.ID, id);
-
-        // check mandatory properties
-        Type type = object.getType();
-        for (PropertyDefinition pd : type.getPropertyDefinitions()) {
-            String name = pd.getName();
-            if (Property.ID.equals(name)) {
-                // ignore, set later
-                continue;
-            }
-            if (pd.isRequired() && !data.containsKey(name)) {
-                if (Property.NAME.equals(name)) {
-                    update.put(Property.NAME, id);
-                } else if (Property.CREATED_BY.equals(name)) {
-                    update.put(Property.CREATED_BY, "system"); // TODO
-                } else if (Property.CREATION_DATE.equals(name)) {
-                    update.put(Property.CREATION_DATE,
-                            GregorianCalendar.getInstance());
-                } else if (Property.LAST_MODIFIED_BY.equals(name)) {
-                    update.put(Property.LAST_MODIFIED_BY, "system"); // TODO
-                } else if (Property.LAST_MODIFICATION_DATE.equals(name)) {
-                    update.put(Property.LAST_MODIFICATION_DATE,
-                            GregorianCalendar.getInstance());
-                } else if (Property.IS_LATEST_VERSION.equals(name)) {
-                    update.put(Property.IS_LATEST_VERSION, Boolean.TRUE);
-                } else if (Property.IS_LATEST_MAJOR_VERSION.equals(name)) {
-                    update.put(Property.IS_LATEST_MAJOR_VERSION, Boolean.TRUE);
-                } else if (Property.IS_VERSION_SERIES_CHECKED_OUT.equals(name)) {
-                    update.put(Property.IS_VERSION_SERIES_CHECKED_OUT,
-                            Boolean.FALSE);
-                } else if (Property.VERSION_SERIES_ID.equals(name)) {
-                    update.put(Property.VERSION_SERIES_ID, id);
-                } else if (Property.VERSION_LABEL.equals(name)) {
-                    update.put(Property.VERSION_LABEL, "1.0");
-                } else {
-                    throw new RuntimeException("Missing property: " + name); // TODO
-                }
-            }
-        }
-
-        // content stream
-        byte[] bytes = (byte[]) data.get(SimpleProperty.CONTENT_BYTES_KEY);
-        if (type.getContentStreamAllowed() == ContentStreamPresence.REQUIRED
-                && bytes == null) {
-            throw new RuntimeException("Content stream required"); // TODO
-        }
-        update.put(Property.CONTENT_STREAM_LENGTH, bytes == null ? null
-                : Integer.valueOf(bytes.length)); // TODO Long
-
-        // update data once we know there's no error
-        for (String key : update.keySet()) {
-            Serializable value = update.get(key);
-            if (value == null) {
-                data.remove(key);
-            } else {
-                data.put(key, value);
-            }
-        }
-
-        // properties
-        repository.datas.put(id, data); // TODO clone data?
-
-        // parents/children
-        String parentId = (String) data.get(Property.PARENT_ID);
-        if (type.getBaseType() == BaseType.FOLDER) {
-            // new folder, empty set of children
-            repository.children.put(id, repository.newSet());
-        } else {
-            // only folders have this property
-            data.remove(Property.PARENT_ID);
-        }
-        if (parentId != null) {
-            // this object is filed
-            // pointer to parent
-            Set<String> parents = repository.newSet();
-            parents.add(parentId);
-            repository.parents.put(id, parents);
-            // new pointer to child
-            repository.children.get(parentId).add(id);
-        }
-    }
-
-    /*
      * ----- Navigation Services -----
      */
 
@@ -375,11 +284,112 @@ public class SimpleConnection implements Connection, SPI {
      * ----- Object Services -----
      */
 
+    // Called by SimpleObject.save() for new objects.
+    protected void saveObject(SimpleObject object) {
+        saveData(object.entry.data, object.getTypeId());
+    }
+
+    protected void saveData(SimpleData data, String typeId) {
+        Map<String, Serializable> update = new HashMap<String, Serializable>();
+
+        // generate an ID
+        String id = repository.generateId();
+        update.put(Property.ID, id);
+
+        // check mandatory properties
+        Type type = repository.getType(typeId);
+        for (PropertyDefinition pd : type.getPropertyDefinitions()) {
+            String name = pd.getName();
+            if (Property.ID.equals(name)) {
+                // ignore, set later
+                continue;
+            }
+            if (pd.isRequired() && !data.containsKey(name)) {
+                if (Property.NAME.equals(name)) {
+                    update.put(Property.NAME, id);
+                } else if (Property.CREATED_BY.equals(name)) {
+                    update.put(Property.CREATED_BY, "system"); // TODO
+                } else if (Property.CREATION_DATE.equals(name)) {
+                    update.put(Property.CREATION_DATE,
+                            GregorianCalendar.getInstance());
+                } else if (Property.LAST_MODIFIED_BY.equals(name)) {
+                    update.put(Property.LAST_MODIFIED_BY, "system"); // TODO
+                } else if (Property.LAST_MODIFICATION_DATE.equals(name)) {
+                    update.put(Property.LAST_MODIFICATION_DATE,
+                            GregorianCalendar.getInstance());
+                } else if (Property.IS_LATEST_VERSION.equals(name)) {
+                    update.put(Property.IS_LATEST_VERSION, Boolean.TRUE);
+                } else if (Property.IS_LATEST_MAJOR_VERSION.equals(name)) {
+                    update.put(Property.IS_LATEST_MAJOR_VERSION, Boolean.TRUE);
+                } else if (Property.IS_VERSION_SERIES_CHECKED_OUT.equals(name)) {
+                    update.put(Property.IS_VERSION_SERIES_CHECKED_OUT,
+                            Boolean.FALSE);
+                } else if (Property.VERSION_SERIES_ID.equals(name)) {
+                    update.put(Property.VERSION_SERIES_ID, id);
+                } else if (Property.VERSION_LABEL.equals(name)) {
+                    update.put(Property.VERSION_LABEL, "1.0");
+                } else {
+                    throw new RuntimeException("Missing property: " + name); // TODO
+                }
+            }
+        }
+
+        // content stream
+        byte[] bytes = (byte[]) data.get(SimpleProperty.CONTENT_BYTES_KEY);
+        if (type.getContentStreamAllowed() == ContentStreamPresence.REQUIRED
+                && bytes == null) {
+            throw new RuntimeException("Content stream required"); // TODO
+        }
+        update.put(Property.CONTENT_STREAM_LENGTH, bytes == null ? null
+                : Integer.valueOf(bytes.length)); // TODO Long
+
+        // update data once we know there's no error
+        for (String key : update.keySet()) {
+            Serializable value = update.get(key);
+            if (value == null) {
+                data.remove(key);
+            } else {
+                data.put(key, value);
+            }
+        }
+
+        // properties
+        repository.datas.put(id, data); // TODO clone data?
+
+        // parents/children
+        String parentId = (String) data.get(Property.PARENT_ID);
+        if (type.getBaseType() == BaseType.FOLDER) {
+            // new folder, empty set of children
+            repository.children.put(id, repository.newSet());
+        } else {
+            // only folders have this property
+            data.remove(Property.PARENT_ID);
+        }
+        if (parentId != null) {
+            // this object is filed
+            // pointer to parent
+            Set<String> parents = repository.newSet();
+            parents.add(parentId);
+            repository.parents.put(id, parents);
+            // new pointer to child
+            repository.children.get(parentId).add(id);
+        }
+    }
+
     public ObjectId createDocument(String typeId,
             Map<String, Serializable> properties, ObjectId folder,
             ContentStream contentStream, VersioningState versioningState) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        Type type = repository.getType(typeId);
+        if (type == null || type.getBaseType() != BaseType.DOCUMENT) {
+            throw new IllegalArgumentException(typeId);
+        }
+        SimpleData data = new SimpleData(typeId);
+        data.putAll(properties);
+        if (folder != null) {
+            data.put(Property.PARENT_ID, folder.getId());
+        }
+        saveData(data, typeId);
+        return new SimpleObjectId((String) data.get(Property.ID));
     }
 
     public ObjectId createFolder(String typeId,
