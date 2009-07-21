@@ -33,6 +33,7 @@ import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.client.connector.Connector;
 import org.apache.chemistry.atompub.client.connector.Request;
 import org.apache.chemistry.atompub.client.connector.Response;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
@@ -43,7 +44,7 @@ import org.apache.chemistry.impl.base.BaseObject;
  */
 public abstract class APPObject extends BaseObject {
 
-    protected final APPObjectEntry entry;
+    protected APPObjectEntry entry;
 
     private final Type type;
 
@@ -197,6 +198,9 @@ public abstract class APPObject extends BaseObject {
     }
 
     protected void create() throws ContentManagerException {
+        Connector connector = entry.connection.getConnector();
+        ReadContext ctx = new ReadContext(entry.connection);
+
         String href = entry.getLink(CMIS.LINK_PARENTS); // TODO check this
         if (href == null) {
             throw new IllegalArgumentException(
@@ -207,14 +211,31 @@ public abstract class APPObject extends BaseObject {
         href = href.replaceAll("/object/([0-9a-f-]{36}$)", "/children/$1");
         Request req = new Request(href);
         req.setHeader("Content-Type", "application/atom+xml;type=entry");
-        Response resp = entry.connection.getConnector().postObject(req, entry);
-        if (!resp.isOk()) {
+        Response resp = connector.postObject(req, entry);
+        if (resp.getStatusCode() != 201) { // Created
             throw new ContentManagerException(
                     "Remote server returned error code: "
                             + resp.getStatusCode());
         }
-        // TODO get the response to update the content of the posted document
-        // resp.getEntity(get, APPDocument.class);
+        APPObjectEntry newEntry = (APPObjectEntry) resp.getObject(ctx);
+        // newEntry SHOULD be returned (AtomPub 9.2)...
+        String loc = resp.getHeader("Location");
+        if (loc == null) {
+            throw new ContentManagerException(
+                    "Remote server failed to return a Location header");
+        }
+        if (newEntry == null || !loc.equals(resp.getHeader("Content-Location"))) {
+            // (Content-Location defined by AtomPub 9.2)
+            // fetch actual new entry from Location header
+            // TODO could fetch only a subset of the properties, if deemed ok
+            newEntry = (APPObjectEntry) connector.getObject(ctx, loc);
+            if (newEntry == null) {
+                throw new ContentManagerException(
+                        "Remote server failed to return an entry for Location: "
+                                + loc);
+            }
+        }
+        entry = newEntry;
     }
 
     protected void update() throws ContentManagerException {

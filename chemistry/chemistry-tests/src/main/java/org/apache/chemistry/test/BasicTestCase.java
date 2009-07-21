@@ -236,7 +236,11 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals("GregorianCalendar(2009-07-14T12:00:00.000+05:00)",
                 cal.toString());
         doc.setValue("date", cal);
+        assertNull(doc.getId()); // not yet saved
         doc.save();
+        String id = doc.getId();
+        assertNotNull(id);
+
         // new connection
         closeConn();
         openConn();
@@ -244,6 +248,7 @@ public abstract class BasicTestCase extends TestCase {
         List<CMISObject> children = root.getChildren(BaseType.DOCUMENT);
         assertEquals(1, children.size());
         doc = (Document) children.get(0);
+        assertEquals(id, doc.getId());
         assertEquals("mydoc", doc.getName());
         assertEquals("mytitle", doc.getString("title"));
         Calendar cal2 = doc.getDateTime("date");

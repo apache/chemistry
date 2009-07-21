@@ -209,10 +209,14 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         ObjectEntry object = spi.getProperties(objectId, null, null, false,
                 false);
 
-        entry.setUpdated(new Date());
-        entry.getIdElement().setValue(getId(object));
+        // prepare the updated entry to return in the response
+        entry = request.getAbdera().getFactory().newEntry();
+        try {
+            addEntryDetails(request, entry, null, object);
+        } catch (ResponseContextException e) {
+            return createErrorResponse(e);
+        }
         String link = getObjectLink(object.getId(), request);
-        entry.addLink(link, "edit");
         return buildCreateEntryResponse(link, entry);
     }
 

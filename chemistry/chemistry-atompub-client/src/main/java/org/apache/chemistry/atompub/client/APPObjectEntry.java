@@ -182,7 +182,8 @@ public class APPObjectEntry implements ObjectEntry {
 
     @Override
     public String toString() {
-        return getId();
+        return getClass().getSimpleName() + '(' + getTypeId() + ',' + getId()
+        + ')';
     }
 
     public void writeObjectTo(XMLWriter xw) throws IOException {
