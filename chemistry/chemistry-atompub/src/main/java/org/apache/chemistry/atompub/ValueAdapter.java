@@ -28,8 +28,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.apache.abdera.model.AtomDate;
 import org.apache.chemistry.PropertyType;
+import org.apache.chemistry.util.GregorianCalendar;
 
 /**
  * Adapter between a Java value and a XML String representation.
@@ -157,14 +157,14 @@ public abstract class ValueAdapter {
     protected static final class DateTimeValueAdapter extends ValueAdapter {
         @Override
         public Serializable readValue(String xml) {
-            return AtomDate.valueOf(xml).getCalendar();
+            return GregorianCalendar.fromAtomPub(xml);
         }
 
         // accepts both Calendar and Date
         @Override
         public String writeValue(Serializable val) {
-            return val.getClass() == Calendar.class ? AtomDate.format(((Calendar) val).getTime())
-                    : AtomDate.format((Date) val);
+            return val instanceof Calendar ? GregorianCalendar.toAtomPub((Calendar) val)
+                    : GregorianCalendar.toAtomPub((Date) val);
         }
 
         @Override

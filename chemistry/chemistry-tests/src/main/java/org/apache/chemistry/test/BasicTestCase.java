@@ -22,6 +22,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
@@ -37,6 +38,7 @@ import org.apache.chemistry.Property;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.util.GregorianCalendar;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -226,6 +228,14 @@ public abstract class BasicTestCase extends TestCase {
         Document doc = root.newDocument("doc");
         doc.setName("mydoc");
         doc.setValue("title", "mytitle");
+        GregorianCalendar cal = new GregorianCalendar(
+                TimeZone.getTimeZone("GMT+05:00"));
+        cal.clear();
+        cal.set(2009, 7 - 1, 14, 12, 00, 00);
+        cal.set(Calendar.MILLISECOND, 0);
+        assertEquals("GregorianCalendar(2009-07-14T12:00:00.000+05:00)",
+                cal.toString());
+        doc.setValue("date", cal);
         doc.save();
         // new connection
         closeConn();
@@ -236,6 +246,8 @@ public abstract class BasicTestCase extends TestCase {
         doc = (Document) children.get(0);
         assertEquals("mydoc", doc.getName());
         assertEquals("mytitle", doc.getString("title"));
+        Calendar cal2 = doc.getDateTime("date");
+        assertEquals(cal.toString(), cal2.toString());
     }
 
 }

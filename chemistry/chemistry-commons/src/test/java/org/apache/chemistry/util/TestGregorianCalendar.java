@@ -32,7 +32,7 @@ public class TestGregorianCalendar extends TestCase {
         cal.set(Calendar.MINUTE, 4);
         cal.set(Calendar.SECOND, 5);
         cal.set(Calendar.MILLISECOND, 6);
-        assertEquals("GregorianCalendar(2009-01-02T03:04:05.006+0730)",
+        assertEquals("GregorianCalendar(2009-01-02T03:04:05.006+07:30)",
                 cal.toString());
     }
 
@@ -45,7 +45,32 @@ public class TestGregorianCalendar extends TestCase {
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MILLISECOND, 999);
-        assertEquals("GregorianCalendar(2008-12-31T23:59:59.999-0600)",
+        assertEquals("GregorianCalendar(2008-12-31T23:59:59.999-06:00)",
+                cal.toString());
+    }
+
+    public void testToString3() {
+        Calendar cal = GregorianCalendar.getInstance(TimeZone.getTimeZone("GMT"));
+        cal.set(Calendar.YEAR, 2008);
+        cal.set(Calendar.MONTH, 0);
+        cal.set(Calendar.DATE, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
+        cal.set(Calendar.MINUTE, 1);
+        cal.set(Calendar.SECOND, 1);
+        cal.set(Calendar.MILLISECOND, 1);
+        assertEquals("GregorianCalendar(2008-01-01T01:01:01.001Z)",
+                cal.toString());
+    }
+
+    public void testFromAtomPub1() {
+        Calendar cal = GregorianCalendar.fromAtomPub("2009-07-14T12:00:00.123-06:30");
+        assertEquals("GregorianCalendar(2009-07-14T12:00:00.123-06:30)",
+                cal.toString());
+    }
+
+    public void testFromAtomPub2() {
+        Calendar cal = GregorianCalendar.fromAtomPub("2009-07-14T12:00:00Z");
+        assertEquals("GregorianCalendar(2009-07-14T12:00:00.000Z)",
                 cal.toString());
     }
 

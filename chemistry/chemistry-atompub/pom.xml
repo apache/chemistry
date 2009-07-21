@@ -29,10 +29,13 @@
   <name>Chemistry AtomPub</name>
 
   <dependencies>
-
     <dependency>
       <groupId>org.apache.chemistry</groupId>
       <artifactId>chemistry-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.chemistry</groupId>
+      <artifactId>chemistry-commons</artifactId>
     </dependency>
 
     <dependency>
