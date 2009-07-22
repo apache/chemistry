@@ -116,7 +116,8 @@ public class TestSimpleRepository extends TestCase {
         Connection conn = repo.getConnection(null);
         Folder root = conn.getRootFolder();
         Folder f1 = root.newFolder("fold");
-        assertEquals(12 + 1, f1.getType().getPropertyDefinitions().size());
+        assertEquals(SimpleType.PROPS_FOLDER_BASE.size() + 2,
+                f1.getType().getPropertyDefinitions().size());
 
         List<CMISObject> children = root.getChildren(null);
         assertEquals(0, children.size());
@@ -140,7 +141,8 @@ public class TestSimpleRepository extends TestCase {
         Connection conn = repo.getConnection(null);
         Folder root = conn.getRootFolder();
         Document d1 = root.newDocument("doc");
-        assertEquals(22 + 3, d1.getType().getPropertyDefinitions().size());
+        assertEquals(SimpleType.PROPS_DOCUMENT_BASE.size() + 3,
+                d1.getType().getPropertyDefinitions().size());
 
         d1.save();
         assertEquals(root.getId(), d1.getParent().getId());

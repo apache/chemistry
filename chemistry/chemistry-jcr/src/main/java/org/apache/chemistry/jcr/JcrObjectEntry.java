@@ -32,7 +32,6 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
-import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectEntry;
@@ -349,8 +348,6 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         }
         return null;
     }
-
-    protected abstract BaseType getBaseType();
 
     public String getTypeId() {
         return getType().getId();

@@ -49,6 +49,11 @@ public class SimpleType implements Type {
             PropertyType.ID, false, null, false, true, null,
             Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
 
+    public static final SimplePropertyDefinition PROP_BASE_TYPE_ID = new SimplePropertyDefinition(
+            Property.BASE_TYPE_ID, "def:basetypeid", "Base Type ID", "", false,
+            PropertyType.ID, false, null, false, true, null,
+            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
+
     public static final SimplePropertyDefinition PROP_CREATED_BY = new SimplePropertyDefinition(
             Property.CREATED_BY, "def:createdby", "Created By", "", false,
             PropertyType.STRING, false, null, false, true, null,
@@ -188,10 +193,10 @@ public class SimpleType implements Type {
             PropertyType.STRING, false, null, false, true, null,
             Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
 
-    private static final PropertyDefinition[] PROPS_COMMON = {
-            PROP_ID, //
+    private static final PropertyDefinition[] PROPS_COMMON = { PROP_ID, //
             PROP_URI, //
             PROP_TYPE_ID, //
+            PROP_BASE_TYPE_ID, //
             PROP_CREATED_BY, //
             PROP_CREATION_DATE, //
             PROP_LAST_MODIFIED_BY, //
@@ -352,20 +357,6 @@ public class SimpleType implements Type {
 
     public BaseType getBaseType() {
         return baseType;
-    }
-
-    public String getBaseTypeQueryName() {
-        switch (baseType) {
-        case DOCUMENT:
-            return "Document";
-        case FOLDER:
-            return "Folder";
-        case POLICY:
-            return "Policy";
-        case RELATIONSHIP:
-            return "Relationship";
-        }
-        throw new UnsupportedOperationException(baseType.toString());
     }
 
     public String getDescription() {

@@ -69,16 +69,6 @@ public interface Type {
     BaseType getBaseType();
 
     /**
-     * The base type's query name.
-     * <p>
-     * This can be only {@code Document}, {@code Folder}, {@code Relationship},
-     * or {@code Policy}.
-     *
-     * @return the base type's query name
-     */
-    String getBaseTypeQueryName();
-
-    /**
      * The type's description.
      * <p>
      * This is an application's description of this type, such as the nature of

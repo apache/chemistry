@@ -33,6 +33,8 @@ public interface Property {
 
     String TYPE_ID = "ObjectTypeId";
 
+    String BASE_TYPE_ID = "BaseTypeId";
+
     String CREATED_BY = "CreatedBy";
 
     String CREATION_DATE = "CreationDate";

@@ -180,7 +180,7 @@ public class APPConnection implements Connection, SPI {
                 includeAllowableActions, includeRelationships,
                 Integer.MAX_VALUE, 0, orderBy, new boolean[1]);
         for (ObjectEntry child : children) {
-            BaseType childType = repository.getType(child.getTypeId()).getBaseType();
+            BaseType childType = child.getBaseType();
             if (type == null || childType.equals(type)) {
                 list.add(child);
             }
@@ -228,9 +228,7 @@ public class APPConnection implements Connection, SPI {
         boolean done = false;
         for (ObjectEntry entry : feed) {
             // type filtering
-            if (type != null
-                    && !repository.getType(entry.getTypeId()).getBaseType().equals(
-                            type)) {
+            if (type != null && !entry.getBaseType().equals(type)) {
                 continue;
             }
             // skip
@@ -259,8 +257,7 @@ public class APPConnection implements Connection, SPI {
         // TODO filter, includeRelationship, includeAllowableActions
         List<ObjectEntry> result = new LinkedList<ObjectEntry>();
         APPObjectEntry current = getObjectEntry(folder);
-        Type type = repository.getType(current.getTypeId());
-        if (!type.getBaseType().equals(BaseType.FOLDER)) {
+        if (!current.getBaseType().equals(BaseType.FOLDER)) {
             throw new IllegalArgumentException("Not a folder: " + folder);
         }
         String rootId = current.connection.getRootFolder().getId();
@@ -344,7 +341,7 @@ public class APPConnection implements Connection, SPI {
         }
         APPObjectEntry entry = getObjectEntry(object);
         Type type = getRepository().getType(entry.getTypeId());
-        switch (type.getBaseType()) {
+        switch (entry.getBaseType()) {
         case DOCUMENT:
             return new APPDocument(entry, type);
         case FOLDER:
@@ -354,7 +351,7 @@ public class APPConnection implements Connection, SPI {
         case RELATIONSHIP:
             throw new UnsupportedOperationException("Not yet implemented");
         default:
-            throw new AssertionError(type.getBaseType());
+            throw new AssertionError(entry.getBaseType());
         }
 
         // throw new UnsupportedOperationException("Not yet implemented");

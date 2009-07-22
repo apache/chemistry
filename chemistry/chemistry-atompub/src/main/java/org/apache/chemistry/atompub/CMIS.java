@@ -89,15 +89,11 @@ public class CMIS {
 
     public static final QName POLICY_TYPE = CMISName("policyType");
 
-    public static final QName TYPE_ID = CMISName("typeId");
+    public static final QName BASE_TYPE_ID = CMISName("baseTypeId");
 
     public static final QName QUERY_NAME = CMISName("queryName");
 
     public static final QName DISPLAY_NAME = CMISName("displayName");
-
-    public static final QName BASE_TYPE = CMISName("baseType");
-
-    public static final QName BASE_TYPE_QUERY_NAME = CMISName("baseTypeQueryName");
 
     public static final QName PARENT_ID = CMISName("parentId");
 

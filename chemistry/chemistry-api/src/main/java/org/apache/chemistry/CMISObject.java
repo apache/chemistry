@@ -191,6 +191,11 @@ public interface CMISObject extends ObjectId {
     Type getType();
 
     /**
+     * The object's base type.
+     */
+    BaseType getBaseType();
+
+    /**
      * Gets a property.
      *
      * @param name the property name

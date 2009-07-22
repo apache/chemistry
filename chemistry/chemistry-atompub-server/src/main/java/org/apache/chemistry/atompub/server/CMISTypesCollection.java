@@ -128,16 +128,15 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         Element el;
         // note: setText is called in a separate statement as JDK 5 has problems
         // compiling when it's on one line (compiler generics bug)
-        el = factory.newElement(CMIS.TYPE_ID, dt);
+        el = factory.newElement(CMIS.ID, dt);
         el.setText(type.getId());
+        // TODO localName, localNamespace
         el = factory.newElement(CMIS.QUERY_NAME, dt);
         el.setText(type.getQueryName());
         el = factory.newElement(CMIS.DISPLAY_NAME, dt);
         el.setText(type.getDisplayName());
-        el = factory.newElement(CMIS.BASE_TYPE, dt);
+        el = factory.newElement(CMIS.BASE_TYPE_ID, dt);
         el.setText(type.getBaseType().toString());
-        el = factory.newElement(CMIS.BASE_TYPE_QUERY_NAME, dt);
-        el.setText(type.getBaseTypeQueryName());
         el = factory.newElement(CMIS.PARENT_ID, dt);
         el.setText(type.getParentId());
         el = factory.newElement(CMIS.DESCRIPTION, dt);
@@ -150,12 +149,13 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         el.setText(bool(type.isQueryable()));
         el = factory.newElement(CMIS.CONTROLLABLE, dt);
         el.setText(bool(type.isControllable()));
-        el = factory.newElement(CMIS.VERSIONABLE, dt);
-        el.setText(bool(type.isVersionable()));
-        el = factory.newElement(CMIS.CONTENT_STREAM_ALLOWED, dt);
-        el.setText(type.getContentStreamAllowed().toString()); // TODO null
         el = factory.newElement(CMIS.INCLUDED_IN_SUPERTYPE_QUERY, dt);
         el.setText(bool(type.isIncludedInSuperTypeQuery()));
+        el = factory.newElement(CMIS.VERSIONABLE, dt); // docs only
+        el.setText(bool(type.isVersionable()));
+        el = factory.newElement(CMIS.CONTENT_STREAM_ALLOWED, dt); // docs only
+        el.setText(type.getContentStreamAllowed().toString()); // TODO null
+        // TODO allowedSourceTypes, allowedTargetTypes
         if ("true".equals(request.getParameter("includePropertyDefinitions"))) {
             for (PropertyDefinition pd : type.getPropertyDefinitions()) {
                 QName qname;

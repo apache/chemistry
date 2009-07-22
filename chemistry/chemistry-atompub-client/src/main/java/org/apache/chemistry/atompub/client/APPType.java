@@ -56,22 +56,6 @@ public class APPType extends APPObjectEntry implements Type {
         propertyDefs = props;
     }
 
-    // should be added to API
-    public boolean isFolder() {
-        return getBaseType() == BaseType.FOLDER;
-    }
-
-    public BaseType getBaseType() {
-        if (baseType == null) {
-            baseType = BaseType.get(map.get(CMIS.BASE_TYPE.getLocalPart()));
-        }
-        return baseType;
-    }
-
-    public String getBaseTypeQueryName() {
-        return map.get(CMIS.BASE_TYPE_QUERY_NAME.getLocalPart());
-    }
-
     public String getDescription() {
         return map.get(CMIS.DESCRIPTION.getLocalPart());
     }
@@ -87,7 +71,20 @@ public class APPType extends APPObjectEntry implements Type {
 
     @Override
     public String getTypeId() {
-        return map.get(CMIS.TYPE_ID.getLocalPart());
+        return map.get(CMIS.ID.getLocalPart());
+    }
+
+    @Override
+    public BaseType getBaseType() {
+        if (baseType == null) {
+            baseType = BaseType.get(map.get(CMIS.BASE_TYPE_ID.getLocalPart()));
+        }
+        return baseType;
+    }
+
+    // should be added to API
+    public boolean isFolder() {
+        return getBaseType() == BaseType.FOLDER;
     }
 
     public String getParentId() {

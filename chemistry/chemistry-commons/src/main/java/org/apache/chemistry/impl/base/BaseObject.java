@@ -145,6 +145,10 @@ public abstract class BaseObject implements CMISObject {
         return getId(Property.TYPE_ID);
     }
 
+    public String getBaseTypeId() {
+        return getId(Property.BASE_TYPE_ID);
+    }
+
     public String getCreatedBy() {
         return getString(Property.CREATED_BY);
     }

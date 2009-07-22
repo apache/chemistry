@@ -120,6 +120,10 @@ public class SimpleObject extends BaseObject {
         return type;
     }
 
+    public BaseType getBaseType() {
+        return type.getBaseType();
+    }
+
     public Serializable getValue(String name) {
         PropertyDefinition pd = getType().getPropertyDefinition(name);
         if (pd == null) {

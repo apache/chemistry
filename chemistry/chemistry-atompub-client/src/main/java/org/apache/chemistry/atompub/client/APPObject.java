@@ -55,8 +55,7 @@ public abstract class APPObject extends BaseObject {
 
     protected static APPObject construct(APPObjectEntry entry) {
         Type type = entry.connection.repository.getType(entry.getTypeId());
-        BaseType baseType = type.getBaseType();
-        switch (baseType) {
+        switch (entry.getBaseType()) {
         case DOCUMENT:
             return new APPDocument(entry, type);
         case FOLDER:
@@ -66,7 +65,7 @@ public abstract class APPObject extends BaseObject {
         case RELATIONSHIP:
             // return new APPRelationship(entry, type);
         default:
-            throw new AssertionError(baseType.toString());
+            throw new AssertionError(entry.getBaseType().toString());
         }
     }
 
@@ -162,6 +161,10 @@ public abstract class APPObject extends BaseObject {
 
     public Type getType() {
         return type;
+    }
+
+    public BaseType getBaseType() {
+        return type.getBaseType();
     }
 
     public Property getProperty(String name) {

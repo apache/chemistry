@@ -37,6 +37,13 @@ public interface ObjectEntry extends ObjectId {
     String getTypeId();
 
     /**
+     * Gets the base type for this entry.
+     *
+     * @return the base type
+     */
+    BaseType getBaseType();
+
+    /**
      * Gets a property value.
      * <p>
      * Returns {@code null} is the property is not set, not fetched or unknown.

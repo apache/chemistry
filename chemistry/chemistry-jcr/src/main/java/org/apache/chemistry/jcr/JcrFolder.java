@@ -63,7 +63,7 @@ public class JcrFolder extends JcrObjectEntry implements Folder {
                 } else {
                     continue;
                 }
-                if (type == null || type == entry.getType().getBaseType()) {
+                if (type == null || type == entry.getBaseType()) {
                     result.add(entry);
                 }
             }
@@ -136,8 +136,7 @@ public class JcrFolder extends JcrObjectEntry implements Folder {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    protected BaseType getBaseType() {
+    public BaseType getBaseType() {
         return BaseType.FOLDER;
     }
 }

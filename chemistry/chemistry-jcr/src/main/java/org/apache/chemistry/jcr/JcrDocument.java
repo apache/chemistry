@@ -153,8 +153,7 @@ public class JcrDocument extends JcrObjectEntry implements Document {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    protected BaseType getBaseType() {
+    public BaseType getBaseType() {
         return BaseType.DOCUMENT;
     }
 }

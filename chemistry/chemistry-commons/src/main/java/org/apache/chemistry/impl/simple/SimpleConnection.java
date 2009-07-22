@@ -103,7 +103,8 @@ public class SimpleConnection implements Connection, SPI {
     }
 
     public SimpleObjectEntry newObjectEntry(String typeId) {
-        return new SimpleObjectEntry(new SimpleData(typeId), this);
+        BaseType baseType = repository.getType(typeId).getBaseType();
+        return new SimpleObjectEntry(new SimpleData(typeId, baseType), this);
     }
 
     public Document newDocument(String typeId, Folder folder) {
@@ -380,10 +381,11 @@ public class SimpleConnection implements Connection, SPI {
             Map<String, Serializable> properties, ObjectId folder,
             ContentStream contentStream, VersioningState versioningState) {
         Type type = repository.getType(typeId);
-        if (type == null || type.getBaseType() != BaseType.DOCUMENT) {
+        BaseType baseType = type.getBaseType();
+        if (type == null || baseType != BaseType.DOCUMENT) {
             throw new IllegalArgumentException(typeId);
         }
-        SimpleData data = new SimpleData(typeId);
+        SimpleData data = new SimpleData(typeId, baseType);
         data.putAll(properties);
         if (folder != null) {
             data.put(Property.PARENT_ID, folder.getId());

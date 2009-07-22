@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
@@ -105,6 +106,10 @@ public class APPObjectEntry implements ObjectEntry {
 
     public String getTypeId() {
         return (String) getValue(Property.TYPE_ID);
+    }
+
+    public BaseType getBaseType() {
+        return BaseType.get((String) getValue(Property.BASE_TYPE_ID));
     }
 
     public Serializable getValue(String name) {

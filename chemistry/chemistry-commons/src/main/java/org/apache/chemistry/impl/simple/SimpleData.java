@@ -19,6 +19,7 @@ package org.apache.chemistry.impl.simple;
 import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Property;
 
 /**
@@ -31,8 +32,9 @@ public class SimpleData extends ConcurrentHashMap<String, Serializable> {
 
     private static final long serialVersionUID = 1L;
 
-    public SimpleData(String typeId) {
+    public SimpleData(String typeId, BaseType baseType) {
         put(Property.TYPE_ID, typeId);
+        put(Property.BASE_TYPE_ID, baseType.toString());
     }
 
 }

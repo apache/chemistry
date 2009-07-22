@@ -163,7 +163,7 @@ public class PropertiesElement extends ExtensibleElementWrapper {
             setProperty(values.get(name), propertyDefinition);
 
             // Alfresco COMPAT (BaseType not in 0.6)
-            if (name.equals(Property.TYPE_ID)) {
+            if (name.equals(Property.BASE_TYPE_ID)) {
                 // emit BaseType as well
                 ExtensibleElement el = addExtension(CMIS.PROPERTY_STRING);
                 el.setAttributeValue(CMIS.NAME, "BaseType");

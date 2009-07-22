@@ -153,8 +153,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         entry.addLink(getTypeLink(object.getTypeId(), request), CMIS.LINK_TYPE);
         String oid = object.getId();
         entry.addLink(getParentsLink(oid, request), CMIS.LINK_PARENTS);
-        Type objectType = repository.getType(object.getTypeId());
-        if (objectType.getBaseType() == BaseType.FOLDER) {
+        if (object.getBaseType() == BaseType.FOLDER) {
             entry.addLink(getChildrenLink(oid, request), CMIS.LINK_CHILDREN);
             entry.addLink(getDescendantsLink(oid, request),
                     CMIS.LINK_DESCENDANTS);
@@ -165,6 +164,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         // ContentStreamUri needs to know the media link
         String mediaLink = isMediaEntry(object) ? getMediaLink(object.getId(),
                 request) : null;
+        Type objectType = repository.getType(object.getTypeId());
         entry.addExtension(new ObjectElement(factory, object, objectType,
                 mediaLink));
 

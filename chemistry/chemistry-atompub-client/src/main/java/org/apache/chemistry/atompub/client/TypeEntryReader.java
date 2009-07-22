@@ -18,9 +18,11 @@
  */
 package org.apache.chemistry.atompub.client;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.chemistry.PropertyDefinition;
@@ -90,7 +92,7 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
                         log.error("Cannot read text element for: " + name, e);
                         continue;
                     }
-                    if (name.equals(CMIS.BASE_TYPE.getLocalPart())) {
+                    if (name.equals(CMIS.BASE_TYPE_ID.getLocalPart())) {
                         // check base type coherent with base element
                         // eg "folder" for a <cmis:folderType>
                         if (!localName.startsWith(text)) {
@@ -101,6 +103,30 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
                         }
                     }
                     map.put(name, text);
+                }
+            }
+            // check some mandatory properties
+            // TODO also for documents: versionable, contentStreamAllowed
+            // TODO also for relationships: allowedSourceTypes, allowedTargetTypes
+            for (QName qname : Arrays.asList( //
+                    CMIS.ID, //
+                    // TODO localName, localNamespace
+                    CMIS.QUERY_NAME, //
+                    CMIS.DISPLAY_NAME, //
+                    CMIS.BASE_TYPE_ID, //
+                    CMIS.PARENT_ID, //
+                    CMIS.DESCRIPTION, //
+                    CMIS.CREATABLE, //
+                    CMIS.FILEABLE, //
+                    CMIS.QUERYABLE, //
+                    CMIS.CONTROLLABLE, //
+                    CMIS.INCLUDED_IN_SUPERTYPE_QUERY //
+            )) {
+                if (!map.containsKey(qname.getLocalPart())) {
+                    throw new IllegalArgumentException(
+                            "Invalid type definition: missing "
+                                    + qname.getPrefix() + ':'
+                                    + qname.getLocalPart());
                 }
             }
             entry.init(map, pdefs);

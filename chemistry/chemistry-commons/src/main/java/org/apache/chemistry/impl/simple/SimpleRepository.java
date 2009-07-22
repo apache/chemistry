@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.JoinCapability;
 import org.apache.chemistry.ObjectId;
@@ -65,7 +66,7 @@ public class SimpleRepository extends BaseRepository {
         children = new ConcurrentHashMap<String, Set<String>>();
         parents = new ConcurrentHashMap<String, Set<String>>();
 
-        SimpleData rootData = new SimpleData(ROOT_TYPE_ID);
+        SimpleData rootData = new SimpleData(ROOT_TYPE_ID, BaseType.FOLDER);
         if (rootId == null) {
             rootId = generateId();
         }

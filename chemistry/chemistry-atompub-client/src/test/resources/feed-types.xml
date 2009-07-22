@@ -15,11 +15,10 @@
     <link href="http://127.0.0.1:8080/cmis/type/document" rel="alternate" />
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
     <cmis:documentType>
-      <cmis:typeId>document</cmis:typeId>
+      <cmis:id>document</cmis:id>
       <cmis:queryName>Document</cmis:queryName>
       <cmis:displayName>Document Type</cmis:displayName>
-      <cmis:baseType>document</cmis:baseType>
-      <cmis:baseTypeQueryName>Document</cmis:baseTypeQueryName>
+      <cmis:baseTypeId>document</cmis:baseTypeId>
       <cmis:parentId />
       <cmis:description></cmis:description>
       <cmis:creatable>true</cmis:creatable>
@@ -39,11 +38,10 @@
     <link href="http://127.0.0.1:8080/cmis/type/folder" rel="alternate" />
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
     <cmis:folderType>
-      <cmis:typeId>folder</cmis:typeId>
+      <cmis:id>folder</cmis:id>
       <cmis:queryName>Folder</cmis:queryName>
       <cmis:displayName>Folder Type</cmis:displayName>
-      <cmis:baseType>folder</cmis:baseType>
-      <cmis:baseTypeQueryName>Folder</cmis:baseTypeQueryName>
+      <cmis:baseTypeId>folder</cmis:baseTypeId>
       <cmis:parentId />
       <cmis:description></cmis:description>
       <cmis:creatable>true</cmis:creatable>
@@ -63,11 +61,10 @@
     <link href="http://127.0.0.1:8080/cmis/type/relationship" rel="alternate" />
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
     <cmis:relationshipType>
-      <cmis:typeId>relationship</cmis:typeId>
+      <cmis:id>relationship</cmis:id>
       <cmis:queryName>Relationship</cmis:queryName>
       <cmis:displayName>Relationship Type</cmis:displayName>
-      <cmis:baseType>relationship</cmis:baseType>
-      <cmis:baseTypeQueryName>Relationship</cmis:baseTypeQueryName>
+      <cmis:baseTypeId>relationship</cmis:baseTypeId>
       <cmis:parentId />
       <cmis:description></cmis:description>
       <cmis:creatable>true</cmis:creatable>
@@ -87,11 +84,10 @@
     <link href="http://127.0.0.1:8080/cmis/type/policy" rel="alternate" />
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
     <cmis:policyType>
-      <cmis:typeId>policy</cmis:typeId>
+      <cmis:id>policy</cmis:id>
       <cmis:queryName>Policy</cmis:queryName>
       <cmis:displayName>Policy Type</cmis:displayName>
-      <cmis:baseType>policy</cmis:baseType>
-      <cmis:baseTypeQueryName>Policy</cmis:baseTypeQueryName>
+      <cmis:baseTypeId>policy</cmis:baseTypeId>
       <cmis:parentId />
       <cmis:description></cmis:description>
       <cmis:creatable>true</cmis:creatable>
@@ -111,11 +107,10 @@
     <link href="http://127.0.0.1:8080/cmis/type/Root" rel="alternate" />
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
     <cmis:folderType>
-      <cmis:typeId>Root</cmis:typeId>
+      <cmis:id>Root</cmis:id>
       <cmis:queryName>Root</cmis:queryName>
       <cmis:displayName>Root Folder Type</cmis:displayName>
-      <cmis:baseType>folder</cmis:baseType>
-      <cmis:baseTypeQueryName>Folder</cmis:baseTypeQueryName>
+      <cmis:baseTypeId>folder</cmis:baseTypeId>
       <cmis:parentId>folder</cmis:parentId>
       <cmis:description></cmis:description>
       <cmis:creatable>false</cmis:creatable>

@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Property;
 
@@ -46,6 +47,10 @@ public class SimpleObjectEntry implements ObjectEntry {
 
     public String getTypeId() {
         return (String) data.get(Property.TYPE_ID);
+    }
+
+    public BaseType getBaseType() {
+        return BaseType.get((String) data.get(Property.BASE_TYPE_ID));
     }
 
     public Map<String, Serializable> getValues() {

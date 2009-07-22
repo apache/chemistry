@@ -73,11 +73,8 @@ public class APPFolder extends APPDocument implements Folder {
         List<ObjectEntry> feed = resp.getObjectFeed(new ReadContext(
                 entry.connection));
         List<CMISObject> children = new ArrayList<CMISObject>(feed.size());
-        APPRepository repository = entry.connection.repository;
         for (ObjectEntry child : feed) {
-            if (type != null
-                    && !repository.getType(child.getTypeId()).getBaseType().equals(
-                            type)) {
+            if (type != null && !child.getBaseType().equals(type)) {
                 continue;
             }
             children.add(APPObject.construct((APPObjectEntry) child));

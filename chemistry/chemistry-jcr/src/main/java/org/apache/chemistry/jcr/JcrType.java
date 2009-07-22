@@ -50,10 +50,6 @@ public class JcrType implements Type {
         return baseType;
     }
 
-    public String getBaseTypeQueryName() {
-        return baseType.toString();
-    }
-
     public ContentStreamPresence getContentStreamAllowed() {
         if (baseType == BaseType.DOCUMENT) {
             return ContentStreamPresence.ALLOWED;
