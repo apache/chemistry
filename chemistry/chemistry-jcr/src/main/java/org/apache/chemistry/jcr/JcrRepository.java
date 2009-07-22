@@ -208,7 +208,7 @@ public class JcrRepository implements Repository, RepositoryInfo,
     // -------------------------------------------------- RepositoryCapabilities
 
     public JoinCapability getJoinCapability() {
-        return JoinCapability.NO_JOIN;
+        return JoinCapability.NONE;
     }
 
     public QueryCapability getQueryCapability() {

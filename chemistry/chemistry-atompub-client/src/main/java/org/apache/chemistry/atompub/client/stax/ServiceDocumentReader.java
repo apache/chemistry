@@ -114,7 +114,7 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                                 reader.getElementText(), QueryCapability.NONE));
                     } else if (localName.equals(CMIS.CAPABILITY_JOIN.getLocalPart())) {
                         caps.setJoinCapability(JoinCapability.get(
-                                reader.getElementText(), JoinCapability.NO_JOIN));
+                                reader.getElementText(), JoinCapability.NONE));
                     }
                 }
             } else if (localName.equals("repositorySpecificInformation")) {
@@ -153,7 +153,7 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                                 el2.getText(), QueryCapability.NONE));
                     } else if (localName.equals(CMIS.CAPABILITY_JOIN.getLocalPart())) {
                         caps.setJoinCapability(JoinCapability.get(
-                                el2.getText(), JoinCapability.NO_JOIN));
+                                el2.getText(), JoinCapability.NONE));
                     }
                 }
             } else if (localName.equals("repositorySpecificInformation")) {

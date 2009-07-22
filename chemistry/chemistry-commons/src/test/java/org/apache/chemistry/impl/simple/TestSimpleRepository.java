@@ -92,7 +92,7 @@ public class TestSimpleRepository extends TestCase {
         assertFalse(capabilities.isPWCUpdatable());
         assertFalse(capabilities.isPWCSearchable());
         assertFalse(capabilities.isAllVersionsSearchable());
-        assertEquals(JoinCapability.NO_JOIN, capabilities.getJoinCapability());
+        assertEquals(JoinCapability.NONE, capabilities.getJoinCapability());
         assertEquals(QueryCapability.BOTH_COMBINED,
                 capabilities.getQueryCapability());
 

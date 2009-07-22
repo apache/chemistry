@@ -27,7 +27,7 @@ public enum JoinCapability {
     /**
      * No join support.
      */
-    NO_JOIN("none"),
+    NONE("none"),
 
     /**
      * Support inner join only.

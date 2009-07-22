@@ -165,7 +165,7 @@ public class SimpleRepository extends BaseRepository {
     }
 
     public JoinCapability getJoinCapability() {
-        return JoinCapability.NO_JOIN;
+        return JoinCapability.NONE;
     }
 
     public QueryCapability getQueryCapability() {
