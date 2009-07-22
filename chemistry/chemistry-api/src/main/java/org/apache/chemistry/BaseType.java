@@ -27,26 +27,26 @@ public enum BaseType {
     /**
      * A document represents a standalone information asset.
      */
-    DOCUMENT("document"),
+    DOCUMENT("cmis:document"),
 
     /**
      * A folder represents a logical container for a collection of fileable
      * objects, which include folders and documents. Folders are used to
      * organize fileable objects.
      */
-    FOLDER("folder"),
+    FOLDER("cmis:folder"),
 
     /**
      * A relationship represents a directional relationship between two
      * independent objects.
      */
-    RELATIONSHIP("relationship"),
+    RELATIONSHIP("cmis:relationship"),
 
     /**
      * A policy represents an administrative policy, which may be applied to one
      * or more controllable objects
      */
-    POLICY("policy");
+    POLICY("cmis:policy");
 
     private final String value;
 
@@ -67,6 +67,10 @@ public enum BaseType {
             throw new IllegalArgumentException(value);
         }
         return o;
+    }
+
+    public String getId() {
+        return value;
     }
 
     @Override

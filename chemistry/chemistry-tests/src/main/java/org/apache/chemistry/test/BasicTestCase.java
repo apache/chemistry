@@ -48,7 +48,7 @@ import org.apache.commons.io.IOUtils;
  */
 public abstract class BasicTestCase extends TestCase {
 
-    public static final String ROOT_TYPE_ID = "Root"; // not in the spec
+    public static final String ROOT_TYPE_ID = "chemistry:root"; // not in the spec
 
     public Repository repository;
 

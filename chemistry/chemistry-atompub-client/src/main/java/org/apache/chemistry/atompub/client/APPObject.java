@@ -65,7 +65,7 @@ public abstract class APPObject extends BaseObject {
         case RELATIONSHIP:
             // return new APPRelationship(entry, type);
         default:
-            throw new AssertionError(entry.getBaseType().toString());
+            throw new AssertionError(entry.getBaseType().getId());
         }
     }
 

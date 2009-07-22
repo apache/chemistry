@@ -15,10 +15,10 @@
     <link href="http://127.0.0.1:8080/cmis/type/document" rel="alternate" />
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
     <cmis:documentType>
-      <cmis:id>document</cmis:id>
+      <cmis:id>cmis:document</cmis:id>
       <cmis:queryName>Document</cmis:queryName>
       <cmis:displayName>Document Type</cmis:displayName>
-      <cmis:baseTypeId>document</cmis:baseTypeId>
+      <cmis:baseTypeId>cmis:document</cmis:baseTypeId>
       <cmis:parentId />
       <cmis:description></cmis:description>
       <cmis:creatable>true</cmis:creatable>
@@ -38,10 +38,10 @@
     <link href="http://127.0.0.1:8080/cmis/type/folder" rel="alternate" />
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
     <cmis:folderType>
-      <cmis:id>folder</cmis:id>
+      <cmis:id>cmis:folder</cmis:id>
       <cmis:queryName>Folder</cmis:queryName>
       <cmis:displayName>Folder Type</cmis:displayName>
-      <cmis:baseTypeId>folder</cmis:baseTypeId>
+      <cmis:baseTypeId>cmis:folder</cmis:baseTypeId>
       <cmis:parentId />
       <cmis:description></cmis:description>
       <cmis:creatable>true</cmis:creatable>
@@ -61,10 +61,10 @@
     <link href="http://127.0.0.1:8080/cmis/type/relationship" rel="alternate" />
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
     <cmis:relationshipType>
-      <cmis:id>relationship</cmis:id>
+      <cmis:id>cmis:relationship</cmis:id>
       <cmis:queryName>Relationship</cmis:queryName>
       <cmis:displayName>Relationship Type</cmis:displayName>
-      <cmis:baseTypeId>relationship</cmis:baseTypeId>
+      <cmis:baseTypeId>cmis:relationship</cmis:baseTypeId>
       <cmis:parentId />
       <cmis:description></cmis:description>
       <cmis:creatable>true</cmis:creatable>
@@ -84,10 +84,10 @@
     <link href="http://127.0.0.1:8080/cmis/type/policy" rel="alternate" />
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
     <cmis:policyType>
-      <cmis:id>policy</cmis:id>
+      <cmis:id>cmis:policy</cmis:id>
       <cmis:queryName>Policy</cmis:queryName>
       <cmis:displayName>Policy Type</cmis:displayName>
-      <cmis:baseTypeId>policy</cmis:baseTypeId>
+      <cmis:baseTypeId>cmis:policy</cmis:baseTypeId>
       <cmis:parentId />
       <cmis:description></cmis:description>
       <cmis:creatable>true</cmis:creatable>
@@ -110,8 +110,8 @@
       <cmis:id>Root</cmis:id>
       <cmis:queryName>Root</cmis:queryName>
       <cmis:displayName>Root Folder Type</cmis:displayName>
-      <cmis:baseTypeId>folder</cmis:baseTypeId>
-      <cmis:parentId>folder</cmis:parentId>
+      <cmis:baseTypeId>cmis:folder</cmis:baseTypeId>
+      <cmis:parentId>cmis:folder</cmis:parentId>
       <cmis:description></cmis:description>
       <cmis:creatable>false</cmis:creatable>
       <cmis:fileable>false</cmis:fileable>

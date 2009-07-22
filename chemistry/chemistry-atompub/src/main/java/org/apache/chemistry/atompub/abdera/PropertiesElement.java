@@ -169,7 +169,7 @@ public class PropertiesElement extends ExtensibleElementWrapper {
                 el.setAttributeValue(CMIS.NAME, "BaseType");
                 Element val = el.addExtension(CMIS.VALUE);
                 // don't merge these two lines
-                val.setText(type.getBaseType().toString());
+                val.setText(type.getBaseType().getId());
             }
         }
     }

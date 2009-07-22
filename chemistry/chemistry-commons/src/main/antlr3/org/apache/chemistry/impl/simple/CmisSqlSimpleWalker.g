@@ -89,6 +89,7 @@ column_reference returns [Object value]:
     ^(COL qualifier? column_name)
       {
           String col = $column_name.start.getText();
+          // TODO should use query name
           $value = data.get(col); // TODO error if unknown prop
       }
     ;

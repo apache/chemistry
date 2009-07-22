@@ -34,7 +34,7 @@ public class SimpleData extends ConcurrentHashMap<String, Serializable> {
 
     public SimpleData(String typeId, BaseType baseType) {
         put(Property.TYPE_ID, typeId);
-        put(Property.BASE_TYPE_ID, baseType.toString());
+        put(Property.BASE_TYPE_ID, baseType.getId());
     }
 
 }

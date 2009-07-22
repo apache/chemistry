@@ -104,14 +104,14 @@ public abstract class AtomPubServerTestCase extends TestCase {
                 "def:date", "Date", "", false, PropertyType.DATETIME, false,
                 null, false, false, null, Updatability.READ_WRITE, true, true,
                 0, null, null, -1, null);
-        SimpleType dt = new SimpleType("doc", "document", "Doc", "My Doc Type",
-                BaseType.DOCUMENT, "", true, true, true, true, true, true,
-                ContentStreamPresence.ALLOWED, null, null, Arrays.asList(p1,
-                        p2, p3));
-        SimpleType ft = new SimpleType("fold", "folder", "Fold",
-                "My Folder Type", BaseType.FOLDER, "", true, true, true, true,
-                false, false, ContentStreamPresence.NOT_ALLOWED, null, null,
-                Arrays.asList(p1, p2));
+        SimpleType dt = new SimpleType("doc", BaseType.DOCUMENT.getId(),
+                "Doc", "My Doc Type", BaseType.DOCUMENT, "", true, true, true,
+                true, true, true, ContentStreamPresence.ALLOWED, null, null,
+                Arrays.asList(p1, p2, p3));
+        SimpleType ft = new SimpleType("fold", BaseType.FOLDER.getId(),
+                "Fold", "My Folder Type", BaseType.FOLDER, "", true, true,
+                true, true, false, false, ContentStreamPresence.NOT_ALLOWED,
+                null, null, Arrays.asList(p1, p2));
         SimpleRepository repo = new SimpleRepository("test", Arrays.asList(dt,
                 ft), rootId);
         Connection conn = repo.getConnection(null);
@@ -152,7 +152,8 @@ public abstract class AtomPubServerTestCase extends TestCase {
     }
 
     public void testConnect() throws Exception {
-        String base = "http://localhost:" + PORT + CONTEXT_PATH + SERVLET_PATH + getResourcePath();
+        String base = "http://localhost:" + PORT + CONTEXT_PATH + SERVLET_PATH
+                + getResourcePath();
         ClientResponse resp;
 
         resp = client.get(base + "/repository");

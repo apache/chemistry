@@ -122,7 +122,7 @@ public class CMISTypesCollection extends CMISCollection<Type> {
             typeElementQName = CMIS.POLICY_TYPE;
             break;
         default:
-            throw new AssertionError(type.getBaseType().toString());
+            throw new AssertionError(type.getBaseType().getId());
         }
         Element dt = factory.newElement(typeElementQName, entry);
         Element el;
@@ -136,7 +136,7 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         el = factory.newElement(CMIS.DISPLAY_NAME, dt);
         el.setText(type.getDisplayName());
         el = factory.newElement(CMIS.BASE_TYPE_ID, dt);
-        el.setText(type.getBaseType().toString());
+        el.setText(type.getBaseType().getId());
         el = factory.newElement(CMIS.PARENT_ID, dt);
         el.setText(type.getParentId());
         el = factory.newElement(CMIS.DESCRIPTION, dt);

@@ -45,42 +45,37 @@ public abstract class BaseRepository implements Repository, RepositoryInfo,
     // from the spec
     public static final String ROOT_FOLDER_NAME = "CMIS_Root_Folder";
 
-    public static final String ROOT_TYPE_ID = "Root";
-
-    public static final String DOCUMENT_TYPE_ID = "document";
-
-    public static final String FOLDER_TYPE_ID = "folder";
-
-    public static final String RELATIONSHIP_TYPE_ID = "relationship";
-
-    public static final String POLICY_TYPE_ID = "policy";
+    public static final String ROOT_TYPE_ID = "chemistry:root";
 
     public static final SimpleType ROOT_TYPE = new SimpleType(ROOT_TYPE_ID,
-            FOLDER_TYPE_ID, "Root", "Root Folder Type", BaseType.FOLDER, "",
-            false, false, false, false, false, false,
+            BaseType.FOLDER.getId(), ROOT_TYPE_ID, "Root Folder Type",
+            BaseType.FOLDER, "", false, false, false, false, false, false,
             ContentStreamPresence.NOT_ALLOWED, null, null,
             Collections.<PropertyDefinition> emptyList());
 
-    public static final SimpleType DOCUMENT_TYPE = new SimpleType(DOCUMENT_TYPE_ID,
-            null, "Document", "Document Type", BaseType.DOCUMENT, "", true,
-            true, true, true, true, true, ContentStreamPresence.ALLOWED, null,
-            null, Collections.<PropertyDefinition> emptyList());
+    public static final SimpleType DOCUMENT_TYPE = new SimpleType(
+            BaseType.DOCUMENT.getId(), null, BaseType.DOCUMENT.getId(),
+            "Document Type", BaseType.DOCUMENT, "", true, true, true, true,
+            true, true, ContentStreamPresence.ALLOWED, null, null,
+            Collections.<PropertyDefinition> emptyList());
 
-    public static final SimpleType FOLDER_TYPE = new SimpleType(FOLDER_TYPE_ID, null,
-            "Folder", "Folder Type", BaseType.FOLDER, "", true, true, false,
-            true, true, false, ContentStreamPresence.NOT_ALLOWED, null, null,
+    public static final SimpleType FOLDER_TYPE = new SimpleType(
+            BaseType.FOLDER.getId(), null, BaseType.FOLDER.getId(),
+            "Folder Type", BaseType.FOLDER, "", true, true, false, true, true,
+            false, ContentStreamPresence.NOT_ALLOWED, null, null,
             Collections.<PropertyDefinition> emptyList());
 
     public static final SimpleType RELATIONSHIP_TYPE = new SimpleType(
-            RELATIONSHIP_TYPE_ID, null, "Relationship", "Relationship Type",
-            BaseType.RELATIONSHIP, "", true, true, false, true, false, false,
-            ContentStreamPresence.NOT_ALLOWED, null, null,
+            BaseType.RELATIONSHIP.getId(), null, BaseType.RELATIONSHIP.getId(),
+            "Relationship Type", BaseType.RELATIONSHIP, "", true, true, false,
+            true, false, false, ContentStreamPresence.NOT_ALLOWED, null, null,
             Collections.<PropertyDefinition> emptyList());
 
-    protected static final SimpleType POLICY_TYPE = new SimpleType(POLICY_TYPE_ID,
-            null, "Policy", "Policy Type", BaseType.POLICY, "", true, true,
-            false, true, false, false, ContentStreamPresence.NOT_ALLOWED, null,
-            null, Collections.<PropertyDefinition> emptyList());
+    protected static final SimpleType POLICY_TYPE = new SimpleType(
+            BaseType.POLICY.getId(), null, "Policy", "Policy Type",
+            BaseType.POLICY, "", true, true, false, true, false, false,
+            ContentStreamPresence.NOT_ALLOWED, null, null,
+            Collections.<PropertyDefinition> emptyList());
 
     protected final Map<String, Type> types = new HashMap<String, Type>();
 

@@ -94,8 +94,8 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
                     }
                     if (name.equals(CMIS.BASE_TYPE_ID.getLocalPart())) {
                         // check base type coherent with base element
-                        // eg "folder" for a <cmis:folderType>
-                        if (!localName.startsWith(text)) {
+                        // eg "cmis:folder" for a <cmis:folderType>
+                        if (!("cmis:" + localName).startsWith(text)) {
                             throw new IllegalArgumentException(
                                     String.format(
                                             "Type element <cmis:%s> cannot have base type: %s",

@@ -61,14 +61,14 @@ public class TestSimpleRepository extends TestCase {
                 "def:date", "Date", "", false, PropertyType.DATETIME, false,
                 null, false, false, null, Updatability.READ_WRITE, true, true,
                 0, null, null, -1, null);
-        SimpleType mt1 = new SimpleType("doc", null, "Doc", "My Doc Type",
-                BaseType.DOCUMENT, "", true, true, true, true, true, true,
-                ContentStreamPresence.ALLOWED, null, null, Arrays.asList(d1,
-                        d2, d3));
-        SimpleType mt2 = new SimpleType("fold", null, "Fold", "My Folder Type",
-                BaseType.FOLDER, "", true, true, true, true, false, false,
-                ContentStreamPresence.NOT_ALLOWED, null, null, Arrays.asList(
-                        d1, d2));
+        SimpleType mt1 = new SimpleType("doc", BaseType.DOCUMENT.getId(),
+                "Doc", "My Doc Type", BaseType.DOCUMENT, "", true, true, true,
+                true, true, true, ContentStreamPresence.ALLOWED, null, null,
+                Arrays.asList(d1, d2, d3));
+        SimpleType mt2 = new SimpleType("fold", BaseType.FOLDER.getId(),
+                "Fold", "My Folder Type", BaseType.FOLDER, "", true, true,
+                true, true, false, false, ContentStreamPresence.NOT_ALLOWED,
+                null, null, Arrays.asList(d1, d2));
         repo = new SimpleRepository("test", Arrays.asList(mt1, mt2), null);
 
     }
@@ -221,18 +221,22 @@ public class TestSimpleRepository extends TestCase {
         Document d1 = root.newDocument("doc");
         d1.save();
 
-        Collection<CMISObject> res = conn.query("SELECT * FROM Folder", false);
+        Collection<CMISObject> res = conn.query("SELECT * FROM cmis:folder",
+                false);
         assertEquals(1, res.size()); // the root
         res = conn.query("SELECT * FROM fold", false);
         assertEquals(0, res.size());
         res = conn.query("SELECT * FROM doc", false);
         assertEquals(1, res.size());
-        res = conn.query("SELECT * FROM Folder WHERE Name = 'CMIS_Root_Folder'",
+        res = conn.query(
+                "SELECT * FROM cmis:folder WHERE cmis:Name = 'CMIS_Root_Folder'",
                 false);
         assertEquals(1, res.size());
-        res = conn.query("SELECT * FROM doc WHERE ObjectId = 'nosuchid'", false);
+        res = conn.query("SELECT * FROM doc WHERE cmis:ObjectId = 'nosuchid'",
+                false);
         assertEquals(0, res.size());
-        res = conn.query("SELECT * FROM doc WHERE ObjectId <> '123'", false);
+        res = conn.query("SELECT * FROM doc WHERE cmis:ObjectId <> '123'",
+                false);
         assertEquals(1, res.size());
     }
 

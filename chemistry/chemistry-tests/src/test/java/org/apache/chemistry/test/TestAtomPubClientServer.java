@@ -67,8 +67,10 @@ public class TestAtomPubClientServer extends BasicTestCase {
 
     public void stopServer() throws Exception {
         // Thread.sleep(60 * MINUTES);
-        server.stop();
-        log.info("CMIS server stopped");
+        if (server != null) {
+            server.stop();
+            log.info("CMIS server stopped");
+        }
     }
 
     @Override
@@ -76,6 +78,16 @@ public class TestAtomPubClientServer extends BasicTestCase {
         String serverUrl = startServer();
         ContentManager cm = new APPContentManager(serverUrl);
         repository = cm.getDefaultRepository();
+    }
+
+    @Override
+    public void setUp() throws Exception {
+        try {
+            super.setUp();
+        } catch (Exception e) {
+            stopServer();
+            throw e;
+        }
     }
 
     @Override
