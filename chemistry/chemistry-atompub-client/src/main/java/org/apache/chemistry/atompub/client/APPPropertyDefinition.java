@@ -159,10 +159,6 @@ public class APPPropertyDefinition implements PropertyDefinition {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public String getEncoding() {
-        return (String) map.get("encoding");
-    }
-
     public boolean validates(Serializable value) {
         return validationError(value) == null;
     }

@@ -113,6 +113,8 @@ public class CMIS {
 
     public static final QName VERSIONABLE = CMISName("versionable");
 
+    public static final QName CONTENT_STREAM_ALLOWED = CMISName("contentStreamAllowed");
+
     public static final QName INCLUDED_IN_SUPERTYPE_QUERY = CMISName("includedInSupertypeQuery");
 
     public static final QName PROPERTY_STRING_DEFINITION = CMISName("propertyStringDefinition");

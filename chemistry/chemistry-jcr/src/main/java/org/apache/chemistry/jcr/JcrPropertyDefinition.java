@@ -51,11 +51,6 @@ public class JcrPropertyDefinition implements PropertyDefinition {
         return propDef.getName();
     }
 
-    public String getEncoding() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public String getId() {
         return propDef.getName();
     }

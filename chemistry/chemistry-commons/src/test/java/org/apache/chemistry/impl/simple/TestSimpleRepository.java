@@ -52,16 +52,15 @@ public class TestSimpleRepository extends TestCase {
         PropertyDefinition d1 = new SimplePropertyDefinition("title",
                 "def:title", "Title", "", false, PropertyType.STRING, false,
                 null, false, false, "", Updatability.READ_WRITE, true, true, 0,
-                null, null, -1, null, null);
+                null, null, -1, null);
         PropertyDefinition d2 = new SimplePropertyDefinition("description",
                 "def:description", "Description", "", false,
                 PropertyType.STRING, false, null, false, false, "",
-                Updatability.READ_WRITE, true, true, 0, null, null, -1, null,
-                null);
+                Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
         PropertyDefinition d3 = new SimplePropertyDefinition("date",
                 "def:date", "Date", "", false, PropertyType.DATETIME, false,
                 null, false, false, null, Updatability.READ_WRITE, true, true,
-                0, null, null, -1, null, null);
+                0, null, null, -1, null);
         SimpleType mt1 = new SimpleType("doc", null, "Doc", "My Doc Type",
                 BaseType.DOCUMENT, "", true, true, true, true, true, true,
                 ContentStreamPresence.ALLOWED, null, null, Arrays.asList(d1,

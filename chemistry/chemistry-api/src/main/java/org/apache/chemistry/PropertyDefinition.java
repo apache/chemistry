@@ -17,6 +17,7 @@
 package org.apache.chemistry;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 
@@ -205,23 +206,29 @@ public interface PropertyDefinition {
      * This is the precision in bits supported for this property (32 or 64
      * currently).
      *
-     * @return the precisions
+     * @return the precision
      */
     int getPrecision();
 
     /**
-     * The minimum value for this integer property.
+     * The minimum value for this property.
+     * <p>
+     * It will be an {@link Integer} for an integer property, and a
+     * {@link BigDecimal} for a decimal property.
      *
      * @return the minimum value, or {@code null} if none is provided
      */
-    Integer getMinValue();
+    Number getMinValue();
 
     /**
-     * The maximum value for this integer property.
+     * The maximum value for this property.
+     * <p>
+     * It will be an {@link Integer} for an integer property, and a
+     * {@link BigDecimal} for a decimal property.
      *
      * @return the maximum value, or {@code null} if none is provided
      */
-    Integer getMaxValue();
+    Number getMaxValue();
 
     /**
      * The maximum length of this string property.
@@ -239,16 +246,6 @@ public interface PropertyDefinition {
      * @return the URI of the XML schema for this property
      */
     URI getSchemaURI();
-
-    /**
-     * The encoding for this XML property.
-     * <p>
-     * This specifies the encoding used for the property value (e.g. UTF-8,
-     * etc.).
-     *
-     * @return the encoding for this property
-     */
-    String getEncoding();
 
     /**
      * Checks if a value can be set in this property.

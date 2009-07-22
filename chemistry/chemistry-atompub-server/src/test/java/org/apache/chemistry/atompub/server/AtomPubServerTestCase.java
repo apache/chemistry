@@ -95,16 +95,15 @@ public abstract class AtomPubServerTestCase extends TestCase {
         PropertyDefinition p1 = new SimplePropertyDefinition("title",
                 "def:title", "Title", "", false, PropertyType.STRING, false,
                 null, false, false, "", Updatability.READ_WRITE, true, true, 0,
-                null, null, -1, null, null);
+                null, null, -1, null);
         PropertyDefinition p2 = new SimplePropertyDefinition("description",
                 "def:description", "Description", "", false,
                 PropertyType.STRING, false, null, false, false, "",
-                Updatability.READ_WRITE, true, true, 0, null, null, -1, null,
-                null);
+                Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
         PropertyDefinition p3 = new SimplePropertyDefinition("date",
                 "def:date", "Date", "", false, PropertyType.DATETIME, false,
                 null, false, false, null, Updatability.READ_WRITE, true, true,
-                0, null, null, -1, null, null);
+                0, null, null, -1, null);
         SimpleType dt = new SimpleType("doc", "document", "Doc", "My Doc Type",
                 BaseType.DOCUMENT, "", true, true, true, true, true, true,
                 ContentStreamPresence.ALLOWED, null, null, Arrays.asList(p1,

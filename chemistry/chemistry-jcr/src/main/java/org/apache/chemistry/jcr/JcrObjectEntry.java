@@ -266,7 +266,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
     private static final SimplePropertyDefinition PROP_TYPE_ID = new SimplePropertyDefinition(
             Property.TYPE_ID, "def:typeid", "Type ID", "", false,
             PropertyType.ID, false, null, false, true, null,
-            Updatability.READ_ONLY, true, true, 0, null, null, -1, null, null);
+            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
 
     public Map<String, Property> getProperties() {
         Map<String, Property> properties = new HashMap<String, Property>();

@@ -37,156 +37,156 @@ public class SimpleType implements Type {
     public static final SimplePropertyDefinition PROP_ID = new SimplePropertyDefinition(
             Property.ID, "def:id", "Id", "", false, PropertyType.ID, false,
             null, false, true, null, Updatability.READ_ONLY, true, true, 0,
-            null, null, -1, null, null);
+            null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_URI = new SimplePropertyDefinition(
             Property.URI, "def:uri", "URI", "", false, PropertyType.URI, false,
             null, false, false, null, Updatability.READ_ONLY, true, true, 0,
-            null, null, -1, null, null);
+            null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_TYPE_ID = new SimplePropertyDefinition(
             Property.TYPE_ID, "def:typeid", "Type ID", "", false,
             PropertyType.ID, false, null, false, true, null,
-            Updatability.READ_ONLY, true, true, 0, null, null, -1, null, null);
+            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_CREATED_BY = new SimplePropertyDefinition(
             Property.CREATED_BY, "def:createdby", "Created By", "", false,
             PropertyType.STRING, false, null, false, true, null,
-            Updatability.READ_ONLY, true, true, 0, null, null, -1, null, null);
+            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_CREATION_DATE = new SimplePropertyDefinition(
             Property.CREATION_DATE, "def:creationdate", "Creation Date", "",
             false, PropertyType.DATETIME, false, null, false, true, null,
-            Updatability.READ_ONLY, true, true, 0, null, null, -1, null, null);
+            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_LAST_MODIFIED_BY = new SimplePropertyDefinition(
             Property.LAST_MODIFIED_BY, "def:lastmodifiedby",
             "Last Modified By", "", false, PropertyType.STRING, false, null,
             false, true, null, Updatability.READ_ONLY, true, true, 0, null,
-            null, -1, null, null);
+            null, -1, null);
 
     public static final SimplePropertyDefinition PROP_LAST_MODIFICATION_DATE = new SimplePropertyDefinition(
             Property.LAST_MODIFICATION_DATE, "def:lastmodificationdate",
             "Last Modification Date", "", false, PropertyType.DATETIME, false,
             null, false, true, null, Updatability.READ_ONLY, true, true, 0,
-            null, null, -1, null, null);
+            null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_CHANGE_TOKEN = new SimplePropertyDefinition(
             Property.CHANGE_TOKEN, "def:changetoken", "Change Token", "",
             false, PropertyType.STRING, false, null, false, false, null,
-            Updatability.READ_WRITE, true, true, 0, null, null, -1, null, null);
+            Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_NAME = new SimplePropertyDefinition(
             Property.NAME, "def:name", "Name", "", false, PropertyType.STRING,
             false, null, false, true, null, Updatability.READ_WRITE, true,
-            true, 0, null, null, -1, null, null);
+            true, 0, null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_IS_LATEST_VERSION = new SimplePropertyDefinition(
             Property.IS_LATEST_VERSION, "def:islatestversion",
             "Is Latest Version", "", false, PropertyType.BOOLEAN, false, null,
             false, true, null, Updatability.READ_ONLY, true, true, 0, null,
-            null, -1, null, null);
+            null, -1, null);
 
     public static final SimplePropertyDefinition PROP_IS_MAJOR_VERSION = new SimplePropertyDefinition(
             Property.IS_MAJOR_VERSION, "def:ismajorversion",
             "Is Major Version", "", false, PropertyType.BOOLEAN, false, null,
             false, false, null, Updatability.READ_ONLY, true, true, 0, null,
-            null, -1, null, null);
+            null, -1, null);
 
     public static final SimplePropertyDefinition PROP_IS_LATEST_MAJOR_VERSION = new SimplePropertyDefinition(
             Property.IS_LATEST_MAJOR_VERSION, "def:islatestmajorversion",
             "Is Latest Major Version", "", false, PropertyType.BOOLEAN, false,
             null, false, true, null, Updatability.READ_ONLY, true, true, 0,
-            null, null, -1, null, null);
+            null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_VERSION_LABEL = new SimplePropertyDefinition(
             Property.VERSION_LABEL, "def:versionlabel", "Version Label", "",
             false, PropertyType.STRING, false, null, false, true, null,
-            Updatability.READ_ONLY, true, true, 0, null, null, -1, null, null);
+            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_VERSION_SERIES_ID = new SimplePropertyDefinition(
             Property.VERSION_SERIES_ID, "def:versionseriesid",
             "Version Series ID", "", false, PropertyType.ID, false, null,
             false, true, null, Updatability.READ_ONLY, true, true, 0, null,
-            null, -1, null, null);
+            null, -1, null);
 
     public static final SimplePropertyDefinition PROP_IS_VERSION_SERIES_CHECKED_OUT = new SimplePropertyDefinition(
             Property.IS_VERSION_SERIES_CHECKED_OUT,
             "def:isversionseriescheckedout", "Is Version Series Checked Out",
             "", false, PropertyType.BOOLEAN, false, null, false, true, null,
-            Updatability.READ_ONLY, true, true, 0, null, null, -1, null, null);
+            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_VERSION_SERIES_CHECKED_OUT_BY = new SimplePropertyDefinition(
             Property.VERSION_SERIES_CHECKED_OUT_BY,
             "def:versionseriescheckedoutby", "Version Series Checked Out By",
             "", false, PropertyType.STRING, false, null, false, false, null,
-            Updatability.READ_ONLY, true, true, 0, null, null, -1, null, null);
+            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_VERSION_SERIES_CHECKED_OUT_ID = new SimplePropertyDefinition(
             Property.VERSION_SERIES_CHECKED_OUT_ID,
             "def:versionseriescheckedoutid", "Version Series Checked Out Id",
             "", false, PropertyType.ID, false, null, false, false, null,
-            Updatability.READ_ONLY, true, true, 0, null, null, -1, null, null);
+            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_CHECKIN_COMMENT = new SimplePropertyDefinition(
             Property.CHECKIN_COMMENT, "def:checkincomment", "Checkin Comment",
             "", false, PropertyType.STRING, false, null, false, false, null,
-            Updatability.READ_ONLY, true, true, 0, null, null, -1, null, null);
+            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_CONTENT_STREAM_LENGTH = new SimplePropertyDefinition(
             Property.CONTENT_STREAM_LENGTH, "def:contentstreamlength",
             "Content Stream Length", "", false, PropertyType.INTEGER, false,
             null, false, false, null, Updatability.READ_ONLY, true, true, 0,
-            null, null, -1, null, null);
+            null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_CONTENT_STREAM_MIME_TYPE = new SimplePropertyDefinition(
             Property.CONTENT_STREAM_MIME_TYPE, "def:contentstreammimetype",
             "Content Stream MIME Type", "", false, PropertyType.STRING, false,
             null, false, false, null, Updatability.READ_ONLY, true, true, 0,
-            null, null, -1, null, null);
+            null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_CONTENT_STREAM_FILENAME = new SimplePropertyDefinition(
             Property.CONTENT_STREAM_FILENAME, "def:contentstreamfilename",
             "Content Stream Filename", "", false, PropertyType.STRING, false,
             null, false, false, null, Updatability.READ_WRITE, true, true, 0,
-            null, null, -1, null, null);
+            null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_CONTENT_STREAM_URI = new SimplePropertyDefinition(
             Property.CONTENT_STREAM_URI, "def:contentstreamuri",
             "Content Stream URI", "", false, PropertyType.URI, false, null,
             false, false, null, Updatability.READ_ONLY, true, true, 0, null,
-            null, -1, null, null);
+            null, -1, null);
 
     public static final SimplePropertyDefinition PROP_PARENT_ID = new SimplePropertyDefinition(
             Property.PARENT_ID, "def:parentid", "Parent Id", "", false,
             PropertyType.ID, false, null, false, true, null,
-            Updatability.READ_ONLY, true, true, 0, null, null, -1, null, null);
+            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_ALLOWED_CHILD_OBJECT_TYPE_IDS = new SimplePropertyDefinition(
             Property.ALLOWED_CHILD_OBJECT_TYPE_IDS,
             "def:allowedchildobjecttypeids", "Allowed Child Object Type Ids",
             "", false, PropertyType.ID, true, null, false, false, null,
-            Updatability.READ_ONLY, true, true, 0, null, null, -1, null, null);
+            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_SOURCE_ID = new SimplePropertyDefinition(
             Property.SOURCE_ID, "def:sourceid", "Source Id", "", false,
             PropertyType.ID, false, null, false, true, null,
-            Updatability.READ_WRITE, true, true, 0, null, null, -1, null, null);
+            Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_TARGET_ID = new SimplePropertyDefinition(
             Property.TARGET_ID, "def:targetid", "Target Id", "", false,
             PropertyType.ID, false, null, false, true, null,
-            Updatability.READ_WRITE, true, true, 0, null, null, -1, null, null);
+            Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_POLICY_NAME = new SimplePropertyDefinition(
             Property.POLICY_NAME, "def:policyname", "Policy Name", "", false,
             PropertyType.STRING, false, null, false, true, null,
-            Updatability.READ_ONLY, true, true, 0, null, null, -1, null, null);
+            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_POLICY_TEXT = new SimplePropertyDefinition(
             Property.POLICY_TEXT, "def:policytext", "Policy Text", "", false,
             PropertyType.STRING, false, null, false, true, null,
-            Updatability.READ_WRITE, true, true, 0, null, null, -1, null, null);
+            Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
 
     private static final PropertyDefinition[] PROPS_COMMON = {
             PROP_ID, //

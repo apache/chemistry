@@ -60,6 +60,14 @@ public enum ContentStreamPresence {
         return o;
     }
 
+    public static ContentStreamPresence get(String value, ContentStreamPresence def) {
+        ContentStreamPresence o = all.get(value);
+        if (o == null) {
+            o = def;
+        }
+        return o;
+    }
+
     @Override
     public String toString() {
         return value;

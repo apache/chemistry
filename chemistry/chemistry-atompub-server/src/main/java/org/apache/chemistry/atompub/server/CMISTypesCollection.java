@@ -152,6 +152,8 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         el.setText(bool(type.isControllable()));
         el = factory.newElement(CMIS.VERSIONABLE, dt);
         el.setText(bool(type.isVersionable()));
+        el = factory.newElement(CMIS.CONTENT_STREAM_ALLOWED, dt);
+        el.setText(type.getContentStreamAllowed().toString()); // TODO null
         el = factory.newElement(CMIS.INCLUDED_IN_SUPERTYPE_QUERY, dt);
         el.setText(bool(type.isIncludedInSuperTypeQuery()));
         if ("true".equals(request.getParameter("includePropertyDefinitions"))) {
@@ -204,7 +206,7 @@ public class CMISTypesCollection extends CMISCollection<Type> {
                 el = factory.newElement(CMIS.CARDINALITY, def);
                 el.setText(pd.isMultiValued() ? "multi" : "single");
                 el = factory.newElement(CMIS.UPDATABILITY, def);
-                el.setText(pd.getUpdatability().toString());
+                el.setText(pd.getUpdatability().toString()); // TODO null
                 el = factory.newElement(CMIS.INHERITED, def);
                 el.setText(pd.isInherited() ? "true" : "false");
                 el = factory.newElement(CMIS.REQUIRED, def);

@@ -45,15 +45,6 @@ public interface Choice {
     Serializable getValue();
 
     /**
-     * The choice index.
-     * <p>
-     * The index provides guidance for the ordering of names when presented.
-     *
-     * @return the index
-     */
-    int getIndex();
-
-    /**
      * The sub-choices, if hierarchical.
      * <p>
      * The sub-choices are returnd ordered by index.

@@ -131,6 +131,11 @@ public class APPType extends APPObjectEntry implements Type {
         return "true".equals(map.get(CMIS.VERSIONABLE.getLocalPart()));
     }
 
+    public ContentStreamPresence getContentStreamAllowed() {
+        return ContentStreamPresence.get(map.get(CMIS.CONTENT_STREAM_ALLOWED),
+                ContentStreamPresence.NOT_ALLOWED);
+    }
+
     public boolean isIncludedInSuperTypeQuery() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
@@ -140,10 +145,6 @@ public class APPType extends APPObjectEntry implements Type {
     }
 
     public String[] getAllowedTargetTypes() {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    public ContentStreamPresence getContentStreamAllowed() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 

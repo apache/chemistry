@@ -59,15 +59,13 @@ public class SimplePropertyDefinition implements PropertyDefinition {
 
     private final int precision;
 
-    private final Integer minValue;
+    private final Number minValue;
 
-    private final Integer maxValue;
+    private final Number maxValue;
 
     private final int maxLength;
 
     private final URI schemaURI;
-
-    private final String encoding;
 
     public SimplePropertyDefinition(String name, String id, String displayName,
             String description, boolean inherited, PropertyType type,
@@ -75,7 +73,7 @@ public class SimplePropertyDefinition implements PropertyDefinition {
             boolean required, Serializable defaultValue,
             Updatability updatability, boolean queryable, boolean orderable,
             int precision, Integer minValue, Integer maxValue, int maxLength,
-            URI schemaURI, String encoding) {
+            URI schemaURI) {
         super();
         if (name.equals(SimpleProperty.CONTENT_BYTES_KEY)) {
             throw new IllegalArgumentException(SimpleProperty.CONTENT_BYTES_KEY
@@ -101,7 +99,6 @@ public class SimplePropertyDefinition implements PropertyDefinition {
         this.maxValue = maxValue;
         this.maxLength = maxLength;
         this.schemaURI = schemaURI;
-        this.encoding = encoding;
     }
 
     public String getName() {
@@ -164,11 +161,11 @@ public class SimplePropertyDefinition implements PropertyDefinition {
         return precision;
     }
 
-    public Integer getMinValue() {
+    public Number getMinValue() {
         return minValue;
     }
 
-    public Integer getMaxValue() {
+    public Number getMaxValue() {
         return maxValue;
     }
 
@@ -178,10 +175,6 @@ public class SimplePropertyDefinition implements PropertyDefinition {
 
     public URI getSchemaURI() {
         return schemaURI;
-    }
-
-    public String getEncoding() {
-        return encoding;
     }
 
     public boolean validates(Serializable value) {
