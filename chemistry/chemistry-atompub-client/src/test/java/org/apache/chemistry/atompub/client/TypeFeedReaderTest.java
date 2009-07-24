@@ -18,21 +18,20 @@
 package org.apache.chemistry.atompub.client;
 
 import java.io.InputStream;
-import java.util.Map;
 
 import junit.framework.TestCase;
 
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.Type;
+import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 
 public class TypeFeedReaderTest extends TestCase {
 
     public void testReadTypesFeed() throws Exception {
         InputStream is = getClass().getResourceAsStream("/feed-types.xml");
-        Map<String, Type> typeRegistry = TypeFeedReader.INSTANCE.read(
-                new ReadContext((Repository) null), is);
-        assertEquals(5, typeRegistry.size());
+        TypeManager typeManager = TypeFeedReader.INSTANCE.read(new ReadContext(
+                (Repository) null), is);
+        assertEquals(5, typeManager.getTypes(null).size());
     }
 
 }

@@ -20,10 +20,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
@@ -136,7 +136,7 @@ public class HttpClientResponse implements Response {
         }
     }
 
-    public Map<String, Type> getTypeFeed(ReadContext ctx)
+    public TypeManager getTypeFeed(ReadContext ctx)
             throws ContentManagerException {
         try {
             return io.getTypeFeedReader().read(ctx, getStream());

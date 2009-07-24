@@ -69,7 +69,11 @@ public class TestSimpleRepository extends TestCase {
                 "Fold", "My Folder Type", BaseType.FOLDER, "", true, true,
                 true, true, false, false, ContentStreamPresence.NOT_ALLOWED,
                 null, null, Arrays.asList(d1, d2));
-        repo = new SimpleRepository("test", Arrays.asList(mt1, mt2), null);
+        SimpleType mt3 = new SimpleType("subdoc", "doc", "SubDoc",
+                "My SubDoc Type", BaseType.DOCUMENT, "", true, true, true,
+                true, true, true, ContentStreamPresence.ALLOWED, null, null,
+                Arrays.asList(d1, d2, d3));
+        repo = new SimpleRepository("test", Arrays.asList(mt1, mt2, mt3), null);
 
     }
 
@@ -95,9 +99,30 @@ public class TestSimpleRepository extends TestCase {
         assertEquals(JoinCapability.NONE, capabilities.getJoinCapability());
         assertEquals(QueryCapability.BOTH_COMBINED,
                 capabilities.getQueryCapability());
+    }
 
-        Collection<Type> types = repo.getTypes(null, true);
-        assertEquals(5 + 2, types.size()); // default types have been added
+    public void testTypes() {
+        Collection<Type> types = repo.getTypes(null);
+        assertEquals(5 + 3, types.size()); // default types have been added
+        assertNotNull(repo.getType("doc"));
+        assertNotNull(repo.getType("subdoc"));
+        assertNotNull(repo.getType("fold"));
+        assertNull(repo.getType("no-such-type"));
+        assertEquals(3,
+                repo.getTypes(BaseType.DOCUMENT.getId(), -1, false).size());
+        assertEquals(1, // TODO spec unclear on depth 0
+                repo.getTypes(BaseType.DOCUMENT.getId(), 0, false).size());
+        assertEquals(2,
+                repo.getTypes(BaseType.DOCUMENT.getId(), 1, false).size());
+        assertEquals(3,
+                repo.getTypes(BaseType.DOCUMENT.getId(), 2, false).size());
+        assertEquals(3,
+                repo.getTypes(BaseType.DOCUMENT.getId(), 3, false).size());
+        assertEquals(2, repo.getTypes("doc", -1, false).size());
+        assertEquals(1, repo.getTypes("doc", 0, false).size());
+        assertEquals(2, repo.getTypes("doc", 1, false).size());
+        assertEquals(2, repo.getTypes("doc", 2, false).size());
+        assertEquals(2, repo.getTypes("doc", 3, false).size());
     }
 
     public void testRoot() throws Exception {

@@ -35,11 +35,13 @@ import org.apache.chemistry.atompub.client.stax.XmlProperty;
  */
 public class APPType extends APPObjectEntry implements Type {
 
+    private static final String UNDEFINED = "\0\0\0";
+
     protected Map<String, String> map;
 
     protected BaseType baseType;
 
-    protected String parentId;
+    protected String parentId = UNDEFINED;
 
     protected Map<String, PropertyDefinition> propertyDefs;
 
@@ -88,8 +90,11 @@ public class APPType extends APPObjectEntry implements Type {
     }
 
     public String getParentId() {
-        if (parentId == null) {
+        if (parentId == UNDEFINED) {
             parentId = map.get(CMIS.PARENT_ID.getLocalPart());
+            if ("".equals(parentId)) {
+                parentId = null;
+            }
         }
         return parentId;
     }

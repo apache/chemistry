@@ -13,21 +13,19 @@
  *
  * Authors:
  *     Bogdan Stefanescu, Nuxeo
+ *     Florent Guillaume, Nuxeo
  */
 package org.apache.chemistry.atompub.client;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.chemistry.Type;
+import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.atompub.client.stax.AbstractFeedReader;
+import org.apache.chemistry.impl.simple.SimpleTypeManager;
 import org.apache.chemistry.xml.stax.StaxReader;
 
 /**
- *
+ * Reader for a feed of types.
  */
-public class TypeFeedReader extends
-        AbstractFeedReader<Map<String, Type>, APPType> {
+public class TypeFeedReader extends AbstractFeedReader<TypeManager, APPType> {
 
     public static final TypeFeedReader INSTANCE = new TypeFeedReader();
 
@@ -40,13 +38,13 @@ public class TypeFeedReader extends
     }
 
     @Override
-    protected void addEntry(Map<String, Type> feed, APPType entry) {
-        feed.put(entry.getId(), entry);
+    protected void addEntry(TypeManager typeManager, APPType type) {
+        typeManager.addType(type);
     }
 
     @Override
-    protected Map<String, Type> createFeed(StaxReader reader) {
-        return new HashMap<String, Type>();
+    protected TypeManager createFeed(StaxReader reader) {
+        return new SimpleTypeManager();
     }
 
 }

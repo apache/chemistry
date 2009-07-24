@@ -13,6 +13,7 @@
  *
  * Authors:
  *     Bogdan Stefanescu, Nuxeo
+ *     Florent Guillaume, Nuxeo
  */
 package org.apache.chemistry.atompub.client;
 
@@ -22,9 +23,9 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 
+import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryInfo;
@@ -47,7 +48,7 @@ public class APPRepository implements Repository {
 
     protected String id;
 
-    protected Map<String, Type> typeRegistry;
+    protected TypeManager typeManager;
 
     protected Map<String, String> collections = new HashMap<String, String>();
 
@@ -103,22 +104,23 @@ public class APPRepository implements Repository {
         return info;
     }
 
+    public void addType(Type type) {
+        throw new UnsupportedOperationException("Cannot add types");
+    }
+
     public Type getType(String typeId) {
         loadTypes();
-        return typeRegistry.get(typeId);
+        return typeManager.getType(typeId);
     }
 
-    public List<Type> getTypes(String typeId,
-            boolean returnPropertyDefinitions, int maxItems, int skipCount,
-            boolean[] hasMoreItems) {
-        loadTypes();
-        throw new UnsupportedOperationException("Not yet Implemented");
+    public Collection<Type> getTypes(String typeId) {
+        return typeManager.getTypes(typeId);
     }
 
-    public Collection<Type> getTypes(String typeId,
+    public Collection<Type> getTypes(String typeId, int depth,
             boolean returnPropertyDefinitions) {
         loadTypes();
-        throw new UnsupportedOperationException("Not yet Implemented");
+        return typeManager.getTypes(typeId, depth, returnPropertyDefinitions);
     }
 
     public String getRelationshipName() {
@@ -132,36 +134,37 @@ public class APPRepository implements Repository {
     /** type API */
 
     public void addType(APPType type) {
-        typeRegistry.put(type.getId(), type);
+        typeManager.addType(type);
     }
 
     protected void loadTypes() {
-        if (typeRegistry == null) {
-            try {
-                String href = getCollectionHref(CMIS.COL_TYPES_CHILDREN);
-                if (href == null) {
-                    throw new IllegalArgumentException(
-                            "Invalid CMIS repository. No types children collection defined");
-                }
-                // TODO lazy load property definition
-                Request req = new Request(href + "?includePropertyDefinitions=true");
-                Response resp = cm.getConnector().get(req);
-                if (!resp.isOk()) {
-                    throw new ContentManagerException(
-                            "Remote server returned error code: "
-                                    + resp.getStatusCode());
-                }
-                InputStream in = resp.getStream();
-                try {
-                    typeRegistry = TypeFeedReader.INSTANCE.read(
-                            new ReadContext(this), in);
-                } finally {
-                    in.close();
-                }
-            } catch (Exception e) { // TODO how to handle exceptions?
-                throw new RuntimeException(
-                        "Failed to load repository types for " + getName(), e);
+        if (typeManager != null) {
+            return;
+        }
+        try {
+            String href = getCollectionHref(CMIS.COL_TYPES_CHILDREN);
+            if (href == null) {
+                throw new IllegalArgumentException(
+                        "Invalid CMIS repository. No types children collection defined");
             }
+            // TODO lazy load property definition
+            Request req = new Request(href + "?includePropertyDefinitions=true");
+            Response resp = cm.getConnector().get(req);
+            if (!resp.isOk()) {
+                throw new ContentManagerException(
+                        "Remote server returned error code: "
+                                + resp.getStatusCode());
+            }
+            InputStream in = resp.getStream();
+            try {
+                typeManager = TypeFeedReader.INSTANCE.read(
+                        new ReadContext(this), in);
+            } finally {
+                in.close();
+            }
+        } catch (Exception e) { // TODO how to handle exceptions?
+            throw new RuntimeException("Failed to load repository types for "
+                    + getName(), e);
         }
     }
 

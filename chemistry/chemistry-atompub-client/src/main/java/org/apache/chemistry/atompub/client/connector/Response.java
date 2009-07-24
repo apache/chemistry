@@ -18,8 +18,8 @@ package org.apache.chemistry.atompub.client.connector;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
+import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
@@ -51,8 +51,7 @@ public interface Response {
     List<ObjectEntry> getObjectFeed(ReadContext ctx)
             throws ContentManagerException;
 
-    Map<String, Type> getTypeFeed(ReadContext ctx)
-            throws ContentManagerException;
+    TypeManager getTypeFeed(ReadContext ctx) throws ContentManagerException;
 
     ObjectEntry getObject(ReadContext ctx) throws ContentManagerException;
 

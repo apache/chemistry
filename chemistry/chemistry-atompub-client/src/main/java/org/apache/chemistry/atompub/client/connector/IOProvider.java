@@ -18,8 +18,8 @@
 package org.apache.chemistry.atompub.client.connector;
 
 import java.util.List;
-import java.util.Map;
 
+import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.client.stax.EntryReader;
@@ -41,7 +41,7 @@ public interface IOProvider {
 
     FeedReader<List<ObjectEntry>> getObjectFeedReader();
 
-    FeedReader<Map<String, Type>> getTypeFeedReader();
+    FeedReader<TypeManager> getTypeFeedReader();
 
     XmlObjectWriter<ObjectEntry> getObjectEntryWriter();
 

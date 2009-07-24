@@ -89,6 +89,10 @@ public class JcrRepository implements Repository, RepositoryInfo,
         return this;
     }
 
+    public void addType(Type type) {
+        throw new UnsupportedOperationException("Cannot add types");
+    }
+
     public Type getType(String typeId) {
         try {
             // TODO pass credentials as parameters
@@ -113,17 +117,15 @@ public class JcrRepository implements Repository, RepositoryInfo,
         return null;
     }
 
-    public Collection<Type> getTypes(String typeId,
-                                     boolean returnPropertyDefinitions) {
-        boolean[] hasMoreItems = new boolean[1];
-        return getTypes(typeId, returnPropertyDefinitions, 0, 0, hasMoreItems);
+    public Collection<Type> getTypes(String typeId) {
+        return getTypes(typeId, -1, true);
     }
 
-    public List<Type> getTypes(String typeId,
-                               boolean returnPropertyDefinitions, int maxItems,
-                               int skipCount, boolean[] hasMoreItems) {
+    public List<Type> getTypes(String typeId, int depth,
+            boolean returnPropertyDefinitions) {
 
         // TODO dynamically discover and return types.
+        // TODO depth, returnPropertyDefinitions
 
         try {
             // TODO pass credentials as parameters

@@ -17,14 +17,16 @@
 package org.apache.chemistry;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
  * A CMIS Repository.
+ * <p>
+ * Basic repository information is available through {@link RepositoryEntry}.
+ * <p>
+ * Types are managed through {@link TypeManager}.
  */
-public interface Repository extends RepositoryEntry {
+public interface Repository extends RepositoryEntry, TypeManager {
 
     /**
      * Gets a new connection to this repository.
@@ -65,51 +67,5 @@ public interface Repository extends RepositoryEntry {
      * @return information about the repository
      */
     RepositoryInfo getInfo();
-
-    /**
-     * Gets the type definitions of the repository.
-     * <p>
-     * If typeId is provided, only the specific type and its descendants are
-     * returned, otherwise all types are returned.
-     * <p>
-     * If returnPropertyDefinitions is {@code false}, then the
-     * {@link PropertyDefinition}s will not be returned in each {@link Type}.
-     *
-     * @param typeId the base type ID, or {@code null}
-     * @return the repository's types
-     */
-    Collection<Type> getTypes(String typeId, boolean returnPropertyDefinitions);
-
-    /**
-     * Gets the type definitions of the repository.
-     * <p>
-     * If typeId is provided, only the specific type and its descendants are
-     * returned, otherwise all types are returned.
-     * <p>
-     * If returnPropertyDefinitions is {@code false}, then the
-     * {@link PropertyDefinition}s will not be returned in each {@link Type}.
-     * <p>
-     * If maxItems is {@code 0} then a repository-specific maximum will be used.
-     *
-     * @param typeId the base type ID, or {@code null}
-     * @param returnPropertyDefinitions {@code false} to skip property
-     *            definitions
-     * @param maxItems the maximum number of items, or {@code 0}
-     * @param skipCount the number of results to skip in the list
-     * @param hasMoreItems a 1-value boolean array to return a flag stating if
-     *            there are more items
-     * @return the repository's types, or a subset of them
-     */
-    // this API is present to mirror the wire protocol
-    List<Type> getTypes(String typeId, boolean returnPropertyDefinitions,
-            int maxItems, int skipCount, boolean[] hasMoreItems);
-
-    /**
-     * Gets the definition for the specified type.
-     *
-     * @param typeId the type ID
-     * @return the type definition
-     */
-    Type getType(String typeId);
 
 }

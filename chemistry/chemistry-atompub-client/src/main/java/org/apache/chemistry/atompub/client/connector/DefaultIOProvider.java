@@ -19,8 +19,8 @@
 package org.apache.chemistry.atompub.client.connector;
 
 import java.util.List;
-import java.util.Map;
 
+import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.client.APPObjectEntryReader;
@@ -29,9 +29,9 @@ import org.apache.chemistry.atompub.client.APPObjectFeedReader;
 import org.apache.chemistry.atompub.client.APPServiceDocumentReader;
 import org.apache.chemistry.atompub.client.TypeEntryReader;
 import org.apache.chemistry.atompub.client.TypeFeedReader;
-import org.apache.chemistry.atompub.client.stax.QueryWriter;
 import org.apache.chemistry.atompub.client.stax.EntryReader;
 import org.apache.chemistry.atompub.client.stax.FeedReader;
+import org.apache.chemistry.atompub.client.stax.QueryWriter;
 import org.apache.chemistry.atompub.client.stax.ServiceDocumentReader;
 import org.apache.chemistry.atompub.client.stax.XmlObjectWriter;
 
@@ -65,7 +65,7 @@ public class DefaultIOProvider implements IOProvider {
         return serviceDocumentReader;
     }
 
-    public FeedReader<Map<String, Type>> getTypeFeedReader() {
+    public FeedReader<TypeManager> getTypeFeedReader() {
         return typeFeedReader;
     }
 

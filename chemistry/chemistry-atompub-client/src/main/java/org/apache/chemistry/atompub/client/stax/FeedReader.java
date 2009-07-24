@@ -24,7 +24,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.chemistry.xml.stax.StaxReader;
 
 /**
- *
+ * Feed reader that returns a generic type T.
  */
 public interface FeedReader<T> {
 

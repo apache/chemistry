@@ -30,7 +30,7 @@ import org.apache.chemistry.xml.stax.ChildrenNavigator;
 import org.apache.chemistry.xml.stax.StaxReader;
 
 /**
- *
+ * Feed reader that returns a generic type T built of entries of generic type E.
  */
 public abstract class AbstractFeedReader<T, E> implements FeedReader<T> {
 

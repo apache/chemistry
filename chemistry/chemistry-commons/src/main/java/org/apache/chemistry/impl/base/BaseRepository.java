@@ -16,13 +16,9 @@
  */
 package org.apache.chemistry.impl.base;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ContentStreamPresence;
@@ -32,8 +28,10 @@ import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryEntry;
 import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.impl.simple.SimpleProperty;
 import org.apache.chemistry.impl.simple.SimpleType;
+import org.apache.chemistry.impl.simple.SimpleTypeManager;
 
 /**
  * Base implementation of a {@link Repository}. The implemented methods are
@@ -77,9 +75,9 @@ public abstract class BaseRepository implements Repository, RepositoryInfo,
             ContentStreamPresence.NOT_ALLOWED, null, null,
             Collections.<PropertyDefinition> emptyList());
 
-    protected final Map<String, Type> types = new HashMap<String, Type>();
-
     protected final String name;
+
+    protected final TypeManager typeManager = new SimpleTypeManager();
 
     protected BaseRepository(String name) {
         this.name = name;
@@ -92,11 +90,7 @@ public abstract class BaseRepository implements Repository, RepositoryInfo,
 
     protected void addTypes(Collection<SimpleType> types) {
         for (Type type : types) {
-            String typeId = type.getId();
-            if (this.types.containsKey(typeId)) {
-                throw new RuntimeException("Type already defined: " + typeId);
-            }
-            this.types.put(typeId, type);
+            typeManager.addType(type);
         }
     }
 
@@ -118,59 +112,6 @@ public abstract class BaseRepository implements Repository, RepositoryInfo,
 
     public RepositoryInfo getInfo() {
         return this;
-    }
-
-    public Type getType(String typeId) {
-        return types.get(typeId);
-    }
-
-    public Collection<Type> getTypes(String typeId,
-            boolean returnPropertyDefinitions) {
-        // TODO always returns property definitions for now
-        if (typeId == null) {
-            return Collections.unmodifiableCollection(types.values());
-        }
-        if (!types.containsKey(typeId)) {
-            return null; // TODO
-        }
-        // TODO return all descendants as well
-        return Collections.singleton(types.get(typeId));
-    }
-
-    public List<Type> getTypes(String typeId,
-            boolean returnPropertyDefinitions, int maxItems, int skipCount,
-            boolean[] hasMoreItems) {
-        if (maxItems < 0) {
-            throw new IllegalArgumentException(String.valueOf(maxItems));
-        }
-        if (skipCount < 0) {
-            throw new IllegalArgumentException(String.valueOf(skipCount));
-        }
-        if (hasMoreItems.length < 1) {
-            throw new IllegalArgumentException(
-                    "hasMoreItems parameter too small");
-        }
-
-        Collection<Type> t = getTypes(typeId, returnPropertyDefinitions);
-        if (t == null) {
-            hasMoreItems[0] = false;
-            return Collections.emptyList();
-        }
-        List<Type> all = new ArrayList<Type>(t);
-        int fromIndex = skipCount;
-        if (fromIndex < 0 || fromIndex > all.size()) {
-            hasMoreItems[0] = false;
-            return Collections.emptyList();
-        }
-        if (maxItems == 0) {
-            maxItems = all.size();
-        }
-        int toIndex = skipCount + maxItems;
-        if (toIndex > all.size()) {
-            toIndex = all.size();
-        }
-        hasMoreItems[0] = toIndex < all.size();
-        return all.subList(fromIndex, toIndex);
     }
 
     /*
@@ -200,6 +141,26 @@ public abstract class BaseRepository implements Repository, RepositoryInfo,
 
     public Collection<RepositoryEntry> getRelatedRepositories() {
         return Collections.emptySet();
+    }
+
+    /*
+     * ----- TypeManager -----
+     */
+    public void addType(Type type) {
+        throw new UnsupportedOperationException("Cannot add types");
+    }
+
+    public Type getType(String typeId) {
+        return typeManager.getType(typeId);
+    }
+
+    public Collection<Type> getTypes(String typeId) {
+        return typeManager.getTypes(typeId);
+    }
+
+    public Collection<Type> getTypes(String typeId, int depth,
+            boolean returnPropertyDefinitions) {
+        return typeManager.getTypes(typeId, depth, returnPropertyDefinitions);
     }
 
 }

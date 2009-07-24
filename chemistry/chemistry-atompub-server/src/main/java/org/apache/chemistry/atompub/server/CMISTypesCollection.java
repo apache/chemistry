@@ -263,7 +263,7 @@ public class CMISTypesCollection extends CMISCollection<Type> {
     @Override
     public Iterable<Type> getEntries(RequestContext request)
             throws ResponseContextException {
-        return repository.getTypes(null, true);
+        return repository.getTypes(null);
     }
 
     @Override
