@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -483,7 +482,8 @@ public class SimpleConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteObject(ObjectId object) {
+    public void deleteObject(ObjectId object, boolean allVersions) {
+        // TODO allVersions
         String id = object.getId();
         if (repository.rootId.equals(id)) {
             throw new RuntimeException("Cannot delete root"); // TODO
@@ -518,6 +518,7 @@ public class SimpleConnection implements Connection, SPI {
             boolean continueOnFailure) {
         // TODO unfiling
         // TODO continueOnFailure
+        boolean allVersions = false; // TODO add in signature?
         String id = folder.getId();
         if (repository.rootId.equals(id)) {
             throw new RuntimeException("Cannot delete root"); // TODO
@@ -530,22 +531,18 @@ public class SimpleConnection implements Connection, SPI {
         if (repository.getType(typeId).getBaseType() != BaseType.FOLDER) {
             throw new RuntimeException("Not a folder: " + folder); // TODO
         }
-        Set<ObjectId> deletedIds = new HashSet<ObjectId>();
         for (String childId : repository.children.get(id)) {
             SimpleData childData = repository.datas.get(childId);
             String childTypeId = (String) childData.get(Property.TYPE_ID);
             ObjectId objectId = new SimpleObjectId(childId);
             if (repository.getType(childTypeId).getBaseType() == BaseType.FOLDER) {
-                deletedIds.addAll(deleteTree(objectId, unfiling,
-                        continueOnFailure));
+                deleteTree(objectId, unfiling, continueOnFailure);
             } else {
-                deleteObject(objectId);
-                deletedIds.add(objectId);
+                deleteObject(objectId, allVersions);
             }
         }
-        deleteObject(folder);
-        deletedIds.add(new SimpleObjectId(id));
-        return deletedIds;
+        deleteObject(folder, false);
+        return Collections.emptyList();
     }
 
     public void addObjectToFolder(ObjectId object, ObjectId folder) {
@@ -662,11 +659,6 @@ public class SimpleConnection implements Connection, SPI {
 
     public Collection<ObjectEntry> getAllVersions(String versionSeriesId,
             String filter) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void deleteAllVersions(String versionSeriesId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

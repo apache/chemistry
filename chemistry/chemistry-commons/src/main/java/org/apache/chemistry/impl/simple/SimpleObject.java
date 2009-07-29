@@ -69,7 +69,7 @@ public class SimpleObject extends BaseObject {
     }
 
     public void delete() {
-        entry.connection.deleteObject(this);
+        entry.connection.deleteObject(this, false);
     }
 
     public void unfile() {

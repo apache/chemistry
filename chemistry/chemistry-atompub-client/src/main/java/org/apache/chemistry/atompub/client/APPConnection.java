@@ -414,7 +414,7 @@ public class APPConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteObject(ObjectId object) {
+    public void deleteObject(ObjectId object, boolean allVersions) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -496,11 +496,6 @@ public class APPConnection implements Connection, SPI {
 
     public Collection<ObjectEntry> getAllVersions(String versionSeriesId,
             String filter) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void deleteAllVersions(String versionSeriesId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

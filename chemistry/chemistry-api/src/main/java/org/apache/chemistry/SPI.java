@@ -433,15 +433,17 @@ public interface SPI {
      * When a filed object is deleted, it is removed from all folders it is
      * filed in.
      * <p>
-     * This service deletes a specific version of a document object. To delete
-     * all versions, use {@link #deleteAllVersions}.
+     * If allVersions is {@code false}, this deletes a specific version of a
+     * document object. If allVersions is {@code true}, then the whole version
+     * series is deleted.
      * <p>
      * Deletion of a private working copy (checked out version) is the same as
      * the cancelling of a checkout.
      *
      * @param object the object to delete
+     * @param allVersions if {@code true}, then delete all versions as well
      */
-    void deleteObject(ObjectId object);
+    void deleteObject(ObjectId object, boolean allVersions);
 
     /**
      * Deletes a tree of objects.
@@ -643,15 +645,6 @@ public interface SPI {
      * @param filter the properties filter, or {@code null} for all properties
      */
     Collection<ObjectEntry> getAllVersions(String versionSeriesId, String filter);
-
-    /**
-     * Deletes all the versions of a document.
-     * <p>
-     * Deletes all document versions in the specified version series.
-     *
-     * @param versionSeriesId the version series ID
-     */
-    void deleteAllVersions(String versionSeriesId);
 
     /*
      * ----- Relationship Services -----

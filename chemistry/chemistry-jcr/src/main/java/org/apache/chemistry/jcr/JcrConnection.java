@@ -211,15 +211,11 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteAllVersions(String versionSeriesId) {
-        throw new UnsupportedOperationException();
-    }
-
     public ObjectId deleteContentStream(ObjectId documentId) {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteObject(ObjectId objectId) {
+    public void deleteObject(ObjectId objectId, boolean allVersions) {
         throw new UnsupportedOperationException();
     }
 
