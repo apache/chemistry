@@ -53,7 +53,6 @@ import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.ReturnVersion;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
@@ -70,8 +69,7 @@ public class SimpleConnection implements Connection, SPI {
 
     public SimpleConnection(SimpleRepository repository) {
         this.repository = repository;
-        rootFolder = (SimpleFolder) getObject(
-                repository.getInfo().getRootFolderId(), ReturnVersion.THIS);
+        rootFolder = (SimpleFolder) getObject(repository.getInfo().getRootFolderId());
     }
 
     public Connection getConnection() {
@@ -418,8 +416,7 @@ public class SimpleConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectEntry getProperties(ObjectId object,
-            ReturnVersion returnVersion, String filter,
+    public ObjectEntry getProperties(ObjectId object, String filter,
             boolean includeAllowableActions, boolean includeRelationships) {
         SimpleData data = repository.datas.get(object.getId());
         if (data == null) {
@@ -428,8 +425,7 @@ public class SimpleConnection implements Connection, SPI {
         return new SimpleObjectEntry(data, this);
     }
 
-    public CMISObject getObject(ObjectId object, ReturnVersion returnVersion) {
-        // TODO returnVersion
+    public CMISObject getObject(ObjectId object) {
         SimpleData data = repository.datas.get(object.getId());
         if (data == null) {
             return null;
@@ -663,7 +659,7 @@ public class SimpleConnection implements Connection, SPI {
     }
 
     public Map<String, Serializable> getPropertiesOfLatestVersion(
-            String versionSeriesId, boolean majorVersion, String filter) {
+            String versionSeriesId, boolean major, String filter) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

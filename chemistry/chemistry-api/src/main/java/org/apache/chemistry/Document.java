@@ -78,12 +78,10 @@ public interface Document extends CMISObject {
      * <p>
      * Returns the latest version, or the latest major version, of this
      * document.
-     * <p>
-     * If the latest major version is requested and the version series of this
-     * document has no major version, an exception is thrown.
      *
-     * @param major {@code true} if the last major version is requested
-     * @return the latest version or latest major version
+     * @param major {@code true} if the latest major version is requested
+     * @return the latest version or latest major version, or {@code null} if
+     *         not found
      */
     Document getLatestVersion(boolean major);
 

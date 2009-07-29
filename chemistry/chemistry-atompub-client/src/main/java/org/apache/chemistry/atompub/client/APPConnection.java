@@ -42,7 +42,6 @@ import org.apache.chemistry.Property;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.ReturnVersion;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
@@ -94,8 +93,7 @@ public class APPConnection implements Connection, SPI {
 
     public Folder getRootFolder() {
         if (root == null) {
-            root = (APPFolder) getObject(repository.info.getRootFolderId(),
-                    ReturnVersion.THIS);
+            root = (APPFolder) getObject(repository.info.getRootFolderId());
         }
         return root;
     }
@@ -335,10 +333,7 @@ public class APPConnection implements Connection, SPI {
         return (APPObjectEntry) resp.getObject(new ReadContext(this));
     }
 
-    public CMISObject getObject(ObjectId object, ReturnVersion returnVersion) {
-        if (returnVersion == null) {
-            returnVersion = ReturnVersion.THIS;
-        }
+    public CMISObject getObject(ObjectId object) {
         APPObjectEntry entry = getObjectEntry(object);
         Type type = getRepository().getType(entry.getTypeId());
         switch (entry.getBaseType()) {
@@ -353,8 +348,6 @@ public class APPConnection implements Connection, SPI {
         default:
             throw new AssertionError(entry.getBaseType());
         }
-
-        // throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public ObjectId createDocument(String typeId,
@@ -388,8 +381,7 @@ public class APPConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectEntry getProperties(ObjectId object,
-            ReturnVersion returnVersion, String filter,
+    public ObjectEntry getProperties(ObjectId object, String filter,
             boolean includeAllowableActions, boolean includeRelationships) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
@@ -504,7 +496,7 @@ public class APPConnection implements Connection, SPI {
     }
 
     public Map<String, Serializable> getPropertiesOfLatestVersion(
-            String versionSeriesId, boolean majorVersion, String filter) {
+            String versionSeriesId, boolean major, String filter) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

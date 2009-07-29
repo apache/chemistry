@@ -104,10 +104,9 @@ public interface Connection {
      * Gets an object given its ID.
      *
      * @param object the object ID
-     * @param returnVersion the version to be returned
-     * @return the object, or {@code null} if it is not found
+     * @return the object, or {@code null} if not found
      */
-    CMISObject getObject(ObjectId object, ReturnVersion returnVersion);
+    CMISObject getObject(ObjectId object);
 
     /*
      * ----- Discovery Services -----

@@ -49,7 +49,6 @@ import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.ReturnVersion;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.VersioningState;
@@ -202,8 +201,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         SPI spi = repository.getSPI(); // TODO XXX connection leak
         ObjectId objectId = spi.createDocument(typeId, properties,
                 new SimpleObjectId(id), contentStream, versioningState);
-        ObjectEntry object = spi.getProperties(objectId, null, null, false,
-                false);
+        ObjectEntry object = spi.getProperties(objectId, null, false, false);
 
         // prepare the updated entry to return in the response
         entry = request.getAbdera().getFactory().newEntry();
@@ -292,8 +290,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     public ObjectEntry getEntry(String id, RequestContext request)
             throws ResponseContextException {
         SPI spi = repository.getSPI(); // TODO XXX connection leak
-        return spi.getProperties(spi.newObjectId(id), ReturnVersion.THIS, null,
-                false, false);
+        return spi.getProperties(spi.newObjectId(id), null, false, false);
     }
 
     @Override

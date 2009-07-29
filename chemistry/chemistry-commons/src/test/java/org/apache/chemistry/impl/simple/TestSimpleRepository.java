@@ -36,7 +36,6 @@ import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.QueryCapability;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryInfo;
-import org.apache.chemistry.ReturnVersion;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.Updatability;
@@ -176,7 +175,7 @@ public class TestSimpleRepository extends TestCase {
         assertEquals("Yo!", d1.getString("title"));
         // refetch
 
-        d1 = (Document) conn.getObject(d1, null);
+        d1 = (Document) conn.getObject(d1);
         assertEquals("Yo!", d1.getString("title"));
 
         Property prop = d1.getProperty("title");
@@ -211,7 +210,7 @@ public class TestSimpleRepository extends TestCase {
         Document d1 = root.newDocument("doc");
         d1.save();
         d1.delete();
-        assertNull(conn.getObject(d1, ReturnVersion.THIS));
+        assertNull(conn.getObject(d1));
     }
 
     public void testRemoveFolder() {
@@ -233,9 +232,9 @@ public class TestSimpleRepository extends TestCase {
         d1.setName("bar");
         d1.save();
         f2.deleteTree(Unfiling.UNFILE);
-        assertEquals(f1.getId(), conn.getObject(f1, ReturnVersion.THIS).getId());
-        assertNull(conn.getObject(f2, ReturnVersion.THIS));
-        assertNull(conn.getObject(d1, ReturnVersion.THIS));
+        assertEquals(f1.getId(), conn.getObject(f1).getId());
+        assertNull(conn.getObject(f2));
+        assertNull(conn.getObject(d1));
     }
 
     public void testBasicQuery() {

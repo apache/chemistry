@@ -183,7 +183,7 @@ public abstract class BasicTestCase extends TestCase {
     public void testGetObjectParents() {
         Folder root = conn.getRootFolder();
         ObjectId folder1Id = root.getChildren(null).get(0);
-        Folder folder1 = (Folder) conn.getObject(folder1Id, null);
+        Folder folder1 = (Folder) conn.getObject(folder1Id);
         Document doc = (Document) folder1.getChildren(BaseType.DOCUMENT).get(0);
         Collection<ObjectEntry> parents = spi.getObjectParents(doc, null,
                 false, false);

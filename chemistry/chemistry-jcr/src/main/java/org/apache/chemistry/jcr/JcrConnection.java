@@ -45,7 +45,6 @@ import org.apache.chemistry.Policy;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.ReturnVersion;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
@@ -70,7 +69,7 @@ public class JcrConnection implements Connection, SPI {
         session.logout();
     }
 
-    public CMISObject getObject(ObjectId objectId, ReturnVersion returnVersion) {
+    public CMISObject getObject(ObjectId objectId) {
         try {
             String relPath = JcrObjectEntry.getPath(objectId.getId()).substring(1);
             if (relPath.equals("")) {
@@ -178,8 +177,7 @@ public class JcrConnection implements Connection, SPI {
                                  VersioningState versioningState) {
 
         try {
-            JcrFolder folder = (JcrFolder) getObject(folderId,
-                    ReturnVersion.LATEST);
+            JcrFolder folder = (JcrFolder) getObject(folderId);
             Document doc = folder.newDocument(null);
             doc.setValues(properties);
             if (contentStream != null) {
@@ -347,7 +345,6 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public ObjectEntry getProperties(ObjectId objectId,
-                                     ReturnVersion returnVersion,
                                      String filter,
                                      boolean includeAllowableActions,
                                      boolean includeRelationships) {
@@ -372,7 +369,7 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public Map<String, Serializable> getPropertiesOfLatestVersion(String versionSeriesId,
-                                                                  boolean majorVersion,
+                                                                  boolean major,
                                                                   String filter) {
         // TODO Auto-generated method stub
         return null;

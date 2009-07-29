@@ -320,9 +320,6 @@ public interface SPI {
      * Returns the properties of an object, and optionally the operations that
      * the user is allowed to perform on the object.
      * <p>
-     * If a returnVersion is specified, it's actually the properties of that
-     * version of the given object that is returned.
-     * <p>
      * The content stream of the object is not returned, use
      * {@link #getContentStream} for that.
      * <p>
@@ -331,7 +328,6 @@ public interface SPI {
      * object.
      *
      * @param object the object
-     * @param returnVersion the version to be returned
      * @param filter the properties filter, or {@code null} for all properties
      * @param includeAllowableActions {@code true} to include allowable actions
      * @param includeRelationships {@code true} if relationships should be
@@ -339,9 +335,8 @@ public interface SPI {
      * @return the properties of the object, or {@code null} if the object is
      *         not found
      */
-    ObjectEntry getProperties(ObjectId object, ReturnVersion returnVersion,
-            String filter, boolean includeAllowableActions,
-            boolean includeRelationships);
+    ObjectEntry getProperties(ObjectId object, String filter,
+            boolean includeAllowableActions, boolean includeRelationships);
 
     /**
      * Checks if the document has an associated content stream.
@@ -642,12 +637,12 @@ public interface SPI {
      * version, an exception is thrown.
      *
      * @param versionSeriesId the version series ID
-     * @param majorVersion {@code true} if the last major version is requested
+     * @param major {@code true} if the last major version is requested
      * @param filter the properties filter, or {@code null} for all properties
      * @return a collection of properties
      */
     Map<String, Serializable> getPropertiesOfLatestVersion(
-            String versionSeriesId, boolean majorVersion, String filter);
+            String versionSeriesId, boolean major, String filter);
 
     /**
      * Gets all the versions of a document.
