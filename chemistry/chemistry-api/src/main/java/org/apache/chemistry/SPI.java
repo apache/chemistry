@@ -397,7 +397,7 @@ public interface SPI {
      *
      * @param document the document
      */
-    void deleteContentStream(ObjectId document);
+    ObjectId deleteContentStream(ObjectId document);
 
     /**
      * Updates the properties of an object.

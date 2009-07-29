@@ -404,7 +404,7 @@ public class APPConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteContentStream(ObjectId document) {
+    public ObjectId deleteContentStream(ObjectId document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

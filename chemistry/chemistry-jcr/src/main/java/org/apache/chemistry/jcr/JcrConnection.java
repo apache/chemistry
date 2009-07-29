@@ -216,7 +216,7 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteContentStream(ObjectId documentId) {
+    public ObjectId deleteContentStream(ObjectId documentId) {
         throw new UnsupportedOperationException();
     }
 
