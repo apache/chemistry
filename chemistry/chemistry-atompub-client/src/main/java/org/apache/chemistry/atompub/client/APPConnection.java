@@ -170,40 +170,36 @@ public class APPConnection implements Connection, SPI {
     /**
      * Accumulates the descendants into a list recursively.
      */
-    protected void accumulateDescendants(ObjectId folder, BaseType type,
-            int depth, String filter, boolean includeAllowableActions,
+    protected void accumulateDescendants(ObjectId folder, int depth,
+            String filter, boolean includeAllowableActions,
             boolean includeRelationships, String orderBy, List<ObjectEntry> list) {
         // TODO deal with paging properly
-        List<ObjectEntry> children = getChildren(folder, type, filter,
+        List<ObjectEntry> children = getChildren(folder, filter,
                 includeAllowableActions, includeRelationships,
                 Integer.MAX_VALUE, 0, orderBy, new boolean[1]);
         for (ObjectEntry child : children) {
-            BaseType childType = child.getBaseType();
-            if (type == null || childType.equals(type)) {
-                list.add(child);
-            }
-            if (depth > 1 && childType == BaseType.FOLDER) {
-                accumulateDescendants(child, type, depth - 1, filter,
+            list.add(child);
+            if (depth > 1 && child.getBaseType() == BaseType.FOLDER) {
+                accumulateDescendants(child, depth - 1, filter,
                         includeAllowableActions, includeRelationships, orderBy,
                         list);
             }
         }
     }
 
-    public List<ObjectEntry> getDescendants(ObjectId folder, BaseType type,
-            int depth, String filter, boolean includeAllowableActions,
+    public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
+            String filter, boolean includeAllowableActions,
             boolean includeRelationships, String orderBy) {
         // TODO includeRelationship, includeAllowableActions, orderBy
         List<ObjectEntry> list = new ArrayList<ObjectEntry>();
-        accumulateDescendants(folder, type, depth, filter,
-                includeAllowableActions, includeRelationships, orderBy, list);
+        accumulateDescendants(folder, depth, filter, includeAllowableActions,
+                includeRelationships, orderBy, list);
         return list;
     }
 
-    public List<ObjectEntry> getChildren(ObjectId folder, BaseType type,
-            String filter, boolean includeAllowableActions,
-            boolean includeRelationships, int maxItems, int skipCount,
-            String orderBy, boolean[] hasMoreItems) {
+    public List<ObjectEntry> getChildren(ObjectId folder, String filter,
+            boolean includeAllowableActions, boolean includeRelationships,
+            int maxItems, int skipCount, String orderBy, boolean[] hasMoreItems) {
         // TODO filter, includeRelationship, includeAllowableActions, orderBy
         if (maxItems <= 0) {
             maxItems = DEFAULT_MAX_CHILDREN;
@@ -225,10 +221,6 @@ public class APPConnection implements Connection, SPI {
         hasMoreItems[0] = false;
         boolean done = false;
         for (ObjectEntry entry : feed) {
-            // type filtering
-            if (type != null && !entry.getBaseType().equals(type)) {
-                continue;
-            }
             // skip
             if (skipCount > 0) {
                 skipCount--;

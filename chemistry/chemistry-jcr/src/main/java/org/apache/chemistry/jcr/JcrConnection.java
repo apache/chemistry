@@ -33,7 +33,6 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
@@ -253,7 +252,7 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public List<ObjectEntry> getChildren(ObjectId folderId, BaseType type,
+    public List<ObjectEntry> getChildren(ObjectId folderId,
                                          String filter,
                                          boolean includeAllowableActions,
                                          boolean includeRelationships,
@@ -319,7 +318,7 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
-    public List<ObjectEntry> getDescendants(ObjectId folderId, BaseType type,
+    public List<ObjectEntry> getDescendants(ObjectId folderId,
                                             int depth, String filter,
                                             boolean includeAllowableActions,
                                             boolean includeRelationships,

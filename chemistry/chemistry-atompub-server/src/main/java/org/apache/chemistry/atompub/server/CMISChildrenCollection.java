@@ -26,7 +26,7 @@ import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 
 /**
-* CMIS Collection for the children of an object.
+ * CMIS Collection for the children of an object.
  */
 public class CMISChildrenCollection extends CMISObjectsCollection {
 
@@ -40,8 +40,8 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
         SPI spi = repository.getSPI(); // TODO XXX connection leak
         boolean[] hasMoreItems = new boolean[1];
         ObjectId objectId = spi.newObjectId(id);
-        List<ObjectEntry> children = spi.getChildren(objectId, null, null,
-                false, false, 0, 0, null, hasMoreItems);
+        List<ObjectEntry> children = spi.getChildren(objectId, null, false,
+                false, 0, 0, null, hasMoreItems);
         return children;
     }
 

@@ -48,7 +48,7 @@ import org.apache.commons.io.IOUtils;
  */
 public abstract class BasicTestCase extends TestCase {
 
-    public static final String ROOT_TYPE_ID = "chemistry:root"; // not in the spec
+    public static final String ROOT_TYPE_ID = "chemistry:root"; // not in spec
 
     public Repository repository;
 
@@ -135,38 +135,36 @@ public abstract class BasicTestCase extends TestCase {
     public void testGetChildren() {
         boolean[] hasMoreItems = new boolean[1];
         Folder root = conn.getRootFolder();
-        assertEquals(1, spi.getChildren(root, BaseType.FOLDER, null, true,
-                false, 20, 0, null, hasMoreItems).size());
+        assertEquals(1, spi.getChildren(root, null, true, false, 20, 0, null,
+                hasMoreItems).size());
         assertFalse(hasMoreItems[0]);
         ObjectId folder1 = root.getChildren(null).get(0);
-        assertEquals(2, spi.getChildren(folder1, null, null, false, false, 20,
-                0, null, hasMoreItems).size());
+        assertEquals(2, spi.getChildren(folder1, null, false, false, 20, 0,
+                null, hasMoreItems).size());
         assertFalse(hasMoreItems[0]);
-        assertEquals(1, spi.getChildren(folder1, null, null, false, false, 1,
-                0, null, hasMoreItems).size());
+        assertEquals(1, spi.getChildren(folder1, null, false, false, 1, 0,
+                null, hasMoreItems).size());
         assertTrue(hasMoreItems[0]);
-        assertEquals(1, spi.getChildren(folder1, null, null, false, false, 1,
-                1, null, hasMoreItems).size());
+        assertEquals(1, spi.getChildren(folder1, null, false, false, 1, 1,
+                null, hasMoreItems).size());
         assertFalse(hasMoreItems[0]);
-        List<ObjectEntry> temp = spi.getChildren(folder1, null, null, false,
-                false, 2, 0, null, hasMoreItems);
+        List<ObjectEntry> temp = spi.getChildren(folder1, null, false, false,
+                2, 0, null, hasMoreItems);
         ObjectId folder2 = temp.get(0).getTypeId().equals("fold") ? temp.get(0)
                 : temp.get(1);
-        assertEquals(1, spi.getChildren(folder2, null, null, false, false, 1,
-                1, null, hasMoreItems).size());
+        assertEquals(1, spi.getChildren(folder2, null, false, false, 1, 1,
+                null, hasMoreItems).size());
         assertTrue(hasMoreItems[0]);
-        assertEquals(2, spi.getChildren(folder2, null, null, false, false, 2,
-                0, null, hasMoreItems).size());
+        assertEquals(2, spi.getChildren(folder2, null, false, false, 2, 0,
+                null, hasMoreItems).size());
         assertTrue(hasMoreItems[0]);
     }
 
     public void testGetDescendants() {
         Folder root = conn.getRootFolder();
-        assertEquals(6, spi.getDescendants(root, null, 4, null, false, false,
-                null).size());
-        List<ObjectEntry> desc = spi.getDescendants(root, BaseType.FOLDER, 4,
-                null, false, false, null);
-        assertEquals(2, desc.size());
+        List<ObjectEntry> desc = spi.getDescendants(root, 4, null, false,
+                false, null);
+        assertEquals(6, desc.size());
     }
 
     public void testGetFolderParent() {

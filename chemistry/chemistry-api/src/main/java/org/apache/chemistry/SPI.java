@@ -82,9 +82,6 @@ public interface SPI {
      * the documents. Otherwise, the latest version of the documents will be
      * returned.
      * <p>
-     * If type is {@code null}, then at each level folders should be returned
-     * before other types of objects.
-     * <p>
      * As relationships are not fileable, type cannot be
      * {@link BaseType#RELATIONSHIP}. However, if includeRelationships is set
      * then relationships are also returned for each returned object, according
@@ -97,7 +94,6 @@ public interface SPI {
      * When returning more than one level, the objects are nested.
      *
      * @param folder the folder
-     * @param type the base type, or {@code null} for all types
      * @param depth the depth, or {@code -1} for all levels
      * @param filter the properties filter, or {@code null} for all properties
      * @param includeAllowableActions {@code true} to include allowable actions
@@ -106,9 +102,9 @@ public interface SPI {
      * @param orderBy an {@code ORDER BY} clause, or {@code null}
      */
     // TODO return type for a tree
-    List<ObjectEntry> getDescendants(ObjectId folder, BaseType type, int depth,
-            String filter, boolean includeAllowableActions,
-            boolean includeRelationships, String orderBy);
+    List<ObjectEntry> getDescendants(ObjectId folder, int depth, String filter,
+            boolean includeAllowableActions, boolean includeRelationships,
+            String orderBy);
 
     /**
      * Gets the direct children of a folder.
@@ -124,24 +120,16 @@ public interface SPI {
      * Ordering is repository-specific, except that if the repository state has
      * not changed then the ordering remains consistent across invocations.
      * <p>
-     * If type is {@code null}, then at each level folders should be returned
-     * before other types of objects.
-     * <p>
-     * As relationships are not fileable, type cannot be
-     * {@link BaseType#RELATIONSHIP}. However, if includeRelationships is set
-     * then relationships are also returned for each returned object, according
-     * to the value of the parameter.
+     * If includeRelationships is set, relationships are also returned for each
+     * returned object, according to the value of the parameter.
      * <p>
      * If includeAllowableActions is {@code true}, the repository will return
-     * the allowable actions for the current user for each descendant object as
-     * part of the results.
-     * <p>
-     * When returning more than one level, the objects are nested.
+     * the allowable actions for the current user for object as part of the
+     * results.
      * <p>
      * The return value hasMoreItems is filled if {@code maxItems > 0}.
      *
      * @param folder the folder
-     * @param type the base type, or {@code null} for all types
      * @param filter the properties filter, or {@code null} for all properties
      * @param includeAllowableActions {@code true} to include allowable actions
      * @param includeRelationships {@code true} if relationships should be
@@ -153,10 +141,9 @@ public interface SPI {
      * @param hasMoreItems a 1-value boolean array to return a flag stating if
      *            there are more items
      */
-    List<ObjectEntry> getChildren(ObjectId folder, BaseType type,
-            String filter, boolean includeAllowableActions,
-            boolean includeRelationships, int maxItems, int skipCount,
-            String orderBy, boolean[] hasMoreItems);
+    List<ObjectEntry> getChildren(ObjectId folder, String filter,
+            boolean includeAllowableActions, boolean includeRelationships,
+            int maxItems, int skipCount, String orderBy, boolean[] hasMoreItems);
 
     /**
      * Gets the parent of a folder.
