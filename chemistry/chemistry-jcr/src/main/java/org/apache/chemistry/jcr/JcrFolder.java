@@ -48,7 +48,7 @@ public class JcrFolder extends JcrObjectEntry implements Folder {
     protected JcrFolder() {
     }
 
-    public List<CMISObject> getChildren(BaseType type) {
+    public List<CMISObject> getChildren() {
         try {
             List<CMISObject> result = new ArrayList<CMISObject>();
 
@@ -63,9 +63,7 @@ public class JcrFolder extends JcrObjectEntry implements Folder {
                 } else {
                     continue;
                 }
-                if (type == null || type == entry.getBaseType()) {
-                    result.add(entry);
-                }
+                result.add(entry);
             }
             return result;
         } catch (RepositoryException e) {

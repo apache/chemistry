@@ -21,12 +21,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectId;
-import org.apache.chemistry.Property;
 import org.apache.chemistry.Unfiling;
 
 public class SimpleFolder extends SimpleObject implements Folder {
@@ -54,17 +52,12 @@ public class SimpleFolder extends SimpleObject implements Folder {
         throw new UnsupportedOperationException();
     }
 
-    public List<CMISObject> getChildren(BaseType type) {
+    public List<CMISObject> getChildren() {
         SimpleRepository repository = entry.connection.repository;
         Set<String> ids = repository.children.get(getId());
         List<CMISObject> children = new ArrayList<CMISObject>(ids.size());
         for (String id : ids) {
             SimpleData d = repository.datas.get(id);
-            if (type != null
-                    && !repository.getType((String) d.get(Property.TYPE_ID)).getBaseType().equals(
-                            type)) {
-                continue;
-            }
             children.add(SimpleObject.construct(new SimpleObjectEntry(d,
                     entry.connection)));
         }

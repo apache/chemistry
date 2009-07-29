@@ -132,7 +132,7 @@ public class TestSimpleRepository extends TestCase {
         assertNotNull(root);
         assertEquals(repo.getRootFolderId().getId(), root.getId());
         assertEquals("CMIS_Root_Folder", root.getName());
-        assertEquals(0, root.getChildren(null).size());
+        assertEquals(0, root.getChildren().size());
         assertNull(root.getParent());
     }
 
@@ -143,19 +143,19 @@ public class TestSimpleRepository extends TestCase {
         assertEquals(SimpleType.PROPS_FOLDER_BASE.size() + 2,
                 f1.getType().getPropertyDefinitions().size());
 
-        List<CMISObject> children = root.getChildren(null);
+        List<CMISObject> children = root.getChildren();
         assertEquals(0, children.size());
 
         f1.save();
         assertEquals(root.getId(), f1.getParent().getId());
 
-        children = root.getChildren(null);
+        children = root.getChildren();
         assertEquals(1, children.size());
         assertTrue(children.get(0) instanceof Folder);
 
         Document d1 = root.newDocument("doc");
         d1.save();
-        children = root.getChildren(null);
+        children = root.getChildren();
         assertEquals(2, children.size());
         assertTrue(children.get(0) instanceof Document
                 || children.get(1) instanceof Document);

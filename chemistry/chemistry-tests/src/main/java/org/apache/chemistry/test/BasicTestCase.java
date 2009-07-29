@@ -81,6 +81,24 @@ public abstract class BasicTestCase extends TestCase {
         spi = null;
     }
 
+    public static Folder getFolderChild(Folder folder) {
+        for (CMISObject child : folder.getChildren()) {
+            if (child.getBaseType() == BaseType.FOLDER) {
+                return (Folder) child;
+            }
+        }
+        return null;
+    }
+
+    public static Document getDocumentChild(Folder folder) {
+        for (CMISObject child : folder.getChildren()) {
+            if (child.getBaseType() == BaseType.DOCUMENT) {
+                return (Document) child;
+            }
+        }
+        return null;
+    }
+
     public void testBasic() {
         assertNotNull(repository);
         assertNotNull(conn);
@@ -96,7 +114,7 @@ public abstract class BasicTestCase extends TestCase {
         assertNotNull(props);
         assertTrue(props.size() > 0);
 
-        List<CMISObject> entries = root.getChildren(null);
+        List<CMISObject> entries = root.getChildren();
         assertEquals(1, entries.size());
         Folder f1 = (Folder) entries.get(0);
         Folder fold = f1.getParent();
@@ -105,9 +123,9 @@ public abstract class BasicTestCase extends TestCase {
 
     public void testDefaultValues() {
         Folder root = conn.getRootFolder();
-        Folder f1 = (Folder) root.getChildren(BaseType.FOLDER).get(0);
-        Folder f2 = (Folder) f1.getChildren(BaseType.FOLDER).get(0);
-        List<CMISObject> children = f2.getChildren(null);
+        Folder f1 = (Folder) root.getChildren().get(0);
+        Folder f2 = getFolderChild(f1);
+        List<CMISObject> children = f2.getChildren();
         assertEquals(3, children.size());
         // check default values
         for (CMISObject child : children) {
@@ -141,7 +159,7 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals(1, spi.getChildren(root, null, true, false, 20, 0, null,
                 hasMoreItems).size());
         assertFalse(hasMoreItems[0]);
-        ObjectId folder1 = root.getChildren(null).get(0);
+        ObjectId folder1 = root.getChildren().get(0);
         assertEquals(2, spi.getChildren(folder1, null, false, false, 20, 0,
                 null, hasMoreItems).size());
         assertFalse(hasMoreItems[0]);
@@ -174,7 +192,7 @@ public abstract class BasicTestCase extends TestCase {
         Folder root = conn.getRootFolder();
         assertEquals(0,
                 spi.getFolderParent(root, null, false, false, false).size());
-        ObjectId folder1 = root.getChildren(null).get(0);
+        ObjectId folder1 = root.getChildren().get(0);
         assertEquals(1,
                 spi.getFolderParent(folder1, null, false, false, true).size());
         assertEquals(root.getId(), spi.getFolderParent(folder1, null, false,
@@ -183,9 +201,9 @@ public abstract class BasicTestCase extends TestCase {
 
     public void testGetObjectParents() {
         Folder root = conn.getRootFolder();
-        ObjectId folder1Id = root.getChildren(null).get(0);
+        ObjectId folder1Id = root.getChildren().get(0);
         Folder folder1 = (Folder) conn.getObject(folder1Id);
-        Document doc = (Document) folder1.getChildren(BaseType.DOCUMENT).get(0);
+        Document doc = getDocumentChild(folder1);
         Collection<ObjectEntry> parents = spi.getObjectParents(doc, null,
                 false, false);
         assertEquals(1, parents.size());
@@ -193,12 +211,11 @@ public abstract class BasicTestCase extends TestCase {
 
     @SuppressWarnings("null")
     public void testGetStream() throws Exception {
-        Folder f1 = (Folder) conn.getRootFolder().getChildren(BaseType.FOLDER).get(
-                0);
-        Folder f2 = (Folder) f1.getChildren(BaseType.FOLDER).get(0);
+        Folder f1 = (Folder) conn.getRootFolder().getChildren().get(0);
+        Folder f2 = getFolderChild(f1);
         Document other = null;
         Document dog = null;
-        for (CMISObject child : f2.getChildren(null)) {
+        for (CMISObject child : f2.getChildren()) {
             String name = child.getName();
             if (name.equals("doc 2")) {
                 other = (Document) child;
@@ -225,7 +242,7 @@ public abstract class BasicTestCase extends TestCase {
 
     public void testNewDocument() {
         Folder root = conn.getRootFolder();
-        assertEquals(0, root.getChildren(BaseType.DOCUMENT).size());
+        assertNull(getDocumentChild(root));
         Document doc = root.newDocument("doc");
         doc.setName("mydoc");
         doc.setValue("title", "mytitle");
@@ -246,9 +263,8 @@ public abstract class BasicTestCase extends TestCase {
         closeConn();
         openConn();
         root = conn.getRootFolder();
-        List<CMISObject> children = root.getChildren(BaseType.DOCUMENT);
-        assertEquals(1, children.size());
-        doc = (Document) children.get(0);
+        doc = getDocumentChild(root);
+        assertNotNull(doc);
         assertEquals(id, doc.getId());
         assertEquals("mydoc", doc.getName());
         assertEquals("mytitle", doc.getString("title"));

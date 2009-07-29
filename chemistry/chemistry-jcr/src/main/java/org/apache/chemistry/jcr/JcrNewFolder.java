@@ -25,7 +25,6 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
@@ -49,11 +48,11 @@ public class JcrNewFolder extends JcrFolder {
     }
 
     @Override
-    public List<CMISObject> getChildren(BaseType type) {
+    public List<CMISObject> getChildren() {
         if (!saved) {
             throw new UnsupportedOperationException();
         }
-        return super.getChildren(type);
+        return super.getChildren();
     }
 
     @Override

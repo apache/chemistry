@@ -106,15 +106,11 @@ public interface Folder extends CMISObject {
     /**
      * Gets the direct children of this folder.
      * <p>
-     * Only children of the given type ({@link BaseType#FOLDER},
-     * {@link BaseType#DOCUMENT}, or {@code null} for all) are returned.
-     * <p>
      * The order of returned children is implementation-dependant.
      *
-     * @param type the base type of children, or {@code null} for all children
      * @return the list of children
      */
-    List<CMISObject> getChildren(BaseType type);
+    List<CMISObject> getChildren();
 
     // getDescendants kept on the SPI
 

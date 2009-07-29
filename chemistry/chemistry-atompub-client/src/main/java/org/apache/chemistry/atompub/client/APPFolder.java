@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
@@ -62,7 +61,7 @@ public class APPFolder extends APPDocument implements Folder {
         throw new UnsupportedOperationException();
     }
 
-    public List<CMISObject> getChildren(BaseType type) {
+    public List<CMISObject> getChildren() {
         String href = entry.getLink(Atom.LINK_DOWN);
         Response resp = entry.connection.getConnector().get(new Request(href));
         if (!resp.isOk()) {
@@ -74,9 +73,6 @@ public class APPFolder extends APPDocument implements Folder {
                 entry.connection));
         List<CMISObject> children = new ArrayList<CMISObject>(feed.size());
         for (ObjectEntry child : feed) {
-            if (type != null && !child.getBaseType().equals(type)) {
-                continue;
-            }
             children.add(APPObject.construct((APPObjectEntry) child));
         }
         return children;
