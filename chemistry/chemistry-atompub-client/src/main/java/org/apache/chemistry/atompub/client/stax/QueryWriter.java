@@ -78,7 +78,7 @@ public class QueryWriter extends AbstractXmlObjectWriter<String> {
         xw.element(CMIS.STATEMENT).econtent(statement);
         xw.element(CMIS.SEARCH_ALL_VERSIONS).content(searchAllVersions);
         if (maxItems > -1) {
-            xw.element(CMIS.PAGE_SIZE).content(maxItems);
+            xw.element(CMIS.MAX_ITEMS).content(maxItems);
         }
         xw.element(CMIS.SKIP_COUNT).content(skipCount);
         xw.element(CMIS.INCLUDE_ALLOWABLE_ACTIONS).content(
