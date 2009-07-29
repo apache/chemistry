@@ -359,10 +359,6 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         return (URI) getValue(id);
     }
 
-    public URI getURI() {
-        return getURI(Property.URI);
-    }
-
     public URI[] getURIs(String id) {
         return (URI[]) getValue(id);
     }

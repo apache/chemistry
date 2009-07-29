@@ -16,7 +16,6 @@
  */
 package org.apache.chemistry.impl.simple;
 
-import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -192,8 +191,7 @@ public class TestSimpleRepository extends TestCase {
         Document d1 = root.newDocument("doc");
         String string = "Houston, we have a problem...";
         ContentStream cs = new SimpleContentStream(string.getBytes("UTF-8"),
-                "text/plain", "houston.txt", new URI(
-                        "http://houston.example.com"));
+                "text/plain", "houston.txt");
 
         d1.setContentStream(cs);
         d1.save();
@@ -202,7 +200,6 @@ public class TestSimpleRepository extends TestCase {
         assertEquals(29, cs.getLength());
         assertEquals("text/plain", cs.getMimeType());
         assertEquals("houston.txt", cs.getFilename());
-        assertEquals(new URI("http://houston.example.com"), cs.getURI());
 
         byte[] bytes = SimpleContentStream.getBytes(cs.getStream());
         assertEquals(string, new String(bytes, "UTF-8"));

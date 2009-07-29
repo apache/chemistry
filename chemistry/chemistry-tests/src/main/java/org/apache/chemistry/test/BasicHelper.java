@@ -101,8 +101,7 @@ public class BasicHelper {
         doc3.setName("doc 3");
         // no title, description or date
         ContentStream cs = new SimpleContentStream(
-                TEST_FILE_CONTENT.getBytes("UTF-8"), "text/plain", "doc3.txt",
-                null);
+                TEST_FILE_CONTENT.getBytes("UTF-8"), "text/plain", "doc3.txt");
         doc3.setContentStream(cs);
         doc3.save();
 
@@ -111,7 +110,7 @@ public class BasicHelper {
         doc4.setValue("title", "A Dog");
         doc4.setValue("description", "This is a small dog");
         InputStream stream = MainServlet.class.getResourceAsStream("/dog.jpg");
-        cs = new SimpleContentStream(stream, "image/jpeg", "dog.jpg", null);
+        cs = new SimpleContentStream(stream, "image/jpeg", "dog.jpg");
         doc4.setContentStream(cs);
         doc4.save();
 

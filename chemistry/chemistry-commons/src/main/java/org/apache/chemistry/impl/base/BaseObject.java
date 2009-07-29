@@ -137,10 +137,6 @@ public abstract class BaseObject implements CMISObject {
         return getString(Property.ID);
     }
 
-    public URI getURI() {
-        return getURI(Property.URI);
-    }
-
     public String getTypeId() {
         return getId(Property.TYPE_ID);
     }

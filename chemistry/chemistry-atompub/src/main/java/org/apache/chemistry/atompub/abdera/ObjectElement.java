@@ -37,21 +37,22 @@ public class ObjectElement extends ExtensibleElementWrapper {
 
     /**
      * Constructor used when parsing XML.
+     *
      * @param repository
      */
     public ObjectElement(Element internal, Repository repository) {
         super(internal);
         Element propsel = getFirstChild(CMIS.PROPERTIES);
-        properties = propsel == null ? null : new PropertiesElement(propsel, repository);
+        properties = propsel == null ? null : new PropertiesElement(propsel,
+                repository);
     }
 
     /**
      * Constructor used when generating XML.
      */
-    public ObjectElement(Factory factory, ObjectEntry object, Type type,
-            String contentStreamURI) {
+    public ObjectElement(Factory factory, ObjectEntry object, Type type) {
         super(factory, CMIS.OBJECT);
-        properties = new PropertiesElement(getFactory(), contentStreamURI);
+        properties = new PropertiesElement(getFactory());
         addExtension(properties);
         setProperties(object.getValues(), type);
     }

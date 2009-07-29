@@ -18,7 +18,6 @@ package org.apache.chemistry;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 
 /**
  * A CMIS Content Stream.
@@ -39,11 +38,6 @@ public interface ContentStream {
      * The content stream file name, or {@code null} if none is provided.
      */
     String getFilename();
-
-    /**
-     * The content stream URI.
-     */
-    URI getURI();
 
     /**
      * The actual byte stream for this content stream.

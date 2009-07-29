@@ -29,8 +29,6 @@ public interface Property {
 
     String ID = "cmis:ObjectId";
 
-    String URI = "cmis:Uri";
-
     String TYPE_ID = "cmis:ObjectTypeId";
 
     String BASE_TYPE_ID = "cmis:BaseTypeId";
@@ -76,8 +74,6 @@ public interface Property {
     String CONTENT_STREAM_MIME_TYPE = "cmis:ContentStreamMimeType";
 
     String CONTENT_STREAM_FILENAME = "cmis:ContentStreamFilename";
-
-    String CONTENT_STREAM_URI = "cmis:ContentStreamUri";
 
     /*
      * ----- Folder -----

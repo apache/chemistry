@@ -19,7 +19,6 @@ package org.apache.chemistry.impl.simple;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.Collection;
 
 import org.apache.chemistry.ContentStream;
@@ -83,8 +82,7 @@ public class SimpleDocument extends SimpleObject implements Document {
         // length is recomputed, no need to read it
         String mimeType = getString(Property.CONTENT_STREAM_MIME_TYPE);
         String filename = getString(Property.CONTENT_STREAM_FILENAME);
-        URI uri = getURI(Property.CONTENT_STREAM_URI);
-        return new SimpleContentStream(contentBytes, mimeType, filename, uri);
+        return new SimpleContentStream(contentBytes, mimeType, filename);
     }
 
     public void setContentStream(ContentStream contentStream)
@@ -100,7 +98,6 @@ public class SimpleDocument extends SimpleObject implements Document {
             entry.setValue(Property.CONTENT_STREAM_LENGTH, null);
             entry.setValue(Property.CONTENT_STREAM_MIME_TYPE, null);
             entry.setValue(Property.CONTENT_STREAM_FILENAME, null);
-            entry.setValue(Property.CONTENT_STREAM_URI, null);
             entry.setValue(SimpleProperty.CONTENT_BYTES_KEY, null);
         } else {
             entry.setValue(Property.CONTENT_STREAM_LENGTH,
@@ -110,7 +107,6 @@ public class SimpleDocument extends SimpleObject implements Document {
                     contentStream.getMimeType());
             entry.setValue(Property.CONTENT_STREAM_FILENAME,
                     contentStream.getFilename());
-            entry.setValue(Property.CONTENT_STREAM_URI, contentStream.getURI());
             entry.setValue(SimpleProperty.CONTENT_BYTES_KEY,
                     SimpleContentStream.getBytes(contentStream.getStream()));
         }

@@ -122,11 +122,6 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
         String id = p.getId();
         PropertyDefinition def = entryType.getPropertyDefinition(id);
         if (def == null) {
-            if (id.equals("ContentStreamURI") || id.equals("BaseType")) {
-                // Alfresco COMPAT
-                // see org.apache.chemistry.atompub.abdera.PropertiesElement
-                return;
-            }
             throw new ParseException("No such property definition: " + id
                     + " in type: " + entryType);
         }

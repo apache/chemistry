@@ -60,27 +60,10 @@ public class PropertiesElement extends ExtensibleElementWrapper {
 
     /**
      * Constructor used when generating XML.
-     * <p>
-     * ContentStreamUri is special-cased as it depends on the server context
-     * (base URL).
      */
-    public PropertiesElement(Factory factory, String contentStreamURI) {
+    public PropertiesElement(Factory factory) {
         super(factory, CMIS.PROPERTIES);
         repository = null;
-        if (contentStreamURI != null) {
-            ExtensibleElement el = addExtension(CMIS.PROPERTY_URI);
-            el.setAttributeValue(CMIS.PDID, Property.CONTENT_STREAM_URI);
-            Element val = el.addExtension(CMIS.VALUE);
-            // don't merge these two lines as JDK 5 has problems compiling it
-            val.setText(contentStreamURI);
-
-            // Alfresco COMPAT (incorrect property name and type):
-            el = addExtension(CMIS.PROPERTY_STRING);
-            el.setAttributeValue(CMIS.PDID, "ContentStreamURI");
-            val = el.addExtension(CMIS.VALUE);
-            // don't merge these two lines
-            val.setText(contentStreamURI);
-        }
     }
 
     public Map<String, Serializable> getProperties() {
@@ -155,12 +138,8 @@ public class PropertiesElement extends ExtensibleElementWrapper {
 
     public void setProperties(Map<String, Serializable> values, Type type) {
         for (PropertyDefinition propertyDefinition : type.getPropertyDefinitions()) {
-            String id = propertyDefinition.getId();
-            if (id.equals(Property.CONTENT_STREAM_URI)) {
-                // special-cased in constructor
-                continue;
-            }
-            setProperty(values.get(id), propertyDefinition);
+            setProperty(values.get(propertyDefinition.getId()),
+                    propertyDefinition);
         }
     }
 

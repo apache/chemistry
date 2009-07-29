@@ -40,11 +40,6 @@ public class SimpleType implements Type {
             PropertyType.ID, false, null, false, true, null,
             Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
 
-    public static final SimplePropertyDefinition PROP_URI = new SimplePropertyDefinition(
-            Property.URI, "def:uri", null, Property.URI, "URI", "", false,
-            PropertyType.URI, false, null, false, false, null,
-            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
-
     public static final SimplePropertyDefinition PROP_TYPE_ID = new SimplePropertyDefinition(
             Property.TYPE_ID, "def:typeid", null, Property.TYPE_ID, "Type ID",
             "", false, PropertyType.ID, false, null, false, true, null,
@@ -170,12 +165,6 @@ public class SimpleType implements Type {
             "", false, PropertyType.STRING, false, null, false, false, null,
             Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
 
-    public static final SimplePropertyDefinition PROP_CONTENT_STREAM_URI = new SimplePropertyDefinition(
-            Property.CONTENT_STREAM_URI, "def:contentstreamuri", null,
-            Property.CONTENT_STREAM_URI, "Content Stream URI", "", false,
-            PropertyType.URI, false, null, false, false, null,
-            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
-
     public static final SimplePropertyDefinition PROP_PARENT_ID = new SimplePropertyDefinition(
             Property.PARENT_ID, "def:parentid", null, Property.PARENT_ID,
             "Parent Id", "", false, PropertyType.ID, false, null, false, true,
@@ -212,7 +201,6 @@ public class SimpleType implements Type {
             null);
 
     private static final PropertyDefinition[] PROPS_COMMON = { PROP_ID, //
-            PROP_URI, //
             PROP_TYPE_ID, //
             PROP_BASE_TYPE_ID, //
             PROP_CREATED_BY, //
@@ -243,8 +231,7 @@ public class SimpleType implements Type {
             PROP_CHECKIN_COMMENT, //
             PROP_CONTENT_STREAM_LENGTH, //
             PROP_CONTENT_STREAM_MIME_TYPE, //
-            PROP_CONTENT_STREAM_FILENAME, //
-            PROP_CONTENT_STREAM_URI);
+            PROP_CONTENT_STREAM_FILENAME);
 
     public static final List<PropertyDefinition> PROPS_FOLDER_BASE = commonPlus(
             PROP_NAME, //

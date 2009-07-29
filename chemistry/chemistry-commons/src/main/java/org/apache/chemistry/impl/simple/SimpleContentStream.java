@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 
 import org.apache.chemistry.ContentStream;
 
@@ -33,26 +32,21 @@ public class SimpleContentStream implements ContentStream {
 
     protected final String filename;
 
-    protected final URI uri;
-
     protected final byte[] bytes;
 
     protected final long length;
 
-    public SimpleContentStream(byte[] bytes, String mimeType, String filename,
-            URI uri) {
+    public SimpleContentStream(byte[] bytes, String mimeType, String filename) {
         this.mimeType = mimeType;
         this.filename = filename;
-        this.uri = uri;
         this.bytes = bytes;
         length = bytes.length;
     }
 
     public SimpleContentStream(InputStream stream, String mimeType,
-            String filename, URI uri) throws IOException {
+            String filename) throws IOException {
         this.mimeType = mimeType;
         this.filename = filename;
-        this.uri = uri;
         bytes = getBytes(stream);
         length = bytes.length;
     }
@@ -77,10 +71,6 @@ public class SimpleContentStream implements ContentStream {
 
     public String getFilename() {
         return filename;
-    }
-
-    public URI getURI() {
-        return uri;
     }
 
     public InputStream getStream() {

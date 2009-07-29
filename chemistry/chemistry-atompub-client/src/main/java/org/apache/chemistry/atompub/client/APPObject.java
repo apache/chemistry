@@ -18,8 +18,6 @@
 package org.apache.chemistry.atompub.client;
 
 import java.io.Serializable;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -254,25 +252,6 @@ public abstract class APPObject extends BaseObject {
             throw new ContentManagerException(
                     "Remote server returned error code: "
                             + resp.getStatusCode());
-        }
-    }
-
-    // ----- overriden from base class -----
-
-    // TODO make sure getProperties returns that too
-    @Override
-    public URI getURI() {
-        String value = entry.getEditLink();
-        if (value == null) {
-            value = entry.getLink("self");
-            if (value == null) {
-                value = entry.getLink("alternate");
-            }
-        }
-        try {
-            return new URI(value);
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Not an URI: " + value);
         }
     }
 

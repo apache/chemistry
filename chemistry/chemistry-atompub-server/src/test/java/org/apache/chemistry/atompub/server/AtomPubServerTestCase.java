@@ -142,8 +142,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         doc3.setValue("title", "doc 3 title");
         doc3.setValue("description", "The doc 3 descr");
         ContentStream cs = new SimpleContentStream(
-                TEST_FILE_CONTENT.getBytes("UTF-8"), "text/plain", "doc3.txt",
-                null);
+                TEST_FILE_CONTENT.getBytes("UTF-8"), "text/plain", "doc3.txt");
         doc3.setContentStream(cs);
         doc3.save();
         doc3id = doc3.getId();

@@ -161,12 +161,8 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         // entry.addLink("XXX", CMIS.LINK_ALLOWABLE_ACTIONS);
         // entry.addLink("XXX", CMIS.LINK_RELATIONSHIPS);
 
-        // ContentStreamUri needs to know the media link
-        String mediaLink = isMediaEntry(object) ? getMediaLink(object.getId(),
-                request) : null;
         Type objectType = repository.getType(object.getTypeId());
-        entry.addExtension(new ObjectElement(factory, object, objectType,
-                mediaLink));
+        entry.addExtension(new ObjectElement(factory, object, objectType));
 
         return link;
     }

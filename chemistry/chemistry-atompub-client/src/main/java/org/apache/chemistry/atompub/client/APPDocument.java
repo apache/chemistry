@@ -94,13 +94,6 @@ public class APPDocument extends APPObject implements Document {
             return filename;
         }
 
-        public URI getURI() {
-            if (uri == UNINITIALIZED_URI) {
-                uri = APPDocument.this.getURI(Property.CONTENT_STREAM_URI);
-            }
-            return uri;
-        }
-
         public long getLength() {
             if (length == -1) {
                 Integer value = getInteger(Property.CONTENT_STREAM_LENGTH);

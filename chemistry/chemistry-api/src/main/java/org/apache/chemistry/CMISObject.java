@@ -302,8 +302,6 @@ public interface CMISObject extends ObjectId {
 
     String getId();
 
-    URI getURI();
-
     String getTypeId();
 
     String getCreatedBy();

@@ -18,7 +18,6 @@ package org.apache.chemistry.jcr;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -81,8 +80,4 @@ public class JcrContentStream implements ContentStream {
         return null;
     }
 
-    public URI getURI() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }
