@@ -137,6 +137,8 @@ public class CMIS {
 
     public static final QName PROPERTY_HTML_DEFINITION = CMISName("propertyHtmlDefinition");
 
+    public static final QName PROPERTY_XHTML_DEFINITION = CMISName("propertyXhtmlDefinition");
+
     public static final QName PROPERTY_TYPE = CMISName("propertyType");
 
     public static final QName CARDINALITY = CMISName("cardinality");
@@ -172,6 +174,8 @@ public class CMIS {
     public static final QName PROPERTY_XML = CMISName("propertyXml");
 
     public static final QName PROPERTY_HTML = CMISName("propertyHtml");
+
+    public static final QName PROPERTY_XHTML = CMISName("propertyXhtml");
 
     public static final QName PDID = CMISName("pdid");
 

@@ -194,6 +194,9 @@ public class CMISTypesCollection extends CMISCollection<Type> {
                 case PropertyType.HTML_ORD:
                     qname = CMIS.PROPERTY_HTML_DEFINITION;
                     break;
+                case PropertyType.XHTML_ORD:
+                    qname = CMIS.PROPERTY_XHTML_DEFINITION;
+                    break;
                 default:
                     throw new AssertionError(pd.getType().name());
                 }

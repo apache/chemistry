@@ -241,6 +241,8 @@ public class PropertiesElement extends ExtensibleElementWrapper {
             throw new UnsupportedOperationException(type.toString());
         case PropertyType.HTML_ORD:
             throw new UnsupportedOperationException(type.toString());
+        case PropertyType.XHTML_ORD:
+            throw new UnsupportedOperationException(type.toString());
         default:
             throw new UnsupportedOperationException(type.toString());
         }
@@ -267,6 +269,8 @@ public class PropertiesElement extends ExtensibleElementWrapper {
             return CMIS.PROPERTY_XML;
         case PropertyType.HTML_ORD:
             return CMIS.PROPERTY_HTML;
+        case PropertyType.XHTML_ORD:
+            return CMIS.PROPERTY_XHTML;
         default:
             throw new UnsupportedOperationException(def.getType().toString());
         }

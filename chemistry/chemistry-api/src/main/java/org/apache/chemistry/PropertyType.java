@@ -45,6 +45,8 @@ public class PropertyType {
 
     public static final int HTML_ORD = 9;
 
+    public static final int XHTML_ORD = 10;
+
     private static final Map<String, PropertyType> all = new HashMap<String, PropertyType>();
 
     /**
@@ -100,6 +102,12 @@ public class PropertyType {
      */
     public static final PropertyType HTML = register(new PropertyType("html",
             HTML_ORD, String.class));
+
+    /**
+     * An XHTML property, represented as a String.
+     */
+    public static final PropertyType XHTML = register(new PropertyType("xhtml",
+            XHTML_ORD, String.class));
 
     private final String name;
 
