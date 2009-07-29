@@ -98,6 +98,9 @@ public abstract class BasicTestCase extends TestCase {
 
         List<CMISObject> entries = root.getChildren(null);
         assertEquals(1, entries.size());
+        Folder f1 = (Folder) entries.get(0);
+        Folder fold = f1.getParent();
+        assertEquals(root.getId(), fold.getId());
     }
 
     public void testDefaultValues() {

@@ -98,10 +98,6 @@ public abstract class CMISCollection<T> extends
      * ----- Utilities -----
      */
 
-    public String getRepositoryLink(RequestContext request) {
-        return request.absoluteUrlFor(TargetType.TYPE_SERVICE, null);
-    }
-
     public String getTypeLink(String tid, RequestContext request) {
         Map<String, String> params = new HashMap<String, String>();
         params.put("entrytype", "type");
@@ -109,16 +105,9 @@ public abstract class CMISCollection<T> extends
         return request.absoluteUrlFor(TargetType.TYPE_ENTRY, params);
     }
 
-    public String getChildrenLink(String fid, RequestContext request) {
+    public String getDownLink(String fid, RequestContext request) {
         Map<String, String> params = new HashMap<String, String>();
         params.put("entrytype", "children");
-        params.put("id", fid);
-        return request.absoluteUrlFor(TargetType.TYPE_ENTRY, params);
-    }
-
-    public String getDescendantsLink(String fid, RequestContext request) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("entrytype", "descendants");
         params.put("id", fid);
         return request.absoluteUrlFor(TargetType.TYPE_ENTRY, params);
     }

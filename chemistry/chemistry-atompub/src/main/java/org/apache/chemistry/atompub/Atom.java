@@ -39,4 +39,57 @@ public class Atom {
 
     public static final QName APP_COLLECTION = new QName(APP_NS, "collection");
 
+    public static final String MEDIA_TYPE_ATOM = "application/atom+xml";
+
+    public static final String MEDIA_TYPE_ATOM_ENTRY = "application/atom+xml;type=entry";
+
+    public static final String MEDIA_TYPE_ATOM_FEED = "application/atom+xml;type=feed";
+
+    public static final String MEDIA_TYPE_ATOM_SERVICE = "application/atomsvc+xml";
+
+    /*
+     * http://www.iana.org/assignments/link-relations/link-relations.xhtml
+     */
+
+    public static final String LINK_SELF = "self";
+
+    public static final String LINK_SERVICE = "service";
+
+    public static final String LINK_DESCRIBED_BY = "describedby";
+
+    public static final String LINK_VIA = "via";
+
+    public static final String LINK_EDIT_MEDIA = "edit-media";
+
+    public static final String LINK_EDIT = "edit";
+
+    public static final String LINK_ALTERNATE = "alternate";
+
+    public static final String LINK_FIRST = "first";
+
+    public static final String LINK_LAST = "last";
+
+    public static final String LINK_PREVIOUS = "previous";
+
+    public static final String LINK_NEXT = "next";
+
+    /*
+     * http://www.ietf.org/id/draft-divilly-atom-hierarchy-03.txt
+     */
+
+    public static final String LINK_UP = "up";
+
+    public static final String LINK_DOWN = "down";
+
+    /*
+     * TODO Will be updated by 0.63 to use properly
+     * http://www.ietf.org/id/draft-brown-versioning-link-relations-01.txt
+     */
+
+    public static final String LINK_VERSION_HISTORY = "allversions"; // TODO
+
+    public static final String LINK_LATEST_VERSION = "latestversion"; // TODO
+
+    public static final String LINK_WORKING_COPY = "pwc"; // TODO
+
 }

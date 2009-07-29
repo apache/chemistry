@@ -28,7 +28,7 @@ import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.Atom;
 import org.apache.chemistry.atompub.client.connector.Request;
 import org.apache.chemistry.atompub.client.connector.Response;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
@@ -63,7 +63,7 @@ public class APPFolder extends APPDocument implements Folder {
     }
 
     public List<CMISObject> getChildren(BaseType type) {
-        String href = entry.getLink(CMIS.LINK_CHILDREN);
+        String href = entry.getLink(Atom.LINK_DOWN);
         Response resp = entry.connection.getConnector().get(new Request(href));
         if (!resp.isOk()) {
             throw new ContentManagerException(

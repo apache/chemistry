@@ -33,7 +33,7 @@ public abstract class ObjectEntryWriter extends
 
     @Override
     public String getContentType() {
-        return "application/atom+xml;type=entry";
+        return Atom.MEDIA_TYPE_ATOM_ENTRY;
     }
 
     @Override

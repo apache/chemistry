@@ -104,7 +104,6 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         // alternate is mandated by Atom when there is no atom:content
         entry.addLink(link, "alternate");
         // CMIS links
-        entry.addLink(getRepositoryLink(request), CMIS.LINK_REPOSITORY);
 
         // CMIS-specific
         // TODO refactor this to be a proper ExtensibleElement

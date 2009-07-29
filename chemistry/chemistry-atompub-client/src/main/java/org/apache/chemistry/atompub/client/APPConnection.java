@@ -46,6 +46,7 @@ import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
+import org.apache.chemistry.atompub.Atom;
 import org.apache.chemistry.atompub.CMIS;
 import org.apache.chemistry.atompub.client.connector.Connector;
 import org.apache.chemistry.atompub.client.connector.Request;
@@ -119,7 +120,7 @@ public class APPConnection implements Connection, SPI {
         }
         APPObjectEntry entry = newObjectEntry(typeId);
         if (folder != null) {
-            entry.addLink(CMIS.LINK_PARENTS,
+            entry.addLink(Atom.LINK_UP,
                     ((APPFolder) folder).entry.getEditLink());
         }
         return new APPDocument(entry, type);
@@ -133,7 +134,7 @@ public class APPConnection implements Connection, SPI {
         APPObjectEntry entry = newObjectEntry(typeId);
         if (folder != null) {
             entry.setValue(Property.PARENT_ID, folder.getId());
-            entry.addLink(CMIS.LINK_PARENTS,
+            entry.addLink(Atom.LINK_UP,
                     ((APPFolder) folder).entry.getEditLink());
         }
         return new APPFolder(entry, type);
@@ -208,7 +209,7 @@ public class APPConnection implements Connection, SPI {
             skipCount = 0;
         }
 
-        String href = getObjectEntry(folder).getLink(CMIS.LINK_CHILDREN);
+        String href = getObjectEntry(folder).getLink(Atom.LINK_DOWN);
         Response resp = connector.get(new Request(href));
         if (!resp.isOk()) {
             throw new ContentManagerException(
@@ -256,7 +257,7 @@ public class APPConnection implements Connection, SPI {
             if (current.getId().equals(rootId)) {
                 break;
             }
-            String href = current.getLink(CMIS.LINK_PARENTS);
+            String href = current.getLink(Atom.LINK_UP);
             Response resp = connector.get(new Request(href));
             if (!resp.isOk()) {
                 throw new ContentManagerException(
@@ -274,7 +275,7 @@ public class APPConnection implements Connection, SPI {
             boolean includeRelationships) {
         // TODO filter, includeRelationship, includeAllowableActions
         APPObjectEntry current = getObjectEntry(object);
-        String href = current.getLink(CMIS.LINK_PARENTS);
+        String href = current.getLink(Atom.LINK_UP);
         Response resp = connector.get(new Request(href));
         if (!resp.isOk()) {
             throw new ContentManagerException(

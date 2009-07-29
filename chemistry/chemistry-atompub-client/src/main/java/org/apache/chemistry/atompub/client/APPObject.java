@@ -30,7 +30,7 @@ import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Type;
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.Atom;
 import org.apache.chemistry.atompub.client.connector.Connector;
 import org.apache.chemistry.atompub.client.connector.Request;
 import org.apache.chemistry.atompub.client.connector.Response;
@@ -94,11 +94,13 @@ public abstract class APPObject extends BaseObject {
     /*
      * ----- Navigation Services -----
      */
+
     public Folder getParent() {
-        String href = entry.getLink(CMIS.LINK_PARENTS); // TODO check this
+        String href = entry.getLink(Atom.LINK_UP); // usually a feed entry
         if (href == null) {
             return null;
         }
+        // can read an entry directly, or the first one from a feed
         APPObjectEntry e = (APPObjectEntry) entry.connection.getConnector().getObject(
                 new ReadContext(entry.connection), href);
         if (e == null) {
@@ -202,16 +204,16 @@ public abstract class APPObject extends BaseObject {
         Connector connector = entry.connection.getConnector();
         ReadContext ctx = new ReadContext(entry.connection);
 
-        String href = entry.getLink(CMIS.LINK_PARENTS); // TODO check this
+        // this link value is local, set by APPConnection#newDocument
+        String href = entry.getLink(Atom.LINK_UP);
         if (href == null) {
             throw new IllegalArgumentException(
                     "Cannot create entry: no 'cmis-parents' link is present");
         }
-        // TODO in 0.5 the parents link (entry or feed) wasn't defined clearly
         // TODO hardcoded Chemistry URL pattern here...
         href = href.replaceAll("/object/([0-9a-f-]{36}$)", "/children/$1");
         Request req = new Request(href);
-        req.setHeader("Content-Type", "application/atom+xml;type=entry");
+        req.setHeader("Content-Type", Atom.MEDIA_TYPE_ATOM_ENTRY);
         Response resp = connector.postObject(req, entry);
         if (resp.getStatusCode() != 201) { // Created
             throw new ContentManagerException(
@@ -246,7 +248,7 @@ public abstract class APPObject extends BaseObject {
                     "Cannot edit entry: no 'edit' link is present");
         }
         Request req = new Request(href);
-        req.setHeader("Content-Type", "application/atom+xml;type=entry");
+        req.setHeader("Content-Type", Atom.MEDIA_TYPE_ATOM_ENTRY);
         Response resp = entry.connection.getConnector().putObject(req, entry);
         if (!resp.isOk()) {
             throw new ContentManagerException(

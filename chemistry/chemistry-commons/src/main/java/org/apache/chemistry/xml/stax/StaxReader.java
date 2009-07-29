@@ -312,7 +312,8 @@ public class StaxReader extends StreamReaderDelegate {
         }
         String val = super.getAttributeValue(namespaceURI, localName);
         if (val == null
-                && (namespaceURI.length() == 0 || namespaceURI.equals(getDefaultNamespaceURI()))) {
+                && (namespaceURI.length() != 0 && namespaceURI.equals(getDefaultNamespaceURI()))) {
+            // try with empty namespace
             val = getAttributeValue("", localName);
         }
         return val;

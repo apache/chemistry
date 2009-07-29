@@ -52,6 +52,7 @@ import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.VersioningState;
+import org.apache.chemistry.atompub.Atom;
 import org.apache.chemistry.atompub.CMIS;
 import org.apache.chemistry.atompub.abdera.ObjectElement;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
@@ -80,7 +81,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         feed.addAuthor(getAuthor(request));
         feed.setUpdated(new Date()); // XXX
 
-        feed.addLink(getChildrenLink(id, request), "self");
+        feed.addLink(getDownLink(id, request), "self");
         feed.addLink(getObjectLink(id, request), CMIS.LINK_SOURCE);
 
         // RFC 5005 paging
@@ -148,14 +149,13 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         // alternate is mandated by Atom when there is no atom:content
         entry.addLink(link, "alternate");
         // CMIS links
-        entry.addLink(getRepositoryLink(request), CMIS.LINK_REPOSITORY);
-        entry.addLink(getTypeLink(object.getTypeId(), request), CMIS.LINK_TYPE);
         String oid = object.getId();
-        entry.addLink(getParentsLink(oid, request), CMIS.LINK_PARENTS);
+        // TODO for folder's up, link to an entry and not a feed
+        entry.addLink(getParentsLink(oid, request), Atom.LINK_UP,
+                Atom.MEDIA_TYPE_ATOM_FEED, null, null, 0);
         if (object.getBaseType() == BaseType.FOLDER) {
-            entry.addLink(getChildrenLink(oid, request), CMIS.LINK_CHILDREN);
-            entry.addLink(getDescendantsLink(oid, request),
-                    CMIS.LINK_DESCENDANTS);
+            entry.addLink(getDownLink(oid, request), Atom.LINK_DOWN,
+                    Atom.MEDIA_TYPE_ATOM_FEED, null, null, 0);
         }
         // entry.addLink("XXX", CMIS.LINK_ALLOWABLE_ACTIONS);
         // entry.addLink("XXX", CMIS.LINK_RELATIONSHIPS);
@@ -264,8 +264,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             throws ResponseContextException {
         String mediaLink = getMediaLink(object.getId(), request);
         entry.setContent(new IRI(mediaLink), getContentType(object));
-        entry.addLink(mediaLink, "edit-media");
-        entry.addLink(mediaLink, CMIS.LINK_STREAM);
+        entry.addLink(mediaLink, Atom.LINK_EDIT_MEDIA);
         return mediaLink;
     }
 

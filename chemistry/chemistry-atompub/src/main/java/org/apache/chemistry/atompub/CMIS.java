@@ -221,32 +221,22 @@ public class CMIS {
      * ----- CMIS Link Types -----
      */
 
-    public static final String LINK_REPOSITORY = "repository";
-
-    public static final String LINK_LATEST_VERSION = "latestversion";
-
     public static final String LINK_SOURCE = "source";
 
     public static final String LINK_TARGET = "target";
 
-    public static final String LINK_TYPE = "type";
-
     public static final String LINK_ALLOWABLE_ACTIONS = "allowableactions";
-
-    public static final String LINK_STREAM = "stream";
-
-    public static final String LINK_PARENTS = "parents";
-
-    public static final String LINK_CHILDREN = "children";
-
-    public static final String LINK_DESCENDANTS = "descendants";
-
-    public static final String LINK_ALL_VERSIONS = "allversions";
-
-    public static final String LINK_PWC = "pwc";
 
     public static final String LINK_RELATIONSHIPS = "relationships";
 
     public static final String LINK_POLICIES = "policies";
+
+    public static final String LINK_ACL = "acl";
+
+    public static final String LINK_CHANGES = "changes";
+
+    public static final String LINK_TYPES_DESCENDANTS = "typesdescendants";
+
+    public static final String LINK_ROOT_DESCENDANTS = "rootdescendants";
 
 }
