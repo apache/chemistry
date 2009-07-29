@@ -198,10 +198,10 @@ public interface CMISObject extends ObjectId {
     /**
      * Gets a property.
      *
-     * @param name the property name
+     * @param id the property ID
      * @return the property
      */
-    Property getProperty(String name);
+    Property getProperty(String id);
 
     /**
      * Gets all the properties.
@@ -213,10 +213,10 @@ public interface CMISObject extends ObjectId {
     /**
      * Gets a property value.
      *
-     * @param name the property name
+     * @param id the property ID
      * @return the property value
      */
-    Serializable getValue(String name);
+    Serializable getValue(String id);
 
     /**
      * Sets a property value.
@@ -226,10 +226,10 @@ public interface CMISObject extends ObjectId {
      * Whether the value is saved immediately or not is repository-specific, see
      * {@link #save()}.
      *
-     * @param name the property name
+     * @param id the property ID
      * @param value the property value, or {@code null}
      */
-    void setValue(String name, Serializable value);
+    void setValue(String id, Serializable value);
 
     /**
      * Sets several property values.
@@ -260,41 +260,41 @@ public interface CMISObject extends ObjectId {
      * ----- convenience methods -----
      */
 
-    String getString(String name);
+    String getString(String id);
 
-    String[] getStrings(String name);
+    String[] getStrings(String id);
 
-    BigDecimal getDecimal(String name);
+    BigDecimal getDecimal(String id);
 
-    BigDecimal[] getDecimals(String name);
+    BigDecimal[] getDecimals(String id);
 
-    Integer getInteger(String name);
+    Integer getInteger(String id);
 
-    Integer[] getIntegers(String name);
+    Integer[] getIntegers(String id);
 
-    Boolean getBoolean(String name);
+    Boolean getBoolean(String id);
 
-    Boolean[] getBooleans(String name);
+    Boolean[] getBooleans(String id);
 
-    Calendar getDateTime(String name);
+    Calendar getDateTime(String id);
 
-    Calendar[] getDateTimes(String name);
+    Calendar[] getDateTimes(String id);
 
-    URI getURI(String name);
+    URI getURI(String id);
 
-    URI[] getURIs(String name);
+    URI[] getURIs(String id);
 
-    String getId(String name);
+    String getId(String id);
 
-    String[] getIds(String name);
+    String[] getIds(String id);
 
-    String getXML(String name);
+    String getXML(String id);
 
-    String[] getXMLs(String name);
+    String[] getXMLs(String id);
 
-    String getHTML(String name);
+    String getHTML(String id);
 
-    String[] getHTMLs(String name);
+    String[] getHTMLs(String id);
 
     /*
      * ----- convenience methods for specific properties -----
@@ -342,6 +342,6 @@ public interface CMISObject extends ObjectId {
      * ----- convenience methods for specific properties (setter) -----
      */
 
-    void setName(String name);
+    void setName(String value);
 
 }

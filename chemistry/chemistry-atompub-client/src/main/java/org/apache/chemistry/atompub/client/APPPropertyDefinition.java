@@ -21,6 +21,7 @@ package org.apache.chemistry.atompub.client;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class APPPropertyDefinition implements PropertyDefinition {
 
     protected Map<String, Object> map;
 
-    protected String name;
+    protected String id;
 
     protected PropertyType type;
 
@@ -62,16 +63,29 @@ public class APPPropertyDefinition implements PropertyDefinition {
         this.map = map;
     }
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    public String getId() {
-        return (String) map.get("id");
+    public String getLocalName() {
+        return (String) map.get(CMIS.LOCAL_NAME.getLocalPart());
+    }
+
+    public URI getLocalNamespace() {
+        String uri = (String) map.get(CMIS.LOCAL_NAMESPACE.getLocalPart());
+        try {
+            return uri == null ? null : new URI(uri);
+        } catch (URISyntaxException e) {
+            return null;
+        }
+    }
+
+    public String getQueryName() {
+        return (String) map.get(CMIS.QUERY_NAME.getLocalPart());
     }
 
     public String getDisplayName() {
-        return (String) map.get("displayName");
+        return (String) map.get(CMIS.DISPLAY_NAME.getLocalPart());
     }
 
     public String getDescription() {
@@ -211,8 +225,8 @@ public class APPPropertyDefinition implements PropertyDefinition {
         ChildrenNavigator nav = reader.getChildren();
         while (nav.next()) {
             String tag = reader.getLocalName();
-            if (tag.equals(CMIS.NAME.getLocalPart())) {
-                pd.name = reader.getElementText();
+            if (tag.equals(CMIS.ID.getLocalPart())) {
+                pd.id = reader.getElementText();
             } else if (tag.equals(CMIS.CARDINALITY.getLocalPart())) {
                 String text = reader.getElementText();
                 pd.multiValued = isMultiValued(text);
@@ -255,7 +269,7 @@ public class APPPropertyDefinition implements PropertyDefinition {
                 }
             } else {
                 if (defaultValues.size() != 1) {
-                    log.error("Single-valued property " + pd.getName()
+                    log.error("Single-valued property " + pd.getId()
                             + " got a defaultValue of size: "
                             + defaultValues.size());
                 }

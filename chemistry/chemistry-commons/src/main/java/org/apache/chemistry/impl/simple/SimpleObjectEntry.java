@@ -57,22 +57,22 @@ public class SimpleObjectEntry implements ObjectEntry {
         return new HashMap<String, Serializable>(data);
     }
 
-    public Serializable getValue(String name) {
-        return data.get(name);
+    public Serializable getValue(String id) {
+        return data.get(id);
     }
 
-    public void setValue(String name, Serializable value) {
+    public void setValue(String id, Serializable value) {
         if (value == null) {
-            data.remove(name);
+            data.remove(id);
         } else {
-            data.put(name, value);
+            data.put(id, value);
         }
     }
 
     public void setValues(Map<String, Serializable> values) {
         // don't use putAll as we want to check for nulls
-        for (String name : values.keySet()) {
-            setValue(name, values.get(name));
+        for (String id : values.keySet()) {
+            setValue(id, values.get(id));
         }
     }
 

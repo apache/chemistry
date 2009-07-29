@@ -54,7 +54,7 @@ public class APPObjectEntryReader extends AbstractObjectReader<APPObjectEntry> {
     @Override
     protected void readProperty(ReadContext ctx, StaxReader reader,
             APPObjectEntry object, XmlProperty p) {
-        object.properties.put(p.getName(), p);
+        object.properties.put(p.getId(), p);
     }
 
     @Override

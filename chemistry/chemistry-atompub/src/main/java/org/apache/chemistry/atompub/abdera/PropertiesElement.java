@@ -69,14 +69,14 @@ public class PropertiesElement extends ExtensibleElementWrapper {
         repository = null;
         if (contentStreamURI != null) {
             ExtensibleElement el = addExtension(CMIS.PROPERTY_URI);
-            el.setAttributeValue(CMIS.NAME, Property.CONTENT_STREAM_URI);
+            el.setAttributeValue(CMIS.PDID, Property.CONTENT_STREAM_URI);
             Element val = el.addExtension(CMIS.VALUE);
             // don't merge these two lines as JDK 5 has problems compiling it
             val.setText(contentStreamURI);
 
             // Alfresco COMPAT (incorrect property name and type):
             el = addExtension(CMIS.PROPERTY_STRING);
-            el.setAttributeValue(CMIS.NAME, "ContentStreamURI");
+            el.setAttributeValue(CMIS.PDID, "ContentStreamURI");
             val = el.addExtension(CMIS.VALUE);
             // don't merge these two lines
             val.setText(contentStreamURI);
@@ -93,8 +93,8 @@ public class PropertiesElement extends ExtensibleElementWrapper {
             if (va == null) {
                 continue;
             }
-            String name = element.getAttributeValue(CMIS.NAME);
-            adapters.put(name, va);
+            String pdid = element.getAttributeValue(CMIS.PDID);
+            adapters.put(pdid, va);
             List<Serializable> list = new LinkedList<Serializable>();
             for (Element el : element.getElements()) {
                 if (!el.getQName().equals(CMIS.VALUE)) {
@@ -102,11 +102,11 @@ public class PropertiesElement extends ExtensibleElementWrapper {
                 }
                 Serializable value = va.readValue(el.getText());
                 list.add(value);
-                if (name.equals(Property.TYPE_ID)) {
+                if (pdid.equals(Property.TYPE_ID)) {
                     typeId = (String) value;
                 }
             }
-            raw.put(name, list);
+            raw.put(pdid, list);
         }
         if (typeId == null) {
             // TODO proper exception
@@ -155,22 +155,12 @@ public class PropertiesElement extends ExtensibleElementWrapper {
 
     public void setProperties(Map<String, Serializable> values, Type type) {
         for (PropertyDefinition propertyDefinition : type.getPropertyDefinitions()) {
-            String name = propertyDefinition.getName();
-            if (name.equals(Property.CONTENT_STREAM_URI)) {
+            String id = propertyDefinition.getId();
+            if (id.equals(Property.CONTENT_STREAM_URI)) {
                 // special-cased in constructor
                 continue;
             }
-            setProperty(values.get(name), propertyDefinition);
-
-            // Alfresco COMPAT (BaseType not in 0.6)
-            if (name.equals(Property.BASE_TYPE_ID)) {
-                // emit BaseType as well
-                ExtensibleElement el = addExtension(CMIS.PROPERTY_STRING);
-                el.setAttributeValue(CMIS.NAME, "BaseType");
-                Element val = el.addExtension(CMIS.VALUE);
-                // don't merge these two lines
-                val.setText(type.getBaseType().getId());
-            }
+            setProperty(values.get(id), propertyDefinition);
         }
     }
 
@@ -183,7 +173,15 @@ public class PropertiesElement extends ExtensibleElementWrapper {
         QName qname = propertyQName(propertyDefinition);
         List<String> values = getStringsForValue(value, propertyDefinition);
         ExtensibleElement el = addExtension(qname);
-        el.setAttributeValue(CMIS.NAME, propertyDefinition.getName());
+        el.setAttributeValue(CMIS.PDID, propertyDefinition.getId());
+        String localName = propertyDefinition.getLocalName();
+        if (localName != null) {
+            el.setAttributeValue(CMIS.LOCALNAME, localName);
+        }
+        String displayName = propertyDefinition.getDisplayName();
+        if (displayName != null) {
+            el.setAttributeValue(CMIS.DISPLAYNAME, displayName);
+        }
         for (String s : values) {
             Element val = el.addExtension(CMIS.VALUE);
             // don't merge these two lines as JDK 5 has problems compiling it

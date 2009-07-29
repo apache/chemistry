@@ -50,29 +50,30 @@ public class TestSimpleRepository extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         PropertyDefinition d1 = new SimplePropertyDefinition("title",
-                "def:title", "Title", "", false, PropertyType.STRING, false,
-                null, false, false, "", Updatability.READ_WRITE, true, true, 0,
-                null, null, -1, null);
-        PropertyDefinition d2 = new SimplePropertyDefinition("description",
-                "def:description", "Description", "", false,
+                "def:title", null, "title", "Title", "", false,
                 PropertyType.STRING, false, null, false, false, "",
                 Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
+        PropertyDefinition d2 = new SimplePropertyDefinition("description",
+                "def:description", null, "description", "Description", "",
+                false, PropertyType.STRING, false, null, false, false, "",
+                Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
         PropertyDefinition d3 = new SimplePropertyDefinition("date",
-                "def:date", "Date", "", false, PropertyType.DATETIME, false,
-                null, false, false, null, Updatability.READ_WRITE, true, true,
-                0, null, null, -1, null);
+                "def:date", null, "date", "Date", "", false,
+                PropertyType.DATETIME, false, null, false, false, null,
+                Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
         SimpleType mt1 = new SimpleType("doc", BaseType.DOCUMENT.getId(),
-                "Doc", "My Doc Type", BaseType.DOCUMENT, "", true, true, true,
-                true, true, true, ContentStreamPresence.ALLOWED, null, null,
-                Arrays.asList(d1, d2, d3));
+                "doc", null, "Doc", "My Doc Type", BaseType.DOCUMENT, "", true,
+                true, true, true, true, true, ContentStreamPresence.ALLOWED,
+                null, null, Arrays.asList(d1, d2, d3));
         SimpleType mt2 = new SimpleType("fold", BaseType.FOLDER.getId(),
-                "Fold", "My Folder Type", BaseType.FOLDER, "", true, true,
-                true, true, false, false, ContentStreamPresence.NOT_ALLOWED,
-                null, null, Arrays.asList(d1, d2));
-        SimpleType mt3 = new SimpleType("subdoc", "doc", "SubDoc",
-                "My SubDoc Type", BaseType.DOCUMENT, "", true, true, true,
-                true, true, true, ContentStreamPresence.ALLOWED, null, null,
-                Arrays.asList(d1, d2, d3));
+                "fold", null, "Fold", "My Folder Type", BaseType.FOLDER, "",
+                true, true, true, true, false, false,
+                ContentStreamPresence.NOT_ALLOWED, null, null, Arrays.asList(
+                        d1, d2));
+        SimpleType mt3 = new SimpleType("subdoc", "doc", "subdoc", null,
+                "SubDoc", "My SubDoc Type", BaseType.DOCUMENT, "", true, true,
+                true, true, true, true, ContentStreamPresence.ALLOWED, null,
+                null, Arrays.asList(d1, d2, d3));
         repo = new SimpleRepository("test", Arrays.asList(mt1, mt2, mt3), null);
 
     }

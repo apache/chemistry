@@ -48,12 +48,6 @@ public class APPObjectEntry implements ObjectEntry {
 
     protected Set<String> allowableActions; // TODO use set?
 
-    protected String id;
-
-    protected String name;
-
-    protected String typeId;
-
     protected final List<String> links;
 
     public APPObjectEntry(APPConnection connection,
@@ -112,20 +106,20 @@ public class APPObjectEntry implements ObjectEntry {
         return BaseType.get((String) getValue(Property.BASE_TYPE_ID));
     }
 
-    public Serializable getValue(String name) {
-        XmlProperty p = properties.get(name);
+    public Serializable getValue(String id) {
+        XmlProperty p = properties.get(id);
         return p == null ? null : p.getValue();
     }
 
     // not in API
     public XmlProperty getProperty(PropertyDefinition pd) {
-        XmlProperty p = properties.get(pd.getName());
+        XmlProperty p = properties.get(pd.getId());
         if (p != null) {
             return p;
         }
         if (isCreation()) {
             p = new XmlProperty(pd);
-            properties.put(pd.getName(), p);
+            properties.put(pd.getId(), p);
         } else {
             // TODO not fetched...
         }
@@ -142,19 +136,19 @@ public class APPObjectEntry implements ObjectEntry {
         return map;
     }
 
-    public void setValue(String name, Serializable value) {
-        XmlProperty p = properties.get(name);
+    public void setValue(String id, Serializable value) {
+        XmlProperty p = properties.get(id);
         if (p != null) {
             p.setValue(value);
         } else {
             PropertyDefinition pd = connection.getRepository().getType(
-                    getTypeId()).getPropertyDefinition(name);
+                    getTypeId()).getPropertyDefinition(id);
             if (pd == null) {
-                throw new IllegalArgumentException("No such property: " + name);
+                throw new IllegalArgumentException("No such property: " + id);
             }
             p = new XmlProperty(pd);
             p.setValue(value);
-            properties.put(name, p);
+            properties.put(id, p);
         }
     }
 
@@ -188,7 +182,7 @@ public class APPObjectEntry implements ObjectEntry {
     @Override
     public String toString() {
         return getClass().getSimpleName() + '(' + getTypeId() + ',' + getId()
-        + ')';
+                + ')';
     }
 
     public void writeObjectTo(XMLWriter xw) throws IOException {
@@ -198,7 +192,7 @@ public class APPObjectEntry implements ObjectEntry {
         xw.start();
         for (XmlProperty p : properties.values()) {
             ValueAdapter va = p.getAdapter();
-            xw.element(va.getPropertyQName()).attr(CMIS.NAME, p.getName());
+            xw.element(va.getPropertyQName()).attr(CMIS.PDID, p.getId());
             xw.start();
             if (p.isValueLoaded()) {
                 Serializable v = p.getValue();

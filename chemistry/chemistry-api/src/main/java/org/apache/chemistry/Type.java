@@ -16,6 +16,7 @@
  */
 package org.apache.chemistry;
 
+import java.net.URI;
 import java.util.Collection;
 
 /**
@@ -31,6 +32,26 @@ public interface Type {
      * @return the type ID
      */
     String getId();
+
+    /**
+     * The type's local name.
+     * <p>
+     * This is the underlying repository's name for the type. It is opaque and
+     * has no uniqueness constraint.
+     *
+     * @return the type local name
+     */
+    String getLocalName();
+
+    /**
+     * The type's local namespace.
+     * <p>
+     * This is the underlying repository's internal namespace for the type local
+     * name.
+     *
+     * @return the type local namespace, or {@code null} if not specified
+     */
+    URI getLocalNamespace();
 
     /**
      * The query name.
@@ -206,8 +227,9 @@ public interface Type {
      * If this type was retrieved through a call specifying {@code
      * returnPropertyDefinitions = false}, then this will return {@code null}.
      *
+     * @param id the property ID
      * @return a property definition, or {@code null} when omitted
      */
-    PropertyDefinition getPropertyDefinition(String name);
+    PropertyDefinition getPropertyDefinition(String id);
 
 }

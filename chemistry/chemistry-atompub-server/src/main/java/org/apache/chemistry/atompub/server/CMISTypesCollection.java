@@ -17,6 +17,7 @@
 package org.apache.chemistry.atompub.server;
 
 import java.io.Serializable;
+import java.net.URI;
 import java.util.Date;
 import java.util.List;
 
@@ -130,7 +131,13 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         // compiling when it's on one line (compiler generics bug)
         el = factory.newElement(CMIS.ID, dt);
         el.setText(type.getId());
-        // TODO localName, localNamespace
+        el = factory.newElement(CMIS.LOCAL_NAME, dt);
+        el.setText(type.getLocalName());
+        URI localNamespace = type.getLocalNamespace();
+        if (localNamespace != null) {
+            el = factory.newElement(CMIS.LOCAL_NAMESPACE, dt);
+            el.setText(localNamespace.toString());
+        }
         el = factory.newElement(CMIS.QUERY_NAME, dt);
         el.setText(type.getQueryName());
         el = factory.newElement(CMIS.DISPLAY_NAME, dt);
@@ -191,12 +198,20 @@ public class CMISTypesCollection extends CMISCollection<Type> {
                     throw new AssertionError(pd.getType().name());
                 }
                 Element def = factory.newElement(qname, dt);
-                el = factory.newElement(CMIS.NAME, def);
-                el.setText(pd.getName());
                 el = factory.newElement(CMIS.ID, def);
                 el.setText(pd.getId());
-                el = factory.newElement(CMIS.PACKAGE, def);
-                el.setText("system"); // TODO package
+                String localName = pd.getLocalName();
+                if (localName != null) {
+                    el = factory.newElement(CMIS.LOCAL_NAME, def);
+                    el.setText(localName);
+                }
+                URI lns = pd.getLocalNamespace();
+                if (lns != null) {
+                    el = factory.newElement(CMIS.LOCAL_NAMESPACE, def);
+                    el.setText(lns.toString());
+                }
+                el = factory.newElement(CMIS.QUERY_NAME, def);
+                el.setText(pd.getQueryName());
                 el = factory.newElement(CMIS.DISPLAY_NAME, def);
                 el.setText(pd.getDisplayName());
                 el = factory.newElement(CMIS.DESCRIPTION, def);

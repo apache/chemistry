@@ -78,11 +78,11 @@ public class JcrDocument extends JcrObjectEntry implements Document {
     }
 
     @Override
-    public String getString(String name) {
-        if (name.equals(Property.CONTENT_STREAM_MIME_TYPE)) {
+    public String getString(String id) {
+        if (id.equals(Property.CONTENT_STREAM_MIME_TYPE)) {
             return getContentStream().getMimeType();
         }
-        return super.getString(name);
+        return super.getString(id);
     }
 
     public void setContentStream(ContentStream contentStream)
@@ -95,11 +95,11 @@ public class JcrDocument extends JcrObjectEntry implements Document {
         throw new UnsupportedOperationException();
     }
 
-    public void setName(String name) {
+    public void setName(String value) {
         throw new UnsupportedOperationException();
     }
 
-    public void setValue(String name, Serializable value) {
+    public void setValue(String id, Serializable value) {
         throw new UnsupportedOperationException();
     }
 

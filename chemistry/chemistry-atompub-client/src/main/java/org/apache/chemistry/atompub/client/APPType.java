@@ -17,6 +17,8 @@
  */
 package org.apache.chemistry.atompub.client;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -107,6 +109,19 @@ public class APPType extends APPObjectEntry implements Type {
     public Collection<PropertyDefinition> getPropertyDefinitions() {
         loadPropertyDef();
         return Collections.unmodifiableCollection(propertyDefs.values());
+    }
+
+    public String getLocalName() {
+        return map.get(CMIS.LOCAL_NAME.getLocalPart());
+    }
+
+    public URI getLocalNamespace() {
+        String uri = map.get(CMIS.LOCAL_NAMESPACE.getLocalPart());
+        try {
+            return uri == null ? null : new URI(uri);
+        } catch (URISyntaxException e) {
+            return null;
+        }
     }
 
     public String getQueryName() {

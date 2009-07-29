@@ -37,14 +37,14 @@ public abstract class BaseObject implements CMISObject {
     public Map<String, Property> getProperties() {
         Map<String, Property> properties = new HashMap<String, Property>();
         for (PropertyDefinition pd : getType().getPropertyDefinitions()) {
-            String name = pd.getName();
-            properties.put(name, getProperty(name));
+            String id = pd.getId();
+            properties.put(id, getProperty(id));
         }
         return properties;
     }
 
-    public void setValue(String name, Serializable value) {
-        getProperty(name).setValue(value);
+    public void setValue(String id, Serializable value) {
+        getProperty(id).setValue(value);
     }
 
     public void setValues(Map<String, Serializable> values) {
@@ -57,76 +57,76 @@ public abstract class BaseObject implements CMISObject {
      * ----- Convenience methods -----
      */
 
-    public String getString(String name) {
-        return (String) getValue(name);
+    public String getString(String id) {
+        return (String) getValue(id);
     }
 
-    public String[] getStrings(String name) {
-        return (String[]) getValue(name);
+    public String[] getStrings(String id) {
+        return (String[]) getValue(id);
     }
 
-    public BigDecimal getDecimal(String name) {
-        return (BigDecimal) getValue(name);
+    public BigDecimal getDecimal(String id) {
+        return (BigDecimal) getValue(id);
     }
 
-    public BigDecimal[] getDecimals(String name) {
-        return (BigDecimal[]) getValue(name);
+    public BigDecimal[] getDecimals(String id) {
+        return (BigDecimal[]) getValue(id);
     }
 
-    public Integer getInteger(String name) {
-        return (Integer) getValue(name);
+    public Integer getInteger(String id) {
+        return (Integer) getValue(id);
     }
 
-    public Integer[] getIntegers(String name) {
-        return (Integer[]) getValue(name);
+    public Integer[] getIntegers(String id) {
+        return (Integer[]) getValue(id);
     }
 
-    public Boolean getBoolean(String name) {
-        return (Boolean) getValue(name);
+    public Boolean getBoolean(String id) {
+        return (Boolean) getValue(id);
     }
 
-    public Boolean[] getBooleans(String name) {
-        return (Boolean[]) getValue(name);
+    public Boolean[] getBooleans(String id) {
+        return (Boolean[]) getValue(id);
     }
 
-    public Calendar getDateTime(String name) {
-        return (Calendar) getValue(name);
+    public Calendar getDateTime(String id) {
+        return (Calendar) getValue(id);
     }
 
-    public Calendar[] getDateTimes(String name) {
-        return (Calendar[]) getValue(name);
+    public Calendar[] getDateTimes(String id) {
+        return (Calendar[]) getValue(id);
     }
 
-    public URI getURI(String name) {
-        return (URI) getValue(name);
+    public URI getURI(String id) {
+        return (URI) getValue(id);
     }
 
-    public URI[] getURIs(String name) {
-        return (URI[]) getValue(name);
+    public URI[] getURIs(String id) {
+        return (URI[]) getValue(id);
     }
 
-    public String getId(String name) {
-        return (String) getValue(name);
+    public String getId(String id) {
+        return (String) getValue(id);
     }
 
-    public String[] getIds(String name) {
-        return (String[]) getValue(name);
+    public String[] getIds(String id) {
+        return (String[]) getValue(id);
     }
 
-    public String getXML(String name) {
-        return (String) getValue(name);
+    public String getXML(String id) {
+        return (String) getValue(id);
     }
 
-    public String[] getXMLs(String name) {
-        return (String[]) getValue(name);
+    public String[] getXMLs(String id) {
+        return (String[]) getValue(id);
     }
 
-    public String getHTML(String name) {
-        return (String) getValue(name);
+    public String getHTML(String id) {
+        return (String) getValue(id);
     }
 
-    public String[] getHTMLs(String name) {
-        return (String[]) getValue(name);
+    public String[] getHTMLs(String id) {
+        return (String[]) getValue(id);
     }
 
     /*
@@ -218,8 +218,8 @@ public abstract class BaseObject implements CMISObject {
         return getString(Property.CHECKIN_COMMENT);
     }
 
-    public void setName(String name) {
-        setValue(Property.NAME, name);
+    public void setName(String value) {
+        setValue(Property.NAME, value);
     }
 
 }

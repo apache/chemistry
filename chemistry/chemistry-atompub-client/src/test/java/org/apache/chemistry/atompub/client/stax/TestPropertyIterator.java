@@ -37,12 +37,12 @@ public class TestPropertyIterator extends TestCase {
         StaxReader sr = StaxReader.newReader(url.openStream());
         sr.getFirstTag(CMIS.PROPERTIES);
         PropertyIterator pi = new PropertyIterator(sr);
-        List<String> names = new LinkedList<String>();
+        List<String> ids = new LinkedList<String>();
         while (pi.hasNext()) {
-            names.add(pi.next().getName());
+            ids.add(pi.next().getId());
         }
         assertEquals(Arrays.asList("string_null", "string", "date",
-                "string_array", "date_array"), names);
+                "string_array", "date_array"), ids);
     }
 
 }

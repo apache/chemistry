@@ -143,19 +143,19 @@ public class JcrNewFolder extends JcrFolder {
     }
 
     @Override
-    public void setName(String name) {
+    public void setName(String value) {
         if (saved) {
             throw new UnsupportedOperationException();
         }
-        this.name = name;
+        this.name = value;
     }
 
     @Override
-    public void setValue(String name, Serializable value) {
+    public void setValue(String id, Serializable value) {
         if (saved) {
             throw new UnsupportedOperationException();
         }
-        values.put(name, value);
+        values.put(id, value);
     }
 
     @Override

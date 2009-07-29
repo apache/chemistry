@@ -79,11 +79,11 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
                         pdefs = new HashMap<String, PropertyDefinition>();
                     }
                     PropertyDefinition pdef = readPropertyDef(reader);
-                    if (pdef.getName() == null) {
+                    if (pdef.getId() == null) {
                         throw new IllegalArgumentException(
-                                "Invalid property definition: no name given");
+                                "Invalid property definition: no id given");
                     }
-                    pdefs.put(pdef.getName(), pdef);
+                    pdefs.put(pdef.getId(), pdef);
                 } else {
                     String text;
                     try {
@@ -107,10 +107,11 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
             }
             // check some mandatory properties
             // TODO also for documents: versionable, contentStreamAllowed
-            // TODO also for relationships: allowedSourceTypes, allowedTargetTypes
+            // TODO also for relationships: allowedSourceTypes,
+            // allowedTargetTypes
             for (QName qname : Arrays.asList( //
                     CMIS.ID, //
-                    // TODO localName, localNamespace
+                    CMIS.LOCAL_NAME, //
                     CMIS.QUERY_NAME, //
                     CMIS.DISPLAY_NAME, //
                     CMIS.BASE_TYPE_ID, //

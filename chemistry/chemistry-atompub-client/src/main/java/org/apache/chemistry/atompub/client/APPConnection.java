@@ -156,7 +156,7 @@ public class APPConnection implements Connection, SPI {
         Type type = getRepository().getType(typeId);
         XmlProperty p = new XmlProperty(
                 type.getPropertyDefinition(Property.TYPE_ID), typeId);
-        map.put(p.getName(), p);
+        map.put(p.getId(), p);
         return new APPObjectEntry(this, map, null);
     }
 

@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,8 @@ import org.apache.chemistry.TypeManager;
 
 public class SimpleTypeManager implements TypeManager {
 
-    protected final Map<String, Type> types = new HashMap<String, Type>();
+    // linked so that values() returns things in a parent-before-children order
+    protected final Map<String, Type> types = new LinkedHashMap<String, Type>();
 
     protected final Map<String, Collection<Type>> typesChildren = new HashMap<String, Collection<Type>>();
 

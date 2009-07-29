@@ -91,6 +91,12 @@ public class CMIS {
 
     public static final QName BASE_TYPE_ID = CMISName("baseTypeId");
 
+    public static final QName ID = CMISName("id");
+
+    public static final QName LOCAL_NAME = CMISName("localName");
+
+    public static final QName LOCAL_NAMESPACE = CMISName("localNamespace");
+
     public static final QName QUERY_NAME = CMISName("queryName");
 
     public static final QName DISPLAY_NAME = CMISName("displayName");
@@ -131,12 +137,6 @@ public class CMIS {
 
     public static final QName PROPERTY_HTML_DEFINITION = CMISName("propertyHtmlDefinition");
 
-    public static final QName NAME = CMISName("name");
-
-    public static final QName ID = CMISName("id");
-
-    public static final QName PACKAGE = CMISName("package");
-
     public static final QName PROPERTY_TYPE = CMISName("propertyType");
 
     public static final QName CARDINALITY = CMISName("cardinality");
@@ -172,6 +172,12 @@ public class CMIS {
     public static final QName PROPERTY_XML = CMISName("propertyXml");
 
     public static final QName PROPERTY_HTML = CMISName("propertyHtml");
+
+    public static final QName PDID = CMISName("pdid");
+
+    public static final QName LOCALNAME = CMISName("localname");
+
+    public static final QName DISPLAYNAME = CMISName("displayname");
 
     public static final QName VALUE = CMISName("value");
 

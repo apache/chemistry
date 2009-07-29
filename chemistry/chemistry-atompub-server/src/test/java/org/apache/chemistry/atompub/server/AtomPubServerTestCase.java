@@ -93,25 +93,26 @@ public abstract class AtomPubServerTestCase extends TestCase {
 
     public static Repository makeRepository(String rootId) throws IOException {
         PropertyDefinition p1 = new SimplePropertyDefinition("title",
-                "def:title", "Title", "", false, PropertyType.STRING, false,
-                null, false, false, "", Updatability.READ_WRITE, true, true, 0,
-                null, null, -1, null);
-        PropertyDefinition p2 = new SimplePropertyDefinition("description",
-                "def:description", "Description", "", false,
+                "def:title", null, "title", "Title", "", false,
                 PropertyType.STRING, false, null, false, false, "",
                 Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
+        PropertyDefinition p2 = new SimplePropertyDefinition("description",
+                "def:description", null, "description", "Description", "",
+                false, PropertyType.STRING, false, null, false, false, "",
+                Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
         PropertyDefinition p3 = new SimplePropertyDefinition("date",
-                "def:date", "Date", "", false, PropertyType.DATETIME, false,
-                null, false, false, null, Updatability.READ_WRITE, true, true,
-                0, null, null, -1, null);
-        SimpleType dt = new SimpleType("doc", BaseType.DOCUMENT.getId(),
-                "Doc", "My Doc Type", BaseType.DOCUMENT, "", true, true, true,
-                true, true, true, ContentStreamPresence.ALLOWED, null, null,
-                Arrays.asList(p1, p2, p3));
-        SimpleType ft = new SimpleType("fold", BaseType.FOLDER.getId(),
-                "Fold", "My Folder Type", BaseType.FOLDER, "", true, true,
-                true, true, false, false, ContentStreamPresence.NOT_ALLOWED,
-                null, null, Arrays.asList(p1, p2));
+                "def:date", null, "date", "Date", "", false,
+                PropertyType.DATETIME, false, null, false, false, null,
+                Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
+        SimpleType dt = new SimpleType("doc", BaseType.DOCUMENT.getId(), "doc",
+                null, "Doc", "My Doc Type", BaseType.DOCUMENT, "", true, true,
+                true, true, true, true, ContentStreamPresence.ALLOWED, null,
+                null, Arrays.asList(p1, p2, p3));
+        SimpleType ft = new SimpleType("fold", BaseType.FOLDER.getId(), "doc",
+                null, "Fold", "My Folder Type", BaseType.FOLDER, "", true,
+                true, true, true, false, false,
+                ContentStreamPresence.NOT_ALLOWED, null, null, Arrays.asList(
+                        p1, p2));
         SimpleRepository repo = new SimpleRepository("test", Arrays.asList(dt,
                 ft), rootId);
         Connection conn = repo.getConnection(null);

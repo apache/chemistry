@@ -16,6 +16,7 @@
  */
 package org.apache.chemistry.jcr;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -74,7 +75,15 @@ public class JcrType implements Type {
         return null;
     }
 
-    public PropertyDefinition getPropertyDefinition(String name) {
+    public String getLocalName() {
+        return nodeType.getName();
+    }
+
+    public URI getLocalNamespace() {
+        return null;
+    }
+
+    public PropertyDefinition getPropertyDefinition(String id) {
         // TODO Auto-generated method stub
         return null;
     }

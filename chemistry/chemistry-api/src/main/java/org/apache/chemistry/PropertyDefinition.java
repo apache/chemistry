@@ -27,38 +27,49 @@ import java.util.List;
 public interface PropertyDefinition {
 
     /**
-     * The property's name.
-     * <p>
-     * This identifies this property among all properties of this type,
-     * including inherited properties. This is also used as a column name in a
-     * SQL query. It may be in mixed case, but must uniquely identify this
-     * property case-insensitively, and must conform to the syntax rules for SQL
-     * identifiers.
-     *
-     * @return the property's name
-     */
-    String getName();
-
-    /**
      * The property ID.
      * <p>
-     * This contains a system-assigned ID which uniquely identifies this
-     * property.
-     * <p>
-     * Two properties of different names from different types may have the same
-     * ID if they are considered to represent "identical" information by the
-     * repository.
+     * This contains an opaque ID which uniquely identifies this property.
      *
      * @return the property ID
      */
     String getId();
 
     /**
+     * The property's local name.
+     * <p>
+     * This is the underlying repository's name for the property. It is opaque
+     * and has no uniqueness constraint.
+     *
+     * @return the property's local name, or {@code null} if not specified
+     */
+    String getLocalName();
+
+    /**
+     * The property's local namespace.
+     * <p>
+     * This is the underlying repository's namespace for the property.
+     *
+     * @return the property's local namespace, or {@code null} if not specified
+     */
+    URI getLocalNamespace();
+
+    /**
+     * The property's query name.
+     * <p>
+     * This is used as a column name in a SQL query. It maybe in mixed case, but
+     * must uniquely identify this property within its type case-insensitively.
+     *
+     * @return the property's name
+     */
+    String getQueryName();
+
+    /**
      * The property's display name.
      * <p>
      * This is used for presentation by the application.
      *
-     * @return the property's display name
+     * @return the property's display name, or {@code null} if not specified
      */
     String getDisplayName();
 
@@ -68,7 +79,7 @@ public interface PropertyDefinition {
      * This is a description of the property, or {@code null} if none is
      * provided.
      *
-     * @return the property's description, or {@code null}
+     * @return the property's description, or {@code null} if not specified
      */
     String getDescription();
 

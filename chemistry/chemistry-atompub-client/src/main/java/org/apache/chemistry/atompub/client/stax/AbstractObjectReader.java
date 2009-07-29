@@ -86,7 +86,7 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
             incomplete = new ArrayList<XmlProperty>();
             while (it.hasNext()) {
                 XmlProperty p = it.next();
-                if (Property.TYPE_ID.equals(p.getName())) {
+                if (Property.TYPE_ID.equals(p.getId())) {
                     // type has been found
                     String v = (String) p.getXmlValue();
                     entryType = ctx.getRepository().getType(v);
@@ -119,15 +119,15 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
 
     protected void readPropertyWithType(ReadContext ctx, StaxReader reader,
             T object, XmlProperty p, Type entryType) {
-        String name = p.getName();
-        PropertyDefinition def = entryType.getPropertyDefinition(name);
+        String id = p.getId();
+        PropertyDefinition def = entryType.getPropertyDefinition(id);
         if (def == null) {
-            if (name.equals("ContentStreamURI") || name.equals("BaseType")) {
+            if (id.equals("ContentStreamURI") || id.equals("BaseType")) {
                 // Alfresco COMPAT
                 // see org.apache.chemistry.atompub.abdera.PropertiesElement
                 return;
             }
-            throw new ParseException("No such property definition: " + name
+            throw new ParseException("No such property definition: " + id
                     + " in type: " + entryType);
         }
         p.setDefinition(def);

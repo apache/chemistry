@@ -52,27 +52,27 @@ public class PropertyIterator extends ChildrenIterator<XmlProperty> {
 
     @Override
     protected XmlProperty getValue() throws XMLStreamException {
-        String key = reader.getAttributeValue(CMIS.NAME);
-        if (key == null) {
+        String id = reader.getAttributeValue(CMIS.PDID);
+        if (id == null) {
             throw new XMLStreamException(
                     "Parse error. Invalid CMIS property at line: "
                             + reader.getLocation().getLineNumber()
-                            + ". No name specified");
+                            + ". No id specified");
         }
         ValueIterator vi = new ValueIterator(reader);
         if (!vi.hasNext()) {
-            return new XmlProperty(key);
+            return new XmlProperty(id);
         }
         String val = vi.next();
         if (!vi.hasNext()) {
-            return new XmlProperty(key, val);
+            return new XmlProperty(id, val);
         }
         List<String> vals = new ArrayList<String>();
         vals.add(val);
         do {
             vals.add(vi.next());
         } while (vi.hasNext());
-        return new XmlProperty(key, vals);
+        return new XmlProperty(id, vals);
     }
 
 }

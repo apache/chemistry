@@ -124,25 +124,25 @@ public class SimpleObject extends BaseObject {
         return type.getBaseType();
     }
 
-    public Serializable getValue(String name) {
-        PropertyDefinition pd = getType().getPropertyDefinition(name);
+    public Serializable getValue(String id) {
+        PropertyDefinition pd = getType().getPropertyDefinition(id);
         if (pd == null) {
-            throw new IllegalArgumentException(name);
+            throw new IllegalArgumentException(id);
         }
-        Serializable value = entry.data.get(name);
+        Serializable value = entry.data.get(id);
         if (value == null) {
             value = pd.getDefaultValue();
         }
         return value;
     }
 
-    public Property getProperty(String name) {
+    public Property getProperty(String id) {
         PropertyDefinition propertyDefinition = getType().getPropertyDefinition(
-                name);
+                id);
         if (propertyDefinition == null) {
-            throw new IllegalArgumentException(name);
+            throw new IllegalArgumentException(id);
         }
-        return new SimpleProperty(entry, name, propertyDefinition);
+        return new SimpleProperty(entry, id, propertyDefinition);
     }
 
     public void save() {

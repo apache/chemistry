@@ -55,6 +55,14 @@ public class JcrPropertyDefinition implements PropertyDefinition {
         return propDef.getName();
     }
 
+    public String getLocalName() {
+        return propDef.getName(); // TODO
+    }
+
+    public URI getLocalNamespace() {
+        return null; // TODO
+    }
+
     public int getMaxLength() {
         // TODO Auto-generated method stub
         return 0;
@@ -70,7 +78,7 @@ public class JcrPropertyDefinition implements PropertyDefinition {
         return null;
     }
 
-    public String getName() {
+    public String getQueryName() {
         return propDef.getName();
     }
 

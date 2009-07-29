@@ -99,11 +99,11 @@ public class JcrFolder extends JcrObjectEntry implements Folder {
         throw new UnsupportedOperationException();
     }
 
-    public void setName(String name) {
+    public void setName(String id) {
         throw new UnsupportedOperationException();
     }
 
-    public void setValue(String name, Serializable value) {
+    public void setValue(String id, Serializable value) {
         throw new UnsupportedOperationException();
     }
 

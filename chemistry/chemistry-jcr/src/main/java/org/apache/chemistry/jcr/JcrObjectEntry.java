@@ -50,6 +50,7 @@ import org.apache.commons.logging.LogFactory;
 public abstract class JcrObjectEntry implements ObjectEntry {
 
     public static final String MIX_UNSTRUCTURED = "mix:unstructured";
+
     private static final Log log = LogFactory.getLog(JcrObjectEntry.class);
 
     protected Node node;
@@ -58,27 +59,28 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         this.node = node;
     }
 
-    public JcrObjectEntry() {}
+    public JcrObjectEntry() {
+    }
 
     public Collection<String> getAllowableActions() {
         throw new UnsupportedOperationException();
     }
 
-    public Boolean getBoolean(String name) {
+    public Boolean getBoolean(String id) {
         try {
-            return Boolean.valueOf(node.getProperty(name).getBoolean());
+            return Boolean.valueOf(node.getProperty(id).getBoolean());
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
-            String msg = "Unable to get boolean value: " + name;
+            String msg = "Unable to get boolean value: " + id;
             log.error(msg, e);
         }
         return null;
     }
 
-    public Boolean[] getBooleans(String name) {
+    public Boolean[] getBooleans(String id) {
         try {
-            Value[] values = node.getProperty(name).getValues();
+            Value[] values = node.getProperty(id).getValues();
             Boolean[] result = new Boolean[values.length];
             for (int i = 0; i < values.length; i++) {
                 result[i] = Boolean.valueOf(values[i].getBoolean());
@@ -87,7 +89,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
-            String msg = "Unable to get boolean values: " + name;
+            String msg = "Unable to get boolean values: " + id;
             log.error(msg, e);
         }
         return null;
@@ -109,21 +111,21 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         return getDateTime(Property.CREATION_DATE);
     }
 
-    public Calendar getDateTime(String name) {
+    public Calendar getDateTime(String id) {
         try {
-            return node.getProperty(name).getDate();
+            return node.getProperty(id).getDate();
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
-            String msg = "Unable to get date time value: " + name;
+            String msg = "Unable to get date time value: " + id;
             log.error(msg, e);
         }
         return null;
     }
 
-    public Calendar[] getDateTimes(String name) {
+    public Calendar[] getDateTimes(String id) {
         try {
-            Value[] values = node.getProperty(name).getValues();
+            Value[] values = node.getProperty(id).getValues();
             Calendar[] result = new Calendar[values.length];
             for (int i = 0; i < values.length; i++) {
                 result[i] = values[i].getDate();
@@ -132,27 +134,27 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
-            String msg = "Unable to get date time values: " + name;
+            String msg = "Unable to get date time values: " + id;
             log.error(msg, e);
         }
         return null;
     }
 
-    public BigDecimal getDecimal(String name) {
+    public BigDecimal getDecimal(String id) {
         try {
-            return new BigDecimal(node.getProperty(name).getDouble());
+            return new BigDecimal(node.getProperty(id).getDouble());
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
-            String msg = "Unable to get decimal value: " + name;
+            String msg = "Unable to get decimal value: " + id;
             log.error(msg, e);
         }
         return null;
     }
 
-    public BigDecimal[] getDecimals(String name) {
+    public BigDecimal[] getDecimals(String id) {
         try {
-            Value[] values = node.getProperty(name).getValues();
+            Value[] values = node.getProperty(id).getValues();
             BigDecimal[] result = new BigDecimal[values.length];
             for (int i = 0; i < values.length; i++) {
                 result[i] = new BigDecimal(values[i].getDouble());
@@ -161,7 +163,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
-            String msg = "Unable to get decimal values: " + name;
+            String msg = "Unable to get decimal values: " + id;
             log.error(msg, e);
         }
         return null;
@@ -175,22 +177,22 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         throw new UnsupportedOperationException();
     }
 
-    public String getHTML(String name) {
-        return (String) getValue(name);
+    public String getHTML(String id) {
+        return (String) getValue(id);
     }
 
-    public String[] getHTMLs(String name) {
-        return (String[]) getValue(name);
+    public String[] getHTMLs(String id) {
+        return (String[]) getValue(id);
     }
 
-    public String getId(String name) {
+    public String getId(String id) {
         try {
-            javax.jcr.Property prop = node.getProperty(name);
+            javax.jcr.Property prop = node.getProperty(id);
             return getItemId(prop);
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
-            String msg = "Unable to get item path: " + name;
+            String msg = "Unable to get item path: " + id;
             log.error(msg, e);
         }
         return null;
@@ -206,25 +208,25 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         return null;
     }
 
-    public String[] getIds(String name) {
-        return (String[]) getValue(name);
+    public String[] getIds(String id) {
+        return (String[]) getValue(id);
     }
 
-    public Integer getInteger(String name) {
+    public Integer getInteger(String id) {
         try {
-            return Integer.valueOf((int) node.getProperty(name).getLong());
+            return Integer.valueOf((int) node.getProperty(id).getLong());
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
-            String msg = "Unable to get integer value: " + name;
+            String msg = "Unable to get integer value: " + id;
             log.error(msg, e);
         }
         return null;
     }
 
-    public Integer[] getIntegers(String name) {
+    public Integer[] getIntegers(String id) {
         try {
-            Value[] values = node.getProperty(name).getValues();
+            Value[] values = node.getProperty(id).getValues();
             Integer[] result = new Integer[values.length];
             for (int i = 0; i < values.length; i++) {
                 result[i] = Integer.valueOf((int) values[i].getLong());
@@ -233,7 +235,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
-            String msg = "Unable to get integer values: " + name;
+            String msg = "Unable to get integer values: " + id;
             log.error(msg, e);
         }
         return null;
@@ -263,15 +265,15 @@ public abstract class JcrObjectEntry implements ObjectEntry {
 
     // TODO use the definition inside SimpleType
     private static final SimplePropertyDefinition PROP_TYPE_ID = new SimplePropertyDefinition(
-            Property.TYPE_ID, "def:typeid", "Type ID", "", false,
-            PropertyType.ID, false, null, false, true, null,
+            Property.TYPE_ID, "def:typeid", null, Property.TYPE_ID, "Type ID",
+            "", false, PropertyType.ID, false, null, false, true, null,
             Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
 
     public Map<String, Property> getProperties() {
         Map<String, Property> properties = new HashMap<String, Property>();
         for (PropertyDefinition pd : getType().getPropertyDefinitions()) {
-            String name = pd.getName();
-            properties.put(name, getProperty(name));
+            String id = pd.getId();
+            properties.put(id, getProperty(id));
         }
         // TODO return other virtual properties and provide helper class
         properties.put(Property.TYPE_ID, new Property() {
@@ -290,13 +292,13 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         return properties;
     }
 
-    public Property getProperty(String name) {
+    public Property getProperty(String id) {
         try {
-            return new JcrProperty(node.getProperty(name));
+            return new JcrProperty(node.getProperty(id));
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
-            String msg = "Unable to get property: " + name;
+            String msg = "Unable to get property: " + id;
             log.error(msg, e);
         }
         return null;
@@ -310,21 +312,21 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         return Collections.emptyList();
     }
 
-    public String getString(String name) {
+    public String getString(String id) {
         try {
-            return node.getProperty(name).getString();
+            return node.getProperty(id).getString();
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
-            String msg = "Unable to get string value: " + name;
+            String msg = "Unable to get string value: " + id;
             log.error(msg, e);
         }
         return null;
     }
 
-    public String[] getStrings(String name) {
+    public String[] getStrings(String id) {
         try {
-            Value[] values = node.getProperty(name).getValues();
+            Value[] values = node.getProperty(id).getValues();
             String[] result = new String[values.length];
             for (int i = 0; i < values.length; i++) {
                 result[i] = values[i].getString();
@@ -333,7 +335,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
-            String msg = "Unable to get string values: " + name;
+            String msg = "Unable to get string values: " + id;
             log.error(msg, e);
         }
         return null;
@@ -353,22 +355,22 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         return getType().getId();
     }
 
-    public URI getURI(String name) {
-        return (URI) getValue(name);
+    public URI getURI(String id) {
+        return (URI) getValue(id);
     }
 
     public URI getURI() {
         return getURI(Property.URI);
     }
 
-    public URI[] getURIs(String name) {
-        return (URI[]) getValue(name);
+    public URI[] getURIs(String id) {
+        return (URI[]) getValue(id);
     }
 
-    public Serializable getValue(String name) {
+    public Serializable getValue(String id) {
         try {
-            if (node.hasProperty(name)) {
-                Value value = node.getProperty(name).getValue();
+            if (node.hasProperty(id)) {
+                Value value = node.getProperty(id).getValue();
                 if (value instanceof Serializable) {
                     return (Serializable) value;
                 }
@@ -376,7 +378,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
-            String msg = "Unable to get value: " + name;
+            String msg = "Unable to get value: " + id;
             log.error(msg, e);
         }
         return null;
@@ -385,8 +387,8 @@ public abstract class JcrObjectEntry implements ObjectEntry {
     public Map<String, Serializable> getValues() {
         Map<String, Serializable> values = new HashMap<String, Serializable>();
         for (PropertyDefinition def : getType().getPropertyDefinitions()) {
-            String name = def.getName();
-            values.put(name, getValue(name));
+            String id = def.getId();
+            values.put(id, getValue(id));
         }
         return values;
     }
@@ -411,12 +413,12 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         return null;
     }
 
-    public String getXML(String name) {
-        return (String) getValue(name);
+    public String getXML(String id) {
+        return (String) getValue(id);
     }
 
-    public String[] getXMLs(String name) {
-        return (String[]) getValue(name);
+    public String[] getXMLs(String id) {
+        return (String[]) getValue(id);
     }
 
     public boolean hasContentStream() {

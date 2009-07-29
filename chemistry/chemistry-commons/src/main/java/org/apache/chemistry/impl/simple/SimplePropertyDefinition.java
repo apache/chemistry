@@ -29,9 +29,13 @@ import org.apache.chemistry.Updatability;
 
 public class SimplePropertyDefinition implements PropertyDefinition {
 
-    private final String name;
-
     private final String id;
+
+    private final String localName;
+
+    private final URI localNamespace;
+
+    private final String queryName;
 
     private final String displayName;
 
@@ -67,7 +71,8 @@ public class SimplePropertyDefinition implements PropertyDefinition {
 
     private final URI schemaURI;
 
-    public SimplePropertyDefinition(String name, String id, String displayName,
+    public SimplePropertyDefinition(String id, String localName,
+            URI localNamespace, String queryName, String displayName,
             String description, boolean inherited, PropertyType type,
             boolean multiValued, List<Choice> choices, boolean openChoice,
             boolean required, Serializable defaultValue,
@@ -75,12 +80,14 @@ public class SimplePropertyDefinition implements PropertyDefinition {
             int precision, Integer minValue, Integer maxValue, int maxLength,
             URI schemaURI) {
         super();
-        if (name.equals(SimpleProperty.CONTENT_BYTES_KEY)) {
+        if (id.equals(SimpleProperty.CONTENT_BYTES_KEY)) {
             throw new IllegalArgumentException(SimpleProperty.CONTENT_BYTES_KEY
                     + " is a reserved name");
         }
-        this.name = name;
         this.id = id;
+        this.localName = localName;
+        this.localNamespace = localNamespace;
+        this.queryName = queryName;
         this.displayName = displayName;
         this.description = description;
         this.inherited = inherited;
@@ -101,12 +108,20 @@ public class SimplePropertyDefinition implements PropertyDefinition {
         this.schemaURI = schemaURI;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public String getId() {
         return id;
+    }
+
+    public String getLocalName() {
+        return localName;
+    }
+
+    public URI getLocalNamespace() {
+        return localNamespace;
+    }
+
+    public String getQueryName() {
+        return queryName;
     }
 
     public String getDisplayName() {

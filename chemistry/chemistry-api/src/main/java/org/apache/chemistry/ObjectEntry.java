@@ -48,20 +48,20 @@ public interface ObjectEntry extends ObjectId {
      * <p>
      * Returns {@code null} is the property is not set, not fetched or unknown.
      *
-     * @param name the property name
+     * @param id the property ID
      * @return the property value, or {@code null}
      */
-    Serializable getValue(String name);
+    Serializable getValue(String id);
 
     /**
      * Sets a property value.
      * <p>
      * Setting a {@code null} value removes the property.
      *
-     * @param name the property name
+     * @param id the property ID
      * @param value the property value, or {@code null}
      */
-    void setValue(String name, Serializable value);
+    void setValue(String id, Serializable value);
 
     /**
      * Gets all the property values known to this entry.

@@ -167,21 +167,21 @@ public abstract class APPObject extends BaseObject {
         return type.getBaseType();
     }
 
-    public Property getProperty(String name) {
-        PropertyDefinition pd = getType().getPropertyDefinition(name);
+    public Property getProperty(String id) {
+        PropertyDefinition pd = getType().getPropertyDefinition(id);
         if (pd == null) {
-            throw new IllegalArgumentException(name);
+            throw new IllegalArgumentException(id);
         }
         return entry.getProperty(pd);
     }
 
-    public Serializable getValue(String name) {
-        PropertyDefinition pd = getType().getPropertyDefinition(name);
+    public Serializable getValue(String id) {
+        PropertyDefinition pd = getType().getPropertyDefinition(id);
         if (pd == null) {
-            throw new IllegalArgumentException(name);
+            throw new IllegalArgumentException(id);
         }
         // TODO deal with unfetched properties
-        Serializable value = entry.getValue(name);
+        Serializable value = entry.getValue(id);
         if (value == null) {
             value = pd.getDefaultValue();
         }

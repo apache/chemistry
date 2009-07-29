@@ -16,6 +16,7 @@
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
     <cmis:documentType>
       <cmis:id>cmis:document</cmis:id>
+      <cmis:localName>cmis:document</cmis:localName>
       <cmis:queryName>Document</cmis:queryName>
       <cmis:displayName>Document Type</cmis:displayName>
       <cmis:baseTypeId>cmis:document</cmis:baseTypeId>
@@ -39,6 +40,7 @@
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
     <cmis:folderType>
       <cmis:id>cmis:folder</cmis:id>
+      <cmis:localName>cmis:folder</cmis:localName>
       <cmis:queryName>Folder</cmis:queryName>
       <cmis:displayName>Folder Type</cmis:displayName>
       <cmis:baseTypeId>cmis:folder</cmis:baseTypeId>
@@ -62,6 +64,7 @@
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
     <cmis:relationshipType>
       <cmis:id>cmis:relationship</cmis:id>
+      <cmis:localName>cmis:relationship</cmis:localName>
       <cmis:queryName>Relationship</cmis:queryName>
       <cmis:displayName>Relationship Type</cmis:displayName>
       <cmis:baseTypeId>cmis:relationship</cmis:baseTypeId>
@@ -85,6 +88,7 @@
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
     <cmis:policyType>
       <cmis:id>cmis:policy</cmis:id>
+      <cmis:localName>cmis:policy</cmis:localName>
       <cmis:queryName>Policy</cmis:queryName>
       <cmis:displayName>Policy Type</cmis:displayName>
       <cmis:baseTypeId>cmis:policy</cmis:baseTypeId>
@@ -108,6 +112,7 @@
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
     <cmis:folderType>
       <cmis:id>Root</cmis:id>
+      <cmis:localName>Root</cmis:localName>
       <cmis:queryName>Root</cmis:queryName>
       <cmis:displayName>Root Folder Type</cmis:displayName>
       <cmis:baseTypeId>cmis:folder</cmis:baseTypeId>

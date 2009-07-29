@@ -32,14 +32,14 @@ public class SimpleProperty implements Property {
 
     protected final ObjectEntry entry;
 
-    protected final String name;
+    protected final String id;
 
     private final PropertyDefinition propertyDefinition;
 
-    public SimpleProperty(ObjectEntry entry, String name,
+    public SimpleProperty(ObjectEntry entry, String id,
             PropertyDefinition propertyDefinition) {
         this.entry = entry;
-        this.name = name;
+        this.id = id;
         this.propertyDefinition = propertyDefinition;
     }
 
@@ -48,14 +48,14 @@ public class SimpleProperty implements Property {
     }
 
     public Serializable getValue() {
-        return entry.getValue(name);
+        return entry.getValue(id);
     }
 
     public void setValue(Serializable value) {
         if (propertyDefinition.getUpdatability() == Updatability.READ_ONLY) {
-            throw new RuntimeException("Read-only property: " + name);
+            throw new RuntimeException("Read-only property: " + id);
         }
-        entry.setValue(name, value);
+        entry.setValue(id, value);
     }
 
 }

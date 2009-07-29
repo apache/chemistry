@@ -294,43 +294,43 @@ public class SimpleConnection implements Connection, SPI {
         Map<String, Serializable> update = new HashMap<String, Serializable>();
 
         // generate an ID
-        String id = repository.generateId();
-        update.put(Property.ID, id);
+        String objectId = repository.generateId();
+        update.put(Property.ID, objectId);
 
         // check mandatory properties
         Type type = repository.getType(typeId);
         for (PropertyDefinition pd : type.getPropertyDefinitions()) {
-            String name = pd.getName();
-            if (Property.ID.equals(name)) {
+            String id = pd.getId();
+            if (Property.ID.equals(id)) {
                 // ignore, set later
                 continue;
             }
-            if (pd.isRequired() && !data.containsKey(name)) {
-                if (Property.NAME.equals(name)) {
-                    update.put(Property.NAME, id);
-                } else if (Property.CREATED_BY.equals(name)) {
+            if (pd.isRequired() && !data.containsKey(id)) {
+                if (Property.NAME.equals(id)) {
+                    update.put(Property.NAME, objectId);
+                } else if (Property.CREATED_BY.equals(id)) {
                     update.put(Property.CREATED_BY, "system"); // TODO
-                } else if (Property.CREATION_DATE.equals(name)) {
+                } else if (Property.CREATION_DATE.equals(id)) {
                     update.put(Property.CREATION_DATE,
                             GregorianCalendar.getInstance());
-                } else if (Property.LAST_MODIFIED_BY.equals(name)) {
+                } else if (Property.LAST_MODIFIED_BY.equals(id)) {
                     update.put(Property.LAST_MODIFIED_BY, "system"); // TODO
-                } else if (Property.LAST_MODIFICATION_DATE.equals(name)) {
+                } else if (Property.LAST_MODIFICATION_DATE.equals(id)) {
                     update.put(Property.LAST_MODIFICATION_DATE,
                             GregorianCalendar.getInstance());
-                } else if (Property.IS_LATEST_VERSION.equals(name)) {
+                } else if (Property.IS_LATEST_VERSION.equals(id)) {
                     update.put(Property.IS_LATEST_VERSION, Boolean.TRUE);
-                } else if (Property.IS_LATEST_MAJOR_VERSION.equals(name)) {
+                } else if (Property.IS_LATEST_MAJOR_VERSION.equals(id)) {
                     update.put(Property.IS_LATEST_MAJOR_VERSION, Boolean.TRUE);
-                } else if (Property.IS_VERSION_SERIES_CHECKED_OUT.equals(name)) {
+                } else if (Property.IS_VERSION_SERIES_CHECKED_OUT.equals(id)) {
                     update.put(Property.IS_VERSION_SERIES_CHECKED_OUT,
                             Boolean.FALSE);
-                } else if (Property.VERSION_SERIES_ID.equals(name)) {
-                    update.put(Property.VERSION_SERIES_ID, id);
-                } else if (Property.VERSION_LABEL.equals(name)) {
+                } else if (Property.VERSION_SERIES_ID.equals(id)) {
+                    update.put(Property.VERSION_SERIES_ID, objectId);
+                } else if (Property.VERSION_LABEL.equals(id)) {
                     update.put(Property.VERSION_LABEL, "1.0");
                 } else {
-                    throw new RuntimeException("Missing property: " + name); // TODO
+                    throw new RuntimeException("Missing property: " + id); // TODO
                 }
             }
         }
@@ -355,13 +355,13 @@ public class SimpleConnection implements Connection, SPI {
         }
 
         // properties
-        repository.datas.put(id, data); // TODO clone data?
+        repository.datas.put(objectId, data); // TODO clone data?
 
         // parents/children
         String parentId = (String) data.get(Property.PARENT_ID);
         if (type.getBaseType() == BaseType.FOLDER) {
             // new folder, empty set of children
-            repository.children.put(id, repository.newSet());
+            repository.children.put(objectId, repository.newSet());
         } else {
             // only folders have this property
             data.remove(Property.PARENT_ID);
@@ -371,9 +371,9 @@ public class SimpleConnection implements Connection, SPI {
             // pointer to parent
             Set<String> parents = repository.newSet();
             parents.add(parentId);
-            repository.parents.put(id, parents);
+            repository.parents.put(objectId, parents);
             // new pointer to child
-            repository.children.get(parentId).add(id);
+            repository.children.get(parentId).add(objectId);
         }
     }
 

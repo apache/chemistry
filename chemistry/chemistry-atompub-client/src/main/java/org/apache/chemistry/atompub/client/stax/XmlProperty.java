@@ -44,7 +44,7 @@ public class XmlProperty implements Property {
     /**
      * The internal state can be:
      * <ol>
-     * <li>if def is null, then value hold the property name,
+     * <li>if def is null, then value hold the property id,
      * <li>if def is not null, then value is either {@link NULL} if not yet
      * computed from xmlValue, or it holds the actual Java value.
      * </ol>
@@ -56,17 +56,17 @@ public class XmlProperty implements Property {
      */
     private Object xmlValue;
 
-    public XmlProperty(String name) {
-        value = name;
+    public XmlProperty(String id) {
+        value = id;
     }
 
-    public XmlProperty(String name, String xmlValue) {
-        value = name;
+    public XmlProperty(String id, String xmlValue) {
+        value = id;
         this.xmlValue = xmlValue;
     }
 
-    public XmlProperty(String name, List<String> xmlValue) {
-        value = name;
+    public XmlProperty(String id, List<String> xmlValue) {
+        value = id;
         this.xmlValue = xmlValue;
     }
 
@@ -82,10 +82,10 @@ public class XmlProperty implements Property {
     }
 
     /**
-     * Gets the property name.
+     * Gets the property ID.
      */
-    public String getName() {
-        return def == null ? (String) value : def.getName();
+    public String getId() {
+        return def == null ? (String) value : def.getId();
     }
 
     /**
@@ -187,7 +187,7 @@ public class XmlProperty implements Property {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + '(' + getName() + "="
+        return this.getClass().getSimpleName() + '(' + getId() + "="
                 + (xmlValue == null ? value : xmlValue) + ')';
     }
 
