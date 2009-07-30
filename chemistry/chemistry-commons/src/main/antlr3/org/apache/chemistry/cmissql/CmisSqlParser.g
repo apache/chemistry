@@ -81,8 +81,8 @@ multi_valued_column_reference:
     ;
 
 string_value_function:
-    ( f=UPPER | f=LOWER ) LPAR column_reference RPAR
-      -> ^(FUNC $f column_reference)
+    ID LPAR column_reference RPAR
+      -> ^(FUNC ID column_reference)
     ;
 
 numeric_value_function:

@@ -96,6 +96,7 @@ predicate:
 "foo IS NOT NULL" -> (UN_OP IS_NOT_NULL (COL foo))
 "1 = ANY foo" -> (BIN_OP_ANY = 1 (COL foo))
 "LOWER(foo) = 'bar'" -> (BIN_OP = (FUNC LOWER (COL foo)) 'bar')
+"quux(foo) = 'bar'" -> (BIN_OP = (FUNC quux (COL foo)) 'bar')
 
 folder_predicate:
 "IN_FOLDER(foo,'ID123')" -> (FUNC IN_FOLDER foo 'ID123')
