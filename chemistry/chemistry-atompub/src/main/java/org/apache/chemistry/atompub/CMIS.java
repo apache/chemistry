@@ -87,8 +87,6 @@ public class CMIS {
 
     public static final QName REPOSITORY_SPECIFIC_INFORMATION = CMISName("repositorySpecificInformation");
 
-    public static final QName COLLECTION_TYPE = CMISName("collectionType");
-
     public static final QName DOCUMENT_TYPE = CMISName("documentType");
 
     public static final QName FOLDER_TYPE = CMISName("folderType");
@@ -210,6 +208,8 @@ public class CMIS {
     /*
      * ----- CMIS REST Atom Qualified Names-----
      */
+
+    public static final QName RESTATOM_COLLECTION_TYPE = CMISRAName("collectionType");
 
     public static final QName RESTATOM_URI_TEMPLATE = CMISRAName("uritemplate");
 

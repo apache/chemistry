@@ -68,7 +68,7 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                     QName name = reader.getName();
                     if (name.equals(Atom.APP_COLLECTION)) {
                         String href = reader.getAttributeValue("href");
-                        String type = reader.getAttributeValue("collectionType"); // XXX
+                        String type = reader.getAttributeValue(CMIS.RESTATOM_COLLECTION_TYPE.getLocalPart());
                         addCollection(repo, href, type);
                     } else if (name.equals(CMIS.REPOSITORY_INFO)) {
                         RepositoryInfo info = readRepositoryInfo(context,

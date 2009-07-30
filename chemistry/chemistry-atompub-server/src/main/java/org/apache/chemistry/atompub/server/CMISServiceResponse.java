@@ -65,7 +65,7 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
             RepositoryInfoWriter.write(sw, provider);
             for (CollectionInfo ci : wi.getCollections(request)) {
                 sw.startCollection(ci.getHref(request));
-                sw.writeAttribute(CMIS.COLLECTION_TYPE,
+                sw.writeAttribute(CMIS.RESTATOM_COLLECTION_TYPE,
                         ((CMISCollection<?>) ci).getType());
                 sw.writeTitle(ci.getTitle(request));
                 sw.writeAccepts(ci.getAccepts(request));
