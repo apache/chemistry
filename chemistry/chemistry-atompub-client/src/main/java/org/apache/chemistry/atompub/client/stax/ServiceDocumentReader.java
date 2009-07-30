@@ -26,14 +26,13 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.abdera.model.Element;
-import org.apache.abdera.model.Workspace;
 import org.apache.chemistry.JoinCapability;
 import org.apache.chemistry.QueryCapability;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.atompub.Atom;
 import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.URITemplate;
 import org.apache.chemistry.atompub.client.APPRepository;
 import org.apache.chemistry.atompub.client.APPRepositoryCapabilities;
 import org.apache.chemistry.atompub.client.APPRepositoryInfo;
@@ -48,6 +47,8 @@ public abstract class ServiceDocumentReader<T extends Repository> {
     protected abstract T createRepository(ReadContext ctx);
 
     protected abstract void addCollection(T repo, String href, String type);
+
+    protected abstract void addURITemplate(T repo, URITemplate uriTemplate);
 
     protected abstract void setInfo(T repo, RepositoryInfo info);
 
@@ -67,12 +68,16 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                     QName name = reader.getName();
                     if (name.equals(Atom.APP_COLLECTION)) {
                         String href = reader.getAttributeValue("href");
-                        String type = reader.getAttributeValue("collectionType");
+                        String type = reader.getAttributeValue("collectionType"); // XXX
                         addCollection(repo, href, type);
                     } else if (name.equals(CMIS.REPOSITORY_INFO)) {
                         RepositoryInfo info = readRepositoryInfo(context,
                                 reader);
                         setInfo(repo, info);
+                    } else if (name.equals(CMIS.RESTATOM_URI_TEMPLATE)) {
+                        URITemplate uriTemplate = readURITemplate(context,
+                                reader);
+                        addURITemplate(repo, uriTemplate);
                     }
                 }
                 repos.add(repo);
@@ -126,43 +131,23 @@ public abstract class ServiceDocumentReader<T extends Repository> {
         return new APPRepositoryInfo(caps, map);
     }
 
-    protected RepositoryInfo getRepositoryInfo(Workspace ws) {
-        Element repoInfo = ws.getFirstChild(CMIS.REPOSITORY_INFO);
-        APPRepositoryCapabilities caps = null;
-        Map<String, Object> map = new HashMap<String, Object>();
-        for (Element el : repoInfo.getElements()) {
-            String localName = el.getQName().getLocalPart();
-            if (localName.equals(CMIS.CAPABILITIES.getLocalPart())) {
-                caps = new APPRepositoryCapabilities();
-                for (Element el2 : el.getElements()) {
-                    localName = el2.getQName().getLocalPart();
-                    if (localName.equals(CMIS.CAPABILITY_ALL_VERSIONS_SEARCHABLE.getLocalPart())) {
-                        caps.setAllVersionsSearchable(Boolean.parseBoolean(el2.getText()));
-                    } else if (localName.equals(CMIS.CAPABILITY_MULTIFILING.getLocalPart())) {
-                        caps.setHasMultifiling(Boolean.parseBoolean(el2.getText()));
-                    } else if (localName.equals(CMIS.CAPABILITY_PWC_SEARCHABLE.getLocalPart())) {
-                        caps.setPWCSearchable(Boolean.parseBoolean(el2.getText()));
-                    } else if (localName.equals(CMIS.CAPABILITY_PWC_UPDATEABLE.getLocalPart())) {
-                        caps.setPWCUpdatable(Boolean.parseBoolean(el2.getText()));
-                    } else if (localName.equals(CMIS.CAPABILITY_UNFILING.getLocalPart())) {
-                        caps.setHasUnfiling(Boolean.parseBoolean(el2.getText()));
-                    } else if (localName.equals(CMIS.CAPABILITY_VERSION_SPECIFIC_FILING.getLocalPart())) {
-                        caps.setHasVersionSpecificFiling(Boolean.parseBoolean(el2.getText()));
-                    } else if (localName.equals(CMIS.CAPABILITY_QUERY.getLocalPart())) {
-                        caps.setQueryCapability(QueryCapability.get(
-                                el2.getText(), QueryCapability.NONE));
-                    } else if (localName.equals(CMIS.CAPABILITY_JOIN.getLocalPart())) {
-                        caps.setJoinCapability(JoinCapability.get(
-                                el2.getText(), JoinCapability.NONE));
-                    }
-                }
-            } else if (localName.equals("repositorySpecificInformation")) {
-                // TODO
-            } else {
-                map.put(localName, el.getText());
+    protected URITemplate readURITemplate(ReadContext context, StaxReader reader)
+            throws XMLStreamException {
+        String type = null;
+        String mediaType = null;
+        String template = null;
+        ChildrenNavigator nav = reader.getChildren();
+        while (nav.next()) {
+            String localName = reader.getLocalName();
+            if (localName.equals(CMIS.RESTATOM_TYPE.getLocalPart())) {
+                type = reader.getElementText();
+            } else if (localName.equals(CMIS.RESTATOM_MEDIA_TYPE.getLocalPart())) {
+                mediaType = reader.getElementText();
+            } else if (localName.equals(CMIS.RESTATOM_TEMPLATE.getLocalPart())) {
+                template = reader.getElementText();
             }
         }
-        return new APPRepositoryInfo(caps, map);
+        return new URITemplate(type, mediaType, template);
     }
 
     protected void readRepositorySpecificInformation(ReadContext context,

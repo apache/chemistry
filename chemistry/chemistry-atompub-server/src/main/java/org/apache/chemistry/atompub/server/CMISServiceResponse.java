@@ -30,6 +30,7 @@ import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.URITemplate;
 import org.w3c.dom.Document;
 
 /**
@@ -55,6 +56,8 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
         sw.startDocument();
         sw.startService();
         ((StaxStreamWriter) sw).writeNamespace(CMIS.CMIS_PREFIX, CMIS.CMIS_NS);
+        ((StaxStreamWriter) sw).writeNamespace(CMIS.CMIS_RESTATOM_PREFIX,
+                CMIS.CMIS_RESTATOM_NS);
         for (WorkspaceInfo wi : provider.getWorkspaceManager(request).getWorkspaces(
                 request)) {
             sw.startWorkspace();
@@ -68,6 +71,20 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
                 sw.writeAccepts(ci.getAccepts(request));
                 // no AtomPub categories
                 sw.endCollection();
+            }
+            // URI templates
+            for (URITemplate info : provider.getURITemplates(request)) {
+                sw.startElement(CMIS.RESTATOM_URI_TEMPLATE);
+                sw.startElement(CMIS.RESTATOM_TYPE);
+                sw.writeElementText(info.type);
+                sw.endElement();
+                sw.startElement(CMIS.RESTATOM_MEDIA_TYPE);
+                sw.writeElementText(info.mediaType);
+                sw.endElement();
+                sw.startElement(CMIS.RESTATOM_TEMPLATE);
+                sw.writeElementText(info.template);
+                sw.endElement();
+                sw.endElement();
             }
             sw.endWorkspace();
         }

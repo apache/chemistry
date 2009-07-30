@@ -22,16 +22,16 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
-import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.URITemplate;
 import org.apache.chemistry.atompub.client.connector.APPContentManager;
 import org.apache.chemistry.atompub.client.connector.Request;
 import org.apache.chemistry.atompub.client.connector.Response;
@@ -52,7 +52,7 @@ public class APPRepository implements Repository {
 
     protected Map<String, String> collections = new HashMap<String, String>();
 
-    protected Map<Class<?>, Object> singletons = new Hashtable<Class<?>, Object>();
+    protected Map<String, URITemplate> uriTemplates = new HashMap<String, URITemplate>();
 
     public APPRepository(APPContentManager cm) {
         this(cm, null);
@@ -100,6 +100,10 @@ public class APPRepository implements Repository {
         collections.put(type, href);
     }
 
+    public void addURITemplate(URITemplate uriTemplate) {
+        uriTemplates.put(uriTemplate.type, uriTemplate);
+    }
+
     public RepositoryInfo getInfo() {
         return info;
     }
@@ -129,6 +133,10 @@ public class APPRepository implements Repository {
 
     public String getCollectionHref(String type) {
         return collections.get(type);
+    }
+
+    public URITemplate getURITemplate(String type) {
+        return uriTemplates.get(type);
     }
 
     /** type API */

@@ -48,6 +48,7 @@ import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.atompub.Atom;
 import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.URITemplate;
 import org.apache.chemistry.atompub.client.connector.Connector;
 import org.apache.chemistry.atompub.client.connector.Request;
 import org.apache.chemistry.atompub.client.connector.Response;
@@ -299,24 +300,36 @@ public class APPConnection implements Connection, SPI {
 
     /*
      * TODO hardcoded Chemistry URL pattern here...
-     *
-     * Will use URI templates (or, failing that, search) in future versions.
      */
     protected APPObjectEntry getObjectEntry(ObjectId objectId) {
         if (objectId instanceof APPObjectEntry) {
             return ((APPObjectEntry) objectId);
         }
-        String href = repository.getCollectionHref(CMIS.COL_ROOT_CHILDREN);
-        if (href.matches(".*/children/[0-9a-f-]{36}")) {
-            href = href.substring(0, href.length() - "/children/".length() - 36);
+        String href;
+        URITemplate uriTemplate = repository.getURITemplate(CMIS.URITMPL_ENTRY_BY_ID);
+        if (uriTemplate != null) {
+            // use entry-by-id URI template
+            href = uriTemplate.template;
+            // TODO proper URI template syntax
+            href = href.replace("{id}", objectId.getId());
         } else {
-            if (href.matches(".*/children$")) {
-                href = href.substring(0, href.length() - "/children".length());
+            // TODO do a search (maybe 4 searches as base type unknown)
+
+            // XXX hardcoded Chemistry URL pattern
+            href = repository.getCollectionHref(CMIS.COL_ROOT_CHILDREN);
+            if (href.matches(".*/children/[0-9a-f-]{36}")) {
+                href = href.substring(0, href.length() - "/children/".length()
+                        - 36);
             } else {
-                throw new AssertionError(href);
+                if (href.matches(".*/children$")) {
+                    href = href.substring(0, href.length()
+                            - "/children".length());
+                } else {
+                    throw new AssertionError(href);
+                }
             }
+            href += "/object/" + objectId.getId();
         }
-        href += "/object/" + objectId.getId();
         Response resp = connector.get(new Request(href));
         if (!resp.isOk()) {
             throw new ContentManagerException(

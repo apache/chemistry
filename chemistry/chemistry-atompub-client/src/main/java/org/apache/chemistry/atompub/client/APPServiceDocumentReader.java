@@ -17,6 +17,7 @@
 package org.apache.chemistry.atompub.client;
 
 import org.apache.chemistry.RepositoryInfo;
+import org.apache.chemistry.atompub.URITemplate;
 import org.apache.chemistry.atompub.client.connector.APPContentManager;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.ServiceDocumentReader;
@@ -30,6 +31,11 @@ public class APPServiceDocumentReader extends
     @Override
     protected void addCollection(APPRepository repo, String href, String type) {
         repo.addCollection(type, href);
+    }
+
+    @Override
+    protected void addURITemplate(APPRepository repo, URITemplate uriTemplate) {
+        repo.addURITemplate(uriTemplate);
     }
 
     @Override

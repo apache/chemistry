@@ -31,8 +31,16 @@ public class CMIS {
 
     public static final String CMIS_PREFIX = "cmis";
 
+    public static final String CMIS_RESTATOM_NS = "http://docs.oasis-open.org/ns/cmis/restatom/200901";
+
+    public static final String CMIS_RESTATOM_PREFIX = "cmisra";
+
     public static QName CMISName(String localPart) {
         return new QName(CMIS_NS, localPart, CMIS_PREFIX);
+    }
+
+    public static QName CMISRAName(String localPart) {
+        return new QName(CMIS_RESTATOM_NS, localPart, CMIS_RESTATOM_PREFIX);
     }
 
     /*
@@ -200,6 +208,18 @@ public class CMIS {
     public static final QName INCLUDE_ALLOWABLE_ACTIONS = CMISName("includeAllowableActions");
 
     /*
+     * ----- CMIS REST Atom Qualified Names-----
+     */
+
+    public static final QName RESTATOM_URI_TEMPLATE = CMISRAName("uritemplate");
+
+    public static final QName RESTATOM_TEMPLATE = CMISRAName("template");
+
+    public static final QName RESTATOM_TYPE = CMISRAName("type");
+
+    public static final QName RESTATOM_MEDIA_TYPE = CMISRAName("mediatype");
+
+    /*
      * ----- CMIS Collection Types -----
      */
 
@@ -238,5 +258,15 @@ public class CMIS {
     public static final String LINK_TYPES_DESCENDANTS = "typesdescendants";
 
     public static final String LINK_ROOT_DESCENDANTS = "rootdescendants";
+
+    /*
+     * ----- CMIS URI Template Types -----
+     */
+
+    public static final String URITMPL_ENTRY_BY_ID = "entrybyid";
+
+    public static final String URITMPL_FOLDER_BY_PATH = "folderbypath";
+
+    public static final String URITMPL_QUERY = "query";
 
 }

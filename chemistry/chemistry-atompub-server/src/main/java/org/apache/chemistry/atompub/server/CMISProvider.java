@@ -16,8 +16,10 @@
  */
 package org.apache.chemistry.atompub.server;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.abdera.protocol.Resolver;
-import org.apache.abdera.protocol.server.CollectionInfo;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.Target;
@@ -31,7 +33,9 @@ import org.apache.abdera.protocol.server.impl.SimpleWorkspaceInfo;
 import org.apache.abdera.protocol.server.impl.TemplateTargetBuilder;
 import org.apache.abdera.util.Constants;
 import org.apache.chemistry.Repository;
+import org.apache.chemistry.atompub.Atom;
 import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.URITemplate;
 
 /**
  * Abdera provider for the CMIS bindings used by Chemistry.
@@ -120,12 +124,11 @@ public class CMISProvider extends AbstractProvider {
         workspaceInfo.addCollection(new CMISCollectionForOther(
                 CMIS.COL_CHECKED_OUT, "checkedout", null, repository));
 
-        CollectionInfo ci;
-        ci = new CMISTypesCollection(CMIS.COL_TYPES_CHILDREN, repository);
-        workspaceInfo.addCollection(ci);
+        workspaceInfo.addCollection(new CMISTypesCollection(
+                CMIS.COL_TYPES_CHILDREN, repository));
 
-        ci = new CMISTypesCollection(CMIS.COL_TYPES_DESCENDANTS, repository);
-        workspaceInfo.addCollection(ci);
+        workspaceInfo.addCollection(new CMISTypesCollection(
+                CMIS.COL_TYPES_DESCENDANTS, repository));
 
         workspaceInfo.addCollection(new CMISQueryFeed(repository));
 
@@ -135,6 +138,26 @@ public class CMISProvider extends AbstractProvider {
 
     public Repository getRepository() {
         return repository;
+    }
+
+    public List<URITemplate> getURITemplates(RequestContext request) {
+        String base = request.getBaseUri().toString();
+        if (!base.endsWith("/")) {
+            base += '/';
+        }
+        List<URITemplate> list = new ArrayList<URITemplate>(3);
+        list.add(new URITemplate(CMIS.URITMPL_ENTRY_BY_ID, //
+                Atom.MEDIA_TYPE_ATOM_ENTRY, //
+                base + "object/{id}"));
+        if (false) { // TODO
+            list.add(new URITemplate(CMIS.URITMPL_FOLDER_BY_PATH, //
+                    Atom.MEDIA_TYPE_ATOM_ENTRY, //
+                    base + "objectpath/{path}"));
+            list.add(new URITemplate(CMIS.URITMPL_QUERY, //
+                    Atom.MEDIA_TYPE_ATOM_FEED, //
+                    base + "query?q={q}"));
+        }
+        return list;
     }
 
     @Override
