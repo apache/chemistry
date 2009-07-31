@@ -17,7 +17,6 @@
 package org.apache.chemistry;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.net.URI;
@@ -246,20 +245,13 @@ public interface CMISObject extends ObjectId {
     void setValues(Map<String, Serializable> values);
 
     /**
-     * Gets a byte stream for this document.
-     *
-     * @param renditionId the rendition ID, or {@code null} for the primary
-     *            stream
-     * @return the byte stream
-     */
-    InputStream getStream(String renditionId) throws IOException;
-
-    /**
      * Gets a content stream for this document.
      *
      * @param renditionId the rendition ID, or {@code null} for the primary
      *            stream
      * @return the content stream
+     *
+     * @throws IOException
      */
     ContentStream getContentStream(String renditionId) throws IOException;
 

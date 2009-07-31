@@ -16,7 +16,6 @@
  */
 package org.apache.chemistry.impl.simple;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -145,11 +144,6 @@ public class SimpleObject extends BaseObject {
             throw new IllegalArgumentException(id);
         }
         return new SimpleProperty(entry, id, propertyDefinition);
-    }
-
-    public InputStream getStream(String renditionId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
     }
 
     public ContentStream getContentStream(String renditionId) {

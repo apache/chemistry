@@ -17,7 +17,6 @@
 package org.apache.chemistry;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 
 /**
@@ -107,13 +106,6 @@ public interface Document extends CMISObject {
     /*
      * ----- data access -----
      */
-
-    /**
-     * Gets the primary byte stream for this document.
-     *
-     * @return the byte stream
-     */
-    InputStream getStream() throws IOException;
 
     /**
      * Gets the primary content stream for this document.

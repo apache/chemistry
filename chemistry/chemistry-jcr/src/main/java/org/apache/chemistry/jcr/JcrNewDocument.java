@@ -124,14 +124,6 @@ public class JcrNewDocument extends JcrDocument {
     }
 
     @Override
-    public InputStream getStream() throws IOException {
-        if (!saved) {
-            throw new UnsupportedOperationException();
-        }
-        return super.getStream();
-    }
-
-    @Override
     public void setContentStream(ContentStream contentStream)
             throws IOException {
 

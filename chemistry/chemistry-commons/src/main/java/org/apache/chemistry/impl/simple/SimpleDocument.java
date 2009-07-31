@@ -16,9 +16,7 @@
  */
 package org.apache.chemistry.impl.simple;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 
 import org.apache.chemistry.ContentStream;
@@ -64,14 +62,6 @@ public class SimpleDocument extends SimpleObject implements Document {
     public void deleteAllVersions() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
-    }
-
-    public InputStream getStream() {
-        byte[] contentBytes = getContentBytes();
-        if (contentBytes == null) {
-            return null;
-        }
-        return new ByteArrayInputStream(contentBytes);
     }
 
     public ContentStream getContentStream() {

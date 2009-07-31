@@ -71,23 +71,6 @@ public class JcrDocument extends JcrObjectEntry implements Document {
         return null;
     }
 
-    public InputStream getStream() throws IOException {
-        try {
-            Node content = node.getNode(JcrConstants.JCR_CONTENT);
-            javax.jcr.Property prop = content.getProperty(JcrConstants.JCR_DATA);
-            return prop.getStream();
-        } catch (RepositoryException e) {
-            String msg = "Unable to get stream.";
-            log.error(msg, e);
-        }
-        return null;
-    }
-
-    public InputStream getStream(String renditionId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     @Override
     public String getString(String id) {
         if (id.equals(Property.CONTENT_STREAM_MIME_TYPE)) {

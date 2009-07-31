@@ -121,20 +121,6 @@ public class APPDocument extends APPObject implements Document {
         }
     }
 
-    public InputStream getStream() throws IOException {
-        String href = entry.getLink(Atom.LINK_EDIT_MEDIA);
-        if (href == null) {
-            return null;
-        }
-        Response resp = entry.connection.connector.get(new Request(href));
-        if (!resp.isOk()) {
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
-        return resp.getStream();
-    }
-
     public void setContentStream(ContentStream contentStream)
             throws IOException {
         throw new UnsupportedOperationException("Not yet implemented");

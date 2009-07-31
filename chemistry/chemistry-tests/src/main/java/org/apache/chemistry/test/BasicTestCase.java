@@ -225,7 +225,6 @@ public abstract class BasicTestCase extends TestCase {
         }
         assertNotNull("doc 2 not found", other);
         assertNull(other.getContentStream());
-        assertNull(other.getStream());
 
         assertNotNull("dog not found", dog);
         ContentStream cs = dog.getContentStream();
@@ -233,7 +232,7 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals("dog.jpg", cs.getFilename());
         assertEquals("image/jpeg", cs.getMimeType());
         assertNotNull(cs.getStream());
-        InputStream in = dog.getStream();
+        InputStream in = dog.getContentStream().getStream();
         assertNotNull(in);
         byte[] array = IOUtils.toByteArray(in);
         assertTrue(array.length != 0);

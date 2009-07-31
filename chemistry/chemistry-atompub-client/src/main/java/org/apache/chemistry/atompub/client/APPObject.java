@@ -17,7 +17,6 @@
  */
 package org.apache.chemistry.atompub.client;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -89,11 +88,6 @@ public abstract class APPObject extends BaseObject {
     }
 
     public void unfile() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public InputStream getStream(String renditionId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
