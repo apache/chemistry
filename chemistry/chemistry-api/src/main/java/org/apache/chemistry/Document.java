@@ -109,21 +109,21 @@ public interface Document extends CMISObject {
      */
 
     /**
-     * Gets the byte stream for this document.
+     * Gets the primary byte stream for this document.
      *
      * @return the byte stream
      */
     InputStream getStream() throws IOException;
 
     /**
-     * Gets the content stream for this document.
+     * Gets the primary content stream for this document.
      *
      * @return the content stream
      */
     ContentStream getContentStream() throws IOException;
 
     /**
-     * Sets the content stream for this document.
+     * Sets the primary content stream for this document.
      *
      * @param contentStream
      * @throws IOException if the stream could not be read

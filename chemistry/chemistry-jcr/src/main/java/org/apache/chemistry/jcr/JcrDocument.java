@@ -42,7 +42,8 @@ public class JcrDocument extends JcrObjectEntry implements Document {
         super(node);
     }
 
-    protected JcrDocument() {}
+    protected JcrDocument() {
+    }
 
     public ContentStream getContentStream() {
         try {
@@ -53,6 +54,11 @@ public class JcrDocument extends JcrObjectEntry implements Document {
             log.error(msg, e);
         }
         return null;
+    }
+
+    public ContentStream getContentStream(String renditionId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     public Folder getParent() {
@@ -75,6 +81,11 @@ public class JcrDocument extends JcrObjectEntry implements Document {
             log.error(msg, e);
         }
         return null;
+    }
+
+    public InputStream getStream(String renditionId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     @Override

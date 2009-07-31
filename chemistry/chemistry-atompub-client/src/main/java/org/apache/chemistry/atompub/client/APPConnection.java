@@ -19,10 +19,10 @@
 package org.apache.chemistry.atompub.client;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -41,6 +41,7 @@ import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
+import org.apache.chemistry.Rendition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
@@ -393,13 +394,18 @@ public class APPConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
+    public List<Rendition> getRenditions(ObjectId object, String filter,
+            int maxItems, int skipCount) {
+        return Collections.emptyList();
+    }
+
     public boolean hasContentStream(ObjectId document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public InputStream getContentStream(ObjectId document, int offset,
-            int length) throws IOException {
+    public ContentStream getContentStream(ObjectId object, String renditionId)
+            throws IOException {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

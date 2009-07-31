@@ -17,12 +17,14 @@
  */
 package org.apache.chemistry.atompub.client;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
@@ -87,6 +89,16 @@ public abstract class APPObject extends BaseObject {
     }
 
     public void unfile() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public InputStream getStream(String renditionId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public ContentStream getContentStream(String renditionId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

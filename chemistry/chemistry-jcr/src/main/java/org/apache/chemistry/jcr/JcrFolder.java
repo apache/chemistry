@@ -16,6 +16,7 @@
  */
 package org.apache.chemistry.jcr;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +30,7 @@ import javax.jcr.RepositoryException;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectId;
@@ -137,4 +139,16 @@ public class JcrFolder extends JcrObjectEntry implements Folder {
     public BaseType getBaseType() {
         return BaseType.FOLDER;
     }
+
+    public InputStream getStream(String renditionId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public ContentStream getContentStream(String renditionId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+
 }

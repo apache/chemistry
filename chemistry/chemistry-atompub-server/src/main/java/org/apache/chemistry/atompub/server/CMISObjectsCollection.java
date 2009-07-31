@@ -309,7 +309,8 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         // TODO entry was fetched for mostly nothing...
         SPI spi = repository.getSPI(); // TODO XXX connection leak
         try {
-            return spi.getContentStream(object, 0, -1);
+            ContentStream contentStream = spi.getContentStream(object, null);
+            return contentStream == null ? null : contentStream.getStream();
         } catch (IOException e) {
             throw new ResponseContextException(500, e);
         }

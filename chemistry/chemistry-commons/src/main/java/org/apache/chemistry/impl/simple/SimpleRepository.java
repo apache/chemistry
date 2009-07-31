@@ -32,6 +32,7 @@ import org.apache.chemistry.JoinCapability;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.QueryCapability;
+import org.apache.chemistry.RenditionCapability;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.impl.base.BaseRepository;
 
@@ -171,6 +172,10 @@ public class SimpleRepository extends BaseRepository {
 
     public QueryCapability getQueryCapability() {
         return QueryCapability.BOTH_COMBINED;
+    }
+
+    public RenditionCapability getRenditionCapability() {
+        return RenditionCapability.NONE;
     }
 
 }

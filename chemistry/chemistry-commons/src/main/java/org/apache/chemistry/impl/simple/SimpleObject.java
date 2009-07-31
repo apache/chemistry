@@ -16,6 +16,7 @@
  */
 package org.apache.chemistry.impl.simple;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.Set;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
@@ -143,6 +145,16 @@ public class SimpleObject extends BaseObject {
             throw new IllegalArgumentException(id);
         }
         return new SimpleProperty(entry, id, propertyDefinition);
+    }
+
+    public InputStream getStream(String renditionId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public ContentStream getContentStream(String renditionId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     public void save() {

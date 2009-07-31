@@ -25,14 +25,14 @@ import java.io.InputStream;
 public interface ContentStream {
 
     /**
-     * The content stream length.
-     */
-    long getLength();
-
-    /**
      * The content stream MIME type.
      */
     String getMimeType();
+
+    /**
+     * The content stream length.
+     */
+    long getLength();
 
     /**
      * The content stream file name, or {@code null} if none is provided.

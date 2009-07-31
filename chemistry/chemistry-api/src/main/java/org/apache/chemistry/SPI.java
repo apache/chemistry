@@ -17,7 +17,6 @@
 package org.apache.chemistry;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -326,6 +325,26 @@ public interface SPI {
             boolean includeAllowableActions, boolean includeRelationships);
 
     /**
+     * Gets the list of associated renditions for an object.
+     * <p>
+     * A rendition filter can be included. It is either {@code "*"}, {@code
+     * "cmis:none"}, or a comma-separated list of either kinds of MIME types
+     * (which may have a subtype of {@code "*"}). The {@code null} value is
+     * equivalent to {@code "cmis:none"}.
+     *
+     * @param object the object
+     * @param filter a rendition filter, or {@code null} for none
+     * @param maxItems the maximum number of renditions to returned, or {@code
+     *            0} for a repository-specific default
+     * @param skipCount the skip count
+     * @return the list of renditions
+     *
+     * @throws UnsupportedOperationException if renditions are not supported
+     */
+    List<Rendition> getRenditions(ObjectId object, String filter, int maxItems,
+            int skipCount);
+
+    /**
      * Checks if the document has an associated content stream.
      * <p>
      * Note that the content stream may be present but still have length 0.
@@ -335,15 +354,18 @@ public interface SPI {
     boolean hasContentStream(ObjectId document);
 
     /**
-     * Gets the content stream for a document.
+     * Gets a content stream for a document or folder.
+     * <p>
+     * If a rendition ID is provided, the content stream returned will be for
+     * the given rendition.
      *
-     * @param document the document
-     * @param offset the offset into the content stream
-     * @param length the length of stream to return, or {@code -1} for all
-     * @return the specified part of the content stream
+     * @param object the document or folder
+     * @param renditionId the rendition ID, or {@code null}
+     * @return the content stream
+     *
      * @throws IOException
      */
-    InputStream getContentStream(ObjectId document, int offset, int length)
+    ContentStream getContentStream(ObjectId object, String renditionId)
             throws IOException;
 
     /**

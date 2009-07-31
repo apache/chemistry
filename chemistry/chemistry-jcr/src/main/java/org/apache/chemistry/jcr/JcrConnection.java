@@ -17,7 +17,6 @@
 package org.apache.chemistry.jcr;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,6 +42,7 @@ import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
+import org.apache.chemistry.Rendition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Unfiling;
@@ -57,6 +57,7 @@ public class JcrConnection implements Connection, SPI {
     private static final Log log = LogFactory.getLog(JcrConnection.class);
 
     private final Session session;
+
     private final JcrRepository repository;
 
     public JcrConnection(Session session, JcrRepository repository) {
@@ -70,7 +71,8 @@ public class JcrConnection implements Connection, SPI {
 
     public CMISObject getObject(ObjectId objectId) {
         try {
-            String relPath = JcrObjectEntry.getPath(objectId.getId()).substring(1);
+            String relPath = JcrObjectEntry.getPath(objectId.getId()).substring(
+                    1);
             if (relPath.equals("")) {
                 return getRootFolder();
             } else {
@@ -145,7 +147,8 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    //---------------------------------------------------------------------- SPI
+    // ----------------------------------------------------------------------
+    // SPI
 
     public void addObjectToFolder(ObjectId objectId, ObjectId folderId) {
         throw new UnsupportedOperationException();
@@ -160,8 +163,8 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public ObjectId checkIn(ObjectId documentId, boolean major,
-                          Map<String, Serializable> properties,
-                          ContentStream contentStream, String comment) {
+            Map<String, Serializable> properties, ContentStream contentStream,
+            String comment) {
         throw new UnsupportedOperationException();
     }
 
@@ -171,9 +174,8 @@ public class JcrConnection implements Connection, SPI {
 
     // TODO add IOException to throws clause
     public ObjectId createDocument(String typeId,
-                                 Map<String, Serializable> properties,
-                                 ObjectId folderId, ContentStream contentStream,
-                                 VersioningState versioningState) {
+            Map<String, Serializable> properties, ObjectId folderId,
+            ContentStream contentStream, VersioningState versioningState) {
 
         try {
             JcrFolder folder = (JcrFolder) getObject(folderId);
@@ -194,20 +196,18 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public ObjectId createFolder(String typeId,
-                               Map<String, Serializable> properties,
-                               ObjectId folderId) {
+            Map<String, Serializable> properties, ObjectId folderId) {
         throw new UnsupportedOperationException();
     }
 
     public ObjectId createPolicy(String typeId,
-                               Map<String, Serializable> properties,
-                               ObjectId folderId) {
+            Map<String, Serializable> properties, ObjectId folderId) {
         throw new UnsupportedOperationException();
     }
 
     public ObjectId createRelationship(String typeId,
-                                     Map<String, Serializable> properties,
-                                     ObjectId sourceId, ObjectId targetId) {
+            Map<String, Serializable> properties, ObjectId sourceId,
+            ObjectId targetId) {
         throw new UnsupportedOperationException();
     }
 
@@ -225,35 +225,30 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public Collection<ObjectEntry> getAllVersions(String versionSeriesId,
-                                                  String filter) {
+            String filter) {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<String> getAllowableActions(ObjectId objectId, String asUser) {
+    public Collection<String> getAllowableActions(ObjectId objectId,
+            String asUser) {
         throw new UnsupportedOperationException();
     }
 
     public Collection<ObjectEntry> getAppliedPolicies(ObjectId objectId,
-                                                      String filter) {
+            String filter) {
         throw new UnsupportedOperationException();
     }
 
     public Collection<ObjectEntry> getCheckedoutDocuments(ObjectId folderId,
-                                                          String filter,
-                                                          boolean includeAllowableActions,
-                                                          boolean includeRelationships,
-                                                          int maxItems,
-                                                          int skipCount,
-                                                          boolean[] hasMoreItems) {
+            String filter, boolean includeAllowableActions,
+            boolean includeRelationships, int maxItems, int skipCount,
+            boolean[] hasMoreItems) {
         throw new UnsupportedOperationException();
     }
 
-    public List<ObjectEntry> getChildren(ObjectId folderId,
-                                         String filter,
-                                         boolean includeAllowableActions,
-                                         boolean includeRelationships,
-                                         int maxItems, int skipCount,
-                                         String orderBy, boolean[] hasMoreItems) {
+    public List<ObjectEntry> getChildren(ObjectId folderId, String filter,
+            boolean includeAllowableActions, boolean includeRelationships,
+            int maxItems, int skipCount, String orderBy, boolean[] hasMoreItems) {
 
         try {
             if (maxItems == 0) {
@@ -261,7 +256,8 @@ public class JcrConnection implements Connection, SPI {
             }
 
             Node node = session.getRootNode();
-            String relPath = JcrObjectEntry.getPath(folderId.getId()).substring(1);
+            String relPath = JcrObjectEntry.getPath(folderId.getId()).substring(
+                    1);
             if (!relPath.equals("")) {
                 node = node.getNode(relPath);
             }
@@ -299,14 +295,15 @@ public class JcrConnection implements Connection, SPI {
         return this;
     }
 
-    public InputStream getContentStream(ObjectId documentId, int offset,
-                                        int length) throws IOException {
-
+    public ContentStream getContentStream(ObjectId documentId,
+            String renditionId) throws IOException {
+        // TODO renditionId
         try {
-            String relPath = JcrObjectEntry.getPath(documentId.getId()).substring(1);
+            String relPath = JcrObjectEntry.getPath(documentId.getId()).substring(
+                    1);
             Node node = session.getRootNode().getNode(relPath);
             JcrDocument document = new JcrDocument(node);
-            return document.getStream();
+            return document.getContentStream();
         } catch (RepositoryException e) {
             String msg = "Unable to get object: " + documentId;
             log.error(msg, e);
@@ -314,38 +311,33 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
-    public List<ObjectEntry> getDescendants(ObjectId folderId,
-                                            int depth, String filter,
-                                            boolean includeAllowableActions,
-                                            boolean includeRelationships,
-                                            String orderBy) {
+    public List<ObjectEntry> getDescendants(ObjectId folderId, int depth,
+            String filter, boolean includeAllowableActions,
+            boolean includeRelationships, String orderBy) {
         // TODO Auto-generated method stub
         return null;
     }
 
     public List<ObjectEntry> getFolderParent(ObjectId folderId, String filter,
-                                             boolean includeAllowableActions,
-                                             boolean includeRelationships,
-                                             boolean returnToRoot) {
+            boolean includeAllowableActions, boolean includeRelationships,
+            boolean returnToRoot) {
         // TODO Auto-generated method stub
         return null;
     }
 
     public Collection<ObjectEntry> getObjectParents(ObjectId objectId,
-                                                    String filter,
-                                                    boolean includeAllowableActions,
-                                                    boolean includeRelationships) {
+            String filter, boolean includeAllowableActions,
+            boolean includeRelationships) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public ObjectEntry getProperties(ObjectId objectId,
-                                     String filter,
-                                     boolean includeAllowableActions,
-                                     boolean includeRelationships) {
+    public ObjectEntry getProperties(ObjectId objectId, String filter,
+            boolean includeAllowableActions, boolean includeRelationships) {
 
         try {
-            String relPath = JcrObjectEntry.getPath(objectId.getId()).substring(1);
+            String relPath = JcrObjectEntry.getPath(objectId.getId()).substring(
+                    1);
             if (relPath.equals("")) {
                 return (ObjectEntry) getRootFolder();
             } else {
@@ -363,22 +355,23 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
-    public Map<String, Serializable> getPropertiesOfLatestVersion(String versionSeriesId,
-                                                                  boolean major,
-                                                                  String filter) {
+    public Map<String, Serializable> getPropertiesOfLatestVersion(
+            String versionSeriesId, boolean major, String filter) {
         // TODO Auto-generated method stub
         return null;
     }
 
     public List<ObjectEntry> getRelationships(ObjectId objectId,
-                                              RelationshipDirection direction,
-                                              String typeId,
-                                              boolean includeSubRelationshipTypes,
-                                              String filter,
-                                              String includeAllowableActions,
-                                              int maxItems, int skipCount,
-                                              boolean[] hasMoreItems) {
+            RelationshipDirection direction, String typeId,
+            boolean includeSubRelationshipTypes, String filter,
+            String includeAllowableActions, int maxItems, int skipCount,
+            boolean[] hasMoreItems) {
 
+        return Collections.emptyList();
+    }
+
+    public List<Rendition> getRenditions(ObjectId object, String filter,
+            int maxItems, int skipCount) {
         return Collections.emptyList();
     }
 
@@ -394,12 +387,9 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public Collection<ObjectEntry> query(String statement,
-                                         boolean searchAllVersions,
-                                         boolean includeAllowableActions,
-                                         boolean includeRelationships,
-                                         int maxItems, int skipCount,
-                                         boolean[] hasMoreItems) {
-
+            boolean searchAllVersions, boolean includeAllowableActions,
+            boolean includeRelationships, int maxItems, int skipCount,
+            boolean[] hasMoreItems) {
 
         try {
             QueryManager qm = session.getWorkspace().getQueryManager();
@@ -436,12 +426,12 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public ObjectId setContentStream(ObjectId documentId, boolean overwrite,
-                                 ContentStream contentStream) {
+            ContentStream contentStream) {
         throw new UnsupportedOperationException();
     }
 
     public ObjectId updateProperties(ObjectId objectId, String changeToken,
-                                   Map<String, Serializable> properties) {
+            Map<String, Serializable> properties) {
         throw new UnsupportedOperationException();
     }
 

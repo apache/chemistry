@@ -35,6 +35,7 @@ import org.apache.chemistry.Connection;
 import org.apache.chemistry.JoinCapability;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.QueryCapability;
+import org.apache.chemistry.RenditionCapability;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryEntry;
@@ -215,6 +216,10 @@ public class JcrRepository implements Repository, RepositoryInfo,
 
     public QueryCapability getQueryCapability() {
         return QueryCapability.BOTH_SEPARATE;
+    }
+
+    public RenditionCapability getRenditionCapability() {
+        return RenditionCapability.NONE;
     }
 
     public boolean hasMultifiling() {

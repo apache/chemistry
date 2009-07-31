@@ -18,6 +18,7 @@ package org.apache.chemistry.atompub.client;
 
 import org.apache.chemistry.JoinCapability;
 import org.apache.chemistry.QueryCapability;
+import org.apache.chemistry.RenditionCapability;
 import org.apache.chemistry.RepositoryCapabilities;
 
 /**
@@ -28,6 +29,8 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
     protected JoinCapability joinCapability;
 
     protected QueryCapability queryCapability;
+
+    protected RenditionCapability renditionCapability;
 
     protected boolean hasUnfiling;
 
@@ -47,6 +50,10 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
 
     public QueryCapability getQueryCapability() {
         return queryCapability;
+    }
+
+    public RenditionCapability getRenditionCapability() {
+        return renditionCapability;
     }
 
     public boolean hasMultifiling() {
@@ -104,4 +111,9 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
     public void setQueryCapability(QueryCapability queryCapability) {
         this.queryCapability = queryCapability;
     }
+
+    public void setRenditionCapability(RenditionCapability renditionCapability) {
+        this.renditionCapability = renditionCapability;
+    }
+
 }

@@ -18,7 +18,6 @@ package org.apache.chemistry.impl.simple;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,6 +50,7 @@ import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
+import org.apache.chemistry.Rendition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
@@ -440,23 +440,28 @@ public class SimpleConnection implements Connection, SPI {
         }
     }
 
+    public List<Rendition> getRenditions(ObjectId object, String filter,
+            int maxItems, int skipCount) {
+        return Collections.emptyList();
+    }
+
     public boolean hasContentStream(ObjectId document) {
         SimpleData data = repository.datas.get(document.getId());
         byte[] bytes = (byte[]) data.get(SimpleProperty.CONTENT_BYTES_KEY);
         return bytes != null;
     }
 
-    public InputStream getContentStream(ObjectId document, int offset,
-            int length) {
-        SimpleData data = repository.datas.get(document.getId());
+    public ContentStream getContentStream(ObjectId object, String renditionId) {
+        // TODO renditionId
+        SimpleData data = repository.datas.get(object.getId());
         byte[] bytes = (byte[]) data.get(SimpleProperty.CONTENT_BYTES_KEY);
         if (bytes == null) {
             return null;
         }
-        if (length == -1) {
-            length = bytes.length;
-        }
-        return new ByteArrayInputStream(bytes, offset, length);
+        // length is recomputed, no need to read it
+        String mimeType = (String) data.get(Property.CONTENT_STREAM_MIME_TYPE);
+        String filename = (String) data.get(Property.CONTENT_STREAM_FILENAME);
+        return new SimpleContentStream(bytes, mimeType, filename);
     }
 
     public ObjectId setContentStream(ObjectId document, boolean overwrite,

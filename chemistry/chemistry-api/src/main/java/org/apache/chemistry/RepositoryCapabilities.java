@@ -66,4 +66,9 @@ public interface RepositoryCapabilities {
      */
     JoinCapability getJoinCapability();
 
+    /**
+     * Support for renditions.
+     */
+    RenditionCapability getRenditionCapability();
+
 }
