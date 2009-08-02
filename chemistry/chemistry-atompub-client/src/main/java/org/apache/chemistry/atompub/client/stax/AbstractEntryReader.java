@@ -49,7 +49,9 @@ public abstract class AbstractEntryReader<T> implements EntryReader<T> {
         T object = createObject(ctx);
         ChildrenNavigator children = reader.getChildren();
         while (children.next()) {
-            if (reader.getNamespaceURI().equals(CMIS.CMIS_NS)) {
+            String nsuri = reader.getNamespaceURI();
+            if (nsuri.equals(CMIS.CMIS_NS)
+                    || nsuri.equals(CMIS.CMISRA_NS)) {
                 readCmisElement(ctx, reader, object);
             } else {
                 readEntryElement(ctx, reader, object);

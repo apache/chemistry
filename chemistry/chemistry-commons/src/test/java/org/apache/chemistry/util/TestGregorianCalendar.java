@@ -63,14 +63,21 @@ public class TestGregorianCalendar extends TestCase {
     }
 
     public void testFromAtomPub1() {
-        Calendar cal = GregorianCalendar.fromAtomPub("2009-07-14T12:00:00.123-06:30");
+        Calendar cal;
+        cal = GregorianCalendar.fromAtomPub("2009-07-14T12:00:00.123-06:30");
         assertEquals("GregorianCalendar(2009-07-14T12:00:00.123-06:30)",
                 cal.toString());
-    }
-
-    public void testFromAtomPub2() {
-        Calendar cal = GregorianCalendar.fromAtomPub("2009-07-14T12:00:00Z");
+        cal = GregorianCalendar.fromAtomPub("2009-07-14T12:00:00Z");
         assertEquals("GregorianCalendar(2009-07-14T12:00:00.000Z)",
+                cal.toString());
+        cal = GregorianCalendar.fromAtomPub("2009-07-14T12:00:00.5Z");
+        assertEquals("GregorianCalendar(2009-07-14T12:00:00.500Z)",
+                cal.toString());
+        cal = GregorianCalendar.fromAtomPub("2009-07-14T12:00:00.44Z");
+        assertEquals("GregorianCalendar(2009-07-14T12:00:00.440Z)",
+                cal.toString());
+        cal = GregorianCalendar.fromAtomPub("2009-07-14T12:00:00.333Z");
+        assertEquals("GregorianCalendar(2009-07-14T12:00:00.333Z)",
                 cal.toString());
     }
 

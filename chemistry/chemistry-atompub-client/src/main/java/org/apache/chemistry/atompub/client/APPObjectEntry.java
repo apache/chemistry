@@ -152,6 +152,22 @@ public class APPObjectEntry implements ObjectEntry {
         }
     }
 
+    protected void _setValue(String id, Serializable value) {
+        XmlProperty p = properties.get(id);
+        if (p != null) {
+            p._setValue(value);
+        } else {
+            PropertyDefinition pd = connection.getRepository().getType(
+                    getTypeId()).getPropertyDefinition(id);
+            if (pd == null) {
+                throw new IllegalArgumentException("No such property: " + id);
+            }
+            p = new XmlProperty(pd);
+            p._setValue(value);
+            properties.put(id, p);
+        }
+    }
+
     public void setValues(Map<String, Serializable> values) {
         for (Map.Entry<String, Serializable> entry : values.entrySet()) {
             setValue(entry.getKey(), entry.getValue());
@@ -186,7 +202,7 @@ public class APPObjectEntry implements ObjectEntry {
     }
 
     public void writeObjectTo(XMLWriter xw) throws IOException {
-        xw.element(CMIS.OBJECT);
+        xw.element(CMIS.RESTATOM_OBJECT);
         xw.start();
         xw.element(CMIS.PROPERTIES);
         xw.start();

@@ -37,6 +37,7 @@ import org.apache.abdera.protocol.server.impl.AbstractCollectionAdapter;
 import org.apache.abdera.protocol.server.servlet.ServletRequestContext;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.atompub.Atom;
+import org.apache.chemistry.atompub.CMIS;
 import org.apache.chemistry.atompub.server.CMISProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -182,7 +183,7 @@ public class AbderaResource {
     }
 
     @POST
-    @Consumes("application/cmisquery+xml")
+    @Consumes(CMIS.MEDIA_TYPE_CMIS_QUERY)
     @Produces(Atom.MEDIA_TYPE_ATOM_FEED)
     @Path("query")
     public Response doPostQuery() {

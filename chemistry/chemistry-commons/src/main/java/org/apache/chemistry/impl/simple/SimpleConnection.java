@@ -153,6 +153,33 @@ public class SimpleConnection implements Connection, SPI {
      */
 
     /**
+     * Accumulates the descendant folders into a list recursively.
+     */
+    protected void accumulateFolders(ObjectId folder, int depth, String filter,
+            boolean includeAllowableActions, List<ObjectEntry> list) {
+        List<ObjectEntry> children = getChildren(folder, filter,
+                includeAllowableActions, false, Integer.MAX_VALUE, 0, null,
+                new boolean[1]);
+        for (ObjectEntry child : children) {
+            if (child.getBaseType() != BaseType.FOLDER) {
+                continue;
+            }
+            list.add(child);
+            if (depth > 1) {
+                accumulateFolders(child, depth - 1, filter,
+                        includeAllowableActions, list);
+            }
+        }
+    }
+
+    public List<ObjectEntry> getFolderTree(ObjectId folder, int depth,
+            String filter, boolean includeAllowableActions) {
+        List<ObjectEntry> list = new ArrayList<ObjectEntry>();
+        accumulateFolders(folder, depth, filter, includeAllowableActions, list);
+        return list;
+    }
+
+    /**
      * Accumulates the descendants into a list recursively.
      */
     protected void accumulateDescendants(ObjectId folder, int depth,
@@ -175,7 +202,6 @@ public class SimpleConnection implements Connection, SPI {
     public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, String orderBy) {
-        // TODO includeRelationship, includeAllowableActions, orderBy
         List<ObjectEntry> list = new ArrayList<ObjectEntry>();
         accumulateDescendants(folder, depth, filter, includeAllowableActions,
                 includeRelationships, orderBy, list);
@@ -373,12 +399,12 @@ public class SimpleConnection implements Connection, SPI {
     public ObjectId createDocument(String typeId,
             Map<String, Serializable> properties, ObjectId folder,
             ContentStream contentStream, VersioningState versioningState) {
+        // TODO contentStream, versioningState
         Type type = repository.getType(typeId);
-        BaseType baseType = type.getBaseType();
-        if (type == null || baseType != BaseType.DOCUMENT) {
+        if (type == null || type.getBaseType() != BaseType.DOCUMENT) {
             throw new IllegalArgumentException(typeId);
         }
-        SimpleData data = new SimpleData(typeId, baseType);
+        SimpleData data = new SimpleData(typeId, type.getBaseType());
         data.putAll(properties);
         if (folder != null) {
             data.put(Property.PARENT_ID, folder.getId());
@@ -389,8 +415,17 @@ public class SimpleConnection implements Connection, SPI {
 
     public ObjectId createFolder(String typeId,
             Map<String, Serializable> properties, ObjectId folder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        Type type = repository.getType(typeId);
+        if (type == null || type.getBaseType() != BaseType.FOLDER) {
+            throw new IllegalArgumentException(typeId);
+        }
+        SimpleData data = new SimpleData(typeId, type.getBaseType());
+        data.putAll(properties);
+        if (folder != null) {
+            data.put(Property.PARENT_ID, folder.getId());
+        }
+        saveData(data, typeId);
+        return new SimpleObjectId((String) data.get(Property.ID));
     }
 
     public ObjectId createRelationship(String typeId,

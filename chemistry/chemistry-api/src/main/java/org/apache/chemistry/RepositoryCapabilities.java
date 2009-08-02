@@ -57,6 +57,12 @@ public interface RepositoryCapabilities {
     boolean isAllVersionsSearchable();
 
     /**
+     * Ability to enumerate the descendants of a folder via
+     * {@link SPI#getDescendants} and {@link SPI#getFolderTree}.
+     */
+    boolean hasGetDescendants();
+
+    /**
      * Support for query on full-text or metadata.
      */
     QueryCapability getQueryCapability();

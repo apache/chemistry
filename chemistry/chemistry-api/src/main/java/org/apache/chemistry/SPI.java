@@ -66,6 +66,17 @@ public interface SPI {
      */
 
     /**
+     * Gets the set of descendant folders contained in the specified folder.
+     *
+     * @param folder the folder
+     * @param depth the depth, or {@code -1} for all levels
+     * @param filter the properties filter, or {@code null} for all properties
+     * @param includeAllowableActions {@code true} to include allowable actions
+     */
+    List<ObjectEntry> getFolderTree(ObjectId folder, int depth, String filter,
+            boolean includeAllowableActions);
+
+    /**
      * Gets the descendants of a folder.
      * <p>
      * Returns the descendant objects contained at one or more levels in the

@@ -238,6 +238,10 @@ public class JcrRepository implements Repository, RepositoryInfo,
         return false;
     }
 
+    public boolean hasGetDescendants() {
+        return false;
+    }
+
     public boolean isPWCSearchable() {
         return false;
     }

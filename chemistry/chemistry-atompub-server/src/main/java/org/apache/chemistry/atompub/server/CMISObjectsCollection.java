@@ -29,6 +29,7 @@ import org.apache.abdera.factory.Factory;
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.AtomDate;
 import org.apache.abdera.model.Content;
+import org.apache.abdera.model.DateTime;
 import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
@@ -48,6 +49,7 @@ import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Property;
+import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
@@ -56,6 +58,7 @@ import org.apache.chemistry.atompub.Atom;
 import org.apache.chemistry.atompub.CMIS;
 import org.apache.chemistry.atompub.abdera.ObjectElement;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
+import org.apache.chemistry.util.GregorianCalendar;
 
 /**
  * CMIS Collection for object entries.
@@ -81,7 +84,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         feed.addAuthor(getAuthor(request));
         feed.setUpdated(new Date()); // XXX
 
-        feed.addLink(getDownLink(id, request), "self");
+        feed.addLink(getChildrenLink(id, request), "self");
         feed.addLink(getObjectLink(id, request), CMIS.LINK_SOURCE);
 
         // RFC 5005 paging
@@ -148,14 +151,24 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         entry.addLink(link, "edit");
         // alternate is mandated by Atom when there is no atom:content
         entry.addLink(link, "alternate");
+
         // CMIS links
         String oid = object.getId();
-        // TODO for folder's up, link to an entry and not a feed
-        entry.addLink(getParentsLink(oid, request), Atom.LINK_UP,
-                Atom.MEDIA_TYPE_ATOM_FEED, null, null, 0);
-        if (object.getBaseType() == BaseType.FOLDER) {
-            entry.addLink(getDownLink(oid, request), Atom.LINK_DOWN,
-                    Atom.MEDIA_TYPE_ATOM_FEED, null, null, 0);
+        BaseType baseType = object.getBaseType();
+        if (baseType == BaseType.FOLDER) {
+            String pid = (String) object.getValue(Property.PARENT_ID);
+            if (pid != null) {
+                entry.addLink(getObjectLink(pid, request), Atom.LINK_UP,
+                        Atom.MEDIA_TYPE_ATOM_ENTRY, null, null, -1);
+            }
+            // TODO don't add links if no children/decendants
+            entry.addLink(getChildrenLink(oid, request), Atom.LINK_DOWN,
+                    Atom.MEDIA_TYPE_ATOM_FEED, null, null, -1);
+            // TODO children descendants and folder tree
+        } else if (baseType == BaseType.DOCUMENT) {
+            // TODO don't add link if no parents
+            entry.addLink(getParentsLink(oid, request), Atom.LINK_UP,
+                    Atom.MEDIA_TYPE_ATOM_FEED, null, null, -1);
         }
         // entry.addLink("XXX", CMIS.LINK_ALLOWABLE_ACTIONS);
         // entry.addLink("XXX", CMIS.LINK_RELATIONSHIPS);
@@ -182,10 +195,11 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         } catch (ResponseContextException e) {
             return createErrorResponse(e);
         }
-        if (entry == null || !ProviderHelper.isValidEntry(entry)) {
+        if (entry == null /* || !ProviderHelper.isValidEntry(entry) TODO XXX TCK */) {
             return new EmptyResponseContext(400);
         }
-        Element obb = entry.getFirstChild(CMIS.OBJECT);
+
+        Element obb = entry.getFirstChild(CMIS.RESTATOM_OBJECT);
         ObjectElement objectElement = new ObjectElement(obb, repository);
         Map<String, Serializable> properties;
         try {
@@ -193,14 +207,56 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         } catch (Exception e) { // TODO proper exception
             return createErrorResponse(new ResponseContextException(500, e));
         }
-        ContentStream contentStream = null;
-        VersioningState versioningState = null;
+
         String typeId = (String) properties.get(Property.TYPE_ID);
-        // not null, already checked in getProperties
+        Type type = repository.getType(typeId);
+        if (type == null) {
+            return createErrorResponse(new ResponseContextException(
+                    "Unknown type: " + typeId, 500));
+        }
+
+        // set Atom-defined properties into entry
+        // TODO hardcoded title properties...
+        PropertyDefinition pdt = type.getPropertyDefinition("title");
+        if (pdt == null) {
+            pdt = type.getPropertyDefinition("dc:title");
+        }
+        if (pdt == null) {
+            pdt = type.getPropertyDefinition(Property.NAME);
+        }
+        if (pdt != null) {
+            String title = entry.getTitle(); // Atom MUST
+            properties.put(pdt.getId(), title);
+        }
+        // TODO summary
+        // parse the date ourselves, as Abdera's AtomDate loses the timezone
+        Calendar updated;
+        DateTime updatedElement = entry.getUpdatedElement(); // Atom MUST
+        if (updatedElement == null) { // TODO XXX TCK
+            updated = null;
+        } else {
+            updated = GregorianCalendar.fromAtomPub(updatedElement.getText());
+            properties.put(Property.LAST_MODIFICATION_DATE, updated);
+        }
 
         SPI spi = repository.getSPI(); // TODO XXX connection leak
-        ObjectId objectId = spi.createDocument(typeId, properties,
-                new SimpleObjectId(id), contentStream, versioningState);
+        ObjectId folderId = new SimpleObjectId(id);
+        ObjectId objectId;
+        switch (type.getBaseType()) {
+        case DOCUMENT:
+            ContentStream contentStream = null; // TODO
+            VersioningState versioningState = null; // TODO
+            objectId = spi.createDocument(typeId, properties, folderId,
+                    contentStream, versioningState);
+            break;
+        case FOLDER:
+            objectId = spi.createFolder(typeId, properties, folderId);
+            break;
+        default:
+            throw new UnsupportedOperationException("not implemented: "
+                    + type.getBaseType());
+        }
+
         ObjectEntry object = spi.getProperties(objectId, null, false, false);
 
         // prepare the updated entry to return in the response
@@ -264,7 +320,8 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             throws ResponseContextException {
         String mediaLink = getMediaLink(object.getId(), request);
         entry.setContent(new IRI(mediaLink), getContentType(object));
-        entry.addLink(mediaLink, Atom.LINK_EDIT_MEDIA);
+        entry.addLink(mediaLink, Atom.LINK_EDIT_MEDIA, getContentType(object),
+                null, null, getContentSize(object));
         return mediaLink;
     }
 

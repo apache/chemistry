@@ -168,6 +168,10 @@ public class XmlProperty implements Property {
         this.value = value;
     }
 
+    public void _setValue(Serializable value) {
+        this.value = value;
+    }
+
     public Object getXmlValue() {
         return xmlValue;
     }

@@ -166,6 +166,10 @@ public class SimpleRepository extends BaseRepository {
         return false;
     }
 
+    public boolean hasGetDescendants() {
+        return true;
+    }
+
     public JoinCapability getJoinCapability() {
         return JoinCapability.NONE;
     }

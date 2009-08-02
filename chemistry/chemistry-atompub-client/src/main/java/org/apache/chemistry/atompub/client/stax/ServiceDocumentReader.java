@@ -70,7 +70,7 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                         String href = reader.getAttributeValue("href");
                         String type = reader.getAttributeValue(CMIS.RESTATOM_COLLECTION_TYPE.getLocalPart());
                         addCollection(repo, href, type);
-                    } else if (name.equals(CMIS.REPOSITORY_INFO)) {
+                    } else if (name.equals(CMIS.RESTATOM_REPOSITORY_INFO)) {
                         RepositoryInfo info = readRepositoryInfo(context,
                                 reader);
                         setInfo(repo, info);
@@ -104,6 +104,8 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                     localName = reader.getLocalName();
                     if (localName.equals(CMIS.CAPABILITY_ALL_VERSIONS_SEARCHABLE.getLocalPart())) {
                         caps.setAllVersionsSearchable(Boolean.parseBoolean(reader.getElementText()));
+                    } else if (localName.equals(CMIS.CAPABILITY_CAN_GET_DESCENDANTS.getLocalPart())) {
+                        caps.setHasGetDescendants(Boolean.parseBoolean(reader.getElementText()));
                     } else if (localName.equals(CMIS.CAPABILITY_MULTIFILING.getLocalPart())) {
                         caps.setHasMultifiling(Boolean.parseBoolean(reader.getElementText()));
                     } else if (localName.equals(CMIS.CAPABILITY_PWC_SEARCHABLE.getLocalPart())) {

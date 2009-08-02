@@ -27,27 +27,27 @@ public class CMIS {
     private CMIS() {
     }
 
-    public static final String CMIS_NS = "http://docs.oasis-open.org/ns/cmis/core/200901";
+    public static final String CMIS_NS_BASE = "http://docs.oasis-open.org/ns/cmis/";
+
+    public static final String CMIS_NS = CMIS_NS_BASE + "core/200901";
 
     public static final String CMIS_PREFIX = "cmis";
 
-    public static final String CMIS_RESTATOM_NS = "http://docs.oasis-open.org/ns/cmis/restatom/200901";
+    public static final String CMISRA_NS = CMIS_NS_BASE + "restatom/200901";
 
-    public static final String CMIS_RESTATOM_PREFIX = "cmisra";
+    public static final String CMISRA_PREFIX = "cmisra";
 
     public static QName CMISName(String localPart) {
         return new QName(CMIS_NS, localPart, CMIS_PREFIX);
     }
 
     public static QName CMISRAName(String localPart) {
-        return new QName(CMIS_RESTATOM_NS, localPart, CMIS_RESTATOM_PREFIX);
+        return new QName(CMISRA_NS, localPart, CMISRA_PREFIX);
     }
 
     /*
      * ----- XML Qualified Names -----
      */
-
-    public static final QName REPOSITORY_INFO = CMISName("repositoryInfo");
 
     public static final QName REPOSITORY_ID = CMISName("repositoryId");
 
@@ -78,6 +78,8 @@ public class CMIS {
     public static final QName CAPABILITY_PWC_SEARCHABLE = CMISName("capabilityPWCSearchable");
 
     public static final QName CAPABILITY_ALL_VERSIONS_SEARCHABLE = CMISName("capabilityAllVersionsSearchable");
+
+    public static final QName CAPABILITY_CAN_GET_DESCENDANTS = CMISName("capabilityGetDescendants");
 
     public static final QName CAPABILITY_QUERY = CMISName("capabilityQuery");
 
@@ -159,8 +161,6 @@ public class CMIS {
 
     public static final QName DEFAULT_VALUE = CMISName("defaultValue");
 
-    public static final QName OBJECT = CMISName("object");
-
     public static final QName PROPERTIES = CMISName("properties");
 
     public static final QName PROPERTY_STRING = CMISName("propertyString");
@@ -183,12 +183,6 @@ public class CMIS {
 
     public static final QName PROPERTY_XHTML = CMISName("propertyXhtml");
 
-    public static final QName PDID = CMISName("pdid");
-
-    public static final QName LOCALNAME = CMISName("localname");
-
-    public static final QName DISPLAYNAME = CMISName("displayname");
-
     public static final QName VALUE = CMISName("value");
 
     public static final QName ALLOWABLE_ACTIONS = CMISName("allowableActions");
@@ -205,9 +199,19 @@ public class CMIS {
 
     public static final QName INCLUDE_ALLOWABLE_ACTIONS = CMISName("includeAllowableActions");
 
+    // no namespace for attributes
+
+    public static final QName PDID = new QName("pdid");
+
+    public static final QName LOCALNAME = new QName("localname");
+
+    public static final QName DISPLAYNAME = new QName("displayname");
+
     /*
      * ----- CMIS REST Atom Qualified Names-----
      */
+
+    public static final QName RESTATOM_REPOSITORY_INFO = CMISRAName("repositoryInfo");
 
     public static final QName RESTATOM_COLLECTION_TYPE = CMISRAName("collectionType");
 
@@ -219,21 +223,23 @@ public class CMIS {
 
     public static final QName RESTATOM_MEDIA_TYPE = CMISRAName("mediatype");
 
+    public static final QName RESTATOM_OBJECT = CMISRAName("object");
+
     /*
      * ----- CMIS Collection Types -----
      */
 
-    public static final String COL_ROOT_CHILDREN = "rootchildren";
+    public static final String COL_ROOT_CHILDREN = "root";
 
-    public static final String COL_ROOT_DESCENDANTS = "rootdescendants";
+    public static final String COL_ROOT_DESCENDANTS = "rootdescendants"; // TODO
 
     public static final String COL_UNFILED = "unfiled";
 
     public static final String COL_CHECKED_OUT = "checkedout";
 
-    public static final String COL_TYPES_CHILDREN = "typeschildren";
+    public static final String COL_TYPES_CHILDREN = "types";
 
-    public static final String COL_TYPES_DESCENDANTS = "typesdescendants";
+    public static final String COL_TYPES_DESCENDANTS = "typesdescendants"; // TODO
 
     public static final String COL_QUERY = "query";
 
@@ -241,23 +247,33 @@ public class CMIS {
      * ----- CMIS Link Types -----
      */
 
-    public static final String LINK_SOURCE = "source";
+    public static final String CMIS_LINK_NS_BASE = CMIS_NS_BASE
+            + "link/200901/";
 
-    public static final String LINK_TARGET = "target";
+    public static final String LINK_SOURCE = CMIS_LINK_NS_BASE + "source";
 
-    public static final String LINK_ALLOWABLE_ACTIONS = "allowableactions";
+    public static final String LINK_TARGET = CMIS_LINK_NS_BASE + "target";
 
-    public static final String LINK_RELATIONSHIPS = "relationships";
+    public static final String LINK_ALLOWABLE_ACTIONS = CMIS_LINK_NS_BASE
+            + "allowableactions";
 
-    public static final String LINK_POLICIES = "policies";
+    public static final String LINK_RELATIONSHIPS = CMIS_LINK_NS_BASE
+            + "relationships";
 
-    public static final String LINK_ACL = "acl";
+    public static final String LINK_POLICIES = CMIS_LINK_NS_BASE + "policies";
 
-    public static final String LINK_CHANGES = "changes";
+    public static final String LINK_ACL = CMIS_LINK_NS_BASE + "acl";
 
-    public static final String LINK_TYPES_DESCENDANTS = "typesdescendants";
+    public static final String LINK_CHANGES = CMIS_LINK_NS_BASE + "changes";
 
-    public static final String LINK_ROOT_DESCENDANTS = "rootdescendants";
+    public static final String LINK_FOLDER_TREE = CMIS_LINK_NS_BASE
+            + "foldertree";
+
+    public static final String LINK_TYPES_DESCENDANTS = CMIS_LINK_NS_BASE
+            + "typesdescendants";
+
+    public static final String LINK_ROOT_DESCENDANTS = CMIS_LINK_NS_BASE
+            + "rootdescendants";
 
     /*
      * ----- CMIS URI Template Types -----
@@ -268,5 +284,15 @@ public class CMIS {
     public static final String URITMPL_FOLDER_BY_PATH = "folderbypath";
 
     public static final String URITMPL_QUERY = "query";
+
+    /*
+     * ----- CMIS Media Types -----
+     */
+
+    public static final String MEDIA_TYPE_CMIS_QUERY = "application/cmisquery+xml";
+
+    public static final String MEDIA_TYPE_CMIS_ALLOWABLE_ACTIONS = "application/cmisallowableactions+xml";
+
+    public static final String MEDIA_TYPE_CMIS_TREE = "application/cmistree+xml";
 
 }

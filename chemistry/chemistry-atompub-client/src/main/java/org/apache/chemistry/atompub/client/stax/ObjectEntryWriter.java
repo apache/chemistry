@@ -40,12 +40,22 @@ public abstract class ObjectEntryWriter extends
     public void write(ObjectEntry object, XMLWriter xw) throws IOException {
         try {
             xw.start();
-            xw.element("entry").xmlns(Atom.ATOM_NS).xmlns(CMIS.CMIS_PREFIX,
-                    CMIS.CMIS_NS);
+            xw.element("entry");
+            xw.xmlns(Atom.ATOM_NS);
+            xw.xmlns(CMIS.CMIS_PREFIX, CMIS.CMIS_NS);
+            xw.xmlns(CMIS.CMISRA_PREFIX, CMIS.CMISRA_NS);
             xw.start();
             // atom requires an ID to be set even on new created entries ..
             xw.element("id").content("urn:uuid:" + object.getId());
-            xw.element("title").content((String) object.getValue(Property.NAME));
+            // TODO hardcoded title properties...
+            String title = (String) object.getValue("title");
+            if (title == null) {
+                title = (String) object.getValue("dc:title");
+            }
+            if (title == null) {
+                title = (String) object.getValue(Property.NAME);
+            }
+            xw.element("title").content(title);
             xw.element("updated").content(new Date());
             xw.element("content").content(""); // TODO fake content for now
             writeCmisObject(object, xw);

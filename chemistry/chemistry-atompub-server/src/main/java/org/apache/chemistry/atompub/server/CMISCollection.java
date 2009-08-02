@@ -105,7 +105,7 @@ public abstract class CMISCollection<T> extends
         return request.absoluteUrlFor(TargetType.TYPE_ENTRY, params);
     }
 
-    public String getDownLink(String fid, RequestContext request) {
+    public String getChildrenLink(String fid, RequestContext request) {
         Map<String, String> params = new HashMap<String, String>();
         params.put("entrytype", "children");
         params.put("id", fid);

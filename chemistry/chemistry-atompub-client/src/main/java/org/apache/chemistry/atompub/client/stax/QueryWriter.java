@@ -67,7 +67,7 @@ public class QueryWriter extends AbstractXmlObjectWriter<String> {
 
     @Override
     public String getContentType() {
-        return "application/cmisquery+xml";
+        return CMIS.MEDIA_TYPE_CMIS_QUERY;
     }
 
     @Override

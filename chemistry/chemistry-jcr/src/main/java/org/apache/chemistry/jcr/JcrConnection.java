@@ -311,25 +311,31 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
+    public List<ObjectEntry> getFolderTree(ObjectId folderId, int depth,
+            String filter, boolean includeAllowableActions) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
     public List<ObjectEntry> getDescendants(ObjectId folderId, int depth,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, String orderBy) {
         // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public List<ObjectEntry> getFolderParent(ObjectId folderId, String filter,
             boolean includeAllowableActions, boolean includeRelationships,
             boolean returnToRoot) {
         // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public Collection<ObjectEntry> getObjectParents(ObjectId objectId,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships) {
         // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public ObjectEntry getProperties(ObjectId objectId, String filter,
@@ -358,7 +364,7 @@ public class JcrConnection implements Connection, SPI {
     public Map<String, Serializable> getPropertiesOfLatestVersion(
             String versionSeriesId, boolean major, String filter) {
         // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public List<ObjectEntry> getRelationships(ObjectId objectId,

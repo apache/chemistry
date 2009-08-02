@@ -56,8 +56,8 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
         sw.startDocument();
         sw.startService();
         ((StaxStreamWriter) sw).writeNamespace(CMIS.CMIS_PREFIX, CMIS.CMIS_NS);
-        ((StaxStreamWriter) sw).writeNamespace(CMIS.CMIS_RESTATOM_PREFIX,
-                CMIS.CMIS_RESTATOM_NS);
+        ((StaxStreamWriter) sw).writeNamespace(CMIS.CMISRA_PREFIX,
+                CMIS.CMISRA_NS);
         for (WorkspaceInfo wi : provider.getWorkspaceManager(request).getWorkspaces(
                 request)) {
             sw.startWorkspace();
@@ -113,7 +113,7 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
             RepositoryInfo info = repository.getInfo();
             RepositoryCapabilities cap = info.getCapabilities();
 
-            sw.startElement(CMIS.REPOSITORY_INFO);
+            sw.startElement(CMIS.RESTATOM_REPOSITORY_INFO);
             write(CMIS.REPOSITORY_ID, repository.getId());
             write(CMIS.REPOSITORY_NAME, repository.getName());
             write(CMIS.REPOSITORY_RELATIONSHIP, "self");

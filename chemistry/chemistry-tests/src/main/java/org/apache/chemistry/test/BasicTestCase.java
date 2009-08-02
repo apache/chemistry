@@ -181,6 +181,12 @@ public abstract class BasicTestCase extends TestCase {
         assertTrue(hasMoreItems[0]);
     }
 
+    public void testGetFolderTree() {
+        Folder root = conn.getRootFolder();
+        List<ObjectEntry> desc = spi.getFolderTree(root, 4, null, false);
+        assertEquals(2, desc.size());
+    }
+
     public void testGetDescendants() {
         Folder root = conn.getRootFolder();
         List<ObjectEntry> desc = spi.getDescendants(root, 4, null, false,
@@ -269,6 +275,35 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals("mytitle", doc.getString("title"));
         Calendar cal2 = doc.getDateTime("date");
         assertEquals(cal.toString(), cal2.toString());
+    }
+
+    @SuppressWarnings("null")
+    public void testNewFolder() {
+        Folder root = conn.getRootFolder();
+        assertNull(getDocumentChild(root));
+        Folder fold = root.newFolder("fold");
+        fold.setName("myfold");
+        fold.setValue("title", "mytitle");
+        assertNull(fold.getId()); // not yet saved
+        fold.save();
+        String id = fold.getId();
+        assertNotNull(id);
+
+        // new connection
+        closeConn();
+        openConn();
+        root = conn.getRootFolder();
+        fold = null;
+        for (CMISObject child : root.getChildren()) {
+            if (child.getName().equals("myfold")) {
+                fold = (Folder) child;
+                break;
+            }
+        }
+        assertNotNull(fold);
+        assertEquals(id, fold.getId());
+        assertEquals("myfold", fold.getName());
+        assertEquals("mytitle", fold.getString("title"));
     }
 
 }

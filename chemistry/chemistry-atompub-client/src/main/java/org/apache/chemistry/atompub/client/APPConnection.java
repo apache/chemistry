@@ -130,12 +130,12 @@ public class APPConnection implements Connection, SPI {
 
     public Folder newFolder(String typeId, Folder folder) {
         Type type = repository.getType(typeId);
-        if (type == null || type.getBaseType() != BaseType.DOCUMENT) {
+        if (type == null || type.getBaseType() != BaseType.FOLDER) {
             throw new IllegalArgumentException(typeId);
         }
         APPObjectEntry entry = newObjectEntry(typeId);
         if (folder != null) {
-            entry.setValue(Property.PARENT_ID, folder.getId());
+            entry._setValue(Property.PARENT_ID, folder.getId());
             entry.addLink(Atom.LINK_UP,
                     ((APPFolder) folder).entry.getEditLink());
         }
@@ -171,6 +171,34 @@ public class APPConnection implements Connection, SPI {
      */
 
     /**
+     * Accumulates the descendant folders into a list recursively.
+     */
+    protected void accumulateFolders(ObjectId folder, int depth, String filter,
+            boolean includeAllowableActions, List<ObjectEntry> list) {
+        List<ObjectEntry> children = getChildren(folder, filter,
+                includeAllowableActions, false, Integer.MAX_VALUE, 0, null,
+                new boolean[1]);
+        for (ObjectEntry child : children) {
+            if (child.getBaseType() != BaseType.FOLDER) {
+                continue;
+            }
+            list.add(child);
+            if (depth > 1) {
+                accumulateFolders(child, depth - 1, filter,
+                        includeAllowableActions, list);
+            }
+        }
+    }
+
+    // TODO use foldertree feed
+    public List<ObjectEntry> getFolderTree(ObjectId folder, int depth,
+            String filter, boolean includeAllowableActions) {
+        List<ObjectEntry> list = new ArrayList<ObjectEntry>();
+        accumulateFolders(folder, depth, filter, includeAllowableActions, list);
+        return list;
+    }
+
+    /**
      * Accumulates the descendants into a list recursively.
      */
     protected void accumulateDescendants(ObjectId folder, int depth,
@@ -190,6 +218,7 @@ public class APPConnection implements Connection, SPI {
         }
     }
 
+    // TODO use descendants feed
     public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, String orderBy) {

@@ -161,7 +161,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         Service root = (Service) resp.getDocument().getRoot();
         Workspace workspace = root.getWorkspaces().get(0);
         assertNotNull(root);
-        Element info = workspace.getFirstChild(CMIS.REPOSITORY_INFO);
+        Element info = workspace.getFirstChild(CMIS.RESTATOM_REPOSITORY_INFO);
         assertNotNull(info);
 
         resp = client.get(base + "/types");
@@ -208,7 +208,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
 
         @Override
         public String getContentType() {
-            return "application/cmisquery+xml";
+            return CMIS.MEDIA_TYPE_CMIS_QUERY;
         }
 
         public boolean isRepeatable() {

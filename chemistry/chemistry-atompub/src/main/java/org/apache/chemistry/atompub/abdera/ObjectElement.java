@@ -51,7 +51,7 @@ public class ObjectElement extends ExtensibleElementWrapper {
      * Constructor used when generating XML.
      */
     public ObjectElement(Factory factory, ObjectEntry object, Type type) {
-        super(factory, CMIS.OBJECT);
+        super(factory, CMIS.RESTATOM_OBJECT);
         properties = new PropertiesElement(getFactory());
         addExtension(properties);
         setProperties(object.getValues(), type);

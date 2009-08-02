@@ -40,6 +40,8 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
 
     protected boolean isAllVersionsSearchable;
 
+    protected boolean hasGetDescendants;
+
     protected boolean isPWCSearchable;
 
     protected boolean isPWCUpdatable;
@@ -72,6 +74,10 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
         return isAllVersionsSearchable;
     }
 
+    public boolean hasGetDescendants() {
+        return hasGetDescendants;
+    }
+
     public boolean isPWCSearchable() {
         return isPWCSearchable;
     }
@@ -82,6 +88,10 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
 
     public void setAllVersionsSearchable(boolean isAllVersionsSearchable) {
         this.isAllVersionsSearchable = isAllVersionsSearchable;
+    }
+
+    public void setHasGetDescendants(boolean hasGetDescendants) {
+        this.hasGetDescendants = hasGetDescendants;
     }
 
     public void setHasMultifiling(boolean hasMultifiling) {

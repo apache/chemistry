@@ -42,7 +42,7 @@ public class GregorianCalendar extends java.util.GregorianCalendar {
 
     private static final Pattern ATOMPUB_PATTERN = Pattern.compile( //
     "(\\d{4})-(\\d{2})-(\\d{2})[Tt]"
-            + "(\\d{2}):(\\d{2}):(\\d{2})(?:\\.(\\d{3}))?"
+            + "(\\d{2}):(\\d{2}):(\\d{2})(?:\\.(\\d+))?"
             + "(?:[Zz]|([+-]\\d{2}:\\d{2}))");
 
     /**
@@ -68,8 +68,10 @@ public class GregorianCalendar extends java.util.GregorianCalendar {
         cal.set(HOUR_OF_DAY, Integer.parseInt(m.group(4)));
         cal.set(MINUTE, Integer.parseInt(m.group(5)));
         cal.set(SECOND, Integer.parseInt(m.group(6)));
-        String ms = m.group(7);
-        cal.set(MILLISECOND, ms == null ? 0 : Integer.parseInt(ms));
+        String decimals = m.group(7);
+        int ms = decimals == null ? 0
+                : Integer.parseInt((decimals + "00").substring(0, 3));
+        cal.set(MILLISECOND, ms);
         return cal;
     }
 

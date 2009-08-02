@@ -42,7 +42,7 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
     @Override
     protected void readCmisElement(ReadContext ctx, StaxReader reader, T object)
             throws XMLStreamException {
-        if (reader.getLocalName().equals(CMIS.OBJECT.getLocalPart())) {
+        if (reader.getLocalName().equals(CMIS.RESTATOM_OBJECT.getLocalPart())) {
             readCmisObject(ctx, reader, object);
         }
     }
@@ -57,7 +57,7 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
 
     protected void readObjectChildElement(ReadContext ctx, StaxReader reader,
             T object) throws XMLStreamException {
-        if (reader.getNamespaceURI().equals(CMIS.OBJECT.getNamespaceURI())) {
+        if (reader.getNamespaceURI().equals(CMIS.CMIS_NS)) {
             if (reader.getLocalName().equals(CMIS.PROPERTIES.getLocalPart())) {
                 readProperties(ctx, reader, object);
             } else if (reader.getLocalName().equals(
