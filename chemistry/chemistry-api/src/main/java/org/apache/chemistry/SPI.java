@@ -456,8 +456,10 @@ public interface SPI {
      * @param object the object to move
      * @param targetFolder the target folder
      * @param sourceFolder the source folder, or {@code null}
+     * @return the resulting object, which may differ from the one passed as
+     *         input
      */
-    void moveObject(ObjectId object, ObjectId targetFolder,
+    ObjectId moveObject(ObjectId object, ObjectId targetFolder,
             ObjectId sourceFolder);
 
     /**

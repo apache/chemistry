@@ -109,18 +109,22 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public Document newDocument(String typeId, Folder folder) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public Folder newFolder(String typeId, Folder folder) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public Policy newPolicy(String typeId, Folder folder) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public Relationship newRelationship(String typeId) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
@@ -151,24 +155,29 @@ public class JcrConnection implements Connection, SPI {
     // SPI
 
     public void addObjectToFolder(ObjectId objectId, ObjectId folderId) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public void applyPolicy(ObjectId policyId, ObjectId objectId) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public void cancelCheckOut(ObjectId documentId) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public ObjectId checkIn(ObjectId documentId, boolean major,
             Map<String, Serializable> properties, ContentStream contentStream,
             String comment) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public ObjectId checkOut(ObjectId documentId, boolean[] contentCopied) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
@@ -197,45 +206,54 @@ public class JcrConnection implements Connection, SPI {
 
     public ObjectId createFolder(String typeId,
             Map<String, Serializable> properties, ObjectId folderId) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public ObjectId createPolicy(String typeId,
             Map<String, Serializable> properties, ObjectId folderId) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public ObjectId createRelationship(String typeId,
             Map<String, Serializable> properties, ObjectId sourceId,
             ObjectId targetId) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public ObjectId deleteContentStream(ObjectId documentId) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public void deleteObject(ObjectId objectId, boolean allVersions) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public Collection<ObjectId> deleteTree(ObjectId folderId,
             Unfiling unfiling, boolean continueOnFailure) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public Collection<ObjectEntry> getAllVersions(String versionSeriesId,
             String filter) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public Collection<String> getAllowableActions(ObjectId objectId,
             String asUser) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public Collection<ObjectEntry> getAppliedPolicies(ObjectId objectId,
             String filter) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
@@ -243,6 +261,7 @@ public class JcrConnection implements Connection, SPI {
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, int maxItems, int skipCount,
             boolean[] hasMoreItems) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
@@ -386,9 +405,9 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void moveObject(ObjectId objectId, ObjectId targetFolderId,
+    public ObjectId moveObject(ObjectId objectId, ObjectId targetFolderId,
             ObjectId sourceFolderId) {
-
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
@@ -424,20 +443,24 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public void removeObjectFromFolder(ObjectId objectId, ObjectId folderId) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public void removePolicy(ObjectId policyId, ObjectId objectId) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public ObjectId setContentStream(ObjectId documentId, boolean overwrite,
             ContentStream contentStream) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public ObjectId updateProperties(ObjectId objectId, String changeToken,
             Map<String, Serializable> properties) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 

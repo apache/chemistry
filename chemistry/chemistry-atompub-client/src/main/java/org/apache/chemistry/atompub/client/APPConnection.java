@@ -456,7 +456,7 @@ public class APPConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void moveObject(ObjectId object, ObjectId targetFolder,
+    public ObjectId moveObject(ObjectId object, ObjectId targetFolder,
             ObjectId sourceFolder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
