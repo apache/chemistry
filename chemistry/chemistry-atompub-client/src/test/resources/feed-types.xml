@@ -25,8 +25,10 @@
       <cmis:creatable>true</cmis:creatable>
       <cmis:fileable>true</cmis:fileable>
       <cmis:queryable>true</cmis:queryable>
-      <cmis:controllable>true</cmis:controllable>
       <cmis:versionable>true</cmis:versionable>
+      <cmis:controllablePolicy>true</cmis:controllablePolicy>
+      <cmis:controllableACL>true</cmis:controllableACL>
+      <cmis:fulltextindexed>true</cmis:fulltextindexed>
       <cmis:includedInSupertypeQuery>true</cmis:includedInSupertypeQuery>
     </cmis:documentType>
   </entry>
@@ -49,8 +51,10 @@
       <cmis:creatable>true</cmis:creatable>
       <cmis:fileable>true</cmis:fileable>
       <cmis:queryable>true</cmis:queryable>
-      <cmis:controllable>false</cmis:controllable>
       <cmis:versionable>false</cmis:versionable>
+      <cmis:controllablePolicy>true</cmis:controllablePolicy>
+      <cmis:controllableACL>true</cmis:controllableACL>
+      <cmis:fulltextindexed>true</cmis:fulltextindexed>
       <cmis:includedInSupertypeQuery>true</cmis:includedInSupertypeQuery>
     </cmis:folderType>
   </entry>
@@ -73,8 +77,10 @@
       <cmis:creatable>true</cmis:creatable>
       <cmis:fileable>false</cmis:fileable>
       <cmis:queryable>true</cmis:queryable>
-      <cmis:controllable>false</cmis:controllable>
       <cmis:versionable>false</cmis:versionable>
+      <cmis:controllablePolicy>false</cmis:controllablePolicy>
+      <cmis:controllableACL>false</cmis:controllableACL>
+      <cmis:fulltextindexed>false</cmis:fulltextindexed>
       <cmis:includedInSupertypeQuery>true</cmis:includedInSupertypeQuery>
     </cmis:relationshipType>
   </entry>
@@ -97,8 +103,10 @@
       <cmis:creatable>true</cmis:creatable>
       <cmis:fileable>false</cmis:fileable>
       <cmis:queryable>true</cmis:queryable>
-      <cmis:controllable>false</cmis:controllable>
       <cmis:versionable>false</cmis:versionable>
+      <cmis:controllablePolicy>false</cmis:controllablePolicy>
+      <cmis:controllableACL>false</cmis:controllableACL>
+      <cmis:fulltextindexed>false</cmis:fulltextindexed>
       <cmis:includedInSupertypeQuery>true</cmis:includedInSupertypeQuery>
     </cmis:policyType>
   </entry>
@@ -121,8 +129,10 @@
       <cmis:creatable>false</cmis:creatable>
       <cmis:fileable>false</cmis:fileable>
       <cmis:queryable>false</cmis:queryable>
-      <cmis:controllable>false</cmis:controllable>
       <cmis:versionable>false</cmis:versionable>
+      <cmis:controllablePolicy>false</cmis:controllablePolicy>
+      <cmis:controllableACL>false</cmis:controllableACL>
+      <cmis:fulltextindexed>false</cmis:fulltextindexed>
       <cmis:includedInSupertypeQuery>false</cmis:includedInSupertypeQuery>
     </cmis:folderType>
   </entry>

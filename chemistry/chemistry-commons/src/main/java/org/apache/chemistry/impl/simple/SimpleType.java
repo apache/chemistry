@@ -273,7 +273,11 @@ public class SimpleType implements Type {
 
     protected final boolean queryable;
 
-    protected final boolean controllable;
+    protected final boolean controllablePolicy;
+
+    protected final boolean controllableACL;
+
+    protected final boolean fulltextIndexed;
 
     protected final boolean includedInSuperTypeQuery;
 
@@ -292,13 +296,15 @@ public class SimpleType implements Type {
     public SimpleType(String id, String parentId, String localName,
             URI localNamespace, String queryName, String displayName,
             BaseType baseType, String description, boolean creatable,
-            boolean queryable, boolean controllable,
+            boolean queryable, boolean controllablePolicy,
+            boolean controllableACL, boolean fulltextIndexed,
             boolean includedInSuperTypeQuery, boolean fileable,
             boolean versionable, ContentStreamPresence contentStreamAllowed,
             String[] allowedSourceTypes, String[] allowedTargetTypes,
             Collection<PropertyDefinition> propertyDefinitions) {
         this(id, parentId, localName, localNamespace, queryName, displayName,
-                baseType, description, creatable, queryable, controllable,
+                baseType, description, creatable, queryable,
+                controllablePolicy, controllableACL, fulltextIndexed,
                 includedInSuperTypeQuery, fileable, versionable,
                 contentStreamAllowed, allowedSourceTypes, allowedTargetTypes);
         addPropertyDefinitions(getBasePropertyDefinitions(baseType));
@@ -308,7 +314,8 @@ public class SimpleType implements Type {
     public SimpleType(String id, String parentId, String localName,
             URI localNamespace, String queryName, String displayName,
             BaseType baseType, String description, boolean creatable,
-            boolean queryable, boolean controllable,
+            boolean queryable, boolean controllablePolicy,
+            boolean controllableACL, boolean fulltextIndexed,
             boolean includedInSuperTypeQuery, boolean fileable,
             boolean versionable, ContentStreamPresence contentStreamAllowed,
             String[] allowedSourceTypes, String[] allowedTargetTypes) {
@@ -322,7 +329,9 @@ public class SimpleType implements Type {
         this.description = description;
         this.creatable = creatable;
         this.queryable = queryable;
-        this.controllable = controllable;
+        this.controllablePolicy = controllablePolicy;
+        this.controllableACL = controllableACL;
+        this.fulltextIndexed = fulltextIndexed;
         this.includedInSuperTypeQuery = includedInSuperTypeQuery;
         this.fileable = fileable;
         this.versionable = versionable;
@@ -399,8 +408,16 @@ public class SimpleType implements Type {
         return queryable;
     }
 
-    public boolean isControllable() {
-        return controllable;
+    public boolean isControllablePolicy() {
+        return controllablePolicy;
+    }
+
+    public boolean isControllableACL() {
+        return controllableACL;
+    }
+
+    public boolean isFulltextIndexed() {
+        return fulltextIndexed;
     }
 
     public boolean isIncludedInSuperTypeQuery() {

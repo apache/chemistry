@@ -128,8 +128,16 @@ public class APPType extends APPObjectEntry implements Type {
         return map.get(CMIS.QUERY_NAME.getLocalPart());
     }
 
-    public boolean isControllable() {
-        return "true".equals(map.get(CMIS.CONTROLLABLE.getLocalPart()));
+    public boolean isControllablePolicy() {
+        return "true".equals(map.get(CMIS.CONTROLLABLE_POLICY.getLocalPart()));
+    }
+
+    public boolean isControllableACL() {
+        return "true".equals(map.get(CMIS.CONTROLLABLE_ACL.getLocalPart()));
+    }
+
+    public boolean isFulltextIndexed() {
+        return "true".equals(map.get(CMIS.FULLTEXT_INDEXED.getLocalPart()));
     }
 
     public boolean isCreatable() {
@@ -177,4 +185,5 @@ public class APPType extends APPObjectEntry implements Type {
     public String toString() {
         return this.getClass().getSimpleName() + '(' + getId() + ')';
     }
+
 }

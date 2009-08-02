@@ -485,7 +485,7 @@ public interface SPI {
      * repositories that do not support version-specific filing, if a document
      * is to be deleted, all versions are deleted.
      * <p>
-     * This method is not transactional. However, if
+     * This method is not atomic. However, if
      * {@link Unfiling#DELETE_SINGLE_FILED DELETE_SINGLE_FILED} and some objects
      * fail to delete, then single-filed objects are either deleted or kept,
      * never just unfiled. This is so that user can call this method again to

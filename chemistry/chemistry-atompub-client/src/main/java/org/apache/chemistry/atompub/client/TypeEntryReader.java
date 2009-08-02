@@ -120,7 +120,9 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
                     CMIS.CREATABLE, //
                     CMIS.FILEABLE, //
                     CMIS.QUERYABLE, //
-                    CMIS.CONTROLLABLE, //
+                    CMIS.CONTROLLABLE_POLICY, //
+                    CMIS.CONTROLLABLE_ACL, //
+                    CMIS.FULLTEXT_INDEXED, //
                     CMIS.INCLUDED_IN_SUPERTYPE_QUERY //
             )) {
                 if (!map.containsKey(qname.getLocalPart())) {

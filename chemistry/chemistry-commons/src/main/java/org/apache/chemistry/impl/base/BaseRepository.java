@@ -48,32 +48,36 @@ public abstract class BaseRepository implements Repository, RepositoryInfo,
     public static final SimpleType ROOT_TYPE = new SimpleType(ROOT_TYPE_ID,
             BaseType.FOLDER.getId(), ROOT_TYPE_ID, null, ROOT_TYPE_ID,
             "Root Folder Type", BaseType.FOLDER, "", false, false, false,
-            false, false, false, ContentStreamPresence.NOT_ALLOWED, null, null,
+            false, false, false, false, false,
+            ContentStreamPresence.NOT_ALLOWED, null, null,
             Collections.<PropertyDefinition> emptyList());
 
     public static final SimpleType DOCUMENT_TYPE = new SimpleType(
             BaseType.DOCUMENT.getId(), null, BaseType.DOCUMENT.getId(), null,
             BaseType.DOCUMENT.getId(), "Document Type", BaseType.DOCUMENT, "",
-            true, true, true, true, true, true, ContentStreamPresence.ALLOWED,
-            null, null, Collections.<PropertyDefinition> emptyList());
+            true, true, true, true, true, true, true, true,
+            ContentStreamPresence.ALLOWED, null, null,
+            Collections.<PropertyDefinition> emptyList());
 
     public static final SimpleType FOLDER_TYPE = new SimpleType(
             BaseType.FOLDER.getId(), null, BaseType.FOLDER.getId(), null,
             BaseType.FOLDER.getId(), "Folder Type", BaseType.FOLDER, "", true,
-            true, false, true, true, false, ContentStreamPresence.NOT_ALLOWED,
-            null, null, Collections.<PropertyDefinition> emptyList());
+            true, false, true, true, true, true, false,
+            ContentStreamPresence.NOT_ALLOWED, null, null,
+            Collections.<PropertyDefinition> emptyList());
 
     public static final SimpleType RELATIONSHIP_TYPE = new SimpleType(
             BaseType.RELATIONSHIP.getId(), null, BaseType.RELATIONSHIP.getId(),
             null, BaseType.RELATIONSHIP.getId(), "Relationship Type",
-            BaseType.RELATIONSHIP, "", true, true, false, true, false, false,
-            ContentStreamPresence.NOT_ALLOWED, null, null,
+            BaseType.RELATIONSHIP, "", true, true, false, false, false, true,
+            false, false, ContentStreamPresence.NOT_ALLOWED, null, null,
             Collections.<PropertyDefinition> emptyList());
 
     protected static final SimpleType POLICY_TYPE = new SimpleType(
             BaseType.POLICY.getId(), null, BaseType.POLICY.getId(), null,
             "Policy", "Policy Type", BaseType.POLICY, "", true, true, false,
-            true, false, false, ContentStreamPresence.NOT_ALLOWED, null, null,
+            false, false, true, false, false,
+            ContentStreamPresence.NOT_ALLOWED, null, null,
             Collections.<PropertyDefinition> emptyList());
 
     protected final String name;

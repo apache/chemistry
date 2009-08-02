@@ -61,17 +61,19 @@ public class TestSimpleRepository extends TestCase {
                 Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
         SimpleType mt1 = new SimpleType("doc", BaseType.DOCUMENT.getId(),
                 "doc", null, "Doc", "My Doc Type", BaseType.DOCUMENT, "", true,
-                true, true, true, true, true, ContentStreamPresence.ALLOWED,
-                null, null, Arrays.asList(d1, d2, d3));
+                true, true, true, true, true, true, true,
+                ContentStreamPresence.ALLOWED, null, null, Arrays.asList(d1,
+                        d2, d3));
         SimpleType mt2 = new SimpleType("fold", BaseType.FOLDER.getId(),
                 "fold", null, "Fold", "My Folder Type", BaseType.FOLDER, "",
-                true, true, true, true, false, false,
+                true, true, true, true, true, true, false, false,
                 ContentStreamPresence.NOT_ALLOWED, null, null, Arrays.asList(
                         d1, d2));
         SimpleType mt3 = new SimpleType("subdoc", "doc", "subdoc", null,
                 "SubDoc", "My SubDoc Type", BaseType.DOCUMENT, "", true, true,
-                true, true, true, true, ContentStreamPresence.ALLOWED, null,
-                null, Arrays.asList(d1, d2, d3));
+                true, true, true, true, true, true,
+                ContentStreamPresence.ALLOWED, null, null, Arrays.asList(d1,
+                        d2, d3));
         repo = new SimpleRepository("test", Arrays.asList(mt1, mt2, mt3), null);
 
     }

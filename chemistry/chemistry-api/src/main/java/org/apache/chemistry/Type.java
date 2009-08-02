@@ -127,16 +127,36 @@ public interface Type {
     boolean isQueryable();
 
     /**
-     * Is the type controllable.
+     * Are objects of this type controllable via policies.
      * <p>
-     * This indicates whether or not objects of this type are controllable.
-     * Policy objects can only be applied to controllable objects.
+     * This indicates whether or not objects of this type are controllable via
+     * policies. Policy objects can only be applied to controllableACL objects.
      * <p>
      * All types may be controllable.
      *
-     * @return {@code true} if the type is controllable.
+     * @return {@code true} if the type is controllable via policies
      */
-    boolean isControllable();
+    boolean isControllablePolicy();
+
+    /**
+     * Are objects of this type controllable via ACLs.
+     *
+     * This indicates whether or not objects of this type are controllable by
+     * ACLs. Only objects that are controllableACL can have an ACL.
+     *
+     * @return {@code true} if the type is controllable via ACLs
+     */
+    boolean isControllableACL();
+
+    /**
+     * Is the type fulltext-indexed.
+     * <p>
+     * This indicates whether objects of this type are fulltext indexed for
+     * querying via the {@code CONTAINS()} query predicate.
+     *
+     * @return {@code true} if the type is fulltext-indexed
+     */
+    boolean isFulltextIndexed();
 
     /**
      * Is the type included in a query of a super-type.

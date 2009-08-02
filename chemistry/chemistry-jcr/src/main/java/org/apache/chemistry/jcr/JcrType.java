@@ -30,6 +30,7 @@ import org.apache.chemistry.Type;
 public class JcrType implements Type {
 
     private final NodeType nodeType;
+
     private final BaseType baseType;
 
     public JcrType(NodeType nodeType, BaseType baseType) {
@@ -98,8 +99,16 @@ public class JcrType implements Type {
         return null;
     }
 
-    public boolean isControllable() {
+    public boolean isControllablePolicy() {
         return false;
+    }
+
+    public boolean isControllableACL() {
+        return false;
+    }
+
+    public boolean isFulltextIndexed() {
+        return false; // TODO
     }
 
     public boolean isCreatable() {
@@ -124,7 +133,5 @@ public class JcrType implements Type {
         // TODO Auto-generated method stub
         return false;
     }
-
-
 
 }

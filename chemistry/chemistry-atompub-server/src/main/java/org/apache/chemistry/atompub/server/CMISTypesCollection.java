@@ -153,8 +153,12 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         el.setText(bool(type.isFileable()));
         el = factory.newElement(CMIS.QUERYABLE, dt);
         el.setText(bool(type.isQueryable()));
-        el = factory.newElement(CMIS.CONTROLLABLE, dt);
-        el.setText(bool(type.isControllable()));
+        el = factory.newElement(CMIS.CONTROLLABLE_POLICY, dt);
+        el.setText(bool(type.isControllablePolicy()));
+        el = factory.newElement(CMIS.CONTROLLABLE_ACL, dt);
+        el.setText(bool(type.isControllableACL()));
+        el = factory.newElement(CMIS.FULLTEXT_INDEXED, dt);
+        el.setText(bool(type.isFulltextIndexed()));
         el = factory.newElement(CMIS.INCLUDED_IN_SUPERTYPE_QUERY, dt);
         el.setText(bool(type.isIncludedInSuperTypeQuery()));
         el = factory.newElement(CMIS.VERSIONABLE, dt); // docs only

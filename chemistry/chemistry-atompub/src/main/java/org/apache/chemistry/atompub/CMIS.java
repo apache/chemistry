@@ -129,7 +129,11 @@ public class CMIS {
 
     public static final QName QUERYABLE = CMISName("queryable");
 
-    public static final QName CONTROLLABLE = CMISName("controllable");
+    public static final QName CONTROLLABLE_POLICY = CMISName("controllablePolicy");
+
+    public static final QName CONTROLLABLE_ACL = CMISName("controllableACL");
+
+    public static final QName FULLTEXT_INDEXED = CMISName("fulltextindexed");
 
     public static final QName VERSIONABLE = CMISName("versionable");
 

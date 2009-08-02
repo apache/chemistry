@@ -61,11 +61,12 @@ public class BasicHelper {
                 Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
         SimpleType dt = new SimpleType("doc", BaseType.DOCUMENT.getId(), "doc",
                 null, "Doc", "My Doc Type", BaseType.DOCUMENT, "", true, true,
-                true, true, true, true, ContentStreamPresence.ALLOWED, null,
-                null, Arrays.asList(p1, p2, p3));
+                true, true, true, true, true, true,
+                ContentStreamPresence.ALLOWED, null, null, Arrays.asList(p1,
+                        p2, p3));
         SimpleType ft = new SimpleType("fold", BaseType.FOLDER.getId(), "fold",
                 null, "Fold", "My Folder Type", BaseType.FOLDER, "", true,
-                true, true, true, false, false,
+                true, true, true, true, true, false, false,
                 ContentStreamPresence.NOT_ALLOWED, null, null, Arrays.asList(
                         p1, p2));
         SimpleRepository repo = new SimpleRepository("test", Arrays.asList(dt,
