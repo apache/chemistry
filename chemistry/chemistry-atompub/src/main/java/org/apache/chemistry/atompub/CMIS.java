@@ -93,7 +93,21 @@ public class CMIS {
 
     public static final QName CAPABILITY_CHANGES_ON_TYPE = CMISName("capabilityChangesOnType");
 
+    public static final QName CAPABILITY_ACL = CMISName("capabilityACL");
+
     public static final QName CHANGES_INCOMPLETE = CMISName("changesIncomplete");
+
+    public static final QName ACL_CAPABILITY = CMISName("aclCapability");
+
+    public static final QName SET_TYPE = CMISName("setType");
+
+    public static final QName PERMISSIONS = CMISName("permissions");
+
+    public static final QName MAPPING = CMISName("mapping");
+
+    public static final QName KEY = CMISName("key");
+
+    public static final QName PERMISSION = CMISName("permission");
 
     public static final QName VERSION_SUPPORTED = CMISName("cmisVersionSupported");
 

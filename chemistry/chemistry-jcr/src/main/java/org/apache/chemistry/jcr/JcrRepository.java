@@ -31,6 +31,8 @@ import javax.jcr.SimpleCredentials;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.nodetype.NodeTypeManager;
 
+import org.apache.chemistry.ACLCapability;
+import org.apache.chemistry.ACLCapabilityType;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ChangeCapability;
 import org.apache.chemistry.Connection;
@@ -56,6 +58,7 @@ public class JcrRepository implements Repository, RepositoryInfo,
     private static final Log log = LogFactory.getLog(JcrRepository.class);
 
     private final javax.jcr.Repository repository;
+
     private final String workspace;
 
     public JcrRepository(javax.jcr.Repository repository, String workspace) {
@@ -74,7 +77,8 @@ public class JcrRepository implements Repository, RepositoryInfo,
 
     public Connection getConnection(Map<String, Serializable> parameters) {
         // TODO pass credentials as parameters
-        SimpleCredentials creds = new SimpleCredentials("admin", "admin".toCharArray());
+        SimpleCredentials creds = new SimpleCredentials("admin",
+                "admin".toCharArray());
 
         try {
             return new JcrConnection(repository.login(creds, workspace), this);
@@ -99,8 +103,8 @@ public class JcrRepository implements Repository, RepositoryInfo,
     public Type getType(String typeId) {
         try {
             // TODO pass credentials as parameters
-            SimpleCredentials creds = new SimpleCredentials("admin", "admin"
-                    .toCharArray());
+            SimpleCredentials creds = new SimpleCredentials("admin",
+                    "admin".toCharArray());
 
             Session session = repository.login(creds, workspace);
 
@@ -132,8 +136,8 @@ public class JcrRepository implements Repository, RepositoryInfo,
 
         try {
             // TODO pass credentials as parameters
-            SimpleCredentials creds = new SimpleCredentials("admin", "admin"
-                    .toCharArray());
+            SimpleCredentials creds = new SimpleCredentials("admin",
+                    "admin".toCharArray());
 
             List<Type> result = new ArrayList<Type>();
 
@@ -188,6 +192,11 @@ public class JcrRepository implements Repository, RepositoryInfo,
 
     public String getLatestChangeLogToken() {
         return "";
+    }
+
+    public ACLCapabilityType getACLCapabilityType() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     public String getDescription() {
@@ -266,5 +275,10 @@ public class JcrRepository implements Repository, RepositoryInfo,
 
     public boolean isPWCUpdatable() {
         return false;
+    }
+
+    public ACLCapability getACLCapability() {
+        // TODO Auto-generated method stub
+        return ACLCapability.NONE;
     }
 }

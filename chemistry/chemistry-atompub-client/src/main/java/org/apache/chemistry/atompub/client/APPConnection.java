@@ -30,6 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.chemistry.ACE;
+import org.apache.chemistry.ACLPropagation;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
@@ -570,18 +572,35 @@ public class APPConnection implements Connection, SPI {
      * ----- Policy Services -----
      */
 
-    public void applyPolicy(ObjectId policy, ObjectId object) {
+    public void applyPolicy(ObjectId object, ObjectId policy) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void removePolicy(ObjectId policy, ObjectId object) {
+    public void removePolicy(ObjectId object, ObjectId policy) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public Collection<ObjectEntry> getAppliedPolicies(ObjectId object,
             String filter) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    /*
+     * ----- ACL services -----
+     */
+
+    public List<ACE> getACL(ObjectId object, boolean onlyBasicPermissions,
+            boolean[] exact) {
+        // TODO Auto-generated method stub
+        return Collections.emptyList();
+    }
+
+    public List<ACE> applyACL(ObjectId object, List<ACE> addACEs,
+            List<ACE> removeACEs, ACLPropagation propagation, boolean[] exact,
+            String[] changeToken) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

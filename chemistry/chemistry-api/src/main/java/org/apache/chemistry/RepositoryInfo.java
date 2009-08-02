@@ -67,6 +67,14 @@ public interface RepositoryInfo extends RepositoryEntry {
     RepositoryCapabilities getCapabilities();
 
     /**
+     * The type of ACL capabilities of the repository.
+     * <p>
+     * Available only if {@link RepositoryCapabilities#getACLCapability} is not
+     * {@link ACLCapability#NONE}.
+     */
+    ACLCapabilityType getACLCapabilityType();
+
+    /**
      * The base types for which changes are reported by the change log.
      */
     Set<BaseType> getChangeLogBaseTypes();

@@ -140,6 +140,7 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
             write(CMIS.CAPABILITY_JOIN, cap.getJoinCapability().toString());
             write(CMIS.CAPABILITY_RENDITIONS,
                     cap.getRenditionCapability().toString());
+            write(CMIS.CAPABILITY_ACL, cap.getACLCapability().toString());
             write(CMIS.CAPABILITY_CHANGES, cap.getJoinCapability().toString());
             for (BaseType t : info.getChangeLogBaseTypes()) {
                 write(CMIS.CAPABILITY_CHANGES_ON_TYPE, t.toString());

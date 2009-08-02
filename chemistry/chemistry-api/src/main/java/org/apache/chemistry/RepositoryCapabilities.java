@@ -82,4 +82,9 @@ public interface RepositoryCapabilities {
      */
     ChangeCapability getChangeCapability();
 
+    /**
+     * The level of support for ACLs.
+     */
+    ACLCapability getACLCapability();
+
 }

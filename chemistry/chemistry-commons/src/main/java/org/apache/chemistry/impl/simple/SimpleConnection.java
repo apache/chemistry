@@ -36,6 +36,8 @@ import org.antlr.runtime.TokenSource;
 import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
+import org.apache.chemistry.ACE;
+import org.apache.chemistry.ACLPropagation;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
@@ -723,18 +725,35 @@ public class SimpleConnection implements Connection, SPI {
      * ----- Policy Services -----
      */
 
-    public void applyPolicy(ObjectId policy, ObjectId object) {
+    public void applyPolicy(ObjectId object, ObjectId policy) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void removePolicy(ObjectId policy, ObjectId object) {
+    public void removePolicy(ObjectId object, ObjectId policy) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public Collection<ObjectEntry> getAppliedPolicies(ObjectId policy,
             String filter) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    /*
+     * ----- ACL Services -----
+     */
+
+    public List<ACE> getACL(ObjectId object, boolean onlyBasicPermissions,
+            boolean[] exact) {
+        // TODO Auto-generated method stub
+        return Collections.emptyList();
+    }
+
+    public List<ACE> applyACL(ObjectId object, List<ACE> addACEs,
+            List<ACE> removeACEs, ACLPropagation propagation, boolean[] exact,
+            String[] changeToken) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

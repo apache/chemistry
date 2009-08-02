@@ -23,6 +23,7 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.chemistry.ACLCapabilityType;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.RepositoryCapabilities;
@@ -119,6 +120,11 @@ public class APPRepositoryInfo implements RepositoryInfo {
 
     public String getLatestChangeLogToken() {
         return getString(CMIS.LATEST_CHANGE_LOG_TOKEN.getLocalPart());
+    }
+
+    public ACLCapabilityType getACLCapabilityType() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     public Collection<RepositoryEntry> getRelatedRepositories() {

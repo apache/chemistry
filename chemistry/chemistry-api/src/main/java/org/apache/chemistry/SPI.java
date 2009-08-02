@@ -749,10 +749,10 @@ public interface SPI {
      * <p>
      * The target object must be controllable.
      *
-     * @param policy the policy
      * @param object the target object
+     * @param policy the policy
      */
-    void applyPolicy(ObjectId policy, ObjectId object);
+    void applyPolicy(ObjectId object, ObjectId policy);
 
     /**
      * Removes a policy from an object.
@@ -761,11 +761,10 @@ public interface SPI {
      * not deleted, and may still be applied to other objects.
      * <p>
      * The target object must be controllable.
-     *
-     * @param policy the policy
      * @param object the target object
+     * @param policy the policy
      */
-    void removePolicy(ObjectId policy, ObjectId object);
+    void removePolicy(ObjectId object, ObjectId policy);
 
     /**
      * Gets the policies applied to an object.
@@ -780,5 +779,44 @@ public interface SPI {
      * @param filter the properties filter, or {@code null} for all properties
      */
     Collection<ObjectEntry> getAppliedPolicies(ObjectId object, String filter);
+
+    /*
+     * ----- ACL services -----
+     */
+
+    /**
+     * Gets the ACL currently applied to the specified document or folder
+     * object.
+     * <p>
+     * The return value exact is {@code true} if the returned ACL fully
+     * describes the permissions for this object.
+     *
+     * @param object the object
+     * @param onlyBasicPermissions {@code true} if the result should be
+     *            expressed using only basic permissions
+     * @return the ACL
+     */
+    List<ACE> getACL(ObjectId object, boolean onlyBasicPermissions,
+            boolean[] exact);
+
+    /**
+     * Adds or removes the given ACEs to or from the ACL of the specified
+     * document or folder object.
+     * <p>
+     * The return value exact is {@code true} if the returned ACL fully
+     * describes the permissions for this object.
+     * <p>
+     * The return value changeToken, if not {@code null}, is a change token for
+     * the object.
+     *
+     * @param object the object
+     * @param addACEs the ACEs to add
+     * @param removeACEs the ACEs to remove
+     * @param propagation the ACL propagation to use
+     * @return the new ACL
+     */
+    List<ACE> applyACL(ObjectId object, List<ACE> addACEs,
+            List<ACE> removeACEs, ACLPropagation propagation, boolean[] exact,
+            String[] changeToken);
 
 }

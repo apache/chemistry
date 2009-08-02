@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.chemistry.ACLCapability;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ChangeCapability;
 import org.apache.chemistry.JoinCapability;
@@ -134,10 +135,12 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                                 RenditionCapability.NONE));
                     } else if (localName.equals(CMIS.CAPABILITY_CHANGES.getLocalPart())) {
                         caps.setChangeCapability(ChangeCapability.get(
-                                reader.getElementText(),
-                                ChangeCapability.NONE));
+                                reader.getElementText(), ChangeCapability.NONE));
                     } else if (localName.equals(CMIS.CAPABILITY_CHANGES_ON_TYPE.getLocalPart())) {
                         changeLogBaseTypes.add(BaseType.get(reader.getElementText()));
+                    } else if (localName.equals(CMIS.CAPABILITY_ACL.getLocalPart())) {
+                        caps.setACLCapability(ACLCapability.get(
+                                reader.getElementText(), ACLCapability.NONE));
                     }
                 }
             } else if (localName.equals(CMIS.REPOSITORY_SPECIFIC_INFORMATION.getLocalPart())) {

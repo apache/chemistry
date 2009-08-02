@@ -26,6 +26,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.chemistry.ACLCapability;
+import org.apache.chemistry.ACLCapabilityType;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ChangeCapability;
 import org.apache.chemistry.Connection;
@@ -148,7 +150,13 @@ public class SimpleRepository extends BaseRepository {
     }
 
     public String getLatestChangeLogToken() {
+        // TODO Auto-generated method stub
         return "";
+    }
+
+    public ACLCapabilityType getACLCapabilityType() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     /*
@@ -197,6 +205,10 @@ public class SimpleRepository extends BaseRepository {
 
     public ChangeCapability getChangeCapability() {
         return ChangeCapability.NONE;
+    }
+
+    public ACLCapability getACLCapability() {
+        return ACLCapability.NONE;
     }
 
 }

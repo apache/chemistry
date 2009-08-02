@@ -33,6 +33,8 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
+import org.apache.chemistry.ACE;
+import org.apache.chemistry.ACLPropagation;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
@@ -160,7 +162,7 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void applyPolicy(ObjectId policyId, ObjectId objectId) {
+    public void applyPolicy(ObjectId objectId, ObjectId policyId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -447,7 +449,7 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void removePolicy(ObjectId policyId, ObjectId objectId) {
+    public void removePolicy(ObjectId objectId, ObjectId policyId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -470,6 +472,19 @@ public class JcrConnection implements Connection, SPI {
         hasMoreItems[0] = false;
         lastChangeLogToken[0] = null;
         return Collections.<ObjectEntry> emptyList().iterator();
+    }
+
+    public List<ACE> getACL(ObjectId object, boolean onlyBasicPermissions,
+            boolean[] exact) {
+        // TODO Auto-generated method stub
+        return Collections.emptyList();
+    }
+
+    public List<ACE> applyACL(ObjectId object, List<ACE> addACEs,
+            List<ACE> removeACEs, ACLPropagation propagation, boolean[] exact,
+            String[] changeToken) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
 }
