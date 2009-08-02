@@ -260,7 +260,7 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> getCheckedoutDocuments(ObjectId folderId,
+    public Collection<ObjectEntry> getCheckedOutDocuments(ObjectId folderId,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, int maxItems, int skipCount,
             boolean[] hasMoreItems) {

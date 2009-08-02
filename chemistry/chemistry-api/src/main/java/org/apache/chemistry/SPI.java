@@ -213,7 +213,7 @@ public interface SPI {
      *            there are more items
      * @param skipCount
      */
-    Collection<ObjectEntry> getCheckedoutDocuments(ObjectId folder,
+    Collection<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, int maxItems, int skipCount,
             boolean[] hasMoreItems);
@@ -407,6 +407,8 @@ public interface SPI {
      * support updates.
      *
      * @param document the document
+     * @return the resulting document, which may differ from the one passed as
+     *         input
      */
     ObjectId deleteContentStream(ObjectId document);
 
@@ -761,6 +763,7 @@ public interface SPI {
      * not deleted, and may still be applied to other objects.
      * <p>
      * The target object must be controllable.
+     *
      * @param object the target object
      * @param policy the policy
      */

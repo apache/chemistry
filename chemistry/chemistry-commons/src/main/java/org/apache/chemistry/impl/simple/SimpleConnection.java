@@ -288,7 +288,7 @@ public class SimpleConnection implements Connection, SPI {
         return parents;
     }
 
-    public Collection<ObjectEntry> getCheckedoutDocuments(ObjectId folder,
+    public Collection<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, int maxItems, int skipCount,
             boolean[] hasMoreItems) {
