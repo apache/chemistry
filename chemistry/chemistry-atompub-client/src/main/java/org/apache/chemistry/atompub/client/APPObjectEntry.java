@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.ChangeInfo;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
@@ -82,6 +83,10 @@ public class APPObjectEntry implements ObjectEntry {
     public String getEditLink() {
         String href = getLink("edit");
         return href == null ? getLink("self") : href;
+    }
+
+    public ChangeInfo getChangeInfo() {
+        return null;
     }
 
     // -----

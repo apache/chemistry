@@ -29,47 +29,47 @@ import org.apache.chemistry.Updatability;
 
 public class SimplePropertyDefinition implements PropertyDefinition {
 
-    private final String id;
+    protected final String id;
 
-    private final String localName;
+    protected final String localName;
 
-    private final URI localNamespace;
+    protected final URI localNamespace;
 
-    private final String queryName;
+    protected final String queryName;
 
-    private final String displayName;
+    protected final String displayName;
 
-    private final String description;
+    protected final String description;
 
-    private final boolean inherited;
+    protected final boolean inherited;
 
-    private final PropertyType type;
+    protected final PropertyType type;
 
-    private final boolean multiValued;
+    protected final boolean multiValued;
 
-    private final List<Choice> choices;
+    protected final List<Choice> choices;
 
-    private final boolean openChoice;
+    protected final boolean openChoice;
 
-    private final boolean required;
+    protected final boolean required;
 
-    private final Serializable defaultValue;
+    protected final Serializable defaultValue;
 
-    private final Updatability updatability;
+    protected final Updatability updatability;
 
-    private final boolean queryable;
+    protected final boolean queryable;
 
-    private final boolean orderable;
+    protected final boolean orderable;
 
-    private final int precision;
+    protected final int precision;
 
-    private final Number minValue;
+    protected final Number minValue;
 
-    private final Number maxValue;
+    protected final Number maxValue;
 
-    private final int maxLength;
+    protected final int maxLength;
 
-    private final URI schemaURI;
+    protected final URI schemaURI;
 
     public SimplePropertyDefinition(String id, String localName,
             URI localNamespace, String queryName, String displayName,

@@ -1,3 +1,19 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Authors:
+ *     Florent Guillaume, Nuxeo
+ */
 package org.apache.chemistry.impl.simple;
 
 import java.util.Map;
@@ -7,25 +23,25 @@ import org.apache.chemistry.Rendition;
 
 public class SimpleRendition implements Rendition {
 
-    private final ObjectId objectId;
+    protected final ObjectId objectId;
 
-    private final String contentStreamId;
+    protected final String contentStreamId;
 
-    private final ObjectId renditionDocumentId;
+    protected final ObjectId renditionDocumentId;
 
-    private final String mimeType;
+    protected final String mimeType;
 
-    private final long length;
+    protected final long length;
 
-    private final String title;
+    protected final String title;
 
-    private final String kind;
+    protected final String kind;
 
-    private final long height;
+    protected final long height;
 
-    private final long width;
+    protected final long width;
 
-    private final Map<String, String> metadata;
+    protected final Map<String, String> metadata;
 
     public SimpleRendition(ObjectId objectId, String contentStreamId,
             ObjectId renditionDocumentId, String mimeType, long length,

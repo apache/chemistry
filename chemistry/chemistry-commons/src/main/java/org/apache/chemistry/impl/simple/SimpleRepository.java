@@ -27,6 +27,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.ChangeCapability;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.JoinCapability;
 import org.apache.chemistry.ObjectId;
@@ -138,6 +139,18 @@ public class SimpleRepository extends BaseRepository {
         return "Chemistry Simple Repository";
     }
 
+    public Set<BaseType> getChangeLogBaseTypes() {
+        return Collections.emptySet();
+    }
+
+    public boolean isChangeLogIncomplete() {
+        return false;
+    }
+
+    public String getLatestChangeLogToken() {
+        return "";
+    }
+
     /*
      * ----- RepositoryCapabilities -----
      */
@@ -180,6 +193,10 @@ public class SimpleRepository extends BaseRepository {
 
     public RenditionCapability getRenditionCapability() {
         return RenditionCapability.NONE;
+    }
+
+    public ChangeCapability getChangeCapability() {
+        return ChangeCapability.NONE;
     }
 
 }

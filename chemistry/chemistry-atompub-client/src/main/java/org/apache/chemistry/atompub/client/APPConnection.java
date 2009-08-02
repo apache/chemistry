@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -513,6 +514,14 @@ public class APPConnection implements Connection, SPI {
             objects.add(APPObject.construct((APPObjectEntry) e));
         }
         return objects;
+    }
+
+    public Iterator<ObjectEntry> getChangeLog(String changeLogToken,
+            boolean includeProperties, int maxItems, boolean[] hasMoreItems,
+            String[] lastChangeLogToken) {
+        hasMoreItems[0] = false;
+        lastChangeLogToken[0] = null;
+        return Collections.<ObjectEntry> emptyList().iterator();
     }
 
     /*

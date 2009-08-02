@@ -18,8 +18,12 @@ package org.apache.chemistry.atompub.client;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryEntry;
@@ -33,14 +37,18 @@ import org.w3c.dom.Document;
  */
 public class APPRepositoryInfo implements RepositoryInfo {
 
-    protected Map<String, Object> map;
+    protected final Map<String, Object> map;
 
-    protected RepositoryCapabilities caps;
+    protected final RepositoryCapabilities caps;
+
+    protected final Set<BaseType> changeLogBaseTypes;
 
     public APPRepositoryInfo(RepositoryCapabilities caps,
-            Map<String, Object> map) {
+            Map<String, Object> map, Set<BaseType> changeLogBaseTypes) {
         this.map = map;
         this.caps = caps;
+        this.changeLogBaseTypes = changeLogBaseTypes.isEmpty() ? Collections.<BaseType> emptySet()
+                : Collections.unmodifiableSet(EnumSet.copyOf(changeLogBaseTypes));
     }
 
     public URI getURI() {
@@ -50,6 +58,10 @@ public class APPRepositoryInfo implements RepositoryInfo {
 
     public String getString(String name) {
         return (String) map.get(name);
+    }
+
+    public boolean getBoolean(String name) {
+        return Boolean.parseBoolean((String) map.get(name));
     }
 
     public String getId() {
@@ -97,6 +109,18 @@ public class APPRepositoryInfo implements RepositoryInfo {
         return caps;
     }
 
+    public Set<BaseType> getChangeLogBaseTypes() {
+        return changeLogBaseTypes;
+    }
+
+    public boolean isChangeLogIncomplete() {
+        return getBoolean(CMIS.CHANGES_INCOMPLETE.getLocalPart());
+    }
+
+    public String getLatestChangeLogToken() {
+        return getString(CMIS.LATEST_CHANGE_LOG_TOKEN.getLocalPart());
+    }
+
     public Collection<RepositoryEntry> getRelatedRepositories() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
@@ -105,4 +129,5 @@ public class APPRepositoryInfo implements RepositoryInfo {
     public String toString() {
         return getName() + " - " + getURI();
     }
+
 }

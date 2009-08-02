@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -669,6 +670,14 @@ public class SimpleConnection implements Connection, SPI {
             objects.add(SimpleObject.construct((SimpleObjectEntry) e));
         }
         return objects;
+    }
+
+    public Iterator<ObjectEntry> getChangeLog(String changeLogToken,
+            boolean includeProperties, int maxItems, boolean[] hasMoreItems,
+            String[] lastChangeLogToken) {
+        hasMoreItems[0] = false;
+        lastChangeLogToken[0] = null;
+        return Collections.<ObjectEntry> emptyList().iterator();
     }
 
     /*

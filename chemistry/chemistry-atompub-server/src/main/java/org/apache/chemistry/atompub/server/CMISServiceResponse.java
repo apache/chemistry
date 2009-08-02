@@ -26,6 +26,7 @@ import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.WorkspaceInfo;
 import org.apache.abdera.protocol.server.context.StreamWriterResponseContext;
 import org.apache.abdera.writer.StreamWriter;
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryInfo;
@@ -121,7 +122,10 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
             write(CMIS.VENDOR_NAME, info.getVendorName());
             write(CMIS.PRODUCT_NAME, info.getProductName());
             write(CMIS.PRODUCT_VERSION, info.getProductVersion());
+            write(CMIS.VERSION_SUPPORTED, ATOMPUB_VERSION_SUPPORTED);
             write(CMIS.ROOT_FOLDER_ID, info.getRootFolderId().getId());
+            write(CMIS.CHANGES_INCOMPLETE, info.isChangeLogIncomplete());
+            write(CMIS.LATEST_CHANGE_LOG_TOKEN, info.getLatestChangeLogToken());
 
             sw.startElement(CMIS.CAPABILITIES);
             write(CMIS.CAPABILITY_MULTIFILING, cap.hasMultifiling());
@@ -134,9 +138,14 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
                     cap.isAllVersionsSearchable());
             write(CMIS.CAPABILITY_QUERY, cap.getQueryCapability().toString());
             write(CMIS.CAPABILITY_JOIN, cap.getJoinCapability().toString());
+            write(CMIS.CAPABILITY_RENDITIONS,
+                    cap.getRenditionCapability().toString());
+            write(CMIS.CAPABILITY_CHANGES, cap.getJoinCapability().toString());
+            for (BaseType t : info.getChangeLogBaseTypes()) {
+                write(CMIS.CAPABILITY_CHANGES_ON_TYPE, t.toString());
+            }
             sw.endElement();
 
-            write(CMIS.VERSION_SUPPORTED, ATOMPUB_VERSION_SUPPORTED);
             write(CMIS.REPOSITORY_SPECIFIC_INFORMATION,
                     info.getRepositorySpecificInformation());
             sw.endElement();

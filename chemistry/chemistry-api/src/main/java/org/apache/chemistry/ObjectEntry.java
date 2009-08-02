@@ -44,6 +44,16 @@ public interface ObjectEntry extends ObjectId {
     BaseType getBaseType();
 
     /**
+     * Gets information about the change to the object.
+     * <p>
+     * This is only available for object entries returned by
+     * {@link SPI#getChangeLog}.
+     *
+     * @see SPI#getChangeLog
+     */
+    ChangeInfo getChangeInfo();
+
+    /**
      * Gets a property value.
      * <p>
      * Returns {@code null} is the property is not set, not fetched or unknown.

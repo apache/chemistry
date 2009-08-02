@@ -19,6 +19,7 @@ package org.apache.chemistry;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -144,8 +145,8 @@ public interface SPI {
      * @param includeAllowableActions {@code true} to include allowable actions
      * @param includeRelationships {@code true} if relationships should be
      *            included as well
-     * @param maxItems the maximum number of objects to returned, or {@code 0}
-     *            for a repository-specific default
+     * @param maxItems the maximum number of objects to return, or {@code 0} for
+     *            a repository-specific default
      * @param skipCount the skip count
      * @param orderBy an {@code ORDER BY} clause, or {@code null}
      * @param hasMoreItems a 1-value boolean array to return a flag stating if
@@ -345,8 +346,8 @@ public interface SPI {
      *
      * @param object the object
      * @param filter a rendition filter, or {@code null} for none
-     * @param maxItems the maximum number of renditions to returned, or {@code
-     *            0} for a repository-specific default
+     * @param maxItems the maximum number of renditions to return, or {@code 0}
+     *            for a repository-specific default
      * @param skipCount the skip count
      * @return the list of renditions
      *
@@ -582,8 +583,8 @@ public interface SPI {
      * @param includeAllowableActions {@code true} to include allowable actions
      * @param includeRelationships {@code true} if relationships should be
      *            included as well
-     * @param maxItems the maximum number of objects to returned, or {@code 0}
-     *            for a repository-specific default
+     * @param maxItems the maximum number of objects to return, or {@code 0} for
+     *            a repository-specific default
      * @param skipCount the skip count
      * @param hasMoreItems
      * @return the matching objects
@@ -592,6 +593,39 @@ public interface SPI {
     Collection<ObjectEntry> query(String statement, boolean searchAllVersions,
             boolean includeAllowableActions, boolean includeRelationships,
             int maxItems, int skipCount, boolean[] hasMoreItems);
+
+    /**
+     * Gets a list of content changes.
+     * <p>
+     * Returns all the change events, or only those starting with the provided
+     * changeLogToken.
+     * <p>
+     * This is intended to be used by search crawlers or other applications that
+     * need to efficiently understand what has changed in the repository.
+     * <p>
+     * The content stream is <em>not</em> returned for any change event.
+     * <p>
+     * The latest change log token for a repository can be acquired via
+     * {@link RepositoryInfo#getLatestChangeToken}.
+     * <p>
+     * The return value hasMoreItems is filled if {@code maxItems > 0}.
+     * <p>
+     * The return value lastChangeLogToken contains the change token of the last
+     * change event returned by the iterator.
+     *
+     * @param changeLogToken the change log token, or {@code null}
+     * @param includeProperties {@code true} if values are returned in the
+     *            change events for updated objects
+     * @param maxItems the maximum number of change events to return, or {@code
+     *            0} for a repository-specific default
+     * @return an iterator over the change events
+     *
+     * @see Repository#getInfo
+     * @see RepositoryInfo#getLatestChangeLogToken
+     */
+    Iterator<ObjectEntry> getChangeLog(String changeLogToken,
+            boolean includeProperties, int maxItems, boolean[] hasMoreItems,
+            String[] lastChangeLogToken);
 
     /*
      * ----- Versioning Services -----
@@ -703,8 +737,8 @@ public interface SPI {
      *            sub-type of typeId are to be returned as well
      * @param filter the properties filter, or {@code null} for all properties
      * @param includeAllowableActions {@code true} to include allowable actions
-     * @param maxItems the maximum number of objects to returned, or {@code 0}
-     *            for a repository-specific default
+     * @param maxItems the maximum number of objects to return, or {@code 0} for
+     *            a repository-specific default
      * @param skipCount the skip count
      * @param hasMoreItems a 1-value boolean array to return a flag stating if
      *            there are more items

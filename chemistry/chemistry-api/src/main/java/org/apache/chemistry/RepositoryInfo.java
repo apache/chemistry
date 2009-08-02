@@ -17,6 +17,7 @@
 package org.apache.chemistry;
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * Information about a CMIS Repository.
@@ -64,6 +65,22 @@ public interface RepositoryInfo extends RepositoryEntry {
      * The capabilities of the repository.
      */
     RepositoryCapabilities getCapabilities();
+
+    /**
+     * The base types for which changes are reported by the change log.
+     */
+    Set<BaseType> getChangeLogBaseTypes();
+
+    /**
+     * Is the change log incomplete (missing older events).
+     */
+    boolean isChangeLogIncomplete();
+
+    /**
+     * The change log token corresponding to the most recent change to any
+     * object in the repository.
+     */
+    String getLatestChangeLogToken();
 
     /**
      * The related repositories.

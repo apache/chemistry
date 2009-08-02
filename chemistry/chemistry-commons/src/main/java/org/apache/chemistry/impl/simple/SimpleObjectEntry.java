@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.ChangeInfo;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Property;
 
@@ -35,6 +36,8 @@ public class SimpleObjectEntry implements ObjectEntry {
     protected final SimpleData data;
 
     protected final SimpleConnection connection;
+
+    protected ChangeInfo changeInfo;
 
     protected SimpleObjectEntry(SimpleData data, SimpleConnection connection) {
         this.data = data;
@@ -51,6 +54,14 @@ public class SimpleObjectEntry implements ObjectEntry {
 
     public BaseType getBaseType() {
         return BaseType.get((String) data.get(Property.BASE_TYPE_ID));
+    }
+
+    public ChangeInfo getChangeInfo() {
+        return changeInfo;
+    }
+
+    public void setChangeInfo(ChangeInfo changeInfo) {
+        this.changeInfo = changeInfo;
     }
 
     public Map<String, Serializable> getValues() {

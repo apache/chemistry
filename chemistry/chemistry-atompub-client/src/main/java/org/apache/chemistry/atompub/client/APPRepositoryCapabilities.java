@@ -16,6 +16,7 @@
  */
 package org.apache.chemistry.atompub.client;
 
+import org.apache.chemistry.ChangeCapability;
 import org.apache.chemistry.JoinCapability;
 import org.apache.chemistry.QueryCapability;
 import org.apache.chemistry.RenditionCapability;
@@ -31,6 +32,8 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
     protected QueryCapability queryCapability;
 
     protected RenditionCapability renditionCapability;
+
+    protected ChangeCapability changeCapability;
 
     protected boolean hasUnfiling;
 
@@ -56,6 +59,10 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
 
     public RenditionCapability getRenditionCapability() {
         return renditionCapability;
+    }
+
+    public ChangeCapability getChangeCapability() {
+        return changeCapability;
     }
 
     public boolean hasMultifiling() {
@@ -124,6 +131,10 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
 
     public void setRenditionCapability(RenditionCapability renditionCapability) {
         this.renditionCapability = renditionCapability;
+    }
+
+    public void setChangeCapability(ChangeCapability changeCapability) {
+        this.changeCapability = changeCapability;
     }
 
 }

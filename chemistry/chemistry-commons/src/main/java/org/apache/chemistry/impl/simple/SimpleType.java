@@ -253,41 +253,41 @@ public class SimpleType implements Type {
             PROP_POLICY_NAME, //
             PROP_POLICY_TEXT);
 
-    private final String id;
+    protected final String id;
 
-    private final String localName;
+    protected final String localName;
 
-    private final URI localNamespace;
+    protected final URI localNamespace;
 
-    private final String queryName;
+    protected final String queryName;
 
-    private final String displayName;
+    protected final String displayName;
 
-    private final String parentId;
+    protected final String parentId;
 
-    private final BaseType baseType;
+    protected final BaseType baseType;
 
-    private final String description;
+    protected final String description;
 
-    private final boolean creatable;
+    protected final boolean creatable;
 
-    private final boolean queryable;
+    protected final boolean queryable;
 
-    private final boolean controllable;
+    protected final boolean controllable;
 
-    private final boolean includedInSuperTypeQuery;
+    protected final boolean includedInSuperTypeQuery;
 
-    private final boolean fileable;
+    protected final boolean fileable;
 
-    private final boolean versionable;
+    protected final boolean versionable;
 
-    private final ContentStreamPresence contentStreamAllowed;
+    protected final ContentStreamPresence contentStreamAllowed;
 
-    private final String[] allowedSourceTypes;
+    protected final String[] allowedSourceTypes;
 
-    private final String[] allowedTargetTypes;
+    protected final String[] allowedTargetTypes;
 
-    private final Map<String, PropertyDefinition> propertyDefinitions;
+    protected final Map<String, PropertyDefinition> propertyDefinitions;
 
     public SimpleType(String id, String parentId, String localName,
             URI localNamespace, String queryName, String displayName,

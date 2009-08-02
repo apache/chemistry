@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -31,6 +32,7 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.nodetype.NodeTypeManager;
 
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.ChangeCapability;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.JoinCapability;
 import org.apache.chemistry.ObjectId;
@@ -176,6 +178,18 @@ public class JcrRepository implements Repository, RepositoryInfo,
         return this;
     }
 
+    public Set<BaseType> getChangeLogBaseTypes() {
+        return Collections.emptySet();
+    }
+
+    public boolean isChangeLogIncomplete() {
+        return false;
+    }
+
+    public String getLatestChangeLogToken() {
+        return "";
+    }
+
     public String getDescription() {
         return getName();
     }
@@ -220,6 +234,10 @@ public class JcrRepository implements Repository, RepositoryInfo,
 
     public RenditionCapability getRenditionCapability() {
         return RenditionCapability.NONE;
+    }
+
+    public ChangeCapability getChangeCapability() {
+        return ChangeCapability.NONE;
     }
 
     public boolean hasMultifiling() {

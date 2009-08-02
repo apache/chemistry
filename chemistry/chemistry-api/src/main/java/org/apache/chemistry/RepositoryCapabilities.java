@@ -77,4 +77,9 @@ public interface RepositoryCapabilities {
      */
     RenditionCapability getRenditionCapability();
 
+    /**
+     * Support for change log.
+     */
+    ChangeCapability getChangeCapability();
+
 }

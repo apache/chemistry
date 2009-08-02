@@ -23,7 +23,7 @@ import org.apache.chemistry.ObjectId;
  */
 public class SimpleObjectId implements ObjectId {
 
-    private final String id;
+    protected final String id;
 
     public SimpleObjectId(String id) {
         this.id = id;

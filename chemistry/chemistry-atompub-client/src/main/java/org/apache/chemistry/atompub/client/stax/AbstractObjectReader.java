@@ -58,11 +58,13 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
     protected void readObjectChildElement(ReadContext ctx, StaxReader reader,
             T object) throws XMLStreamException {
         if (reader.getNamespaceURI().equals(CMIS.CMIS_NS)) {
-            if (reader.getLocalName().equals(CMIS.PROPERTIES.getLocalPart())) {
+            String localName = reader.getLocalName();
+            if (localName.equals(CMIS.PROPERTIES.getLocalPart())) {
                 readProperties(ctx, reader, object);
-            } else if (reader.getLocalName().equals(
-                    CMIS.ALLOWABLE_ACTIONS.getLocalPart())) {
+            } else if (localName.equals(CMIS.ALLOWABLE_ACTIONS.getLocalPart())) {
                 readAllowableActions(ctx, reader, object);
+            } else if (localName.equals(CMIS.CHANGE_EVENT_INFO.getLocalPart())) {
+                readChangeEventInfo(ctx, reader, object);
             } else { // unknown tag
                 readOtherCmisElement(ctx, reader, object);
             }
@@ -130,6 +132,11 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
     }
 
     protected void readAllowableActions(ReadContext ctx, StaxReader reader,
+            T object) throws XMLStreamException {
+        // TODO not yet implemented
+    }
+
+    protected void readChangeEventInfo(ReadContext ctx, StaxReader reader,
             T object) throws XMLStreamException {
         // TODO not yet implemented
     }

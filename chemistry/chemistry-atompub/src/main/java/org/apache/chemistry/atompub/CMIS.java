@@ -65,6 +65,8 @@ public class CMIS {
 
     public static final QName ROOT_FOLDER_ID = CMISName("rootFolderId");
 
+    public static final QName LATEST_CHANGE_LOG_TOKEN = CMISName("latestChangeToken"); // TODO-0.63
+
     public static final QName CAPABILITIES = CMISName("capabilities");
 
     public static final QName CAPABILITY_MULTIFILING = CMISName("capabilityMultifiling");
@@ -84,6 +86,14 @@ public class CMIS {
     public static final QName CAPABILITY_QUERY = CMISName("capabilityQuery");
 
     public static final QName CAPABILITY_JOIN = CMISName("capabilityJoin");
+
+    public static final QName CAPABILITY_RENDITIONS = CMISName("capabilityRenditions");
+
+    public static final QName CAPABILITY_CHANGES = CMISName("capabilityChanges");
+
+    public static final QName CAPABILITY_CHANGES_ON_TYPE = CMISName("capabilityChangesOnType");
+
+    public static final QName CHANGES_INCOMPLETE = CMISName("changesIncomplete");
 
     public static final QName VERSION_SUPPORTED = CMISName("cmisVersionSupported");
 
@@ -186,6 +196,12 @@ public class CMIS {
     public static final QName VALUE = CMISName("value");
 
     public static final QName ALLOWABLE_ACTIONS = CMISName("allowableActions");
+
+    public static final QName CHANGE_EVENT_INFO = CMISName("changeEventInfo");
+
+    public static final QName CHANGE_TYPE = CMISName("changeType");
+
+    public static final QName CHANGE_TIME = CMISName("changeTime");
 
     public static final QName QUERY = CMISName("query");
 

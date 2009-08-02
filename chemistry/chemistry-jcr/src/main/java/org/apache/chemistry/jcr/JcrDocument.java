@@ -17,7 +17,6 @@
 package org.apache.chemistry.jcr;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
@@ -26,6 +25,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.ChangeInfo;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
@@ -150,4 +150,9 @@ public class JcrDocument extends JcrObjectEntry implements Document {
     public BaseType getBaseType() {
         return BaseType.DOCUMENT;
     }
+
+    public ChangeInfo getChangeInfo() {
+        return null;
+    }
+
 }

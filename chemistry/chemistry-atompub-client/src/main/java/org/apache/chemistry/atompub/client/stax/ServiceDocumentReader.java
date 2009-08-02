@@ -20,14 +20,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.chemistry.BaseType;
+import org.apache.chemistry.ChangeCapability;
 import org.apache.chemistry.JoinCapability;
 import org.apache.chemistry.QueryCapability;
+import org.apache.chemistry.RenditionCapability;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.atompub.Atom;
@@ -94,6 +99,7 @@ public abstract class ServiceDocumentReader<T extends Repository> {
             StaxReader reader) throws XMLStreamException {
         APPRepositoryCapabilities caps = null;
         Map<String, Object> map = new HashMap<String, Object>();
+        Set<BaseType> changeLogBaseTypes = new HashSet<BaseType>();
         ChildrenNavigator nav = reader.getChildren();
         while (nav.next()) {
             String localName = reader.getLocalName();
@@ -122,15 +128,25 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                     } else if (localName.equals(CMIS.CAPABILITY_JOIN.getLocalPart())) {
                         caps.setJoinCapability(JoinCapability.get(
                                 reader.getElementText(), JoinCapability.NONE));
+                    } else if (localName.equals(CMIS.CAPABILITY_RENDITIONS.getLocalPart())) {
+                        caps.setRenditionCapability(RenditionCapability.get(
+                                reader.getElementText(),
+                                RenditionCapability.NONE));
+                    } else if (localName.equals(CMIS.CAPABILITY_CHANGES.getLocalPart())) {
+                        caps.setChangeCapability(ChangeCapability.get(
+                                reader.getElementText(),
+                                ChangeCapability.NONE));
+                    } else if (localName.equals(CMIS.CAPABILITY_CHANGES_ON_TYPE.getLocalPart())) {
+                        changeLogBaseTypes.add(BaseType.get(reader.getElementText()));
                     }
                 }
-            } else if (localName.equals("repositorySpecificInformation")) {
+            } else if (localName.equals(CMIS.REPOSITORY_SPECIFIC_INFORMATION.getLocalPart())) {
                 readRepositorySpecificInformation(context, reader);
             } else {
                 map.put(localName, reader.getElementText());
             }
         }
-        return new APPRepositoryInfo(caps, map);
+        return new APPRepositoryInfo(caps, map, changeLogBaseTypes);
     }
 
     protected URITemplate readURITemplate(ReadContext context, StaxReader reader)

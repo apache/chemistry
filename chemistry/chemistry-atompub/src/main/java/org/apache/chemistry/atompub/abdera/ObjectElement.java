@@ -70,4 +70,6 @@ public class ObjectElement extends ExtensibleElementWrapper {
 
     // TODO allowable actions
 
+    // TODO change event info
+
 }
