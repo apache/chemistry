@@ -83,6 +83,8 @@ public class CMIS {
 
     public static final QName CAPABILITY_CAN_GET_DESCENDANTS = CMISName("capabilityGetDescendants");
 
+    public static final QName CAPABILITY_CONTENT_STREAM_UPDATABILITY = CMISName("capabilityContentStreamUpdatability");
+
     public static final QName CAPABILITY_QUERY = CMISName("capabilityQuery");
 
     public static final QName CAPABILITY_JOIN = CMISName("capabilityJoin");

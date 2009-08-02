@@ -136,6 +136,10 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
             write(CMIS.CAPABILITY_PWC_SEARCHABLE, cap.isPWCSearchable());
             write(CMIS.CAPABILITY_ALL_VERSIONS_SEARCHABLE,
                     cap.isAllVersionsSearchable());
+            write(CMIS.CAPABILITY_CAN_GET_DESCENDANTS, cap.hasGetDescendants());
+            write(CMIS.CAPABILITY_CONTENT_STREAM_UPDATABILITY,
+                    cap.isContentStreamUpdatableAnytime() ? "anytime"
+                            : "pwconly");
             write(CMIS.CAPABILITY_QUERY, cap.getQueryCapability().toString());
             write(CMIS.CAPABILITY_JOIN, cap.getJoinCapability().toString());
             write(CMIS.CAPABILITY_RENDITIONS,

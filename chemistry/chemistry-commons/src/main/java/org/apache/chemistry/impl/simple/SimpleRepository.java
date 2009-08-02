@@ -191,6 +191,10 @@ public class SimpleRepository extends BaseRepository {
         return true;
     }
 
+    public boolean isContentStreamUpdatableAnytime() {
+        return true;
+    }
+
     public JoinCapability getJoinCapability() {
         return JoinCapability.NONE;
     }

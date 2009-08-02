@@ -113,6 +113,8 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                         caps.setAllVersionsSearchable(Boolean.parseBoolean(reader.getElementText()));
                     } else if (localName.equals(CMIS.CAPABILITY_CAN_GET_DESCENDANTS.getLocalPart())) {
                         caps.setHasGetDescendants(Boolean.parseBoolean(reader.getElementText()));
+                    } else if (localName.equals(CMIS.CAPABILITY_CONTENT_STREAM_UPDATABILITY.getLocalPart())) {
+                        caps.setContentStreamUpdatableAnytime("anytime".equals(reader.getElementText()));
                     } else if (localName.equals(CMIS.CAPABILITY_MULTIFILING.getLocalPart())) {
                         caps.setHasMultifiling(Boolean.parseBoolean(reader.getElementText()));
                     } else if (localName.equals(CMIS.CAPABILITY_PWC_SEARCHABLE.getLocalPart())) {

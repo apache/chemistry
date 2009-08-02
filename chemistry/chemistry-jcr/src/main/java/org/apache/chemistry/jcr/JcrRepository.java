@@ -269,6 +269,10 @@ public class JcrRepository implements Repository, RepositoryInfo,
         return false;
     }
 
+    public boolean isContentStreamUpdatableAnytime() {
+        return true;
+    }
+
     public boolean isPWCSearchable() {
         return false;
     }

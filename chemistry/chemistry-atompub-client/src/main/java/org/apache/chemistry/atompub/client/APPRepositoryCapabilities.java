@@ -48,6 +48,8 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
 
     protected boolean hasGetDescendants;
 
+    protected boolean isContentStreamUpdatableAnytime;
+
     protected boolean isPWCSearchable;
 
     protected boolean isPWCUpdatable;
@@ -92,6 +94,10 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
         return hasGetDescendants;
     }
 
+    public boolean isContentStreamUpdatableAnytime() {
+        return isContentStreamUpdatableAnytime;
+    }
+
     public boolean isPWCSearchable() {
         return isPWCSearchable;
     }
@@ -106,6 +112,11 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
 
     public void setHasGetDescendants(boolean hasGetDescendants) {
         this.hasGetDescendants = hasGetDescendants;
+    }
+
+    public void setContentStreamUpdatableAnytime(
+            boolean isContentStreamUpdatableAnytime) {
+        this.isContentStreamUpdatableAnytime = isContentStreamUpdatableAnytime;
     }
 
     public void setHasMultifiling(boolean hasMultifiling) {

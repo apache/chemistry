@@ -63,6 +63,11 @@ public interface RepositoryCapabilities {
     boolean hasGetDescendants();
 
     /**
+     * Ability to update the content stream anytime, or only on the PWC.
+     */
+    boolean isContentStreamUpdatableAnytime();
+
+    /**
      * Support for query on full-text or metadata.
      */
     QueryCapability getQueryCapability();
