@@ -344,9 +344,8 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public List<ObjectEntry> getFolderParent(ObjectId folderId, String filter,
-            boolean includeAllowableActions, boolean includeRelationships,
-            boolean returnToRoot) {
+    public ObjectEntry getFolderParent(ObjectId folderId, String filter,
+            boolean includeAllowableActions, boolean includeRelationships) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

@@ -162,26 +162,16 @@ public interface SPI {
      * Returns {@code null} if the specified folder is the root folder.
      * <p>
      * To find the parent of a non-folder, use {@link #getObjectParents}.
-     * <p>
-     * If returnToRoot is {@code false}, returns only the immediate parent of
-     * the folder. If {@code true}, return an ordered list of all ancestor
-     * folders from the specified folder to the root folder. The resulting list
-     * is ordered by ancestry, closest to specified folder first. However, as
-     * XML clients may not always respect ordering, repositories should always
-     * include the parent and the ObjectID property in the filter to allow
-     * re-ordering if necessary.
      *
      * @param folder the folder
      * @param filter the properties filter, or {@code null} for all properties
      * @param includeAllowableActions {@code true} to include allowable actions
      * @param includeRelationships {@code true} if relationships should be
      *            included as well
-     * @param returnToRoot {@code true} if all ancestors must be returned
      * @return the parents and optionally relationships
      */
-    List<ObjectEntry> getFolderParent(ObjectId folder, String filter,
-            boolean includeAllowableActions, boolean includeRelationships,
-            boolean returnToRoot);
+    ObjectEntry getFolderParent(ObjectId folder, String filter,
+            boolean includeAllowableActions, boolean includeRelationships);
 
     /**
      * Gets the direct parents of an object.

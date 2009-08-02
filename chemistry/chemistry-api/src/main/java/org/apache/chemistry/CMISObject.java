@@ -106,7 +106,6 @@ public interface CMISObject extends ObjectId {
      * @return the parent folder, or {@code null}.
      *
      * @see #getParents
-     * @see Folder#getAncestors
      */
     Folder getParent();
 
@@ -118,7 +117,6 @@ public interface CMISObject extends ObjectId {
      * @return the collection of parent folders
      *
      * @see #getParent
-     * @see Folder#getAncestors
      */
     Collection<Folder> getParents();
 

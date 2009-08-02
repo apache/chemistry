@@ -196,13 +196,11 @@ public abstract class BasicTestCase extends TestCase {
 
     public void testGetFolderParent() {
         Folder root = conn.getRootFolder();
-        assertEquals(0,
-                spi.getFolderParent(root, null, false, false, false).size());
+        assertNull(spi.getFolderParent(root, null, false, false));
         ObjectId folder1 = root.getChildren().get(0);
-        assertEquals(1,
-                spi.getFolderParent(folder1, null, false, false, true).size());
-        assertEquals(root.getId(), spi.getFolderParent(folder1, null, false,
-                false, false).get(0).getId());
+        ObjectEntry p1 = spi.getFolderParent(folder1, null, false, false);
+        assertNotNull(p1);
+        assertEquals(root.getId(), p1.getId());
     }
 
     public void testGetObjectParents() {

@@ -274,32 +274,28 @@ public class APPConnection implements Connection, SPI {
         return result;
     }
 
-    public List<ObjectEntry> getFolderParent(ObjectId folder, String filter,
-            boolean includeAllowableActions, boolean includeRelationships,
-            boolean returnToRoot) {
+    public ObjectEntry getFolderParent(ObjectId folder, String filter,
+            boolean includeAllowableActions, boolean includeRelationships) {
         // TODO filter, includeRelationship, includeAllowableActions
-        List<ObjectEntry> result = new LinkedList<ObjectEntry>();
         APPObjectEntry current = getObjectEntry(folder);
         if (!current.getBaseType().equals(BaseType.FOLDER)) {
             throw new IllegalArgumentException("Not a folder: " + folder);
         }
         String rootId = current.connection.getRootFolder().getId();
-        ReadContext ctx = new ReadContext(this);
-        do {
-            if (current.getId().equals(rootId)) {
-                break;
-            }
-            String href = current.getLink(Atom.LINK_UP);
-            Response resp = connector.get(new Request(href));
-            if (!resp.isOk()) {
-                throw new ContentManagerException(
-                        "Remote server returned error code: "
-                                + resp.getStatusCode());
-            }
-            current = (APPObjectEntry) resp.getObject(ctx);
-            result.add(current);
-        } while (returnToRoot);
-        return result;
+        if (current.getId().equals(rootId)) {
+            return null;
+        }
+        String href = current.getLink(Atom.LINK_UP);
+        if (href == null) {
+            return null;
+        }
+        Response resp = connector.get(new Request(href));
+        if (!resp.isOk()) {
+            throw new ContentManagerException(
+                    "Remote server returned error code: "
+                            + resp.getStatusCode());
+        }
+        return (APPObjectEntry) resp.getObject(new ReadContext(this));
     }
 
     public Collection<ObjectEntry> getObjectParents(ObjectId object,

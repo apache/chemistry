@@ -56,11 +56,6 @@ public class APPFolder extends APPDocument implements Folder {
         throw new UnsupportedOperationException();
     }
 
-    public List<Folder> getAncestors() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     public List<CMISObject> getChildren() {
         String href = entry.getLink(Atom.LINK_DOWN);
         Response resp = entry.connection.getConnector().get(new Request(href));

@@ -131,11 +131,6 @@ public class JcrFolder extends JcrObjectEntry implements Folder {
         return Collections.emptySet();
     }
 
-    public List<Folder> getAncestors() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     public BaseType getBaseType() {
         return BaseType.FOLDER;
     }

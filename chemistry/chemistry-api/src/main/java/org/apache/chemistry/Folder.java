@@ -88,22 +88,6 @@ public interface Folder extends CMISObject {
      */
 
     /**
-     * Gets the ancestors of this folder.
-     * <p>
-     * Returns an ordered list of all ancestor folders from this specified
-     * folder to the root folder. The resulting list is ordered by ancestry,
-     * closest this folder first.
-     * <p>
-     * Returns an empty list if this folder is the root folder.
-     *
-     * @return the list of ancestors
-     *
-     * @see CMISObject#getParent
-     * @see CMISObject#getParents
-     */
-    List<Folder> getAncestors();
-
-    /**
      * Gets the direct children of this folder.
      * <p>
      * The order of returned children is implementation-dependant.

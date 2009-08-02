@@ -47,11 +47,6 @@ public class SimpleFolder extends SimpleObject implements Folder {
         return entry.connection.deleteTree(this, unfiling, true);
     }
 
-    public List<Folder> getAncestors() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     public List<CMISObject> getChildren() {
         SimpleRepository repository = entry.connection.repository;
         Set<String> ids = repository.children.get(getId());

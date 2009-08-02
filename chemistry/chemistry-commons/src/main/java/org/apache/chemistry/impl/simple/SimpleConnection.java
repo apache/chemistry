@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -248,12 +247,11 @@ public class SimpleConnection implements Connection, SPI {
         }
     }
 
-    public List<ObjectEntry> getFolderParent(ObjectId folder, String filter,
-            boolean includeAllowableActions, boolean includeRelationships,
-            boolean returnToRoot) {
+    public ObjectEntry getFolderParent(ObjectId folder, String filter,
+            boolean includeAllowableActions, boolean includeRelationships) {
         // TODO filter, includeRelationship, includeAllowableActions
-        List<ObjectEntry> result = new LinkedList<ObjectEntry>();
-        SimpleData data = repository.datas.get(folder.getId());
+        String folderId = folder.getId();
+        SimpleData data = repository.datas.get(folderId);
         if (data == null) {
             throw new RuntimeException("No such folder: " + folder);
         }
@@ -262,21 +260,16 @@ public class SimpleConnection implements Connection, SPI {
         if (!type.getBaseType().equals(BaseType.FOLDER)) {
             throw new IllegalArgumentException("Not a folder: " + folder);
         }
-        String currentId = (String) data.get(Property.ID);
-        do {
-            Set<String> parents = repository.parents.get(currentId);
-            if (parents == null || parents.isEmpty()) {
-                break;
-            }
-            if (parents.size() > 1) {
-                throw new AssertionError(currentId + " has " + parents.size()
-                        + " parents");
-            }
-            currentId = parents.iterator().next();
-            data = repository.datas.get(currentId);
-            result.add(new SimpleObjectEntry(data, this));
-        } while (returnToRoot);
-        return result;
+        Set<String> parents = repository.parents.get(folderId);
+        if (parents == null || parents.isEmpty()) {
+            return null;
+        }
+        if (parents.size() > 1) {
+            throw new AssertionError(folder + " has " + parents.size()
+                    + " parents");
+        }
+        String parentId = parents.iterator().next();
+        return new SimpleObjectEntry(repository.datas.get(parentId), this);
     }
 
     public Collection<ObjectEntry> getObjectParents(ObjectId object,

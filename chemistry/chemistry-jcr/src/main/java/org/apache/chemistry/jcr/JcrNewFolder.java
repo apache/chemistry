@@ -113,14 +113,6 @@ public class JcrNewFolder extends JcrFolder {
     }
 
     @Override
-    public List<Folder> getAncestors() {
-        if (!saved) {
-            throw new UnsupportedOperationException();
-        }
-        return super.getAncestors();
-    }
-
-    @Override
     public void save() {
         if (saved) {
             throw new UnsupportedOperationException();
