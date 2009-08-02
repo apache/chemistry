@@ -200,7 +200,7 @@ text_search_predicate:
     CONTAINS^ LPAR! (qualifier COMMA!)? text_search_expression RPAR!;
 
 folder_predicate:
-    ( f=IN_FOLDER | f=IN_TREE ) LPAR qualifier? COMMA? folder_id RPAR
+    ( f=IN_FOLDER | f=IN_TREE ) LPAR (qualifier COMMA)? folder_id RPAR
       -> ^(FUNC $f qualifier? folder_id)
     ;
 
