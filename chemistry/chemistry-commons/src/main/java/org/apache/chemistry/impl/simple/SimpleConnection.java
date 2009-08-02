@@ -486,8 +486,9 @@ public class SimpleConnection implements Connection, SPI {
         return bytes != null;
     }
 
-    public ContentStream getContentStream(ObjectId object, String renditionId) {
-        // TODO renditionId
+    public ContentStream getContentStream(ObjectId object,
+            String contentStreamId) {
+        // TODO contentStreamId
         SimpleData data = repository.datas.get(object.getId());
         byte[] bytes = (byte[]) data.get(SimpleProperty.CONTENT_BYTES_KEY);
         if (bytes == null) {

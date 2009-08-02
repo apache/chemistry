@@ -56,7 +56,7 @@ public class JcrDocument extends JcrObjectEntry implements Document {
         return null;
     }
 
-    public ContentStream getContentStream(String renditionId) {
+    public ContentStream getContentStream(String contentStreamId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

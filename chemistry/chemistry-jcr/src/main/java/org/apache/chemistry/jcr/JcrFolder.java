@@ -140,7 +140,7 @@ public class JcrFolder extends JcrObjectEntry implements Folder {
         return BaseType.FOLDER;
     }
 
-    public ContentStream getContentStream(String renditionId) {
+    public ContentStream getContentStream(String contentStreamId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

@@ -35,21 +35,19 @@ public interface Rendition {
     String KIND_THUMBNAIL = "cmis:thumbnail";
 
     /**
-     * The rendition ID.
-     * <p>
-     * This ID has meaning only in the context of the rendition's base document
-     * or folder.
-     * <p>
-     * This ID may be passed to {@link SPI#getContentStream} to retrieve the
-     * rendition stream.
-     */
-    String getId();
-
-    /**
      * The object ID of the base document or folder that this rendition is
      * about.
      */
     ObjectId getObjectId();
+
+    /**
+     * The rendition content stream ID.
+     * <p>
+     * The content stream ID has meaning only in the context of the rendition's
+     * base document or folder. It may be passed to {@link SPI#getContentStream}
+     * to retrieve the rendition stream.
+     */
+    String getContentStreamId();
 
     /**
      * The rendition document object ID (optional).
@@ -70,7 +68,7 @@ public interface Rendition {
     long getLength();
 
     /**
-     * The rendition title, or {@code null}
+     * The rendition title, or {@code null}.
      */
     String getTitle();
 

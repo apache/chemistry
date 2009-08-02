@@ -92,7 +92,7 @@ public abstract class APPObject extends BaseObject {
         throw new UnsupportedOperationException();
     }
 
-    public ContentStream getContentStream(String renditionId) {
+    public ContentStream getContentStream(String contentStreamId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

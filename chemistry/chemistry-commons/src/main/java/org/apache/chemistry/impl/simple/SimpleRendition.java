@@ -7,9 +7,9 @@ import org.apache.chemistry.Rendition;
 
 public class SimpleRendition implements Rendition {
 
-    private final String id;
-
     private final ObjectId objectId;
+
+    private final String contentStreamId;
 
     private final ObjectId renditionDocumentId;
 
@@ -27,15 +27,12 @@ public class SimpleRendition implements Rendition {
 
     private final Map<String, String> metadata;
 
-    public SimpleRendition(String id, ObjectId objectId,
+    public SimpleRendition(ObjectId objectId, String contentStreamId,
             ObjectId renditionDocumentId, String mimeType, long length,
             String title, String kind, long height, long width,
             Map<String, String> metadata) {
-        if (id == null) {
-            throw new IllegalArgumentException("Rendition id cannot be null");
-        }
-        this.id = id;
         this.objectId = objectId;
+        this.contentStreamId = contentStreamId;
         this.renditionDocumentId = renditionDocumentId;
         this.mimeType = mimeType;
         this.length = length;
@@ -46,12 +43,12 @@ public class SimpleRendition implements Rendition {
         this.metadata = metadata;
     }
 
-    public String getId() {
-        return id;
-    }
-
     public ObjectId getObjectId() {
         return objectId;
+    }
+
+    public String getContentStreamId() {
+        return contentStreamId;
     }
 
     public ObjectId getRenditionDocumentId() {

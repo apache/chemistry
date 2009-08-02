@@ -367,16 +367,16 @@ public interface SPI {
     /**
      * Gets a content stream for a document or folder.
      * <p>
-     * If a rendition ID is provided, the content stream returned will be for
-     * the given rendition.
+     * A content stream ID can be provided, to access alternate content streams
+     * (renditions for instance).
      *
      * @param object the document or folder
-     * @param renditionId the rendition ID, or {@code null}
+     * @param contentStreamId the content stream ID, or {@code null}
      * @return the content stream
      *
      * @throws IOException
      */
-    ContentStream getContentStream(ObjectId object, String renditionId)
+    ContentStream getContentStream(ObjectId object, String contentStreamId)
             throws IOException;
 
     /**

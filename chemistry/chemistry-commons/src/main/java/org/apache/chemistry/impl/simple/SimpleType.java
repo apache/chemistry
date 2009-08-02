@@ -165,6 +165,12 @@ public class SimpleType implements Type {
             "", false, PropertyType.STRING, false, null, false, false, null,
             Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
 
+    public static final SimplePropertyDefinition PROP_CONTENT_STREAM_ID = new SimplePropertyDefinition(
+            Property.CONTENT_STREAM_ID, "def:contentstreamid", null,
+            Property.CONTENT_STREAM_ID, "Content Stream ID", "", false,
+            PropertyType.STRING, false, null, false, false, null,
+            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
+
     public static final SimplePropertyDefinition PROP_PARENT_ID = new SimplePropertyDefinition(
             Property.PARENT_ID, "def:parentid", null, Property.PARENT_ID,
             "Parent Id", "", false, PropertyType.ID, false, null, false, true,
@@ -231,7 +237,8 @@ public class SimpleType implements Type {
             PROP_CHECKIN_COMMENT, //
             PROP_CONTENT_STREAM_LENGTH, //
             PROP_CONTENT_STREAM_MIME_TYPE, //
-            PROP_CONTENT_STREAM_FILENAME);
+            PROP_CONTENT_STREAM_FILENAME, //
+            PROP_CONTENT_STREAM_ID);
 
     public static final List<PropertyDefinition> PROPS_FOLDER_BASE = commonPlus(
             PROP_NAME, //

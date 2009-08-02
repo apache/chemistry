@@ -247,13 +247,13 @@ public interface CMISObject extends ObjectId {
     /**
      * Gets a content stream for this document.
      *
-     * @param renditionId the rendition ID, or {@code null} for the primary
-     *            stream
+     * @param contentStreamId the content stream ID, or {@code null} for the
+     *            primary content stream
      * @return the content stream
      *
      * @throws IOException
      */
-    ContentStream getContentStream(String renditionId) throws IOException;
+    ContentStream getContentStream(String contentStreamId) throws IOException;
 
     /**
      * Saves the modifications done to the object through {@link #setValue},

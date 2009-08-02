@@ -315,8 +315,8 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public ContentStream getContentStream(ObjectId documentId,
-            String renditionId) throws IOException {
-        // TODO renditionId
+            String contentStreamId) throws IOException {
+        // TODO contentStreamId
         try {
             String relPath = JcrObjectEntry.getPath(documentId.getId()).substring(
                     1);

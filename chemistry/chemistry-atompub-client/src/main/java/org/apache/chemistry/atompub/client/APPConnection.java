@@ -433,8 +433,8 @@ public class APPConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ContentStream getContentStream(ObjectId object, String renditionId)
-            throws IOException {
+    public ContentStream getContentStream(ObjectId object,
+            String contentStreamId) throws IOException {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

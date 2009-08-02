@@ -146,7 +146,7 @@ public class SimpleObject extends BaseObject {
         return new SimpleProperty(entry, id, propertyDefinition);
     }
 
-    public ContentStream getContentStream(String renditionId) {
+    public ContentStream getContentStream(String contentStreamId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

@@ -75,6 +75,8 @@ public interface Property {
 
     String CONTENT_STREAM_FILENAME = "cmis:ContentStreamFilename";
 
+    String CONTENT_STREAM_ID = "cmis:ContentStreamId";
+
     /*
      * ----- Folder -----
      */
