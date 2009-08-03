@@ -40,10 +40,9 @@ import org.apache.chemistry.impl.simple.SimpleTypeManager;
 public abstract class BaseRepository implements Repository, RepositoryInfo,
         RepositoryCapabilities {
 
-    // from the spec
-    public static final String ROOT_FOLDER_NAME = "CMIS_Root_Folder";
-
     public static final String ROOT_TYPE_ID = "chemistry:root";
+
+    public static final String ROOT_FOLDER_NAME = "";
 
     public static final SimpleType ROOT_TYPE = new SimpleType(ROOT_TYPE_ID,
             BaseType.FOLDER.getId(), ROOT_TYPE_ID, null, ROOT_TYPE_ID,

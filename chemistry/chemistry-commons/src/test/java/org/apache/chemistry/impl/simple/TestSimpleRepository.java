@@ -133,7 +133,7 @@ public class TestSimpleRepository extends TestCase {
         Folder root = conn.getRootFolder();
         assertNotNull(root);
         assertEquals(repo.getRootFolderId().getId(), root.getId());
-        assertEquals("CMIS_Root_Folder", root.getName());
+        assertEquals("", root.getName());
         assertEquals(0, root.getChildren().size());
         assertNull(root.getParent());
     }
@@ -253,7 +253,7 @@ public class TestSimpleRepository extends TestCase {
         res = conn.query("SELECT * FROM doc", false);
         assertEquals(1, res.size());
         res = conn.query(
-                "SELECT * FROM cmis:folder WHERE cmis:Name = 'CMIS_Root_Folder'",
+                "SELECT * FROM cmis:folder WHERE cmis:Name = ''",
                 false);
         assertEquals(1, res.size());
         res = conn.query("SELECT * FROM doc WHERE cmis:ObjectId = 'nosuchid'",

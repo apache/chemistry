@@ -50,6 +50,8 @@ public abstract class BasicTestCase extends TestCase {
 
     public static final String ROOT_TYPE_ID = "chemistry:root"; // not in spec
 
+    public static final String ROOT_FOLDER_NAME = ""; // not in spec
+
     public Repository repository;
 
     public Connection conn;
@@ -108,7 +110,7 @@ public abstract class BasicTestCase extends TestCase {
         assertNotNull(rootType);
         assertEquals(ROOT_TYPE_ID, rootType.getId());
         assertEquals(ROOT_TYPE_ID, root.getTypeId());
-        assertEquals("CMIS_Root_Folder", root.getName()); // from the spec
+        assertEquals(ROOT_FOLDER_NAME, root.getName());
         assertEquals(null, root.getParent());
         Map<String, Property> props = root.getProperties();
         assertNotNull(props);
