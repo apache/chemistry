@@ -222,12 +222,10 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             pdt = type.getPropertyDefinition("dc:title");
         }
         if (pdt == null) {
-            pdt = type.getPropertyDefinition(Property.NAME);
+            pdt = type.getPropertyDefinition(Property.NAME); // mandatory
         }
-        if (pdt != null) {
-            String title = entry.getTitle(); // Atom MUST
-            properties.put(pdt.getId(), title);
-        }
+        String title = entry.getTitle(); // Atom MUST
+        properties.put(pdt.getId(), title);
         // TODO summary
         // parse the date ourselves, as Abdera's AtomDate loses the timezone
         Calendar updated;

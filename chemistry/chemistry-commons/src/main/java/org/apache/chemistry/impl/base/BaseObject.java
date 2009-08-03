@@ -145,6 +145,10 @@ public abstract class BaseObject implements CMISObject {
         return getId(Property.BASE_TYPE_ID);
     }
 
+    public String getName() {
+        return getString(Property.NAME);
+    }
+
     public String getCreatedBy() {
         return getString(Property.CREATED_BY);
     }
@@ -163,10 +167,6 @@ public abstract class BaseObject implements CMISObject {
 
     public String getChangeToken() {
         return getString(Property.CHANGE_TOKEN);
-    }
-
-    public String getName() {
-        return getString(Property.NAME);
     }
 
     public boolean isImmutable() {

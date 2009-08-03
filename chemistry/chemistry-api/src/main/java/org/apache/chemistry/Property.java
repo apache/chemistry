@@ -33,6 +33,8 @@ public interface Property {
 
     String BASE_TYPE_ID = "cmis:BaseTypeId";
 
+    String NAME = "cmis:Name";
+
     String CREATED_BY = "cmis:CreatedBy";
 
     String CREATION_DATE = "cmis:CreationDate";
@@ -46,8 +48,6 @@ public interface Property {
     /*
      * ----- Document -----
      */
-
-    String NAME = "cmis:Name";
 
     String IS_IMMUTABLE = "cmis:IsImmutable";
 
@@ -81,7 +81,6 @@ public interface Property {
      * ----- Folder -----
      */
 
-    // NAME as well
     String PARENT_ID = "cmis:ParentId";
 
     String ALLOWED_CHILD_OBJECT_TYPE_IDS = "cmis:AllowedChildObjectTypeIds";
@@ -97,8 +96,6 @@ public interface Property {
     /*
      * ----- Policy -----
      */
-
-    String POLICY_NAME = "cmis:PolicyName";
 
     String POLICY_TEXT = "cmis:PolicyText";
 

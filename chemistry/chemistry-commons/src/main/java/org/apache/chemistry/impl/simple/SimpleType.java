@@ -51,6 +51,11 @@ public class SimpleType implements Type {
             false, null, false, true, null, Updatability.READ_ONLY, true, true,
             0, null, null, -1, null);
 
+    public static final SimplePropertyDefinition PROP_NAME = new SimplePropertyDefinition(
+            Property.NAME, "def:name", null, Property.NAME, "Name", "", false,
+            PropertyType.STRING, false, null, false, true, null,
+            Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
+
     public static final SimplePropertyDefinition PROP_CREATED_BY = new SimplePropertyDefinition(
             Property.CREATED_BY, "def:createdby", null, Property.CREATED_BY,
             "Created By", "", false, PropertyType.STRING, false, null, false,
@@ -79,11 +84,6 @@ public class SimpleType implements Type {
             Property.CHANGE_TOKEN, "def:changetoken", null,
             Property.CHANGE_TOKEN, "Change Token", "", false,
             PropertyType.STRING, false, null, false, false, null,
-            Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
-
-    public static final SimplePropertyDefinition PROP_NAME = new SimplePropertyDefinition(
-            Property.NAME, "def:name", null, Property.NAME, "Name", "", false,
-            PropertyType.STRING, false, null, false, true, null,
             Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_IS_LATEST_VERSION = new SimplePropertyDefinition(
@@ -194,12 +194,6 @@ public class SimpleType implements Type {
             "Target Id", "", false, PropertyType.ID, false, null, false, true,
             null, Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
 
-    public static final SimplePropertyDefinition PROP_POLICY_NAME = new SimplePropertyDefinition(
-            Property.POLICY_NAME, "def:policyname", null, Property.POLICY_NAME,
-            "Policy Name", "", false, PropertyType.STRING, false, null, false,
-            true, null, Updatability.READ_ONLY, true, true, 0, null, null, -1,
-            null);
-
     public static final SimplePropertyDefinition PROP_POLICY_TEXT = new SimplePropertyDefinition(
             Property.POLICY_TEXT, "def:policytext", null, Property.POLICY_TEXT,
             "Policy Text", "", false, PropertyType.STRING, false, null, false,
@@ -209,6 +203,7 @@ public class SimpleType implements Type {
     private static final PropertyDefinition[] PROPS_COMMON = { PROP_ID, //
             PROP_TYPE_ID, //
             PROP_BASE_TYPE_ID, //
+            PROP_NAME, //
             PROP_CREATED_BY, //
             PROP_CREATION_DATE, //
             PROP_LAST_MODIFIED_BY, //
@@ -225,7 +220,6 @@ public class SimpleType implements Type {
     }
 
     public static final List<PropertyDefinition> PROPS_DOCUMENT_BASE = commonPlus(
-            PROP_NAME, //
             PROP_IS_LATEST_VERSION, //
             PROP_IS_MAJOR_VERSION, //
             PROP_IS_LATEST_MAJOR_VERSION, //
@@ -241,7 +235,6 @@ public class SimpleType implements Type {
             PROP_CONTENT_STREAM_ID);
 
     public static final List<PropertyDefinition> PROPS_FOLDER_BASE = commonPlus(
-            PROP_NAME, //
             PROP_PARENT_ID, //
             PROP_ALLOWED_CHILD_OBJECT_TYPE_IDS);
 
@@ -249,9 +242,8 @@ public class SimpleType implements Type {
             PROP_SOURCE_ID, //
             PROP_TARGET_ID);
 
-    public static final List<PropertyDefinition> PROPS_POLICY_BASE = commonPlus(
-            PROP_POLICY_NAME, //
-            PROP_POLICY_TEXT);
+    public static final List<PropertyDefinition> PROPS_POLICY_BASE = commonPlus( //
+    PROP_POLICY_TEXT);
 
     protected final String id;
 
