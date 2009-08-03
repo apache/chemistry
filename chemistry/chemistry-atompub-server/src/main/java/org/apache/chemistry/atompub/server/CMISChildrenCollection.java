@@ -41,7 +41,7 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
         boolean[] hasMoreItems = new boolean[1];
         ObjectId objectId = spi.newObjectId(id);
         List<ObjectEntry> children = spi.getChildren(objectId, null, false,
-                false, 0, 0, null, hasMoreItems);
+                false, false, 0, 0, null, hasMoreItems);
         return children;
     }
 

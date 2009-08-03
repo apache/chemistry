@@ -158,28 +158,28 @@ public abstract class BasicTestCase extends TestCase {
     public void testGetChildren() {
         boolean[] hasMoreItems = new boolean[1];
         Folder root = conn.getRootFolder();
-        assertEquals(1, spi.getChildren(root, null, true, false, 20, 0, null,
-                hasMoreItems).size());
+        assertEquals(1, spi.getChildren(root, null, true, false, false, 20, 0,
+                null, hasMoreItems).size());
         assertFalse(hasMoreItems[0]);
         ObjectId folder1 = root.getChildren().get(0);
-        assertEquals(2, spi.getChildren(folder1, null, false, false, 20, 0,
-                null, hasMoreItems).size());
+        assertEquals(2, spi.getChildren(folder1, null, false, false, false, 20,
+                0, null, hasMoreItems).size());
         assertFalse(hasMoreItems[0]);
-        assertEquals(1, spi.getChildren(folder1, null, false, false, 1, 0,
-                null, hasMoreItems).size());
+        assertEquals(1, spi.getChildren(folder1, null, false, false, false, 1,
+                0, null, hasMoreItems).size());
         assertTrue(hasMoreItems[0]);
-        assertEquals(1, spi.getChildren(folder1, null, false, false, 1, 1,
-                null, hasMoreItems).size());
+        assertEquals(1, spi.getChildren(folder1, null, false, false, false, 1,
+                1, null, hasMoreItems).size());
         assertFalse(hasMoreItems[0]);
         List<ObjectEntry> temp = spi.getChildren(folder1, null, false, false,
-                2, 0, null, hasMoreItems);
+                false, 2, 0, null, hasMoreItems);
         ObjectId folder2 = temp.get(0).getTypeId().equals("fold") ? temp.get(0)
                 : temp.get(1);
-        assertEquals(1, spi.getChildren(folder2, null, false, false, 1, 1,
-                null, hasMoreItems).size());
+        assertEquals(1, spi.getChildren(folder2, null, false, false, false, 1,
+                1, null, hasMoreItems).size());
         assertTrue(hasMoreItems[0]);
-        assertEquals(2, spi.getChildren(folder2, null, false, false, 2, 0,
-                null, hasMoreItems).size());
+        assertEquals(2, spi.getChildren(folder2, null, false, false, false, 2,
+                0, null, hasMoreItems).size());
         assertTrue(hasMoreItems[0]);
     }
 
@@ -192,7 +192,7 @@ public abstract class BasicTestCase extends TestCase {
     public void testGetDescendants() {
         Folder root = conn.getRootFolder();
         List<ObjectEntry> desc = spi.getDescendants(root, 4, null, false,
-                false, null);
+                false, false, null);
         assertEquals(6, desc.size());
     }
 

@@ -160,8 +160,8 @@ public class SimpleConnection implements Connection, SPI {
     protected void accumulateFolders(ObjectId folder, int depth, String filter,
             boolean includeAllowableActions, List<ObjectEntry> list) {
         List<ObjectEntry> children = getChildren(folder, filter,
-                includeAllowableActions, false, Integer.MAX_VALUE, 0, null,
-                new boolean[1]);
+                includeAllowableActions, false, false, Integer.MAX_VALUE, 0,
+                null, new boolean[1]);
         for (ObjectEntry child : children) {
             if (child.getBaseType() != BaseType.FOLDER) {
                 continue;
@@ -183,36 +183,42 @@ public class SimpleConnection implements Connection, SPI {
 
     /**
      * Accumulates the descendants into a list recursively.
+     *
+     * @param includeRenditions TODO
      */
     protected void accumulateDescendants(ObjectId folder, int depth,
             String filter, boolean includeAllowableActions,
-            boolean includeRelationships, String orderBy, List<ObjectEntry> list) {
+            boolean includeRelationships, boolean includeRenditions,
+            String orderBy, List<ObjectEntry> list) {
         // TODO deal with paging properly
         List<ObjectEntry> children = getChildren(folder, filter,
                 includeAllowableActions, includeRelationships,
-                Integer.MAX_VALUE, 0, orderBy, new boolean[1]);
+                includeRenditions, Integer.MAX_VALUE, 0, orderBy,
+                new boolean[1]);
         for (ObjectEntry child : children) {
             list.add(child);
             if (depth > 1 && child.getBaseType() == BaseType.FOLDER) {
                 accumulateDescendants(child, depth - 1, filter,
-                        includeAllowableActions, includeRelationships, orderBy,
-                        list);
+                        includeAllowableActions, includeRelationships,
+                        includeRenditions, orderBy, list);
             }
         }
     }
 
     public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
             String filter, boolean includeAllowableActions,
-            boolean includeRelationships, String orderBy) {
+            boolean includeRelationships, boolean includeRenditions,
+            String orderBy) {
         List<ObjectEntry> list = new ArrayList<ObjectEntry>();
         accumulateDescendants(folder, depth, filter, includeAllowableActions,
-                includeRelationships, orderBy, list);
+                includeRelationships, includeRenditions, orderBy, list);
         return list;
     }
 
     public List<ObjectEntry> getChildren(ObjectId folder, String filter,
             boolean includeAllowableActions, boolean includeRelationships,
-            int maxItems, int skipCount, String orderBy, boolean[] hasMoreItems) {
+            boolean includeRenditions, int maxItems, int skipCount,
+            String orderBy, boolean[] hasMoreItems) {
         // TODO orderBy
         Set<String> ids = repository.children.get(folder.getId());
         List<ObjectEntry> all = new ArrayList<ObjectEntry>(ids.size());
@@ -598,8 +604,8 @@ public class SimpleConnection implements Connection, SPI {
 
     public Collection<ObjectEntry> query(String statement,
             boolean searchAllVersions, boolean includeAllowableActions,
-            boolean includeRelationships, int maxItems, int skipCount,
-            boolean[] hasMoreItems) {
+            boolean includeRelationships, boolean includeRenditions,
+            int maxItems, int skipCount, boolean[] hasMoreItems) {
         // this implementation doesn't try to be very efficient...
         List<ObjectEntry> all = new ArrayList<ObjectEntry>();
         String tableName = null;
@@ -659,7 +665,7 @@ public class SimpleConnection implements Connection, SPI {
             boolean searchAllVersions) {
         boolean[] hasMoreItems = new boolean[1];
         Collection<ObjectEntry> res = query(statement, searchAllVersions,
-                false, false, 0, 0, hasMoreItems);
+                false, false, false, 0, 0, hasMoreItems);
         List<CMISObject> objects = new ArrayList<CMISObject>(res.size());
         for (ObjectEntry e : res) {
             objects.add(SimpleObject.construct((SimpleObjectEntry) e));

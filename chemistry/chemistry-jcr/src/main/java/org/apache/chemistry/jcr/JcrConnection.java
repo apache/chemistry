@@ -135,7 +135,7 @@ public class JcrConnection implements Connection, SPI {
             boolean searchAllVersions) {
         boolean[] hasMoreItems = new boolean[1];
         Collection<ObjectEntry> entries = query(statement, searchAllVersions,
-                false, false, Integer.MAX_VALUE, 0, hasMoreItems);
+                false, false, false, Integer.MAX_VALUE, 0, hasMoreItems);
         List<CMISObject> objects = new ArrayList<CMISObject>(entries.size());
         for (ObjectEntry entry : entries) {
             // cast entries, they are all JcrFolder or JcrDocument
@@ -270,7 +270,8 @@ public class JcrConnection implements Connection, SPI {
 
     public List<ObjectEntry> getChildren(ObjectId folderId, String filter,
             boolean includeAllowableActions, boolean includeRelationships,
-            int maxItems, int skipCount, String orderBy, boolean[] hasMoreItems) {
+            boolean includeRenditions, int maxItems, int skipCount,
+            String orderBy, boolean[] hasMoreItems) {
 
         try {
             if (maxItems == 0) {
@@ -341,7 +342,8 @@ public class JcrConnection implements Connection, SPI {
 
     public List<ObjectEntry> getDescendants(ObjectId folderId, int depth,
             String filter, boolean includeAllowableActions,
-            boolean includeRelationships, String orderBy) {
+            boolean includeRelationships, boolean includeRenditions,
+            String orderBy) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -415,8 +417,8 @@ public class JcrConnection implements Connection, SPI {
 
     public Collection<ObjectEntry> query(String statement,
             boolean searchAllVersions, boolean includeAllowableActions,
-            boolean includeRelationships, int maxItems, int skipCount,
-            boolean[] hasMoreItems) {
+            boolean includeRelationships, boolean includeRenditions,
+            int maxItems, int skipCount, boolean[] hasMoreItems) {
 
         try {
             QueryManager qm = session.getWorkspace().getQueryManager();

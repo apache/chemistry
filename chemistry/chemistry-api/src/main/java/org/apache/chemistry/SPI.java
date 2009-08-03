@@ -110,12 +110,14 @@ public interface SPI {
      * @param includeAllowableActions {@code true} to include allowable actions
      * @param includeRelationships {@code true} if relationships should be
      *            included as well
+     * @param includeRenditions {@code true} if renditions should be included as
+     *            well
      * @param orderBy an {@code ORDER BY} clause, or {@code null}
      */
     // TODO return type for a tree
     List<ObjectEntry> getDescendants(ObjectId folder, int depth, String filter,
             boolean includeAllowableActions, boolean includeRelationships,
-            String orderBy);
+            boolean includeRenditions, String orderBy);
 
     /**
      * Gets the direct children of a folder.
@@ -145,6 +147,8 @@ public interface SPI {
      * @param includeAllowableActions {@code true} to include allowable actions
      * @param includeRelationships {@code true} if relationships should be
      *            included as well
+     * @param includeRenditions {@code true} if renditions should be included as
+     *            well
      * @param maxItems the maximum number of objects to return, or {@code 0} for
      *            a repository-specific default
      * @param skipCount the skip count
@@ -154,7 +158,8 @@ public interface SPI {
      */
     List<ObjectEntry> getChildren(ObjectId folder, String filter,
             boolean includeAllowableActions, boolean includeRelationships,
-            int maxItems, int skipCount, String orderBy, boolean[] hasMoreItems);
+            boolean includeRenditions, int maxItems, int skipCount,
+            String orderBy, boolean[] hasMoreItems);
 
     /**
      * Gets the parent of a folder.
@@ -575,6 +580,8 @@ public interface SPI {
      * @param includeAllowableActions {@code true} to include allowable actions
      * @param includeRelationships {@code true} if relationships should be
      *            included as well
+     * @param includeRenditions {@code true} if renditions should be included as
+     *            well
      * @param maxItems the maximum number of objects to return, or {@code 0} for
      *            a repository-specific default
      * @param skipCount the skip count
@@ -584,7 +591,8 @@ public interface SPI {
     // TODO returns a result set actually, there may be computed values
     Collection<ObjectEntry> query(String statement, boolean searchAllVersions,
             boolean includeAllowableActions, boolean includeRelationships,
-            int maxItems, int skipCount, boolean[] hasMoreItems);
+            boolean includeRenditions, int maxItems, int skipCount,
+            boolean[] hasMoreItems);
 
     /**
      * Gets a list of content changes.
