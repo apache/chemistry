@@ -37,7 +37,7 @@ public interface ContentStream {
     /**
      * The content stream file name, or {@code null} if none is provided.
      */
-    String getFilename();
+    String getFileName();
 
     /**
      * The actual byte stream for this content stream.

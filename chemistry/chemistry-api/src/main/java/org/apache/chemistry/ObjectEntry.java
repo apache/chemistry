@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 /**
  * A CMIS object entry, returned from a search or a listing.
  * <p>
@@ -95,7 +97,7 @@ public interface ObjectEntry extends ObjectId {
     /**
      * The allowable actions, if fetched.
      */
-    Collection<String> getAllowableActions();
+    Map<QName, Boolean> getAllowableActions();
 
     /**
      * The relationships in relation to this document, if fetched.

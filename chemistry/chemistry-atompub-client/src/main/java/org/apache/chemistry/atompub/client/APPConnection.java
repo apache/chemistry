@@ -50,8 +50,8 @@ import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
-import org.apache.chemistry.atompub.Atom;
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.AtomPub;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.URITemplate;
 import org.apache.chemistry.atompub.client.connector.Connector;
 import org.apache.chemistry.atompub.client.connector.Request;
@@ -125,7 +125,7 @@ public class APPConnection implements Connection, SPI {
         }
         APPObjectEntry entry = newObjectEntry(typeId);
         if (folder != null) {
-            entry.addLink(Atom.LINK_UP,
+            entry.addLink(AtomPub.LINK_UP,
                     ((APPFolder) folder).entry.getEditLink());
         }
         return new APPDocument(entry, type);
@@ -139,7 +139,7 @@ public class APPConnection implements Connection, SPI {
         APPObjectEntry entry = newObjectEntry(typeId);
         if (folder != null) {
             entry._setValue(Property.PARENT_ID, folder.getId());
-            entry.addLink(Atom.LINK_UP,
+            entry.addLink(AtomPub.LINK_UP,
                     ((APPFolder) folder).entry.getEditLink());
         }
         return new APPFolder(entry, type);
@@ -249,7 +249,7 @@ public class APPConnection implements Connection, SPI {
             skipCount = 0;
         }
 
-        String href = getObjectEntry(folder).getLink(Atom.LINK_DOWN);
+        String href = getObjectEntry(folder).getLink(AtomPub.LINK_DOWN);
         Response resp = connector.get(new Request(href));
         if (!resp.isOk()) {
             throw new ContentManagerException(
@@ -282,9 +282,8 @@ public class APPConnection implements Connection, SPI {
         return result;
     }
 
-    public ObjectEntry getFolderParent(ObjectId folder, String filter,
-            boolean includeAllowableActions, boolean includeRelationships) {
-        // TODO filter, includeRelationship, includeAllowableActions
+    public ObjectEntry getFolderParent(ObjectId folder, String filter) {
+        // TODO filter
         APPObjectEntry current = getObjectEntry(folder);
         if (!current.getBaseType().equals(BaseType.FOLDER)) {
             throw new IllegalArgumentException("Not a folder: " + folder);
@@ -293,7 +292,7 @@ public class APPConnection implements Connection, SPI {
         if (current.getId().equals(rootId)) {
             return null;
         }
-        String href = current.getLink(Atom.LINK_UP);
+        String href = current.getLink(AtomPub.LINK_UP);
         if (href == null) {
             return null;
         }
@@ -307,11 +306,10 @@ public class APPConnection implements Connection, SPI {
     }
 
     public Collection<ObjectEntry> getObjectParents(ObjectId object,
-            String filter, boolean includeAllowableActions,
-            boolean includeRelationships) {
-        // TODO filter, includeRelationship, includeAllowableActions
+            String filter) {
+        // TODO filter
         APPObjectEntry current = getObjectEntry(object);
-        String href = current.getLink(Atom.LINK_UP);
+        String href = current.getLink(AtomPub.LINK_UP);
         Response resp = connector.get(new Request(href));
         if (!resp.isOk()) {
             throw new ContentManagerException(
@@ -341,7 +339,7 @@ public class APPConnection implements Connection, SPI {
             return ((APPObjectEntry) objectId);
         }
         String href;
-        URITemplate uriTemplate = repository.getURITemplate(CMIS.URITMPL_ENTRY_BY_ID);
+        URITemplate uriTemplate = repository.getURITemplate(AtomPubCMIS.URITMPL_ENTRY_BY_ID);
         if (uriTemplate != null) {
             // use entry-by-id URI template
             href = uriTemplate.template;
@@ -351,7 +349,7 @@ public class APPConnection implements Connection, SPI {
             // TODO do a search (maybe 4 searches as base type unknown)
 
             // XXX hardcoded Chemistry URL pattern
-            href = repository.getCollectionHref(CMIS.COL_ROOT_CHILDREN);
+            href = repository.getCollectionHref(AtomPubCMIS.COL_ROOT_CHILDREN);
             if (href.matches(".*/children/[0-9a-f-]{36}")) {
                 href = href.substring(0, href.length() - "/children/".length()
                         - 36);
@@ -391,28 +389,26 @@ public class APPConnection implements Connection, SPI {
         }
     }
 
-    public ObjectId createDocument(String typeId,
-            Map<String, Serializable> properties, ObjectId folder,
-            ContentStream contentStream, VersioningState versioningState) {
+    public ObjectId createDocument(Map<String, Serializable> properties,
+            ObjectId folder, ContentStream contentStream,
+            VersioningState versioningState) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId createFolder(String typeId,
-            Map<String, Serializable> properties, ObjectId folder) {
+    public ObjectId createFolder(Map<String, Serializable> properties,
+            ObjectId folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId createRelationship(String typeId,
-            Map<String, Serializable> properties, ObjectId source,
-            ObjectId target) {
+    public ObjectId createRelationship(Map<String, Serializable> properties) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId createPolicy(String typeId,
-            Map<String, Serializable> properties, ObjectId folder) {
+    public ObjectId createPolicy(Map<String, Serializable> properties,
+            ObjectId folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -496,7 +492,7 @@ public class APPConnection implements Connection, SPI {
             boolean searchAllVersions, boolean includeAllowableActions,
             boolean includeRelationships, boolean includeRenditions,
             int maxItems, int skipCount, boolean[] hasMoreItems) {
-        String href = repository.getCollectionHref(CMIS.COL_QUERY);
+        String href = repository.getCollectionHref(AtomPubCMIS.COL_QUERY);
         Response resp = connector.postQuery(new Request(href), statement,
                 searchAllVersions, maxItems, skipCount, includeAllowableActions);
         if (!resp.isOk()) {

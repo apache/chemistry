@@ -25,10 +25,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.CMIS;
 import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Type;
-import org.apache.chemistry.atompub.CMIS;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.XmlProperty;
 

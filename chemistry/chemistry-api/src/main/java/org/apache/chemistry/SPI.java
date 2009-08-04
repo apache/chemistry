@@ -170,13 +170,9 @@ public interface SPI {
      *
      * @param folder the folder
      * @param filter the properties filter, or {@code null} for all properties
-     * @param includeAllowableActions {@code true} to include allowable actions
-     * @param includeRelationships {@code true} if relationships should be
-     *            included as well
      * @return the parents and optionally relationships
      */
-    ObjectEntry getFolderParent(ObjectId folder, String filter,
-            boolean includeAllowableActions, boolean includeRelationships);
+    ObjectEntry getFolderParent(ObjectId folder, String filter);
 
     /**
      * Gets the direct parents of an object.
@@ -187,13 +183,9 @@ public interface SPI {
      *
      * @param object the object
      * @param filter the properties filter, or {@code null} for all properties
-     * @param includeAllowableActions {@code true} to include allowable actions
-     * @param includeRelationships {@code true} if relationships should be
-     *            included as well
      * @return the collection of parent folders
      */
-    Collection<ObjectEntry> getObjectParents(ObjectId object, String filter,
-            boolean includeAllowableActions, boolean includeRelationships);
+    Collection<ObjectEntry> getObjectParents(ObjectId object, String filter);
 
     /**
      * Gets the list of documents that are checked out that the user has access
@@ -230,8 +222,7 @@ public interface SPI {
     /**
      * Creates a document.
      * <p>
-     * Creates a document of the specified type, and optionally adds the
-     * document to a folder.
+     * Creates a document, and optionally adds it to a folder.
      * <p>
      * The versioningState input is used to create a document in a
      * {@link VersioningState#CHECKED_OUT CHECKED_OUT} state, or as a checked-in
@@ -240,44 +231,35 @@ public interface SPI {
      * {@link VersioningState#CHECKED_OUT CHECKED_OUT} state, the object is a
      * private working copy and there is no corresponding checked out document.
      *
-     * @param typeId the document type ID
      * @param properties the properties
      * @param folder the containing folder, or {@code null}
      * @param contentStream the content stream, or {@code null}
      * @param versioningState the versioning state
+     *
      * @return the ID of the created document
      */
-    ObjectId createDocument(String typeId,
-            Map<String, Serializable> properties, ObjectId folder,
-            ContentStream contentStream, VersioningState versioningState);
+    ObjectId createDocument(Map<String, Serializable> properties,
+            ObjectId folder, ContentStream contentStream,
+            VersioningState versioningState);
 
     /**
      * Creates a folder.
-     * <p>
-     * Creates a folder object of the specified type.
      *
-     * @param typeId the folder type ID
      * @param properties the properties
      * @param folder the containing folder
+     *
      * @return the ID of the created folder
      */
-    ObjectId createFolder(String typeId, Map<String, Serializable> properties,
-            ObjectId folder);
+    ObjectId createFolder(Map<String, Serializable> properties, ObjectId folder);
 
     /**
      * Creates a relationship.
-     * <p>
-     * Creates a relationship of the specified type.
      *
-     * @param typeId the relationship type ID
      * @param properties the properties
-     * @param source the source
-     * @param target the target
+     *
      * @return the ID of the created relationship
      */
-    ObjectId createRelationship(String typeId,
-            Map<String, Serializable> properties, ObjectId source,
-            ObjectId target);
+    ObjectId createRelationship(Map<String, Serializable> properties);
 
     /**
      * Creates a policy.
@@ -285,13 +267,12 @@ public interface SPI {
      * Creates a policy of the specified type, and optionally adds the policy to
      * a folder.
      *
-     * @param typeId the relationship type ID
      * @param properties the properties
      * @param folder the containing folder, or {@code null}
+     *
      * @return the ID of the created policy
      */
-    ObjectId createPolicy(String typeId, Map<String, Serializable> properties,
-            ObjectId folder);
+    ObjectId createPolicy(Map<String, Serializable> properties, ObjectId folder);
 
     /**
      * Gets the allowable actions.
@@ -334,10 +315,11 @@ public interface SPI {
     /**
      * Gets the list of associated renditions for an object.
      * <p>
-     * A rendition filter can be included. It is either {@code "*"}, {@code
-     * "cmis:none"}, or a comma-separated list of either kinds of MIME types
-     * (which may have a subtype of {@code "*"}). The {@code null} value is
-     * equivalent to {@code "cmis:none"}.
+     * A rendition filter can be included. It is either {@code "*"} (
+     * {@link Rendition#FILTER_ALL}), {@code "cmis:none"} (
+     * {@link Rendition#FILTER_NONE}), or a comma-separated list of either kinds
+     * of MIME types (which may have a subtype of {@code "*"}). The {@code null}
+     * value is equivalent to {@code "cmis:none"}.
      *
      * @param object the object
      * @param filter a rendition filter, or {@code null} for none
@@ -347,6 +329,9 @@ public interface SPI {
      * @return the list of renditions
      *
      * @throws UnsupportedOperationException if renditions are not supported
+     *
+     * @see Rendition#FILTER_ALL
+     * @see Rendition#FILTER_NONE
      */
     List<Rendition> getRenditions(ObjectId object, String filter, int maxItems,
             int skipCount);

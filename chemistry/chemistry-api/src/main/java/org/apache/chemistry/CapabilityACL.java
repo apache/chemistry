@@ -20,54 +20,56 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The level of changes (if any) that the repository exposes via
- * {@link SPI#getChangeLog}.
+ * The level of support for ACLs by the repository.
  *
- * @see SPI#getChangeLog
+ * @see RepositoryCapabilities#getACLCapability
  */
-public enum ChangeCapability {
+public enum CapabilityACL {
 
     /**
-     * The repository does not expose any information in the change log.
+     * The repository does not support ACL services.
      */
     NONE("none"),
 
     /**
-     * The change log can return only the object IDs for changed objects in the
-     * repository and an indication of the type of change, not details of the
-     * actual change.
+     * The repository supports discovery of ACLs ({@link SPI#getACL}).
+     *
+     * @see SPI#getACL
      */
-    OBJECT_IDS_ONLY("objectidsonly"),
+    DISCOVER("discover"),
 
     /**
-     * The change log can return the object IDs for changed objects in the
-     * repository and the details of the actual properties changed.
+     * The repository supports discovery of ACLs and applying ACLs (
+     * {@link SPI#getACL} and {@link SPI#applyACL}).
+     *
+     * @see SPI#getACL
+     * @see SPI#applyACL
      */
-    ALL("all");
+    MANAGE("manage");
 
     private final String value;
 
-    private ChangeCapability(String value) {
+    private CapabilityACL(String value) {
         this.value = value;
     }
 
-    private static final Map<String, ChangeCapability> all = new HashMap<String, ChangeCapability>();
+    private static final Map<String, CapabilityACL> all = new HashMap<String, CapabilityACL>();
     static {
-        for (ChangeCapability o : values()) {
+        for (CapabilityACL o : values()) {
             all.put(o.value, o);
         }
     }
 
-    public static ChangeCapability get(String value) {
-        ChangeCapability o = all.get(value);
+    public static CapabilityACL get(String value) {
+        CapabilityACL o = all.get(value);
         if (o == null) {
             throw new IllegalArgumentException(value);
         }
         return o;
     }
 
-    public static ChangeCapability get(String value, ChangeCapability def) {
-        ChangeCapability o = all.get(value);
+    public static CapabilityACL get(String value, CapabilityACL def) {
+        CapabilityACL o = all.get(value);
         if (o == null) {
             o = def;
         }

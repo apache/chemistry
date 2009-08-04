@@ -110,7 +110,7 @@ joined_table
 join_type: INNER | LEFT OUTER?;
 
 join_specification:
-    ON^ LPAR! column_reference EQ! column_reference RPAR!;
+    ON^ column_reference EQ! column_reference;
 
 where_clause: WHERE^ search_condition;
 

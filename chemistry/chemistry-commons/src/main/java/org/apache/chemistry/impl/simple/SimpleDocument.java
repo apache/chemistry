@@ -71,7 +71,7 @@ public class SimpleDocument extends SimpleObject implements Document {
         }
         // length is recomputed, no need to read it
         String mimeType = getString(Property.CONTENT_STREAM_MIME_TYPE);
-        String filename = getString(Property.CONTENT_STREAM_FILENAME);
+        String filename = getString(Property.CONTENT_STREAM_FILE_NAME);
         return new SimpleContentStream(contentBytes, mimeType, filename);
     }
 
@@ -87,7 +87,7 @@ public class SimpleDocument extends SimpleObject implements Document {
         if (contentStream == null) {
             entry.setValue(Property.CONTENT_STREAM_LENGTH, null);
             entry.setValue(Property.CONTENT_STREAM_MIME_TYPE, null);
-            entry.setValue(Property.CONTENT_STREAM_FILENAME, null);
+            entry.setValue(Property.CONTENT_STREAM_FILE_NAME, null);
             entry.setValue(SimpleProperty.CONTENT_BYTES_KEY, null);
         } else {
             entry.setValue(Property.CONTENT_STREAM_LENGTH,
@@ -95,8 +95,8 @@ public class SimpleDocument extends SimpleObject implements Document {
                                                                        // Long
             entry.setValue(Property.CONTENT_STREAM_MIME_TYPE,
                     contentStream.getMimeType());
-            entry.setValue(Property.CONTENT_STREAM_FILENAME,
-                    contentStream.getFilename());
+            entry.setValue(Property.CONTENT_STREAM_FILE_NAME,
+                    contentStream.getFileName());
             entry.setValue(SimpleProperty.CONTENT_BYTES_KEY,
                     SimpleContentStream.getBytes(contentStream.getStream()));
         }

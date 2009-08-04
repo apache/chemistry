@@ -21,6 +21,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,15 +32,15 @@ import javax.jcr.SimpleCredentials;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.nodetype.NodeTypeManager;
 
-import org.apache.chemistry.ACLCapability;
+import org.apache.chemistry.CapabilityACL;
 import org.apache.chemistry.ACLCapabilityType;
 import org.apache.chemistry.BaseType;
-import org.apache.chemistry.ChangeCapability;
+import org.apache.chemistry.CapabilityChange;
 import org.apache.chemistry.Connection;
-import org.apache.chemistry.JoinCapability;
+import org.apache.chemistry.CapabilityJoin;
 import org.apache.chemistry.ObjectId;
-import org.apache.chemistry.QueryCapability;
-import org.apache.chemistry.RenditionCapability;
+import org.apache.chemistry.CapabilityQuery;
+import org.apache.chemistry.CapabilityRendition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryEntry;
@@ -171,8 +172,7 @@ public class JcrRepository implements Repository, RepositoryInfo,
         return null;
     }
 
-    public URI getURI() {
-        // TODO Auto-generated method stub
+    public URI getThinClientURI() {
         return null;
     }
 
@@ -183,7 +183,13 @@ public class JcrRepository implements Repository, RepositoryInfo,
     }
 
     public Set<BaseType> getChangeLogBaseTypes() {
-        return Collections.emptySet();
+        // TODO-0.63 TCK checks 0.62 schema which has minOccurs=1
+        Set<BaseType> changeLogBaseTypes = new HashSet<BaseType>();
+        changeLogBaseTypes.add(BaseType.DOCUMENT);
+        changeLogBaseTypes.add(BaseType.FOLDER);
+        changeLogBaseTypes.add(BaseType.RELATIONSHIP);
+        changeLogBaseTypes.add(BaseType.POLICY);
+        return changeLogBaseTypes;
     }
 
     public boolean isChangeLogIncomplete() {
@@ -228,25 +234,25 @@ public class JcrRepository implements Repository, RepositoryInfo,
     }
 
     public String getVersionSupported() {
-        return "0.61";
+        return "0.62";
     }
 
     // -------------------------------------------------- RepositoryCapabilities
 
-    public JoinCapability getJoinCapability() {
-        return JoinCapability.NONE;
+    public CapabilityJoin getJoinCapability() {
+        return CapabilityJoin.NONE;
     }
 
-    public QueryCapability getQueryCapability() {
-        return QueryCapability.BOTH_SEPARATE;
+    public CapabilityQuery getQueryCapability() {
+        return CapabilityQuery.BOTH_SEPARATE;
     }
 
-    public RenditionCapability getRenditionCapability() {
-        return RenditionCapability.NONE;
+    public CapabilityRendition getRenditionCapability() {
+        return CapabilityRendition.NONE;
     }
 
-    public ChangeCapability getChangeCapability() {
-        return ChangeCapability.NONE;
+    public CapabilityChange getChangeCapability() {
+        return CapabilityChange.NONE;
     }
 
     public boolean hasMultifiling() {
@@ -281,8 +287,8 @@ public class JcrRepository implements Repository, RepositoryInfo,
         return false;
     }
 
-    public ACLCapability getACLCapability() {
+    public CapabilityACL getACLCapability() {
         // TODO Auto-generated method stub
-        return ACLCapability.NONE;
+        return CapabilityACL.NONE;
     }
 }

@@ -32,11 +32,11 @@ import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
+import org.apache.chemistry.CMIS;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
-import org.apache.chemistry.atompub.CMIS;
 import org.apache.chemistry.atompub.abdera.PropertiesElement;
 
 /**
@@ -59,8 +59,7 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         feed.declareNS(CMIS.CMIS_NS, CMIS.CMIS_PREFIX);
         feed.setId(getId(request));
         feed.setTitle(getTitle(request));
-        // feed.addLink("");
-        // feed.addLink("", "self");
+        feed.addLink(request.getResolvedUri().toString(), "self");
         feed.addAuthor(getAuthor(request));
         feed.setUpdated(new Date()); // XXX fixed date
         return feed;
@@ -314,10 +313,9 @@ public class CMISTypesCollection extends CMISCollection<Type> {
     }
 
     @Override
-    public Type getEntry(String resourceName, RequestContext request)
+    public Type getEntry(String typeId, RequestContext request)
             throws ResponseContextException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return repository.getType(typeId);
     }
 
     @Override

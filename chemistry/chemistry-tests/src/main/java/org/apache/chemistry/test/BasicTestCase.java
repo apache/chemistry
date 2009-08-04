@@ -198,9 +198,9 @@ public abstract class BasicTestCase extends TestCase {
 
     public void testGetFolderParent() {
         Folder root = conn.getRootFolder();
-        assertNull(spi.getFolderParent(root, null, false, false));
+        assertNull(spi.getFolderParent(root, null));
         ObjectId folder1 = root.getChildren().get(0);
-        ObjectEntry p1 = spi.getFolderParent(folder1, null, false, false);
+        ObjectEntry p1 = spi.getFolderParent(folder1, null);
         assertNotNull(p1);
         assertEquals(root.getId(), p1.getId());
     }
@@ -210,8 +210,7 @@ public abstract class BasicTestCase extends TestCase {
         ObjectId folder1Id = root.getChildren().get(0);
         Folder folder1 = (Folder) conn.getObject(folder1Id);
         Document doc = getDocumentChild(folder1);
-        Collection<ObjectEntry> parents = spi.getObjectParents(doc, null,
-                false, false);
+        Collection<ObjectEntry> parents = spi.getObjectParents(doc, null);
         assertEquals(1, parents.size());
     }
 
@@ -235,7 +234,7 @@ public abstract class BasicTestCase extends TestCase {
         assertNotNull("dog not found", dog);
         ContentStream cs = dog.getContentStream();
         assertTrue(cs.getLength() != 0);
-        assertEquals("dog.jpg", cs.getFilename());
+        assertEquals("dog.jpg", cs.getFileName());
         assertEquals("image/jpeg", cs.getMimeType());
         assertNotNull(cs.getStream());
         InputStream in = dog.getContentStream().getStream();

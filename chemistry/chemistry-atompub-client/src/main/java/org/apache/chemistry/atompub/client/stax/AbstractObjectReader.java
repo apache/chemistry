@@ -19,14 +19,18 @@
 package org.apache.chemistry.atompub.client.stax;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.chemistry.CMIS;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Type;
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.xml.stax.ChildrenNavigator;
 import org.apache.chemistry.xml.stax.ParseException;
 import org.apache.chemistry.xml.stax.StaxReader;
@@ -39,10 +43,13 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
     protected abstract void readProperty(ReadContext ctx, StaxReader reader,
             T object, XmlProperty p);
 
+    protected abstract void readAllowableActions(ReadContext ctx,
+            StaxReader reader, T object, Map<QName, Boolean> allowableActions);
+
     @Override
     protected void readCmisElement(ReadContext ctx, StaxReader reader, T object)
             throws XMLStreamException {
-        if (reader.getLocalName().equals(CMIS.RESTATOM_OBJECT.getLocalPart())) {
+        if (reader.getLocalName().equals(AtomPubCMIS.OBJECT.getLocalPart())) {
             readCmisObject(ctx, reader, object);
         }
     }
@@ -133,7 +140,14 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
 
     protected void readAllowableActions(ReadContext ctx, StaxReader reader,
             T object) throws XMLStreamException {
-        // TODO not yet implemented
+        Map<QName, Boolean> allowableActions = new HashMap<QName, Boolean>();
+        ChildrenNavigator children = reader.getChildren();
+        while (children.next()) {
+            QName qname = reader.getName();
+            Boolean bool = Boolean.valueOf(reader.getElementText());
+            allowableActions.put(qname, bool);
+        }
+        readAllowableActions(ctx, reader, object, allowableActions);
     }
 
     protected void readChangeEventInfo(ReadContext ctx, StaxReader reader,

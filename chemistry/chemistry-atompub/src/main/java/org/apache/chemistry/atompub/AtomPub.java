@@ -21,15 +21,23 @@ import javax.xml.namespace.QName;
 /**
  * Utility class providing various Atom- and AtomPub-related constants.
  */
-public class Atom {
+public class AtomPub {
 
     // utility class
-    private Atom() {
+    private AtomPub() {
     }
+
+    /*
+     * ----- Namespaces -----
+     */
 
     public static final String ATOM_NS = "http://www.w3.org/2005/Atom";
 
     public static final String APP_NS = "http://www.w3.org/2007/app";
+
+    /*
+     * ----- XML Qualified Names-----
+     */
 
     public static final QName ATOM_FEED = new QName(ATOM_NS, "feed");
 
@@ -39,6 +47,10 @@ public class Atom {
 
     public static final QName APP_COLLECTION = new QName(APP_NS, "collection");
 
+    /*
+     * ----- Media Types -----
+     */
+
     public static final String MEDIA_TYPE_ATOM = "application/atom+xml";
 
     public static final String MEDIA_TYPE_ATOM_ENTRY = "application/atom+xml;type=entry";
@@ -46,6 +58,10 @@ public class Atom {
     public static final String MEDIA_TYPE_ATOM_FEED = "application/atom+xml;type=feed";
 
     public static final String MEDIA_TYPE_ATOM_SERVICE = "application/atomsvc+xml";
+
+    /*
+     * ----- Link Types -----
+     */
 
     /*
      * http://www.iana.org/assignments/link-relations/link-relations.xhtml
@@ -82,14 +98,14 @@ public class Atom {
     public static final String LINK_DOWN = "down";
 
     /*
-     * TODO Will be updated by 0.63 to use properly
+     * TODO-0.63 update to use properly
      * http://www.ietf.org/id/draft-brown-versioning-link-relations-01.txt
      */
 
-    public static final String LINK_VERSION_HISTORY = "allversions"; // TODO
+    public static final String LINK_VERSION_HISTORY = "allversions"; // TODO-0.63
 
-    public static final String LINK_LATEST_VERSION = "latestversion"; // TODO
+    public static final String LINK_LATEST_VERSION = "latestversion"; // TODO-0.63
 
-    public static final String LINK_WORKING_COPY = "pwc"; // TODO
+    public static final String LINK_WORKING_COPY = "pwc"; // TODO-0.63
 
 }

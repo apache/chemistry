@@ -28,7 +28,7 @@ import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.Type;
-import org.apache.chemistry.atompub.Atom;
+import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.client.connector.Connector;
 import org.apache.chemistry.atompub.client.connector.Request;
 import org.apache.chemistry.atompub.client.connector.Response;
@@ -54,7 +54,7 @@ public class APPDocument extends APPObject implements Document {
     }
 
     public ContentStream getContentStream() {
-        String url = entry.getLink(Atom.LINK_EDIT_MEDIA);
+        String url = entry.getLink(AtomPub.LINK_EDIT_MEDIA);
         return url == null ? null : new APPContentStream(url);
     }
 
@@ -87,9 +87,9 @@ public class APPDocument extends APPObject implements Document {
             return mimeType;
         }
 
-        public String getFilename() {
+        public String getFileName() {
             if (filename == UNINITIALIZED_STRING) {
-                filename = getString(Property.CONTENT_STREAM_FILENAME);
+                filename = getString(Property.CONTENT_STREAM_FILE_NAME);
             }
             return filename;
         }

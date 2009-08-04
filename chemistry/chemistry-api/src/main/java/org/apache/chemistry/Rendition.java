@@ -32,6 +32,19 @@ import java.util.Map;
  */
 public interface Rendition {
 
+    /**
+     * The rendition filter specifying all renditions.
+     */
+    String FILTER_ALL = "*";
+
+    /**
+     * The rendition filter specifying no rendition.
+     */
+    String FILTER_NONE = "cmis:none";
+
+    /**
+     * The thumbnail rendition kind.
+     */
     String KIND_THUMBNAIL = "cmis:thumbnail";
 
     /**

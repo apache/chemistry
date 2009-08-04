@@ -35,12 +35,12 @@ import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.ExtensibleElement;
 import org.apache.abdera.model.ExtensibleElementWrapper;
+import org.apache.chemistry.CMIS;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
-import org.apache.chemistry.atompub.CMIS;
 import org.apache.chemistry.atompub.ValueAdapter;
 
 /**

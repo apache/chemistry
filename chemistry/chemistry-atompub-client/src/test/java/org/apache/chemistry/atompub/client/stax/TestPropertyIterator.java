@@ -24,7 +24,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.CMIS;
 import org.apache.chemistry.xml.stax.StaxReader;
 
 /**

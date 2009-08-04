@@ -132,7 +132,7 @@ public abstract class BaseRepository implements Repository, RepositoryInfo,
     }
 
     public String getVersionSupported() {
-        return "0.61";
+        return "0.62";
     }
 
     public org.w3c.dom.Document getRepositorySpecificInformation() {

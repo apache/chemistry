@@ -29,11 +29,11 @@ import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
-import org.apache.chemistry.JoinCapability;
+import org.apache.chemistry.CapabilityJoin;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
-import org.apache.chemistry.QueryCapability;
+import org.apache.chemistry.CapabilityQuery;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.Type;
@@ -87,7 +87,7 @@ public class TestSimpleRepository extends TestCase {
         assertEquals("Apache", info.getVendorName());
         assertEquals("Chemistry Simple Repository", info.getProductName());
         assertEquals("0.1-SNAPSHOT", info.getProductVersion());
-        assertEquals("0.61", info.getVersionSupported());
+        assertEquals("0.62", info.getVersionSupported());
         assertNull(info.getRepositorySpecificInformation());
 
         RepositoryCapabilities capabilities = info.getCapabilities();
@@ -97,8 +97,8 @@ public class TestSimpleRepository extends TestCase {
         assertFalse(capabilities.isPWCUpdatable());
         assertFalse(capabilities.isPWCSearchable());
         assertFalse(capabilities.isAllVersionsSearchable());
-        assertEquals(JoinCapability.NONE, capabilities.getJoinCapability());
-        assertEquals(QueryCapability.BOTH_COMBINED,
+        assertEquals(CapabilityJoin.NONE, capabilities.getJoinCapability());
+        assertEquals(CapabilityQuery.BOTH_COMBINED,
                 capabilities.getQueryCapability());
     }
 
@@ -200,7 +200,7 @@ public class TestSimpleRepository extends TestCase {
 
         assertEquals(29, cs.getLength());
         assertEquals("text/plain", cs.getMimeType());
-        assertEquals("houston.txt", cs.getFilename());
+        assertEquals("houston.txt", cs.getFileName());
 
         byte[] bytes = SimpleContentStream.getBytes(cs.getStream());
         assertEquals(string, new String(bytes, "UTF-8"));

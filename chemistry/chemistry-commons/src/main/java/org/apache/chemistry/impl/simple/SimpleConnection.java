@@ -255,9 +255,8 @@ public class SimpleConnection implements Connection, SPI {
         }
     }
 
-    public ObjectEntry getFolderParent(ObjectId folder, String filter,
-            boolean includeAllowableActions, boolean includeRelationships) {
-        // TODO filter, includeRelationship, includeAllowableActions
+    public ObjectEntry getFolderParent(ObjectId folder, String filter) {
+        // TODO filter
         String folderId = folder.getId();
         SimpleData data = repository.datas.get(folderId);
         if (data == null) {
@@ -281,9 +280,7 @@ public class SimpleConnection implements Connection, SPI {
     }
 
     public Collection<ObjectEntry> getObjectParents(ObjectId object,
-            String filter, boolean includeAllowableActions,
-            boolean includeRelationships) {
-        // TODO includeAllowableActions and includeRelationships
+            String filter) {
         // TODO filter
         Set<String> ids = repository.parents.get(object.getId());
         List<ObjectEntry> parents = new ArrayList<ObjectEntry>(ids.size());
@@ -398,10 +395,14 @@ public class SimpleConnection implements Connection, SPI {
         }
     }
 
-    public ObjectId createDocument(String typeId,
-            Map<String, Serializable> properties, ObjectId folder,
-            ContentStream contentStream, VersioningState versioningState) {
+    public ObjectId createDocument(Map<String, Serializable> properties,
+            ObjectId folder, ContentStream contentStream,
+            VersioningState versioningState) {
         // TODO contentStream, versioningState
+        String typeId = (String) properties.get(Property.TYPE_ID);
+        if (typeId == null) {
+            throw new IllegalArgumentException("Missing obejct type id");
+        }
         Type type = repository.getType(typeId);
         if (type == null || type.getBaseType() != BaseType.DOCUMENT) {
             throw new IllegalArgumentException(typeId);
@@ -415,8 +416,12 @@ public class SimpleConnection implements Connection, SPI {
         return new SimpleObjectId((String) data.get(Property.ID));
     }
 
-    public ObjectId createFolder(String typeId,
-            Map<String, Serializable> properties, ObjectId folder) {
+    public ObjectId createFolder(Map<String, Serializable> properties,
+            ObjectId folder) {
+        String typeId = (String) properties.get(Property.TYPE_ID);
+        if (typeId == null) {
+            throw new IllegalArgumentException("Missing obejct type id");
+        }
         Type type = repository.getType(typeId);
         if (type == null || type.getBaseType() != BaseType.FOLDER) {
             throw new IllegalArgumentException(typeId);
@@ -430,15 +435,13 @@ public class SimpleConnection implements Connection, SPI {
         return new SimpleObjectId((String) data.get(Property.ID));
     }
 
-    public ObjectId createRelationship(String typeId,
-            Map<String, Serializable> properties, ObjectId source,
-            ObjectId target) {
+    public ObjectId createRelationship(Map<String, Serializable> properties) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId createPolicy(String typeId,
-            Map<String, Serializable> properties, ObjectId folder) {
+    public ObjectId createPolicy(Map<String, Serializable> properties,
+            ObjectId folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -498,7 +501,7 @@ public class SimpleConnection implements Connection, SPI {
         }
         // length is recomputed, no need to read it
         String mimeType = (String) data.get(Property.CONTENT_STREAM_MIME_TYPE);
-        String filename = (String) data.get(Property.CONTENT_STREAM_FILENAME);
+        String filename = (String) data.get(Property.CONTENT_STREAM_FILE_NAME);
         return new SimpleContentStream(bytes, mimeType, filename);
     }
 

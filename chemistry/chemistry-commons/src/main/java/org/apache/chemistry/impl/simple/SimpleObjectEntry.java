@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ChangeInfo;
 import org.apache.chemistry.ObjectEntry;
@@ -87,7 +89,7 @@ public class SimpleObjectEntry implements ObjectEntry {
         }
     }
 
-    public Collection<String> getAllowableActions() {
+    public Map<QName, Boolean> getAllowableActions() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

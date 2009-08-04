@@ -23,10 +23,11 @@ import java.util.Map;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.ExtensibleElementWrapper;
+import org.apache.chemistry.CMIS;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 
 /**
  * Abdera ElementWrapper for an AtomPub cmis:object element.
@@ -51,7 +52,7 @@ public class ObjectElement extends ExtensibleElementWrapper {
      * Constructor used when generating XML.
      */
     public ObjectElement(Factory factory, ObjectEntry object, Type type) {
-        super(factory, CMIS.RESTATOM_OBJECT);
+        super(factory, AtomPubCMIS.OBJECT);
         properties = new PropertiesElement(getFactory());
         addExtension(properties);
         setProperties(object.getValues(), type);

@@ -67,13 +67,13 @@ public interface Property {
 
     String VERSION_SERIES_CHECKED_OUT_ID = "cmis:VersionSeriesCheckedOutId";
 
-    String CHECKIN_COMMENT = "cmis:CheckinComment";
+    String CHECK_IN_COMMENT = "cmis:CheckinComment"; // TODO-0.63
 
     String CONTENT_STREAM_LENGTH = "cmis:ContentStreamLength";
 
     String CONTENT_STREAM_MIME_TYPE = "cmis:ContentStreamMimeType";
 
-    String CONTENT_STREAM_FILENAME = "cmis:ContentStreamFilename";
+    String CONTENT_STREAM_FILE_NAME = "cmis:ContentStreamFileName";
 
     String CONTENT_STREAM_ID = "cmis:ContentStreamId";
 

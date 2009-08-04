@@ -70,26 +70,26 @@ public interface RepositoryCapabilities {
     /**
      * Support for query on full-text or metadata.
      */
-    QueryCapability getQueryCapability();
+    CapabilityQuery getQueryCapability();
 
     /**
      * Support for inner and outer join in query.
      */
-    JoinCapability getJoinCapability();
+    CapabilityJoin getJoinCapability();
 
     /**
      * Support for renditions.
      */
-    RenditionCapability getRenditionCapability();
+    CapabilityRendition getRenditionCapability();
 
     /**
      * Support for change log.
      */
-    ChangeCapability getChangeCapability();
+    CapabilityChange getChangeCapability();
 
     /**
      * The level of support for ACLs.
      */
-    ACLCapability getACLCapability();
+    CapabilityACL getACLCapability();
 
 }

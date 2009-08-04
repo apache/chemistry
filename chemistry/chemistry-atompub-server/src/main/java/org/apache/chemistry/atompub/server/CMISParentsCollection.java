@@ -36,7 +36,7 @@ public class CMISParentsCollection extends CMISObjectsCollection {
             throws ResponseContextException {
         SPI spi = repository.getSPI(); // TODO XXX connection leak
         ObjectId objectId = spi.newObjectId(id);
-        Collection<ObjectEntry> parents = spi.getObjectParents(objectId, null, false, false);
+        Collection<ObjectEntry> parents = spi.getObjectParents(objectId, null);
         return parents;
     }
 

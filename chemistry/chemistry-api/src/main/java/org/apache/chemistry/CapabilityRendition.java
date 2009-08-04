@@ -20,48 +20,43 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Support for inner and outer join in query.
+ * Support for renditions.
  */
-public enum JoinCapability {
+public enum CapabilityRendition {
 
     /**
-     * No join support.
+     * The repository does not expose renditions at all.
      */
     NONE("none"),
 
     /**
-     * Support inner join only.
+     * Renditions are provided by the repository and readable by the client.
      */
-    INNER_ONLY("inneronly"),
-
-    /**
-     * Support inner and outer join.
-     */
-    INNER_AND_OUTER("innerandouter");
+    READ("read");
 
     private final String value;
 
-    private JoinCapability(String value) {
+    private CapabilityRendition(String value) {
         this.value = value;
     }
 
-    private static final Map<String, JoinCapability> all = new HashMap<String, JoinCapability>();
+    private static final Map<String, CapabilityRendition> all = new HashMap<String, CapabilityRendition>();
     static {
-        for (JoinCapability o : values()) {
+        for (CapabilityRendition o : values()) {
             all.put(o.value, o);
         }
     }
 
-    public static JoinCapability get(String value) {
-        JoinCapability o = all.get(value);
+    public static CapabilityRendition get(String value) {
+        CapabilityRendition o = all.get(value);
         if (o == null) {
             throw new IllegalArgumentException(value);
         }
         return o;
     }
 
-    public static JoinCapability get(String value, JoinCapability def) {
-        JoinCapability o = all.get(value);
+    public static CapabilityRendition get(String value, CapabilityRendition def) {
+        CapabilityRendition o = all.get(value);
         if (o == null) {
             o = def;
         }

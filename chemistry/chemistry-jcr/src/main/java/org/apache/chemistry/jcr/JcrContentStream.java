@@ -37,7 +37,7 @@ public class JcrContentStream implements ContentStream {
         this.content = content;
     }
 
-    public String getFilename() {
+    public String getFileName() {
         try {
             return content.getName();
         } catch (RepositoryException e) {

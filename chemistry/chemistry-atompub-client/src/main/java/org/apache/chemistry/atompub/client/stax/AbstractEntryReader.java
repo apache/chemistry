@@ -21,8 +21,9 @@ import java.io.InputStream;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.chemistry.atompub.Atom;
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.CMIS;
+import org.apache.chemistry.atompub.AtomPub;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.xml.stax.ChildrenNavigator;
 import org.apache.chemistry.xml.stax.StaxReader;
 
@@ -43,7 +44,7 @@ public abstract class AbstractEntryReader<T> implements EntryReader<T> {
     }
 
     public T read(ReadContext ctx, StaxReader reader) throws XMLStreamException {
-        if (!reader.getFirstTag(Atom.ATOM_ENTRY)) {
+        if (!reader.getFirstTag(AtomPub.ATOM_ENTRY)) {
             return null;
         }
         T object = createObject(ctx);
@@ -51,7 +52,7 @@ public abstract class AbstractEntryReader<T> implements EntryReader<T> {
         while (children.next()) {
             String nsuri = reader.getNamespaceURI();
             if (nsuri.equals(CMIS.CMIS_NS)
-                    || nsuri.equals(CMIS.CMISRA_NS)) {
+                    || nsuri.equals(AtomPubCMIS.CMISRA_NS)) {
                 readCmisElement(ctx, reader, object);
             } else {
                 readEntryElement(ctx, reader, object);
@@ -67,7 +68,7 @@ public abstract class AbstractEntryReader<T> implements EntryReader<T> {
 
     protected void readEntryElement(ReadContext ctx, StaxReader reader, T object)
             throws XMLStreamException {
-        if (reader.getNamespaceURI().equals(Atom.ATOM_NS)) {
+        if (reader.getNamespaceURI().equals(AtomPub.ATOM_NS)) {
             readAtomElement(ctx, reader, object);
         } else {
             readExtensionElement(ctx, reader, object);

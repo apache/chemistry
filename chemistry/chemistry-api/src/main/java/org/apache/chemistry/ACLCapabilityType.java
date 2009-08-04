@@ -33,7 +33,7 @@ public interface ACLCapabilityType {
     PermissionsSupported getSupportedPermissions();
 
     /**
-     * Gets how non-direct ACEs can be handled by the repository
+     * Gets how non-direct ACEs can be handled by the repository.
      */
     ACLPropagation getACLPropagation();
 

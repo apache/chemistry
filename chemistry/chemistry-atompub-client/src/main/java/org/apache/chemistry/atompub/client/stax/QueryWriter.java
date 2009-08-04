@@ -19,7 +19,8 @@ package org.apache.chemistry.atompub.client.stax;
 
 import java.io.IOException;
 
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.CMIS;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.xml.stax.XMLWriter;
 
 /**
@@ -67,7 +68,7 @@ public class QueryWriter extends AbstractXmlObjectWriter<String> {
 
     @Override
     public String getContentType() {
-        return CMIS.MEDIA_TYPE_CMIS_QUERY;
+        return AtomPubCMIS.MEDIA_TYPE_CMIS_QUERY;
     }
 
     @Override

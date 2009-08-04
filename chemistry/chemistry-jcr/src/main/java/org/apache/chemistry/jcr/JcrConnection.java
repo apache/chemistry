@@ -185,17 +185,17 @@ public class JcrConnection implements Connection, SPI {
     }
 
     // TODO add IOException to throws clause
-    public ObjectId createDocument(String typeId,
-            Map<String, Serializable> properties, ObjectId folderId,
-            ContentStream contentStream, VersioningState versioningState) {
+    public ObjectId createDocument(Map<String, Serializable> properties,
+            ObjectId folderId, ContentStream contentStream,
+            VersioningState versioningState) {
 
         try {
             JcrFolder folder = (JcrFolder) getObject(folderId);
             Document doc = folder.newDocument(null);
             doc.setValues(properties);
             if (contentStream != null) {
-                doc.setName(contentStream.getFilename());
-                doc.setValue("title", contentStream.getFilename());
+                doc.setName(contentStream.getFileName());
+                doc.setValue("title", contentStream.getFileName());
                 doc.setContentStream(contentStream);
             }
             doc.save();
@@ -207,21 +207,19 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
-    public ObjectId createFolder(String typeId,
-            Map<String, Serializable> properties, ObjectId folderId) {
+    public ObjectId createFolder(Map<String, Serializable> properties,
+            ObjectId folderId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId createPolicy(String typeId,
-            Map<String, Serializable> properties, ObjectId folderId) {
+    public ObjectId createPolicy(Map<String, Serializable> properties,
+            ObjectId folderId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId createRelationship(String typeId,
-            Map<String, Serializable> properties, ObjectId sourceId,
-            ObjectId targetId) {
+    public ObjectId createRelationship(Map<String, Serializable> properties) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -348,15 +346,13 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectEntry getFolderParent(ObjectId folderId, String filter,
-            boolean includeAllowableActions, boolean includeRelationships) {
+    public ObjectEntry getFolderParent(ObjectId folderId, String filter) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public Collection<ObjectEntry> getObjectParents(ObjectId objectId,
-            String filter, boolean includeAllowableActions,
-            boolean includeRelationships) {
+            String filter) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

@@ -28,7 +28,7 @@ import org.apache.axiom.om.OMDocument;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.abdera.QueryElement;
 
 /**
@@ -42,7 +42,7 @@ public class CMISQueryFeed extends CMISObjectsCollection {
     protected String statement;
 
     public CMISQueryFeed(Repository repository) {
-        super(CMIS.COL_QUERY, "query", null, repository);
+        super(AtomPubCMIS.COL_QUERY, "query", null, repository);
     }
 
     /*

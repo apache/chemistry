@@ -31,6 +31,7 @@ import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
+import javax.xml.namespace.QName;
 
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
@@ -62,7 +63,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
     public JcrObjectEntry() {
     }
 
-    public Collection<String> getAllowableActions() {
+    public Map<QName, Boolean> getAllowableActions() {
         throw new UnsupportedOperationException();
     }
 
@@ -99,8 +100,8 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         return getString(Property.CHANGE_TOKEN);
     }
 
-    public String getCheckinComment() {
-        return getString(Property.CHECKIN_COMMENT);
+    public String getCheckInComment() {
+        return getString(Property.CHECK_IN_COMMENT);
     }
 
     public String getCreatedBy() {

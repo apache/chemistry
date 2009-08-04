@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.chemistry.CMIS;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.util.GregorianCalendar;
 

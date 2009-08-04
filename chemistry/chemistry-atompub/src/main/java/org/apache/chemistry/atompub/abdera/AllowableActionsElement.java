@@ -18,7 +18,7 @@ package org.apache.chemistry.atompub.abdera;
 
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.ExtensibleElementWrapper;
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.CMIS;
 
 /**
  * Abdera ElementWrapper for an AtomPub cmis:allowableActions element.

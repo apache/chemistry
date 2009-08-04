@@ -19,10 +19,11 @@ package org.apache.chemistry.atompub.client.stax;
 import java.io.IOException;
 import java.util.Date;
 
+import org.apache.chemistry.CMIS;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Property;
-import org.apache.chemistry.atompub.Atom;
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.AtomPub;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.xml.stax.XMLWriter;
 
 /**
@@ -33,7 +34,7 @@ public abstract class ObjectEntryWriter extends
 
     @Override
     public String getContentType() {
-        return Atom.MEDIA_TYPE_ATOM_ENTRY;
+        return AtomPub.MEDIA_TYPE_ATOM_ENTRY;
     }
 
     @Override
@@ -41,9 +42,9 @@ public abstract class ObjectEntryWriter extends
         try {
             xw.start();
             xw.element("entry");
-            xw.xmlns(Atom.ATOM_NS);
+            xw.xmlns(AtomPub.ATOM_NS);
             xw.xmlns(CMIS.CMIS_PREFIX, CMIS.CMIS_NS);
-            xw.xmlns(CMIS.CMISRA_PREFIX, CMIS.CMISRA_NS);
+            xw.xmlns(AtomPubCMIS.CMISRA_PREFIX, AtomPubCMIS.CMISRA_NS);
             xw.start();
             // atom requires an ID to be set even on new created entries ..
             xw.element("id").content("urn:uuid:" + object.getId());

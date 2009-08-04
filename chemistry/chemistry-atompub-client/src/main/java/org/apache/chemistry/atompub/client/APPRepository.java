@@ -30,7 +30,7 @@ import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.TypeManager;
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.URITemplate;
 import org.apache.chemistry.atompub.client.connector.APPContentManager;
 import org.apache.chemistry.atompub.client.connector.Request;
@@ -82,8 +82,8 @@ public class APPRepository implements Repository {
         return info.getName();
     }
 
-    public URI getURI() {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public URI getThinClientURI() {
+        return info.getThinClientURI();
     }
 
     public SPI getSPI() {
@@ -150,7 +150,7 @@ public class APPRepository implements Repository {
             return;
         }
         try {
-            String href = getCollectionHref(CMIS.COL_TYPES_CHILDREN);
+            String href = getCollectionHref(AtomPubCMIS.COL_TYPES_CHILDREN);
             if (href == null) {
                 throw new IllegalArgumentException(
                         "Invalid CMIS repository. No types children collection defined");

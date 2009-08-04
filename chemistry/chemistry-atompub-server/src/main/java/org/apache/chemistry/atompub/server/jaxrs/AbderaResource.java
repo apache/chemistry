@@ -36,8 +36,8 @@ import org.apache.abdera.protocol.server.ServiceManager;
 import org.apache.abdera.protocol.server.impl.AbstractCollectionAdapter;
 import org.apache.abdera.protocol.server.servlet.ServletRequestContext;
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.atompub.Atom;
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.AtomPub;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.server.CMISProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -140,7 +140,7 @@ public class AbderaResource {
     }
 
     @GET
-    @Produces(Atom.MEDIA_TYPE_ATOM_SERVICE)
+    @Produces(AtomPub.MEDIA_TYPE_ATOM_SERVICE)
     @Path("repository")
     public Response doGetRepository(@Context HttpServletRequest httpRequest) {
         RequestContext requestContext = getRequestContext(1);
@@ -149,14 +149,14 @@ public class AbderaResource {
     }
 
     @GET
-    @Produces(Atom.MEDIA_TYPE_ATOM_FEED)
+    @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
     @Path("types")
     public Response doGetTypes() {
         return getAbderaFeed(1);
     }
 
     @GET
-    @Produces(Atom.MEDIA_TYPE_ATOM_FEED)
+    @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
     @Path("children/{objectid}")
     public Response doGetChildren() {
         // objectid decoded by Abdera getCollectionAdapter
@@ -164,7 +164,7 @@ public class AbderaResource {
     }
 
     @GET
-    @Produces(Atom.MEDIA_TYPE_ATOM_ENTRY)
+    @Produces(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
     @Path("object/{objectid}")
     public Response doGetObject() {
         // objectid decoded by Abdera getCollectionAdapter
@@ -183,8 +183,8 @@ public class AbderaResource {
     }
 
     @POST
-    @Consumes(CMIS.MEDIA_TYPE_CMIS_QUERY)
-    @Produces(Atom.MEDIA_TYPE_ATOM_FEED)
+    @Consumes(AtomPubCMIS.MEDIA_TYPE_CMIS_QUERY)
+    @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
     @Path("query")
     public Response doPostQuery() {
         return getAbderaPostFeed(1);

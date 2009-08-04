@@ -28,16 +28,17 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.chemistry.ACLCapability;
+import org.apache.chemistry.CapabilityACL;
 import org.apache.chemistry.BaseType;
-import org.apache.chemistry.ChangeCapability;
-import org.apache.chemistry.JoinCapability;
-import org.apache.chemistry.QueryCapability;
-import org.apache.chemistry.RenditionCapability;
+import org.apache.chemistry.CMIS;
+import org.apache.chemistry.CapabilityChange;
+import org.apache.chemistry.CapabilityJoin;
+import org.apache.chemistry.CapabilityQuery;
+import org.apache.chemistry.CapabilityRendition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryInfo;
-import org.apache.chemistry.atompub.Atom;
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.AtomPub;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.URITemplate;
 import org.apache.chemistry.atompub.client.APPRepository;
 import org.apache.chemistry.atompub.client.APPRepositoryCapabilities;
@@ -72,15 +73,15 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                 ChildrenNavigator children = reader.getChildren();
                 while (children.next()) {
                     QName name = reader.getName();
-                    if (name.equals(Atom.APP_COLLECTION)) {
+                    if (name.equals(AtomPub.APP_COLLECTION)) {
                         String href = reader.getAttributeValue("href");
-                        String type = reader.getAttributeValue(CMIS.RESTATOM_COLLECTION_TYPE.getLocalPart());
+                        String type = reader.getAttributeValue(AtomPubCMIS.COLLECTION_TYPE.getLocalPart());
                         addCollection(repo, href, type);
-                    } else if (name.equals(CMIS.RESTATOM_REPOSITORY_INFO)) {
+                    } else if (name.equals(AtomPubCMIS.REPOSITORY_INFO)) {
                         RepositoryInfo info = readRepositoryInfo(context,
                                 reader);
                         setInfo(repo, info);
-                    } else if (name.equals(CMIS.RESTATOM_URI_TEMPLATE)) {
+                    } else if (name.equals(AtomPubCMIS.URI_TEMPLATE)) {
                         URITemplate uriTemplate = readURITemplate(context,
                                 reader);
                         addURITemplate(repo, uriTemplate);
@@ -126,23 +127,23 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                     } else if (localName.equals(CMIS.CAPABILITY_VERSION_SPECIFIC_FILING.getLocalPart())) {
                         caps.setHasVersionSpecificFiling(Boolean.parseBoolean(reader.getElementText()));
                     } else if (localName.equals(CMIS.CAPABILITY_QUERY.getLocalPart())) {
-                        caps.setQueryCapability(QueryCapability.get(
-                                reader.getElementText(), QueryCapability.NONE));
+                        caps.setQueryCapability(CapabilityQuery.get(
+                                reader.getElementText(), CapabilityQuery.NONE));
                     } else if (localName.equals(CMIS.CAPABILITY_JOIN.getLocalPart())) {
-                        caps.setJoinCapability(JoinCapability.get(
-                                reader.getElementText(), JoinCapability.NONE));
+                        caps.setJoinCapability(CapabilityJoin.get(
+                                reader.getElementText(), CapabilityJoin.NONE));
                     } else if (localName.equals(CMIS.CAPABILITY_RENDITIONS.getLocalPart())) {
-                        caps.setRenditionCapability(RenditionCapability.get(
+                        caps.setRenditionCapability(CapabilityRendition.get(
                                 reader.getElementText(),
-                                RenditionCapability.NONE));
+                                CapabilityRendition.NONE));
                     } else if (localName.equals(CMIS.CAPABILITY_CHANGES.getLocalPart())) {
-                        caps.setChangeCapability(ChangeCapability.get(
-                                reader.getElementText(), ChangeCapability.NONE));
+                        caps.setChangeCapability(CapabilityChange.get(
+                                reader.getElementText(), CapabilityChange.NONE));
                     } else if (localName.equals(CMIS.CAPABILITY_CHANGES_ON_TYPE.getLocalPart())) {
                         changeLogBaseTypes.add(BaseType.get(reader.getElementText()));
                     } else if (localName.equals(CMIS.CAPABILITY_ACL.getLocalPart())) {
-                        caps.setACLCapability(ACLCapability.get(
-                                reader.getElementText(), ACLCapability.NONE));
+                        caps.setACLCapability(CapabilityACL.get(
+                                reader.getElementText(), CapabilityACL.NONE));
                     }
                 }
             } else if (localName.equals(CMIS.REPOSITORY_SPECIFIC_INFORMATION.getLocalPart())) {
@@ -150,6 +151,13 @@ public abstract class ServiceDocumentReader<T extends Repository> {
             } else {
                 map.put(localName, reader.getElementText());
             }
+        }
+        if (changeLogBaseTypes.isEmpty()) {
+            // TODO-0.63 TCK checks 0.62 schema which has minOccurs=1
+            changeLogBaseTypes.add(BaseType.DOCUMENT);
+            changeLogBaseTypes.add(BaseType.FOLDER);
+            changeLogBaseTypes.add(BaseType.RELATIONSHIP);
+            changeLogBaseTypes.add(BaseType.POLICY);
         }
         return new APPRepositoryInfo(caps, map, changeLogBaseTypes);
     }
@@ -162,11 +170,11 @@ public abstract class ServiceDocumentReader<T extends Repository> {
         ChildrenNavigator nav = reader.getChildren();
         while (nav.next()) {
             String localName = reader.getLocalName();
-            if (localName.equals(CMIS.RESTATOM_TYPE.getLocalPart())) {
+            if (localName.equals(AtomPubCMIS.TYPE.getLocalPart())) {
                 type = reader.getElementText();
-            } else if (localName.equals(CMIS.RESTATOM_MEDIA_TYPE.getLocalPart())) {
+            } else if (localName.equals(AtomPubCMIS.MEDIA_TYPE.getLocalPart())) {
                 mediaType = reader.getElementText();
-            } else if (localName.equals(CMIS.RESTATOM_TEMPLATE.getLocalPart())) {
+            } else if (localName.equals(AtomPubCMIS.TEMPLATE.getLocalPart())) {
                 template = reader.getElementText();
             }
         }

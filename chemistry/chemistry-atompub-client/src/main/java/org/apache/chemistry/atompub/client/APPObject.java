@@ -31,7 +31,7 @@ import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Type;
-import org.apache.chemistry.atompub.Atom;
+import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.client.connector.Connector;
 import org.apache.chemistry.atompub.client.connector.Request;
 import org.apache.chemistry.atompub.client.connector.Response;
@@ -102,7 +102,7 @@ public abstract class APPObject extends BaseObject {
      */
 
     public Folder getParent() {
-        String href = entry.getLink(Atom.LINK_UP); // usually a feed entry
+        String href = entry.getLink(AtomPub.LINK_UP); // usually a feed entry
         if (href == null) {
             return null;
         }
@@ -211,7 +211,7 @@ public abstract class APPObject extends BaseObject {
         ReadContext ctx = new ReadContext(entry.connection);
 
         // this link value is local, set by APPConnection#newDocument
-        String href = entry.getLink(Atom.LINK_UP);
+        String href = entry.getLink(AtomPub.LINK_UP);
         if (href == null) {
             throw new IllegalArgumentException(
                     "Cannot create entry: no 'cmis-parents' link is present");
@@ -219,7 +219,7 @@ public abstract class APPObject extends BaseObject {
         // TODO hardcoded Chemistry URL pattern here...
         href = href.replaceAll("/object/([0-9a-f-]{36}$)", "/children/$1");
         Request req = new Request(href);
-        req.setHeader("Content-Type", Atom.MEDIA_TYPE_ATOM_ENTRY);
+        req.setHeader("Content-Type", AtomPub.MEDIA_TYPE_ATOM_ENTRY);
         Response resp = connector.postObject(req, entry);
         if (resp.getStatusCode() != 201) { // Created
             throw new ContentManagerException(
@@ -254,7 +254,7 @@ public abstract class APPObject extends BaseObject {
                     "Cannot edit entry: no 'edit' link is present");
         }
         Request req = new Request(href);
-        req.setHeader("Content-Type", Atom.MEDIA_TYPE_ATOM_ENTRY);
+        req.setHeader("Content-Type", AtomPub.MEDIA_TYPE_ATOM_ENTRY);
         Response resp = entry.connection.getConnector().putObject(req, entry);
         if (!resp.isOk()) {
             throw new ContentManagerException(

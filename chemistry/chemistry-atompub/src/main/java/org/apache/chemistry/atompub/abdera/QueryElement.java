@@ -24,7 +24,7 @@ import org.apache.abdera.model.ElementWrapper;
 import org.apache.abdera.model.ExtensibleElementWrapper;
 import org.apache.abdera.parser.stax.FOMElement;
 import org.apache.axiom.om.OMElement;
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.CMIS;
 
 /**
  * Element wrapping for a CMIS query.

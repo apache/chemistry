@@ -25,7 +25,7 @@ import java.net.URL;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.chemistry.atompub.Atom;
+import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.xml.stax.ChildrenNavigator;
 import org.apache.chemistry.xml.stax.StaxReader;
 
@@ -91,7 +91,7 @@ public abstract class AbstractFeedReader<T, E> implements FeedReader<T> {
     }
 
     public T read(ReadContext ctx, StaxReader reader) throws XMLStreamException {
-        if (!reader.getFirstTag(Atom.ATOM_FEED)) {
+        if (!reader.getFirstTag(AtomPub.ATOM_FEED)) {
             throw new XMLStreamException("Parse error: Not an atom feed");
         }
         // create a new feed object to be filled
@@ -99,7 +99,7 @@ public abstract class AbstractFeedReader<T, E> implements FeedReader<T> {
         ChildrenNavigator nav = reader.getChildren();
         while (nav.next() && !isDone(ctx, reader)) {
             String nsUri = reader.getNamespaceURI();
-            if (Atom.ATOM_NS.equals(nsUri)) {
+            if (AtomPub.ATOM_NS.equals(nsUri)) {
                 if ("entry".equals(reader.getLocalName())) {
                     addEntry(feed, entryBuilder.read(ctx, reader));
                 } else {

@@ -140,7 +140,7 @@ public class JcrNewDocument extends JcrDocument {
         try {
             String name = this.name;
             if (cs != null) {
-                name = cs.getFilename();
+                name = cs.getFileName();
             }
             if (name == null) {
                 Serializable val = getValue("title");

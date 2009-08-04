@@ -210,8 +210,8 @@ public abstract class BaseObject implements CMISObject {
         return getId(Property.VERSION_SERIES_CHECKED_OUT_ID);
     }
 
-    public String getCheckinComment() {
-        return getString(Property.CHECKIN_COMMENT);
+    public String getCheckInComment() {
+        return getString(Property.CHECK_IN_COMMENT);
     }
 
     public void setName(String value) {

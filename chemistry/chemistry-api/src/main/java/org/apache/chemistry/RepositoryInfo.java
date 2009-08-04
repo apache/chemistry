@@ -70,7 +70,7 @@ public interface RepositoryInfo extends RepositoryEntry {
      * The type of ACL capabilities of the repository.
      * <p>
      * Available only if {@link RepositoryCapabilities#getACLCapability} is not
-     * {@link ACLCapability#NONE}.
+     * {@link CapabilityACL#NONE}.
      */
     ACLCapabilityType getACLCapabilityType();
 

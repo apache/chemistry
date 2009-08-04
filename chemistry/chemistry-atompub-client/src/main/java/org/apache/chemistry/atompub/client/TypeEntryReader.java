@@ -25,9 +25,9 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.chemistry.CMIS;
 import org.apache.chemistry.PropertyDefinition;
-import org.apache.chemistry.atompub.Atom;
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.client.stax.AbstractEntryReader;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.xml.stax.ChildrenNavigator;
@@ -55,8 +55,8 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
             APPType object) throws XMLStreamException {
         // read only links - optimization to avoid useless operations
         if ("link".equals(reader.getLocalName())) {
-            String rel = reader.getAttributeValue(Atom.ATOM_NS, "rel");
-            String href = reader.getAttributeValue(Atom.ATOM_NS, "href");
+            String rel = reader.getAttributeValue(AtomPub.ATOM_NS, "rel");
+            String href = reader.getAttributeValue(AtomPub.ATOM_NS, "href");
             object.addLink(rel, href);
         }
     }
@@ -67,7 +67,8 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
         String localName = reader.getLocalName();
         if (CMIS.DOCUMENT_TYPE.getLocalPart().equals(localName)
                 || CMIS.FOLDER_TYPE.getLocalPart().equals(localName)
-                || CMIS.RELATIONSHIP_TYPE.getLocalPart().equals(localName)
+                || CMIS.RELATIONSHIP_TYPE.getLocalPart().equals(
+                        localName)
                 || CMIS.POLICY_TYPE.getLocalPart().equals(localName)) {
             ChildrenNavigator children = reader.getChildren();
             Map<String, String> map = new HashMap<String, String>();

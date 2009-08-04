@@ -29,11 +29,11 @@ import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.chemistry.CMIS;
 import org.apache.chemistry.Choice;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Updatability;
-import org.apache.chemistry.atompub.CMIS;
 import org.apache.chemistry.atompub.ValueAdapter;
 import org.apache.chemistry.xml.stax.ChildrenNavigator;
 import org.apache.chemistry.xml.stax.StaxReader;

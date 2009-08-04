@@ -69,7 +69,7 @@ public class SimpleContentStream implements ContentStream {
         return mimeType;
     }
 
-    public String getFilename() {
+    public String getFileName() {
         return filename;
     }
 

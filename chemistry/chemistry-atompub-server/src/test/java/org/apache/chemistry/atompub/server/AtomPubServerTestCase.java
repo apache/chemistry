@@ -30,6 +30,7 @@ import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.util.AbstractEntityProvider;
 import org.apache.abdera.writer.StreamWriter;
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.CMIS;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ContentStreamPresence;
@@ -39,7 +40,7 @@ import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Updatability;
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.impl.simple.SimplePropertyDefinition;
 import org.apache.chemistry.impl.simple.SimpleRepository;
@@ -162,7 +163,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         Service root = (Service) resp.getDocument().getRoot();
         Workspace workspace = root.getWorkspaces().get(0);
         assertNotNull(root);
-        Element info = workspace.getFirstChild(CMIS.RESTATOM_REPOSITORY_INFO);
+        Element info = workspace.getFirstChild(AtomPubCMIS.REPOSITORY_INFO);
         assertNotNull(info);
 
         resp = client.get(base + "/types");
@@ -209,7 +210,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
 
         @Override
         public String getContentType() {
-            return CMIS.MEDIA_TYPE_CMIS_QUERY;
+            return AtomPubCMIS.MEDIA_TYPE_CMIS_QUERY;
         }
 
         public boolean isRepeatable() {
@@ -221,8 +222,8 @@ public abstract class AtomPubServerTestCase extends TestCase {
             sw.startElement("query", CMIS.CMIS_NS, CMIS.CMIS_PREFIX);
             sw.startElement("statement", CMIS.CMIS_NS, CMIS.CMIS_PREFIX).writeElementText(
                     statement).endElement();
-            sw.startElement("searchAllVersions", CMIS.CMIS_NS, CMIS.CMIS_PREFIX).writeElementText(
-                    "false").endElement();
+            sw.startElement("searchAllVersions", CMIS.CMIS_NS,
+                    CMIS.CMIS_PREFIX).writeElementText("false").endElement();
             sw.startElement("pageSize", CMIS.CMIS_NS, CMIS.CMIS_PREFIX).writeElementText(
                     0).endElement();
             sw.startElement("skipCount", CMIS.CMIS_NS, CMIS.CMIS_PREFIX).writeElementText(

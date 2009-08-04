@@ -140,9 +140,9 @@ public class SimpleType implements Type {
             null, false, false, null, Updatability.READ_ONLY, true, true, 0,
             null, null, -1, null);
 
-    public static final SimplePropertyDefinition PROP_CHECKIN_COMMENT = new SimplePropertyDefinition(
-            Property.CHECKIN_COMMENT, "def:checkincomment", null,
-            Property.CHECKIN_COMMENT, "Checkin Comment", "", false,
+    public static final SimplePropertyDefinition PROP_CHECK_IN_COMMENT = new SimplePropertyDefinition(
+            Property.CHECK_IN_COMMENT, "def:checkincomment", null,
+            Property.CHECK_IN_COMMENT, "Check In Comment", "", false,
             PropertyType.STRING, false, null, false, false, null,
             Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
 
@@ -159,11 +159,12 @@ public class SimpleType implements Type {
             null, false, false, null, Updatability.READ_ONLY, true, true, 0,
             null, null, -1, null);
 
-    public static final SimplePropertyDefinition PROP_CONTENT_STREAM_FILENAME = new SimplePropertyDefinition(
-            Property.CONTENT_STREAM_FILENAME, "def:contentstreamfilename",
-            null, Property.CONTENT_STREAM_FILENAME, "Content Stream Filename",
-            "", false, PropertyType.STRING, false, null, false, false, null,
-            Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
+    public static final SimplePropertyDefinition PROP_CONTENT_STREAM_FILE_NAME = new SimplePropertyDefinition(
+            Property.CONTENT_STREAM_FILE_NAME, "def:contentstreamfilename",
+            null, Property.CONTENT_STREAM_FILE_NAME,
+            "Content Stream File Name", "", false, PropertyType.STRING, false,
+            null, false, false, null, Updatability.READ_WRITE, true, true, 0,
+            null, null, -1, null);
 
     public static final SimplePropertyDefinition PROP_CONTENT_STREAM_ID = new SimplePropertyDefinition(
             Property.CONTENT_STREAM_ID, "def:contentstreamid", null,
@@ -228,10 +229,10 @@ public class SimpleType implements Type {
             PROP_IS_VERSION_SERIES_CHECKED_OUT, //
             PROP_VERSION_SERIES_CHECKED_OUT_BY, //
             PROP_VERSION_SERIES_CHECKED_OUT_ID, //
-            PROP_CHECKIN_COMMENT, //
+            PROP_CHECK_IN_COMMENT, //
             PROP_CONTENT_STREAM_LENGTH, //
             PROP_CONTENT_STREAM_MIME_TYPE, //
-            PROP_CONTENT_STREAM_FILENAME, //
+            PROP_CONTENT_STREAM_FILE_NAME, //
             PROP_CONTENT_STREAM_ID);
 
     public static final List<PropertyDefinition> PROPS_FOLDER_BASE = commonPlus(

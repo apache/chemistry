@@ -344,7 +344,7 @@ public interface CMISObject extends ObjectId {
 
     String getVersionSeriesCheckedOutId();
 
-    String getCheckinComment();
+    String getCheckInComment();
 
     /*
      * ----- convenience methods for specific properties (setter) -----

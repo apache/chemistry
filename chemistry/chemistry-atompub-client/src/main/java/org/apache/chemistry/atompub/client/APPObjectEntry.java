@@ -21,19 +21,21 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
 
+import javax.xml.namespace.QName;
+
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.CMIS;
 import org.apache.chemistry.ChangeInfo;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.ValueAdapter;
 import org.apache.chemistry.atompub.client.stax.XmlProperty;
 import org.apache.chemistry.xml.stax.XMLWriter;
@@ -47,16 +49,19 @@ public class APPObjectEntry implements ObjectEntry {
 
     protected Map<String, XmlProperty> properties;
 
-    protected Set<String> allowableActions; // TODO use set?
+    protected Map<QName, Boolean> allowableActions;
 
     protected final List<String> links;
 
     public APPObjectEntry(APPConnection connection,
-            Map<String, XmlProperty> properties, Set<String> allowableActions) {
+            Map<String, XmlProperty> properties,
+            Map<QName, Boolean> allowableActions) {
         this.connection = connection;
         this.properties = properties;
         if (allowableActions == null) {
-            allowableActions = new HashSet<String>();
+            allowableActions = Collections.emptyMap();
+        } else {
+            allowableActions = Collections.unmodifiableMap(allowableActions);
         }
         this.allowableActions = allowableActions;
         links = new ArrayList<String>();
@@ -192,7 +197,7 @@ public class APPObjectEntry implements ObjectEntry {
     // return null;
     // }
 
-    public Collection<String> getAllowableActions() {
+    public Map<QName, Boolean> getAllowableActions() {
         return allowableActions;
     }
 
@@ -207,7 +212,7 @@ public class APPObjectEntry implements ObjectEntry {
     }
 
     public void writeObjectTo(XMLWriter xw) throws IOException {
-        xw.element(CMIS.RESTATOM_OBJECT);
+        xw.element(AtomPubCMIS.OBJECT);
         xw.start();
         xw.element(CMIS.PROPERTIES);
         xw.start();

@@ -17,6 +17,7 @@
 package org.apache.chemistry.atompub.client;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -25,18 +26,22 @@ import java.util.Set;
 
 import org.apache.chemistry.ACLCapabilityType;
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.CMIS;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryEntry;
 import org.apache.chemistry.RepositoryInfo;
-import org.apache.chemistry.atompub.CMIS;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 
 /**
  *
  */
 public class APPRepositoryInfo implements RepositoryInfo {
+
+    public static final Log log = LogFactory.getLog(APPRepositoryInfo.class);
 
     protected final Map<String, Object> map;
 
@@ -50,11 +55,6 @@ public class APPRepositoryInfo implements RepositoryInfo {
         this.caps = caps;
         this.changeLogBaseTypes = changeLogBaseTypes.isEmpty() ? Collections.<BaseType> emptySet()
                 : Collections.unmodifiableSet(EnumSet.copyOf(changeLogBaseTypes));
-    }
-
-    public URI getURI() {
-        // TODO: what for?
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public String getString(String name) {
@@ -75,6 +75,16 @@ public class APPRepositoryInfo implements RepositoryInfo {
 
     public String getRelationshipName() {
         return getString(CMIS.REPOSITORY_RELATIONSHIP.getLocalPart());
+    }
+
+    public URI getThinClientURI() {
+        String uri = getString(CMIS.THIN_CLIENT_URI.getLocalPart());
+        try {
+            return uri == null ? null : new URI(uri);
+        } catch (URISyntaxException e) {
+            log.error("Invalid URI: " + uri, e);
+            return null;
+        }
     }
 
     public String getDescription() {
@@ -133,7 +143,7 @@ public class APPRepositoryInfo implements RepositoryInfo {
 
     @Override
     public String toString() {
-        return getName() + " - " + getURI();
+        return getClass().getSimpleName() + '(' + getName() + ')';
     }
 
 }

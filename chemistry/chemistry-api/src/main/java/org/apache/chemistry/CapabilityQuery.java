@@ -20,56 +20,58 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The level of support for ACLs by the repository.
- *
- * @see RepositoryCapabilities#getACLCapability
+ * Support for query on full-text or metadata.
  */
-public enum ACLCapability {
+public enum CapabilityQuery {
 
     /**
-     * The repository does not support ACL services.
+     * No query support.
      */
     NONE("none"),
 
     /**
-     * The repository supports discovery of ACLs ({@link SPI#getACL}).
-     *
-     * @see SPI#getACL
+     * Support only metadata queries.
      */
-    DISCOVER("discover"),
+    METADATA_ONLY("metadataonly"),
 
     /**
-     * The repository supports discovery of ACLs and applying ACLs (
-     * {@link SPI#getACL} and {@link SPI#applyACL}).
-     *
-     * @see SPI#getACL
-     * @see SPI#applyACL
+     * Support only full-text queries.
      */
-    MANAGE("manage");
+    FULL_TEXT_ONLY("fulltextonly"),
+
+    /**
+     * Support both full-text and metadata queries, but not in the same query.
+     */
+    BOTH_SEPARATE("bothseparate"),
+
+    /**
+     * Support both full-text and metadata queries, in the same query.
+     */
+    BOTH_COMBINED("bothcombined");
 
     private final String value;
 
-    private ACLCapability(String value) {
+    private CapabilityQuery(String value) {
         this.value = value;
     }
 
-    private static final Map<String, ACLCapability> all = new HashMap<String, ACLCapability>();
+    private static final Map<String, CapabilityQuery> all = new HashMap<String, CapabilityQuery>();
     static {
-        for (ACLCapability o : values()) {
+        for (CapabilityQuery o : values()) {
             all.put(o.value, o);
         }
     }
 
-    public static ACLCapability get(String value) {
-        ACLCapability o = all.get(value);
+    public static CapabilityQuery get(String value) {
+        CapabilityQuery o = all.get(value);
         if (o == null) {
             throw new IllegalArgumentException(value);
         }
         return o;
     }
 
-    public static ACLCapability get(String value, ACLCapability def) {
-        ACLCapability o = all.get(value);
+    public static CapabilityQuery get(String value, CapabilityQuery def) {
+        CapabilityQuery o = all.get(value);
         if (o == null) {
             o = def;
         }

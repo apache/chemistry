@@ -16,11 +16,11 @@
  */
 package org.apache.chemistry.atompub.client;
 
-import org.apache.chemistry.ACLCapability;
-import org.apache.chemistry.ChangeCapability;
-import org.apache.chemistry.JoinCapability;
-import org.apache.chemistry.QueryCapability;
-import org.apache.chemistry.RenditionCapability;
+import org.apache.chemistry.CapabilityACL;
+import org.apache.chemistry.CapabilityChange;
+import org.apache.chemistry.CapabilityJoin;
+import org.apache.chemistry.CapabilityQuery;
+import org.apache.chemistry.CapabilityRendition;
 import org.apache.chemistry.RepositoryCapabilities;
 
 /**
@@ -28,15 +28,15 @@ import org.apache.chemistry.RepositoryCapabilities;
  */
 public class APPRepositoryCapabilities implements RepositoryCapabilities {
 
-    protected JoinCapability joinCapability;
+    protected CapabilityJoin joinCapability;
 
-    protected QueryCapability queryCapability;
+    protected CapabilityQuery queryCapability;
 
-    protected RenditionCapability renditionCapability;
+    protected CapabilityRendition renditionCapability;
 
-    protected ChangeCapability changeCapability;
+    protected CapabilityChange changeCapability;
 
-    protected ACLCapability aclCapability;
+    protected CapabilityACL aclCapability;
 
     protected boolean hasUnfiling;
 
@@ -54,23 +54,23 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
 
     protected boolean isPWCUpdatable;
 
-    public JoinCapability getJoinCapability() {
+    public CapabilityJoin getJoinCapability() {
         return joinCapability;
     }
 
-    public QueryCapability getQueryCapability() {
+    public CapabilityQuery getQueryCapability() {
         return queryCapability;
     }
 
-    public RenditionCapability getRenditionCapability() {
+    public CapabilityRendition getRenditionCapability() {
         return renditionCapability;
     }
 
-    public ChangeCapability getChangeCapability() {
+    public CapabilityChange getChangeCapability() {
         return changeCapability;
     }
 
-    public ACLCapability getACLCapability() {
+    public CapabilityACL getACLCapability() {
         return aclCapability;
     }
 
@@ -131,7 +131,7 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
         this.hasVersionSpecificFiling = hasVersionSpecificFiling;
     }
 
-    public void setJoinCapability(JoinCapability joinCapability) {
+    public void setJoinCapability(CapabilityJoin joinCapability) {
         this.joinCapability = joinCapability;
     }
 
@@ -143,19 +143,19 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
         this.isPWCUpdatable = isPWCUpdatable;
     }
 
-    public void setQueryCapability(QueryCapability queryCapability) {
+    public void setQueryCapability(CapabilityQuery queryCapability) {
         this.queryCapability = queryCapability;
     }
 
-    public void setRenditionCapability(RenditionCapability renditionCapability) {
+    public void setRenditionCapability(CapabilityRendition renditionCapability) {
         this.renditionCapability = renditionCapability;
     }
 
-    public void setChangeCapability(ChangeCapability changeCapability) {
+    public void setChangeCapability(CapabilityChange changeCapability) {
         this.changeCapability = changeCapability;
     }
 
-    public void setACLCapability(ACLCapability aclCapability) {
+    public void setACLCapability(CapabilityACL aclCapability) {
         this.aclCapability = aclCapability;
     }
 

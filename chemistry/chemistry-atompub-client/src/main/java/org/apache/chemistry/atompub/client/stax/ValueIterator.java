@@ -18,7 +18,7 @@ package org.apache.chemistry.atompub.client.stax;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.CMIS;
 import org.apache.chemistry.xml.stax.ChildrenIterator;
 import org.apache.chemistry.xml.stax.StaxReader;
 

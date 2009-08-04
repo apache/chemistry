@@ -42,6 +42,9 @@ public class CMISWorkspaceManager extends AbstractWorkspaceManager {
         if (paths.startsWith("/types/") || paths.startsWith("/types?")) {
             return new CMISTypesCollection(null, repository);
         }
+        if (paths.startsWith("/type/")) {
+            return new CMISTypesCollection(null, repository);
+        }
         if (paths.startsWith("/children/")) {
             String id = request.getTarget().getParameter("objectid");
             return new CMISChildrenCollection(null, id, repository);

@@ -21,7 +21,7 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.CMIS;
 import org.apache.chemistry.xml.stax.ChildrenIterator;
 import org.apache.chemistry.xml.stax.StaxReader;
 

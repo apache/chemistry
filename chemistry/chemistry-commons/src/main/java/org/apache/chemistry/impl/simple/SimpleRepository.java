@@ -26,16 +26,16 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.chemistry.ACLCapability;
+import org.apache.chemistry.CapabilityACL;
 import org.apache.chemistry.ACLCapabilityType;
 import org.apache.chemistry.BaseType;
-import org.apache.chemistry.ChangeCapability;
+import org.apache.chemistry.CapabilityChange;
 import org.apache.chemistry.Connection;
-import org.apache.chemistry.JoinCapability;
+import org.apache.chemistry.CapabilityJoin;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Property;
-import org.apache.chemistry.QueryCapability;
-import org.apache.chemistry.RenditionCapability;
+import org.apache.chemistry.CapabilityQuery;
+import org.apache.chemistry.CapabilityRendition;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.impl.base.BaseRepository;
 
@@ -98,12 +98,11 @@ public class SimpleRepository extends BaseRepository {
      * ----- RepositoryEntry -----
      */
 
-    public URI getURI() {
-        // TODO Return a URI
+    public String getRelationshipName() {
         return null;
     }
 
-    public String getRelationshipName() {
+    public URI getThinClientURI() {
         return null;
     }
 
@@ -142,7 +141,13 @@ public class SimpleRepository extends BaseRepository {
     }
 
     public Set<BaseType> getChangeLogBaseTypes() {
-        return Collections.emptySet();
+        // TODO-0.63 TCK checks 0.62 schema which has minOccurs=1
+        Set<BaseType> changeLogBaseTypes = new HashSet<BaseType>();
+        changeLogBaseTypes.add(BaseType.DOCUMENT);
+        changeLogBaseTypes.add(BaseType.FOLDER);
+        changeLogBaseTypes.add(BaseType.RELATIONSHIP);
+        changeLogBaseTypes.add(BaseType.POLICY);
+        return changeLogBaseTypes;
     }
 
     public boolean isChangeLogIncomplete() {
@@ -195,24 +200,24 @@ public class SimpleRepository extends BaseRepository {
         return true;
     }
 
-    public JoinCapability getJoinCapability() {
-        return JoinCapability.NONE;
+    public CapabilityJoin getJoinCapability() {
+        return CapabilityJoin.NONE;
     }
 
-    public QueryCapability getQueryCapability() {
-        return QueryCapability.BOTH_COMBINED;
+    public CapabilityQuery getQueryCapability() {
+        return CapabilityQuery.BOTH_COMBINED;
     }
 
-    public RenditionCapability getRenditionCapability() {
-        return RenditionCapability.NONE;
+    public CapabilityRendition getRenditionCapability() {
+        return CapabilityRendition.NONE;
     }
 
-    public ChangeCapability getChangeCapability() {
-        return ChangeCapability.NONE;
+    public CapabilityChange getChangeCapability() {
+        return CapabilityChange.NONE;
     }
 
-    public ACLCapability getACLCapability() {
-        return ACLCapability.NONE;
+    public CapabilityACL getACLCapability() {
+        return CapabilityACL.NONE;
     }
 
 }

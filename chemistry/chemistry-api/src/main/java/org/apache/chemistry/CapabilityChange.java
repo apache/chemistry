@@ -20,43 +20,54 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Support for renditions.
+ * The level of changes (if any) that the repository exposes via
+ * {@link SPI#getChangeLog}.
+ *
+ * @see SPI#getChangeLog
  */
-public enum RenditionCapability {
+public enum CapabilityChange {
 
     /**
-     * The repository does not expose renditions at all.
+     * The repository does not expose any information in the change log.
      */
     NONE("none"),
 
     /**
-     * Renditions are provided by the repository and readable by the client.
+     * The change log can return only the object IDs for changed objects in the
+     * repository and an indication of the type of change, not details of the
+     * actual change.
      */
-    READ("read");
+    OBJECT_IDS_ONLY("objectidsonly"),
+
+    /**
+     * The change log can return the object IDs for changed objects in the
+     * repository and the details of the actual properties changed.
+     */
+    ALL("all");
 
     private final String value;
 
-    private RenditionCapability(String value) {
+    private CapabilityChange(String value) {
         this.value = value;
     }
 
-    private static final Map<String, RenditionCapability> all = new HashMap<String, RenditionCapability>();
+    private static final Map<String, CapabilityChange> all = new HashMap<String, CapabilityChange>();
     static {
-        for (RenditionCapability o : values()) {
+        for (CapabilityChange o : values()) {
             all.put(o.value, o);
         }
     }
 
-    public static RenditionCapability get(String value) {
-        RenditionCapability o = all.get(value);
+    public static CapabilityChange get(String value) {
+        CapabilityChange o = all.get(value);
         if (o == null) {
             throw new IllegalArgumentException(value);
         }
         return o;
     }
 
-    public static RenditionCapability get(String value, RenditionCapability def) {
-        RenditionCapability o = all.get(value);
+    public static CapabilityChange get(String value, CapabilityChange def) {
+        CapabilityChange o = all.get(value);
         if (o == null) {
             o = def;
         }

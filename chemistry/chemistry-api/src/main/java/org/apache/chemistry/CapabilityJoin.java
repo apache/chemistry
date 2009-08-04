@@ -20,58 +20,48 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Support for query on full-text or metadata.
+ * Support for inner and outer join in query.
  */
-public enum QueryCapability {
+public enum CapabilityJoin {
 
     /**
-     * No query support.
+     * No join support.
      */
     NONE("none"),
 
     /**
-     * Support only metadata queries.
+     * Support inner join only.
      */
-    METADATA_ONLY("metadataonly"),
+    INNER_ONLY("inneronly"),
 
     /**
-     * Support only full-text queries.
+     * Support inner and outer join.
      */
-    FULL_TEXT_ONLY("fulltextonly"),
-
-    /**
-     * Support both full-text and metadata queries, but not in the same query.
-     */
-    BOTH_SEPARATE("bothseparate"),
-
-    /**
-     * Support both full-text and metadata queries, in the same query.
-     */
-    BOTH_COMBINED("bothcombined");
+    INNER_AND_OUTER("innerandouter");
 
     private final String value;
 
-    private QueryCapability(String value) {
+    private CapabilityJoin(String value) {
         this.value = value;
     }
 
-    private static final Map<String, QueryCapability> all = new HashMap<String, QueryCapability>();
+    private static final Map<String, CapabilityJoin> all = new HashMap<String, CapabilityJoin>();
     static {
-        for (QueryCapability o : values()) {
+        for (CapabilityJoin o : values()) {
             all.put(o.value, o);
         }
     }
 
-    public static QueryCapability get(String value) {
-        QueryCapability o = all.get(value);
+    public static CapabilityJoin get(String value) {
+        CapabilityJoin o = all.get(value);
         if (o == null) {
             throw new IllegalArgumentException(value);
         }
         return o;
     }
 
-    public static QueryCapability get(String value, QueryCapability def) {
-        QueryCapability o = all.get(value);
+    public static CapabilityJoin get(String value, CapabilityJoin def) {
+        CapabilityJoin o = all.get(value);
         if (o == null) {
             o = def;
         }

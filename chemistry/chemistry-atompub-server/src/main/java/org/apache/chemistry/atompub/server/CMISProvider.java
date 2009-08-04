@@ -33,8 +33,8 @@ import org.apache.abdera.protocol.server.impl.SimpleWorkspaceInfo;
 import org.apache.abdera.protocol.server.impl.TemplateTargetBuilder;
 import org.apache.abdera.util.Constants;
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.atompub.Atom;
-import org.apache.chemistry.atompub.CMIS;
+import org.apache.chemistry.atompub.AtomPub;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.URITemplate;
 
 /**
@@ -111,24 +111,24 @@ public class CMISProvider extends AbstractProvider {
         workspaceInfo.setTitle(repository.getInfo().getName());
 
         workspaceInfo.addCollection(new CMISChildrenCollection(
-                CMIS.COL_ROOT_CHILDREN,
+                AtomPubCMIS.COL_ROOT_CHILDREN,
                 repository.getInfo().getRootFolderId().getId(), repository));
 
         workspaceInfo.addCollection(new CMISCollectionForOther(
-                CMIS.COL_ROOT_DESCENDANTS, "descendants",
+                AtomPubCMIS.COL_ROOT_DESCENDANTS, "descendants",
                 repository.getInfo().getRootFolderId().getId(), repository));
 
         workspaceInfo.addCollection(new CMISCollectionForOther(
-                CMIS.COL_UNFILED, "unfiled", null, repository));
+                AtomPubCMIS.COL_UNFILED, "unfiled", null, repository));
 
         workspaceInfo.addCollection(new CMISCollectionForOther(
-                CMIS.COL_CHECKED_OUT, "checkedout", null, repository));
+                AtomPubCMIS.COL_CHECKED_OUT, "checkedout", null, repository));
 
         workspaceInfo.addCollection(new CMISTypesCollection(
-                CMIS.COL_TYPES_CHILDREN, repository));
+                AtomPubCMIS.COL_TYPES_CHILDREN, repository));
 
         workspaceInfo.addCollection(new CMISTypesCollection(
-                CMIS.COL_TYPES_DESCENDANTS, repository));
+                AtomPubCMIS.COL_TYPES_DESCENDANTS, repository));
 
         workspaceInfo.addCollection(new CMISQueryFeed(repository));
 
@@ -146,15 +146,15 @@ public class CMISProvider extends AbstractProvider {
             base += '/';
         }
         List<URITemplate> list = new ArrayList<URITemplate>(3);
-        list.add(new URITemplate(CMIS.URITMPL_ENTRY_BY_ID, //
-                Atom.MEDIA_TYPE_ATOM_ENTRY, //
+        list.add(new URITemplate(AtomPubCMIS.URITMPL_ENTRY_BY_ID, //
+                AtomPub.MEDIA_TYPE_ATOM_ENTRY, //
                 base + "object/{id}"));
         if (false) { // TODO
-            list.add(new URITemplate(CMIS.URITMPL_FOLDER_BY_PATH, //
-                    Atom.MEDIA_TYPE_ATOM_ENTRY, //
+            list.add(new URITemplate(AtomPubCMIS.URITMPL_FOLDER_BY_PATH, //
+                    AtomPub.MEDIA_TYPE_ATOM_ENTRY, //
                     base + "objectpath/{path}"));
-            list.add(new URITemplate(CMIS.URITMPL_QUERY, //
-                    Atom.MEDIA_TYPE_ATOM_FEED, //
+            list.add(new URITemplate(AtomPubCMIS.URITMPL_QUERY, //
+                    AtomPub.MEDIA_TYPE_ATOM_FEED, //
                     base + "query?q={q}"));
         }
         return list;

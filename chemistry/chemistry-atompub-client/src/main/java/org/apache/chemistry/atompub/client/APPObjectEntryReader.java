@@ -17,12 +17,15 @@
  */
 package org.apache.chemistry.atompub.client;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.chemistry.Type;
-import org.apache.chemistry.atompub.Atom;
+import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.client.stax.AbstractObjectReader;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.XmlProperty;
@@ -58,12 +61,18 @@ public class APPObjectEntryReader extends AbstractObjectReader<APPObjectEntry> {
     }
 
     @Override
+    protected void readAllowableActions(ReadContext ctx, StaxReader reader,
+            APPObjectEntry object, Map<QName, Boolean> allowableActions) {
+        object.allowableActions = Collections.unmodifiableMap(allowableActions);
+    }
+
+    @Override
     protected void readAtomElement(ReadContext ctx, StaxReader reader,
             APPObjectEntry object) throws XMLStreamException {
         String name = reader.getLocalName();
         if ("link".equals(name)) {
-            String rel = reader.getAttributeValue(Atom.ATOM_NS, "rel");
-            String href = reader.getAttributeValue(Atom.ATOM_NS, "href");
+            String rel = reader.getAttributeValue(AtomPub.ATOM_NS, "rel");
+            String href = reader.getAttributeValue(AtomPub.ATOM_NS, "href");
             object.addLink(rel, href);
             // } else if ("id".equals(name)) {
             // object.id = new URI(id);
