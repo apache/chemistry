@@ -107,6 +107,10 @@ public abstract class CMISCollection<T> extends
      * ----- Utilities -----
      */
 
+    public String getServiceLink(RequestContext request) {
+        return request.absoluteUrlFor(TargetType.TYPE_SERVICE, null);
+    }
+
     public String getTypeLink(String tid, RequestContext request) {
         Map<String, String> params = new HashMap<String, String>();
         params.put("entrytype", "type");

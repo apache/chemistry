@@ -152,6 +152,9 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         entry.addLink(link, "edit");
         // alternate is mandated by Atom when there is no atom:content
         entry.addLink(link, "alternate");
+        String typeId = object.getTypeId();
+        entry.addLink(getTypeLink(typeId, request), AtomPub.LINK_DESCRIBED_BY);
+        entry.addLink(getServiceLink(request), AtomPub.LINK_SERVICE);
 
         // CMIS links
         String oid = object.getId();
@@ -174,7 +177,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         // entry.addLink("XXX", CMIS.LINK_ALLOWABLE_ACTIONS);
         // entry.addLink("XXX", CMIS.LINK_RELATIONSHIPS);
 
-        Type objectType = repository.getType(object.getTypeId());
+        Type objectType = repository.getType(typeId);
         entry.addExtension(new ObjectElement(factory, object, objectType));
 
         return link;
