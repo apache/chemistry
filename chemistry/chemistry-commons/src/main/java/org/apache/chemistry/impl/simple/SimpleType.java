@@ -177,6 +177,11 @@ public class SimpleType implements Type {
             "Parent Id", "", false, PropertyType.ID, false, null, false, true,
             null, Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
 
+    public static final SimplePropertyDefinition PROP_PATH = new SimplePropertyDefinition(
+            Property.PATH, "def:path", null, Property.PATH, "Path", "", false,
+            PropertyType.STRING, false, null, false, true, null,
+            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
+
     public static final SimplePropertyDefinition PROP_ALLOWED_CHILD_OBJECT_TYPE_IDS = new SimplePropertyDefinition(
             Property.ALLOWED_CHILD_OBJECT_TYPE_IDS,
             "def:allowedchildobjecttypeids", null,
@@ -237,6 +242,7 @@ public class SimpleType implements Type {
 
     public static final List<PropertyDefinition> PROPS_FOLDER_BASE = commonPlus(
             PROP_PARENT_ID, //
+            PROP_PATH, //
             PROP_ALLOWED_CHILD_OBJECT_TYPE_IDS);
 
     public static final List<PropertyDefinition> PROPS_RELATIONSHIP_BASE = commonPlus(

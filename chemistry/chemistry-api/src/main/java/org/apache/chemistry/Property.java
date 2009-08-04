@@ -83,6 +83,8 @@ public interface Property {
 
     String PARENT_ID = "cmis:ParentId";
 
+    String PATH = "cmis:PathName"; // TODO-0.63
+
     String ALLOWED_CHILD_OBJECT_TYPE_IDS = "cmis:AllowedChildObjectTypeIds";
 
     /*

@@ -19,6 +19,7 @@ package org.apache.chemistry.atompub.server;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.abdera.model.Feed;
 import org.apache.abdera.protocol.server.ProviderHelper;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.ResponseContext;
@@ -26,6 +27,7 @@ import org.apache.abdera.protocol.server.TargetType;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
 import org.apache.chemistry.Repository;
+import org.apache.chemistry.atompub.AtomPub;
 
 /**
  * Base abstract class for the CMIS collections.
@@ -72,6 +74,13 @@ public abstract class CMISCollection<T> extends
     /*
      * ----- AbstractCollectionAdapter -----
      */
+
+    @Override
+    public ResponseContext buildGetFeedResponse(Feed feed) {
+        ResponseContext rc = super.buildGetFeedResponse(feed);
+        rc.setContentType(AtomPub.MEDIA_TYPE_ATOM_FEED);
+        return rc;
+    }
 
     // called by AbstractProvider.process if unknown TargetType
     @Override

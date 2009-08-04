@@ -108,6 +108,14 @@ public interface Connection {
      */
     CMISObject getObject(ObjectId object);
 
+    /**
+     * Gets a folder given its path.
+     *
+     * @param path the folder path
+     * @return the folder, or {@code null} if not found
+     */
+    Folder getFolder(String path);
+
     /*
      * ----- Discovery Services -----
      */

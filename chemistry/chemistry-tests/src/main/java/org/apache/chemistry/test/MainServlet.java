@@ -50,23 +50,43 @@ public class MainServlet {
     public static final String CMIS_SERVICE = "/repository";
 
     public static void main(String[] args) throws Exception {
+        String host = HOST;
+        int port = PORT;
+        int minutes = MINUTES;
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            if ("--help".equals(arg)) {
+                System.err.println("Usage: ... [-h HOST] [-p PORT] [-t TIME(minutes)]");
+                System.exit(0);
+            }
+            if (i == args.length - 1) {
+                continue;
+            }
+            // 2-arg
+            if ("--host".equals(arg) || "-h".equals(arg)) {
+                host = args[++i];
+            } else if ("--port".equals(arg) || "-p".equals(arg)) {
+                port = Integer.parseInt(args[++i]);
+            } else if ("--time".equals(arg) || "-t".equals(arg)) {
+                minutes = Integer.parseInt(args[++i]);
+            }
+        }
         Repository repository = BasicHelper.makeRepository(ROOT_ID);
         Server server = new Server();
         Connector connector = new SocketConnector();
-        connector.setHost(HOST);
-        connector.setPort(PORT);
+        connector.setHost(host);
+        connector.setPort(port);
         server.setConnectors(new Connector[] { connector });
         Servlet servlet = new CMISServlet(repository);
         ServletHolder servletHolder = new ServletHolder(servlet);
         Context context = new Context(server, SERVLET_PATH, Context.SESSIONS);
         context.addServlet(servletHolder, "/*");
         server.start();
-        String url = "http://" + HOST + ':' + PORT + SERVLET_PATH
+        String url = "http://" + host + ':' + port + SERVLET_PATH
                 + CMIS_SERVICE;
         log.info("CMIS server started, AtomPub service url: " + url);
-        Thread.sleep(60 * MINUTES);
+        Thread.sleep(60 * minutes);
         server.stop();
         log.info("CMIS server stopped");
     }
-
 }

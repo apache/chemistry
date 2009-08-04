@@ -424,6 +424,17 @@ public class APPConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
+    public ObjectEntry getFolderByPath(String path, String filter,
+            boolean includeAllowableActions, boolean includeRelationships) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Folder getFolder(String path) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
     public List<Rendition> getRenditions(ObjectId object, String filter,
             int maxItems, int skipCount) {
         return Collections.emptyList();

@@ -380,6 +380,34 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
+    public ObjectEntry getFolderByPath(String path, String filter,
+            boolean includeAllowableActions, boolean includeRelationships) {
+        try {
+            if (path == null || path.equals("") || path.equals("/")) {
+                return (ObjectEntry) getRootFolder();
+            } else {
+                if (path.startsWith("/")) {
+                    path = path.substring(1);
+                }
+                Node node = session.getRootNode().getNode(path);
+                if (node.isNodeType(JcrConstants.NT_FOLDER)) {
+                    return new JcrFolder(node);
+                } else if (node.isNodeType(JcrConstants.NT_FILE)) {
+                    return new JcrDocument(node);
+                }
+            }
+        } catch (RepositoryException e) {
+            String msg = "Unable to get object: " + path;
+            log.error(msg, e);
+        }
+        return null;
+    }
+
+    public Folder getFolder(String path) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
     public Map<String, Serializable> getPropertiesOfLatestVersion(
             String versionSeriesId, boolean major, String filter) {
         // TODO Auto-generated method stub

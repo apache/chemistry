@@ -326,6 +326,8 @@ public class SimpleConnection implements Connection, SPI {
             if (pd.isRequired() && !data.containsKey(id)) {
                 if (Property.NAME.equals(id)) {
                     update.put(Property.NAME, objectId);
+                } else if (Property.PATH.equals(id)) {
+                    update.put(Property.PATH, "XXX"); // TODO
                 } else if (Property.CREATED_BY.equals(id)) {
                     update.put(Property.CREATED_BY, "system"); // TODO
                 } else if (Property.CREATION_DATE.equals(id)) {
@@ -458,6 +460,17 @@ public class SimpleConnection implements Connection, SPI {
             return null;
         }
         return new SimpleObjectEntry(data, this);
+    }
+
+    public ObjectEntry getFolderByPath(String path, String filter,
+            boolean includeAllowableActions, boolean includeRelationships) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Folder getFolder(String path) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     public CMISObject getObject(ObjectId object) {
