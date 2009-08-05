@@ -424,10 +424,35 @@ public class APPConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectEntry getFolderByPath(String path, String filter,
+    public ObjectEntry getObjectByPath(String path, String filter,
             boolean includeAllowableActions, boolean includeRelationships) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        if (!path.startsWith("/")) {
+            throw new IllegalArgumentException("Path must start with / : "
+                    + path);
+        }
+        if (!path.equals("/") && path.endsWith("/")) {
+            throw new IllegalArgumentException("Path must not end with / : "
+                    + path);
+        }
+        URITemplate uriTemplate = repository.getURITemplate(AtomPubCMIS.URITMPL_FOLDER_BY_PATH);
+        if (uriTemplate == null) {
+            throw new UnsupportedOperationException("Cannot get object by path");
+        }
+        // TODO proper URI template syntax and encoding
+        String encodedPath = path.replace(" ", "%20");
+        String href = uriTemplate.template.replace("{path}", encodedPath);
+
+        Response resp = connector.get(new Request(href));
+        if (!resp.isOk()) {
+            if (resp.getStatusCode() == 404) {
+                // object not found, signature says return null
+                return null;
+            }
+            throw new ContentManagerException(
+                    "Remote server returned error code: "
+                            + resp.getStatusCode());
+        }
+        return (APPObjectEntry) resp.getObject(new ReadContext(this));
     }
 
     public Folder getFolder(String path) {

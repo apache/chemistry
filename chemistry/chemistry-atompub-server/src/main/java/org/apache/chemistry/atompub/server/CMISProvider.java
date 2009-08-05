@@ -71,6 +71,8 @@ public class CMISProvider extends AbstractProvider {
                 TargetType.TYPE_ENTRY, "objectid"); // XXX entry?
         targetResolver.setPattern("/type/([^/?]+)", TargetType.TYPE_ENTRY,
                 "typeid");
+        targetResolver.setPattern("/path/([^?]*)", TargetType.TYPE_ENTRY,
+                "path");
 
         // media
         targetBuilder.setTemplate(TargetType.TYPE_MEDIA,
@@ -149,10 +151,10 @@ public class CMISProvider extends AbstractProvider {
         list.add(new URITemplate(AtomPubCMIS.URITMPL_ENTRY_BY_ID, //
                 AtomPub.MEDIA_TYPE_ATOM_ENTRY, //
                 base + "object/{id}"));
+        list.add(new URITemplate(AtomPubCMIS.URITMPL_FOLDER_BY_PATH, //
+                AtomPub.MEDIA_TYPE_ATOM_ENTRY, //
+                base + "path{path}"));
         if (false) { // TODO
-            list.add(new URITemplate(AtomPubCMIS.URITMPL_FOLDER_BY_PATH, //
-                    AtomPub.MEDIA_TYPE_ATOM_ENTRY, //
-                    base + "objectpath/{path}"));
             list.add(new URITemplate(AtomPubCMIS.URITMPL_QUERY, //
                     AtomPub.MEDIA_TYPE_ATOM_FEED, //
                     base + "query?q={q}"));

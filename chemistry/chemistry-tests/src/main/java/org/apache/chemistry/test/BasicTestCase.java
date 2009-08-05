@@ -155,6 +155,21 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals(2, res.size());
     }
 
+    public void testGetObjectByPath() {
+        Folder root = conn.getRootFolder();
+        assertEquals(ROOT_FOLDER_NAME, root.getName());
+        assertNotNull(spi.getObjectByPath("/", null, false, false));
+        assertNotNull(spi.getObjectByPath("/folder 1", null, false, false));
+        assertNotNull(spi.getObjectByPath("/folder 1/doc 1", null, false, false));
+        assertNotNull(spi.getObjectByPath("/folder 1/folder 2", null, false,
+                false));
+        assertNotNull(spi.getObjectByPath("/folder 1/folder 2/doc 2", null,
+                false, false));
+        assertNotNull(spi.getObjectByPath("/folder 1/folder 2/doc 3", null,
+                false, false));
+        assertNull(spi.getObjectByPath("/notsuchname", null, false, false));
+    }
+
     public void testGetChildren() {
         boolean[] hasMoreItems = new boolean[1];
         Folder root = conn.getRootFolder();

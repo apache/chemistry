@@ -58,7 +58,6 @@ import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.abdera.ObjectElement;
-import org.apache.chemistry.impl.simple.SimpleObjectId;
 import org.apache.chemistry.util.GregorianCalendar;
 
 /**
@@ -242,7 +241,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         }
 
         SPI spi = repository.getSPI(); // TODO XXX connection leak
-        ObjectId folderId = new SimpleObjectId(id);
+        ObjectId folderId = spi.newObjectId(id);
         ObjectId objectId;
         switch (type.getBaseType()) {
         case DOCUMENT:
@@ -359,15 +358,29 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     }
 
     @Override
-    public ObjectEntry getEntry(String id, RequestContext request)
+    public ObjectEntry getEntry(String resourceName, RequestContext request)
             throws ResponseContextException {
         SPI spi = repository.getSPI(); // TODO XXX connection leak
-        return spi.getProperties(spi.newObjectId(id), null, false, false);
+        if ("path".equals(getType())) {
+            String path = "/" + resourceName;
+            // TODO decode properly
+            path = path.replace("%20", " ");
+            return spi.getObjectByPath(path, null, false, false);
+        } else { // object
+            String id = resourceName;
+            return spi.getProperties(spi.newObjectId(id), null, false, false);
+        }
     }
 
     @Override
     public String getResourceName(RequestContext request) {
-        return request.getTarget().getParameter("objectid");
+        String name;
+        if ("path".equals(getType())) {
+            name = "path";
+        } else {
+            name = "objectid";
+        }
+        return request.getTarget().getParameter(name);
     }
 
     @Override

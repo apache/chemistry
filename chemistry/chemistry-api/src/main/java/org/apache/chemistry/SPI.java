@@ -313,17 +313,17 @@ public interface SPI {
             boolean includeAllowableActions, boolean includeRelationships);
 
     /**
-     * Gets the properties of a folder, given its path.
+     * Gets the properties of an object, given its path.
      *
-     * @param path the folder path
+     * @param path the object path
      * @param filter the properties filter, or {@code null} for all properties
      * @param includeAllowableActions {@code true} to include allowable actions
      * @param includeRelationships {@code true} if relationships should be
      *            included as well
-     * @return the properties of the folder, or {@code null} if the object is
+     * @return the properties of the object, or {@code null} if the object is
      *         not found
      */
-    ObjectEntry getFolderByPath(String path, String filter,
+    ObjectEntry getObjectByPath(String path, String filter,
             boolean includeAllowableActions, boolean includeRelationships);
 
     /**

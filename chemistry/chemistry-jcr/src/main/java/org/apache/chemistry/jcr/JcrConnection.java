@@ -380,7 +380,7 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
-    public ObjectEntry getFolderByPath(String path, String filter,
+    public ObjectEntry getObjectByPath(String path, String filter,
             boolean includeAllowableActions, boolean includeRelationships) {
         try {
             if (path == null || path.equals("") || path.equals("/")) {

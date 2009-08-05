@@ -70,7 +70,7 @@ public class SimpleConnection implements Connection, SPI {
 
     public SimpleConnection(SimpleRepository repository) {
         this.repository = repository;
-        rootFolder = (SimpleFolder) getObject(repository.getInfo().getRootFolderId());
+        rootFolder = (SimpleFolder) getObject(repository.getRootFolderId());
     }
 
     public Connection getConnection() {
@@ -455,6 +455,7 @@ public class SimpleConnection implements Connection, SPI {
 
     public ObjectEntry getProperties(ObjectId object, String filter,
             boolean includeAllowableActions, boolean includeRelationships) {
+        // TODO filter, includeAllowableActions, includeRelationships
         SimpleData data = repository.datas.get(object.getId());
         if (data == null) {
             return null;
@@ -462,10 +463,42 @@ public class SimpleConnection implements Connection, SPI {
         return new SimpleObjectEntry(data, this);
     }
 
-    public ObjectEntry getFolderByPath(String path, String filter,
+    public ObjectEntry getObjectByPath(String path, String filter,
             boolean includeAllowableActions, boolean includeRelationships) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // TODO filter, includeAllowableActions, includeRelationships
+        if (!path.startsWith("/")) {
+            throw new IllegalArgumentException("Path must start with / : "
+                    + path);
+        }
+        if (!path.equals("/") && path.endsWith("/")) {
+            throw new IllegalArgumentException("Path must not end with / : "
+                    + path);
+        }
+        String id = repository.getRootFolderId().getId();
+        String[] segments = path.substring(1).split("/");
+        if (!path.equals("/")) {
+            for (String segment : segments) {
+                if ("".equals(segment)) {
+                    throw new IllegalArgumentException(
+                            "Path must not contain // : " + path);
+                }
+                String foundId = null;
+                for (String childId : repository.children.get(id)) {
+                    SimpleData data = repository.datas.get(childId);
+                    String name = (String) data.get(Property.NAME);
+                    if (segment.equals(name)) {
+                        foundId = childId;
+                        break;
+                    }
+                }
+                if (foundId == null) {
+                    // not found
+                    return null;
+                }
+                id = foundId;
+            }
+        }
+        return new SimpleObjectEntry(repository.datas.get(id), this);
     }
 
     public Folder getFolder(String path) {

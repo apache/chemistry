@@ -57,6 +57,9 @@ public class CMISWorkspaceManager extends AbstractWorkspaceManager {
             // TODO has a different feed type than children
             return new CMISChildrenCollection(null, null, repository);
         }
+        if (paths.startsWith("/path/")) {
+            return new CMISChildrenCollection("path", null, repository);
+        }
         if (paths.startsWith("/file/")) {
             return new CMISChildrenCollection(null, null, repository);
         }

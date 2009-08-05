@@ -116,7 +116,7 @@ public class AtomPubCMIS {
 
     public static final String URITMPL_ENTRY_BY_ID = "entrybyid";
 
-    public static final String URITMPL_FOLDER_BY_PATH = "folderbypath";
+    public static final String URITMPL_FOLDER_BY_PATH = "folderbypath"; // TODO-0.63
 
     public static final String URITMPL_QUERY = "query";
 
