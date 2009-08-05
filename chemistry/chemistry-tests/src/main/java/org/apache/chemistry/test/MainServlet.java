@@ -39,20 +39,22 @@ public class MainServlet {
     // use a fixed root id, this helps with caching in some clients
     public static final String ROOT_ID = "b7666828-f1aa-41e1-9d0a-94a7898ae569";
 
-    private static final int MINUTES = 60;
+    private static final int DEFAULT_MINUTES = 60;
 
-    public static final String HOST = "0.0.0.0";
+    public static final String DEFAULT_HOST = "0.0.0.0";
 
-    public static final int PORT = 8080;
-
-    public static final String SERVLET_PATH = "/cmis";
-
-    public static final String CMIS_SERVICE = "/repository";
+    public static final int DEFAULT_PORT = 8080;
 
     public static void main(String[] args) throws Exception {
-        String host = HOST;
-        int port = PORT;
-        int minutes = MINUTES;
+        Repository repository = BasicHelper.makeRepository(ROOT_ID);
+        MainServlet.run(args, repository, "/cmis", "/repository");
+    }
+
+    public static void run(String[] args, Repository repository,
+            String servletPath, String cmisService) throws Exception {
+        String host = DEFAULT_HOST;
+        int port = DEFAULT_PORT;
+        int minutes = DEFAULT_MINUTES;
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             if ("--help".equals(arg)) {
@@ -71,7 +73,6 @@ public class MainServlet {
                 minutes = Integer.parseInt(args[++i]);
             }
         }
-        Repository repository = BasicHelper.makeRepository(ROOT_ID);
         Server server = new Server();
         Connector connector = new SocketConnector();
         connector.setHost(host);
@@ -79,14 +80,19 @@ public class MainServlet {
         server.setConnectors(new Connector[] { connector });
         Servlet servlet = new CMISServlet(repository);
         ServletHolder servletHolder = new ServletHolder(servlet);
-        Context context = new Context(server, SERVLET_PATH, Context.SESSIONS);
+        Context context = new Context(server, servletPath, Context.SESSIONS);
         context.addServlet(servletHolder, "/*");
         server.start();
-        String url = "http://" + host + ':' + port + SERVLET_PATH
-                + CMIS_SERVICE;
-        log.info("CMIS server started, AtomPub service url: " + url);
+        String url = "http://" + host + ':' + port + servletPath + cmisService;
+        log.info(getServerName(repository) + " started, AtomPub service url: "
+                + url);
         Thread.sleep(1000 * 60 * minutes);
         server.stop();
-        log.info("CMIS server stopped");
+        log.info(getServerName(repository) + " stopped");
     }
+
+    private static String getServerName(Repository repository) {
+        return "CMIS repository " + repository.getInfo().getProductName();
+    }
+
 }
