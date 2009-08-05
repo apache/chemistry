@@ -30,6 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 import org.apache.chemistry.ACE;
 import org.apache.chemistry.ACLPropagation;
 import org.apache.chemistry.BaseType;
@@ -413,7 +415,7 @@ public class APPConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<String> getAllowableActions(ObjectId object, String asUser) {
+    public Collection<QName> getAllowableActions(ObjectId object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

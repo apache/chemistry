@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 /**
  * A SPI connection to a CMIS Repository.
  * <p>
@@ -277,16 +279,14 @@ public interface SPI {
     /**
      * Gets the allowable actions.
      * <p>
-     * Returns the list of allowable actions for an object based on the current
+     * Returns the list of allowable actions on an object based on the current
      * user's context, subject to any access constraints that are currently
      * imposed by the repository.
      *
      * @param object the object
-     * @param asUser the user for which the check should be made, or {@code
-     *            null} for the current user
      * @return the allowable actions
      */
-    Collection<String> getAllowableActions(ObjectId object, String asUser);
+    Collection<QName> getAllowableActions(ObjectId object);
 
     /**
      * Gets the properties of an object.

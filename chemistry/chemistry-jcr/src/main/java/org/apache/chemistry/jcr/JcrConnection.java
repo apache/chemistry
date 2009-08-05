@@ -32,6 +32,7 @@ import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
+import javax.xml.namespace.QName;
 
 import org.apache.chemistry.ACE;
 import org.apache.chemistry.ACLPropagation;
@@ -246,8 +247,7 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<String> getAllowableActions(ObjectId objectId,
-            String asUser) {
+    public Collection<QName> getAllowableActions(ObjectId objectId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

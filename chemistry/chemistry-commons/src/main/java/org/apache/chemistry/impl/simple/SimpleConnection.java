@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.namespace.QName;
+
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -448,7 +450,7 @@ public class SimpleConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<String> getAllowableActions(ObjectId object, String asUser) {
+    public Collection<QName> getAllowableActions(ObjectId object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
