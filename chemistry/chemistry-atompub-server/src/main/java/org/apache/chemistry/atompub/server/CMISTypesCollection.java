@@ -18,6 +18,7 @@ package org.apache.chemistry.atompub.server;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +34,7 @@ import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMIS;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
@@ -261,7 +263,7 @@ public class CMISTypesCollection extends CMISCollection<Type> {
             }
         }
         // end property definitions
-        if ("typesdescendants".equals(getType())) {
+        if (AtomPubCMIS.COL_TYPES_DESCENDANTS.equals(getType())) {
             Collection<Type> subTypes = repository.getTypes(type.getId(), 1,
                     includePropertyDefinitions);
             if (!subTypes.isEmpty()) {
@@ -294,7 +296,16 @@ public class CMISTypesCollection extends CMISCollection<Type> {
     @Override
     public Iterable<Type> getEntries(RequestContext request)
             throws ResponseContextException {
-        return repository.getTypes(id);
+        if (id == null && AtomPubCMIS.COL_TYPES_DESCENDANTS.equals(getType())) {
+            // descendants needs only the first level, it will then recurse
+            List<Type> list = new ArrayList<Type>(4);
+            for (String tid : BaseType.ALL_IDS) {
+                list.add(repository.getType(tid));
+            }
+            return list;
+        } else {
+            return repository.getTypes(id);
+        }
     }
 
     @Override
@@ -333,6 +344,7 @@ public class CMISTypesCollection extends CMISCollection<Type> {
     public String getResourceName(RequestContext request) {
         return request.getTarget().getParameter("typeid");
     }
+
     @Override
     protected String getLink(Type type, IRI feedIri, RequestContext request) {
         return getTypeLink(type.getId(), request);

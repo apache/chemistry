@@ -16,7 +16,11 @@
  */
 package org.apache.chemistry;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -55,10 +59,19 @@ public enum BaseType {
     }
 
     private static final Map<String, BaseType> all = new HashMap<String, BaseType>();
+
+    public static final List<BaseType> ALL = Collections.unmodifiableList(Arrays.asList(values()));
+
+    public static final List<String> ALL_IDS;
+
     static {
+        List<String> ids = new ArrayList<String>(4);
         for (BaseType o : values()) {
-            all.put(o.value, o);
+            String id = o.getId();
+            all.put(id, o);
+            ids.add(id);
         }
+        ALL_IDS = Collections.unmodifiableList(ids);
     }
 
     public static BaseType get(String value) {

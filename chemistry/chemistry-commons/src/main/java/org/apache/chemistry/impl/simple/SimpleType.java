@@ -451,4 +451,9 @@ public class SimpleType implements Type {
         return propertyDefinitions.get(id);
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + getId() + ')';
+    }
+
 }

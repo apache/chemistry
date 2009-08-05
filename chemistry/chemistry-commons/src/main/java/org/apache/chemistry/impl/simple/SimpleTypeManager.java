@@ -17,7 +17,6 @@
 package org.apache.chemistry.impl.simple;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -77,21 +76,25 @@ public class SimpleTypeManager implements TypeManager {
      */
     public Collection<Type> getTypes(String typeId, int depth,
             boolean returnPropertyDefinitions) {
+        List<Type> list = new LinkedList<Type>();
+        Set<String> done = new HashSet<String>();
         if (typeId == null) {
             // ignore depth
-            // TODO returnPropertyDefinitions
-            return Collections.unmodifiableCollection(types.values());
+            for (String tid : BaseType.ALL_IDS) {
+                list.add(types.get(tid));
+                collectSubTypes(tid, -1, returnPropertyDefinitions, list, done);
+            }
+        } else {
+            if (!types.containsKey(typeId)) {
+                throw new IllegalArgumentException("No such type: " + typeId);
+            }
+            // TODO spec unclear on depth 0
+            if (depth < 0) {
+                list.add(types.get(typeId));
+            }
+            collectSubTypes(typeId, depth, returnPropertyDefinitions, list,
+                    done);
         }
-        if (!types.containsKey(typeId)) {
-            throw new IllegalArgumentException("No such type: " + typeId);
-        }
-        // TODO spec unclear on depth 0
-        List<Type> list = new LinkedList<Type>();
-        if (depth < 0) {
-            list.add(types.get(typeId));
-        }
-        collectSubTypes(typeId, depth, returnPropertyDefinitions, list,
-                new HashSet<String>());
         return list;
     }
 
