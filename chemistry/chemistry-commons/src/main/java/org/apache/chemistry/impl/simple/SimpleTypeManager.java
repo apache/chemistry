@@ -34,7 +34,15 @@ public class SimpleTypeManager implements TypeManager {
     // linked so that values() returns things in a parent-before-children order
     protected final Map<String, Type> types = new LinkedHashMap<String, Type>();
 
-    protected final Map<String, Collection<Type>> typesChildren = new HashMap<String, Collection<Type>>();
+    protected final Map<String, Collection<Type>> typesChildren;
+
+    public SimpleTypeManager() {
+        typesChildren = new HashMap<String, Collection<Type>>();
+        // make sure base types are there
+        for (String bid : BaseType.ALL_IDS) {
+            typesChildren.put(bid, new LinkedList<Type>());
+        }
+    }
 
     public void addType(Type type) {
         String typeId = type.getId();
@@ -81,7 +89,12 @@ public class SimpleTypeManager implements TypeManager {
         if (typeId == null) {
             // ignore depth
             for (String tid : BaseType.ALL_IDS) {
-                list.add(types.get(tid));
+                Type type = types.get(tid);
+                if (type == null) {
+                    // some optional base types may be absent
+                    continue;
+                }
+                list.add(type);
                 collectSubTypes(tid, -1, returnPropertyDefinitions, list, done);
             }
         } else {
