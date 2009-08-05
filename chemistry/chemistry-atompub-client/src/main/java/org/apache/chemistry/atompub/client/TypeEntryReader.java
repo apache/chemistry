@@ -28,6 +28,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.chemistry.CMIS;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.atompub.AtomPub;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.client.stax.AbstractEntryReader;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.xml.stax.ChildrenNavigator;
@@ -64,12 +65,7 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
     @Override
     protected void readCmisElement(ReadContext context, StaxReader reader,
             APPType entry) throws XMLStreamException {
-        String localName = reader.getLocalName();
-        if (CMIS.DOCUMENT_TYPE.getLocalPart().equals(localName)
-                || CMIS.FOLDER_TYPE.getLocalPart().equals(localName)
-                || CMIS.RELATIONSHIP_TYPE.getLocalPart().equals(
-                        localName)
-                || CMIS.POLICY_TYPE.getLocalPart().equals(localName)) {
+        if (AtomPubCMIS.TYPE.getLocalPart().equals(reader.getLocalName())) {
             ChildrenNavigator children = reader.getChildren();
             Map<String, String> map = new HashMap<String, String>();
             Map<String, PropertyDefinition> pdefs = null;
@@ -92,16 +88,6 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
                     } catch (XMLStreamException e) {
                         log.error("Cannot read text element for: " + name, e);
                         continue;
-                    }
-                    if (name.equals(CMIS.BASE_TYPE_ID.getLocalPart())) {
-                        // check base type coherent with base element
-                        // eg "cmis:folder" for a <cmis:folderType>
-                        if (!("cmis:" + localName).startsWith(text)) {
-                            throw new IllegalArgumentException(
-                                    String.format(
-                                            "Type element <cmis:%s> cannot have base type: %s",
-                                            localName, text));
-                        }
                     }
                     map.put(name, text);
                 }

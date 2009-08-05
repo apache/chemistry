@@ -106,6 +106,8 @@ public class CMISProvider extends AbstractProvider {
         // ?
         targetResolver.setPattern("/types/([^/?]+)",
                 TargetType.TYPE_COLLECTION, "typeid");
+        targetResolver.setPattern("/typesdescendants/([^/?]*)",
+                TargetType.TYPE_COLLECTION, "typeid");
 
         // CMIS workspaces available
 
@@ -127,10 +129,10 @@ public class CMISProvider extends AbstractProvider {
                 AtomPubCMIS.COL_CHECKED_OUT, "checkedout", null, repository));
 
         workspaceInfo.addCollection(new CMISTypesCollection(
-                AtomPubCMIS.COL_TYPES_CHILDREN, repository));
+                AtomPubCMIS.COL_TYPES_CHILDREN, null, repository));
 
         workspaceInfo.addCollection(new CMISTypesCollection(
-                AtomPubCMIS.COL_TYPES_DESCENDANTS, repository));
+                AtomPubCMIS.COL_TYPES_DESCENDANTS, null, repository));
 
         workspaceInfo.addCollection(new CMISQueryFeed(repository));
 

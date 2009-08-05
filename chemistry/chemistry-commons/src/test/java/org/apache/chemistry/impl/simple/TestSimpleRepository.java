@@ -111,19 +111,19 @@ public class TestSimpleRepository extends TestCase {
         assertNull(repo.getType("no-such-type"));
         assertEquals(3,
                 repo.getTypes(BaseType.DOCUMENT.getId(), -1, false).size());
-        assertEquals(1, // TODO spec unclear on depth 0
+        assertEquals(0, // TODO spec unclear on depth 0
                 repo.getTypes(BaseType.DOCUMENT.getId(), 0, false).size());
-        assertEquals(2,
+        assertEquals(1,
                 repo.getTypes(BaseType.DOCUMENT.getId(), 1, false).size());
-        assertEquals(3,
+        assertEquals(2,
                 repo.getTypes(BaseType.DOCUMENT.getId(), 2, false).size());
-        assertEquals(3,
+        assertEquals(2,
                 repo.getTypes(BaseType.DOCUMENT.getId(), 3, false).size());
         assertEquals(2, repo.getTypes("doc", -1, false).size());
-        assertEquals(1, repo.getTypes("doc", 0, false).size());
-        assertEquals(2, repo.getTypes("doc", 1, false).size());
-        assertEquals(2, repo.getTypes("doc", 2, false).size());
-        assertEquals(2, repo.getTypes("doc", 3, false).size());
+        assertEquals(0, repo.getTypes("doc", 0, false).size());
+        assertEquals(1, repo.getTypes("doc", 1, false).size());
+        assertEquals(1, repo.getTypes("doc", 2, false).size());
+        assertEquals(1, repo.getTypes("doc", 3, false).size());
     }
 
     public void testRoot() throws Exception {

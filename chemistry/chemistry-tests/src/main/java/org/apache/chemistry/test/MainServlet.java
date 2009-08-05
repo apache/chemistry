@@ -39,7 +39,7 @@ public class MainServlet {
     // use a fixed root id, this helps with caching in some clients
     public static final String ROOT_ID = "b7666828-f1aa-41e1-9d0a-94a7898ae569";
 
-    private static final int MINUTES = 60 * 1000; // in ms
+    private static final int MINUTES = 60;
 
     public static final String HOST = "0.0.0.0";
 
@@ -56,7 +56,7 @@ public class MainServlet {
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             if ("--help".equals(arg)) {
-                System.err.println("Usage: ... [-h HOST] [-p PORT] [-t TIME(minutes)]");
+                System.err.println("Usage: ... [-h HOST] [-p PORT] [-t TIME (minutes)]");
                 System.exit(0);
             }
             if (i == args.length - 1) {
@@ -85,7 +85,7 @@ public class MainServlet {
         String url = "http://" + host + ':' + port + SERVLET_PATH
                 + CMIS_SERVICE;
         log.info("CMIS server started, AtomPub service url: " + url);
-        Thread.sleep(60 * minutes);
+        Thread.sleep(1000 * 60 * minutes);
         server.stop();
         log.info("CMIS server stopped");
     }

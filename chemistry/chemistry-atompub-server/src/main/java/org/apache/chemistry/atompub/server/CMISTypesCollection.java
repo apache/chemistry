@@ -18,6 +18,7 @@ package org.apache.chemistry.atompub.server;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +38,7 @@ import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.abdera.PropertiesElement;
 
 /**
@@ -44,8 +46,8 @@ import org.apache.chemistry.atompub.abdera.PropertiesElement;
  */
 public class CMISTypesCollection extends CMISCollection<Type> {
 
-    public CMISTypesCollection(String type, Repository repository) {
-        super(type, "types", null, repository);
+    public CMISTypesCollection(String type, String id, Repository repository) {
+        super(type, "types", id, repository);
     }
 
     /*
@@ -67,6 +69,7 @@ public class CMISTypesCollection extends CMISCollection<Type> {
 
     @Override
     public String getId(RequestContext request) {
+        // TODO when descendants
         return "urn:x-id:types";
     }
 
@@ -84,8 +87,9 @@ public class CMISTypesCollection extends CMISCollection<Type> {
      */
 
     @Override
-    protected String addEntryDetails(RequestContext request, Entry entry,
+    public String addEntryDetails(RequestContext request, Entry entry,
             IRI feedIri, Type type) throws ResponseContextException {
+        boolean includePropertyDefinitions = "true".equals(request.getParameter("includePropertyDefinitions"));
         Factory factory = request.getAbdera().getFactory();
 
         entry.setId(getId(type));
@@ -105,67 +109,49 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         // CMIS links
 
         // CMIS-specific
-        // TODO refactor this to be a proper ExtensibleElement
-        QName typeElementQName;
-        switch (type.getBaseType()) {
-        case DOCUMENT:
-            typeElementQName = CMIS.DOCUMENT_TYPE;
-            break;
-        case FOLDER:
-            typeElementQName = CMIS.FOLDER_TYPE;
-            break;
-        case RELATIONSHIP:
-            typeElementQName = CMIS.RELATIONSHIP_TYPE;
-            break;
-        case POLICY:
-            typeElementQName = CMIS.POLICY_TYPE;
-            break;
-        default:
-            throw new AssertionError(type.getBaseType().getId());
-        }
-        Element dt = factory.newElement(typeElementQName, entry);
+        Element te = factory.newElement(AtomPubCMIS.TYPE, entry);
         Element el;
         // note: setText is called in a separate statement as JDK 5 has problems
         // compiling when it's on one line (compiler generics bug)
-        el = factory.newElement(CMIS.ID, dt);
+        el = factory.newElement(CMIS.ID, te);
         el.setText(type.getId());
-        el = factory.newElement(CMIS.LOCAL_NAME, dt);
+        el = factory.newElement(CMIS.LOCAL_NAME, te);
         el.setText(type.getLocalName());
         URI localNamespace = type.getLocalNamespace();
         if (localNamespace != null) {
-            el = factory.newElement(CMIS.LOCAL_NAMESPACE, dt);
+            el = factory.newElement(CMIS.LOCAL_NAMESPACE, te);
             el.setText(localNamespace.toString());
         }
-        el = factory.newElement(CMIS.QUERY_NAME, dt);
+        el = factory.newElement(CMIS.QUERY_NAME, te);
         el.setText(type.getQueryName());
-        el = factory.newElement(CMIS.DISPLAY_NAME, dt);
+        el = factory.newElement(CMIS.DISPLAY_NAME, te);
         el.setText(type.getDisplayName());
-        el = factory.newElement(CMIS.BASE_TYPE_ID, dt);
+        el = factory.newElement(CMIS.BASE_TYPE_ID, te);
         el.setText(type.getBaseType().getId());
-        el = factory.newElement(CMIS.PARENT_ID, dt);
+        el = factory.newElement(CMIS.PARENT_ID, te);
         el.setText(type.getParentId());
-        el = factory.newElement(CMIS.DESCRIPTION, dt);
+        el = factory.newElement(CMIS.DESCRIPTION, te);
         el.setText(type.getDescription());
-        el = factory.newElement(CMIS.CREATABLE, dt);
+        el = factory.newElement(CMIS.CREATABLE, te);
         el.setText(bool(type.isCreatable()));
-        el = factory.newElement(CMIS.FILEABLE, dt);
+        el = factory.newElement(CMIS.FILEABLE, te);
         el.setText(bool(type.isFileable()));
-        el = factory.newElement(CMIS.QUERYABLE, dt);
+        el = factory.newElement(CMIS.QUERYABLE, te);
         el.setText(bool(type.isQueryable()));
-        el = factory.newElement(CMIS.CONTROLLABLE_POLICY, dt);
+        el = factory.newElement(CMIS.CONTROLLABLE_POLICY, te);
         el.setText(bool(type.isControllablePolicy()));
-        el = factory.newElement(CMIS.CONTROLLABLE_ACL, dt);
+        el = factory.newElement(CMIS.CONTROLLABLE_ACL, te);
         el.setText(bool(type.isControllableACL()));
-        el = factory.newElement(CMIS.FULLTEXT_INDEXED, dt);
+        el = factory.newElement(CMIS.FULLTEXT_INDEXED, te);
         el.setText(bool(type.isFulltextIndexed()));
-        el = factory.newElement(CMIS.INCLUDED_IN_SUPERTYPE_QUERY, dt);
+        el = factory.newElement(CMIS.INCLUDED_IN_SUPERTYPE_QUERY, te);
         el.setText(bool(type.isIncludedInSuperTypeQuery()));
-        el = factory.newElement(CMIS.VERSIONABLE, dt); // docs only
+        el = factory.newElement(CMIS.VERSIONABLE, te); // docs only
         el.setText(bool(type.isVersionable()));
-        el = factory.newElement(CMIS.CONTENT_STREAM_ALLOWED, dt); // docs only
+        el = factory.newElement(CMIS.CONTENT_STREAM_ALLOWED, te); // docs only
         el.setText(type.getContentStreamAllowed().toString()); // TODO null
         // TODO allowedSourceTypes, allowedTargetTypes
-        if ("true".equals(request.getParameter("includePropertyDefinitions"))) {
+        if (includePropertyDefinitions) {
             for (PropertyDefinition pd : type.getPropertyDefinitions()) {
                 QName qname;
                 switch (pd.getType().ordinal()) {
@@ -202,7 +188,7 @@ public class CMISTypesCollection extends CMISCollection<Type> {
                 default:
                     throw new AssertionError(pd.getType().name());
                 }
-                Element def = factory.newElement(qname, dt);
+                Element def = factory.newElement(qname, te);
                 el = factory.newElement(CMIS.ID, def);
                 el.setText(pd.getId());
                 String localName = pd.getLocalName();
@@ -271,6 +257,31 @@ public class CMISTypesCollection extends CMISCollection<Type> {
                 default:
                     throw new AssertionError(pd.getType().name());
                 }
+                // end property definition
+            }
+        }
+        // end property definitions
+        if ("typesdescendants".equals(getType())) {
+            Collection<Type> subTypes = repository.getTypes(type.getId(), 1,
+                    includePropertyDefinitions);
+            if (!subTypes.isEmpty()) {
+                Element che = factory.newElement(AtomPubCMIS.CHILDREN, entry);
+                // TODO basic feed info
+                // AbstractCollectionAdapter.createFeedBase:
+                factory.newID(che).setValue(
+                        "urn:x-id:typesdecendants-" + type.getId());
+                // che.setTitle(getTitle(request));
+                // che.addLink("");
+                // che.addLink("", "self");
+                // che.addAuthor(getAuthor(request));
+                // che.setUpdated(new Date());
+                // AbstractEntityCollectionAdapter.addFeedDetails
+                // che.setUpdated(new Date());
+                for (Type subType : subTypes) {
+                    Entry subEntry = factory.newEntry(che);
+                    addEntryDetails(request, subEntry, null, subType);
+                }
+                // end children entry
             }
         }
         return link;
@@ -283,7 +294,7 @@ public class CMISTypesCollection extends CMISCollection<Type> {
     @Override
     public Iterable<Type> getEntries(RequestContext request)
             throws ResponseContextException {
-        return repository.getTypes(null);
+        return repository.getTypes(id);
     }
 
     @Override
@@ -318,6 +329,10 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         return repository.getType(typeId);
     }
 
+    @Override
+    public String getResourceName(RequestContext request) {
+        return request.getTarget().getParameter("typeid");
+    }
     @Override
     protected String getLink(Type type, IRI feedIri, RequestContext request) {
         return getTypeLink(type.getId(), request);

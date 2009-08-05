@@ -20,6 +20,7 @@ import org.apache.abdera.protocol.server.CollectionAdapter;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.impl.AbstractWorkspaceManager;
 import org.apache.chemistry.Repository;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 
 /**
  * Workspace manager that correctly finds the appropriate collection adapter by
@@ -40,10 +41,19 @@ public class CMISWorkspaceManager extends AbstractWorkspaceManager {
         String path = spath == null ? uri : uri.substring(spath.length());
         String paths = path + '/';
         if (paths.startsWith("/types/") || paths.startsWith("/types?")) {
-            return new CMISTypesCollection(null, repository);
+            return new CMISTypesCollection(null, null, repository);
+        }
+        if (paths.startsWith("/typesdescendants/")) {
+            String id = request.getTarget().getParameter("typeid");
+            if (id.equals("")) {
+                id = null;
+            }
+            return new CMISTypesCollection(AtomPubCMIS.COL_TYPES_DESCENDANTS,
+                    id, repository);
         }
         if (paths.startsWith("/type/")) {
-            return new CMISTypesCollection(null, repository);
+            return new CMISTypesCollection(AtomPubCMIS.COL_TYPES_CHILDREN,
+                    null, repository);
         }
         if (paths.startsWith("/children/")) {
             String id = request.getTarget().getParameter("objectid");

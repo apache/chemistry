@@ -87,6 +87,9 @@ public class SimpleTypeManager implements TypeManager {
         }
         // TODO spec unclear on depth 0
         List<Type> list = new LinkedList<Type>();
+        if (depth < 0) {
+            list.add(types.get(typeId));
+        }
         collectSubTypes(typeId, depth, returnPropertyDefinitions, list,
                 new HashSet<String>());
         return list;
@@ -94,20 +97,20 @@ public class SimpleTypeManager implements TypeManager {
 
     protected void collectSubTypes(String typeId, int depth,
             boolean returnPropertyDefinitions, List<Type> list, Set<String> done) {
-        if (done.contains(typeId)) {
-            // TODO move cycles check to addType
-            throw new IllegalStateException("Types contain a cycle involving: "
-                    + typeId);
-        }
         // TODO returnPropertyDefinitions
-        list.add(types.get(typeId));
-        done.add(typeId);
         if (depth == 0) {
             return;
         }
-        Collection<Type> children = typesChildren.get(typeId);
-        for (Type type : children) {
-            collectSubTypes(type.getId(), depth - 1, returnPropertyDefinitions,
+        for (Type subType : typesChildren.get(typeId)) {
+            String subTypeId = subType.getId();
+            if (done.contains(subTypeId)) {
+                // TODO move cycles check to addType
+                throw new IllegalStateException(
+                        "Types contain a cycle involving: " + subTypeId);
+            }
+            done.add(subTypeId);
+            list.add(subType);
+            collectSubTypes(subTypeId, depth - 1, returnPropertyDefinitions,
                     list, done);
         }
     }

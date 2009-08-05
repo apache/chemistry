@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<feed xmlns="http://www.w3.org/2005/Atom" xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200901">
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200901"
+  xmlns:cmisra="http://docs.oasis-open.org/ns/cmis/restatom/200901">
   <id>urn:x-id:types</id>
   <title type="text">Types</title>
   <author>
@@ -14,7 +15,7 @@
     <link href="http://127.0.0.1:8080/cmis/type/document" rel="edit" />
     <link href="http://127.0.0.1:8080/cmis/type/document" rel="alternate" />
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
-    <cmis:documentType>
+    <cmisra:type>
       <cmis:id>cmis:document</cmis:id>
       <cmis:localName>cmis:document</cmis:localName>
       <cmis:queryName>Document</cmis:queryName>
@@ -29,8 +30,9 @@
       <cmis:controllablePolicy>true</cmis:controllablePolicy>
       <cmis:controllableACL>true</cmis:controllableACL>
       <cmis:fulltextindexed>true</cmis:fulltextindexed>
-      <cmis:includedInSupertypeQuery>true</cmis:includedInSupertypeQuery>
-    </cmis:documentType>
+      <cmis:includedInSupertypeQuery>true
+      </cmis:includedInSupertypeQuery>
+    </cmisra:type>
   </entry>
   <entry>
     <id>urn:x-tid:folder</id>
@@ -40,7 +42,7 @@
     <link href="http://127.0.0.1:8080/cmis/type/folder" rel="edit" />
     <link href="http://127.0.0.1:8080/cmis/type/folder" rel="alternate" />
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
-    <cmis:folderType>
+    <cmisra:type>
       <cmis:id>cmis:folder</cmis:id>
       <cmis:localName>cmis:folder</cmis:localName>
       <cmis:queryName>Folder</cmis:queryName>
@@ -55,8 +57,9 @@
       <cmis:controllablePolicy>true</cmis:controllablePolicy>
       <cmis:controllableACL>true</cmis:controllableACL>
       <cmis:fulltextindexed>true</cmis:fulltextindexed>
-      <cmis:includedInSupertypeQuery>true</cmis:includedInSupertypeQuery>
-    </cmis:folderType>
+      <cmis:includedInSupertypeQuery>true
+      </cmis:includedInSupertypeQuery>
+    </cmisra:type>
   </entry>
   <entry>
     <id>urn:x-tid:relationship</id>
@@ -66,7 +69,7 @@
     <link href="http://127.0.0.1:8080/cmis/type/relationship" rel="edit" />
     <link href="http://127.0.0.1:8080/cmis/type/relationship" rel="alternate" />
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
-    <cmis:relationshipType>
+    <cmisra:type>
       <cmis:id>cmis:relationship</cmis:id>
       <cmis:localName>cmis:relationship</cmis:localName>
       <cmis:queryName>Relationship</cmis:queryName>
@@ -81,8 +84,9 @@
       <cmis:controllablePolicy>false</cmis:controllablePolicy>
       <cmis:controllableACL>false</cmis:controllableACL>
       <cmis:fulltextindexed>false</cmis:fulltextindexed>
-      <cmis:includedInSupertypeQuery>true</cmis:includedInSupertypeQuery>
-    </cmis:relationshipType>
+      <cmis:includedInSupertypeQuery>true
+      </cmis:includedInSupertypeQuery>
+    </cmisra:type>
   </entry>
   <entry>
     <id>urn:x-tid:policy</id>
@@ -92,7 +96,7 @@
     <link href="http://127.0.0.1:8080/cmis/type/policy" rel="edit" />
     <link href="http://127.0.0.1:8080/cmis/type/policy" rel="alternate" />
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
-    <cmis:policyType>
+    <cmisra:type>
       <cmis:id>cmis:policy</cmis:id>
       <cmis:localName>cmis:policy</cmis:localName>
       <cmis:queryName>Policy</cmis:queryName>
@@ -107,8 +111,9 @@
       <cmis:controllablePolicy>false</cmis:controllablePolicy>
       <cmis:controllableACL>false</cmis:controllableACL>
       <cmis:fulltextindexed>false</cmis:fulltextindexed>
-      <cmis:includedInSupertypeQuery>true</cmis:includedInSupertypeQuery>
-    </cmis:policyType>
+      <cmis:includedInSupertypeQuery>true
+      </cmis:includedInSupertypeQuery>
+    </cmisra:type>
   </entry>
   <entry>
     <id>urn:x-tid:Root</id>
@@ -118,7 +123,7 @@
     <link href="http://127.0.0.1:8080/cmis/type/Root" rel="edit" />
     <link href="http://127.0.0.1:8080/cmis/type/Root" rel="alternate" />
     <link href="http://127.0.0.1:8080/cmis/repository" rel="repository" />
-    <cmis:folderType>
+    <cmisra:type>
       <cmis:id>Root</cmis:id>
       <cmis:localName>Root</cmis:localName>
       <cmis:queryName>Root</cmis:queryName>
@@ -133,7 +138,8 @@
       <cmis:controllablePolicy>false</cmis:controllablePolicy>
       <cmis:controllableACL>false</cmis:controllableACL>
       <cmis:fulltextindexed>false</cmis:fulltextindexed>
-      <cmis:includedInSupertypeQuery>false</cmis:includedInSupertypeQuery>
-    </cmis:folderType>
+      <cmis:includedInSupertypeQuery>false
+      </cmis:includedInSupertypeQuery>
+    </cmisra:type>
   </entry>
 </feed>

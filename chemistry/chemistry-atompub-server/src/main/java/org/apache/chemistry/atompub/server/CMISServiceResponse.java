@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 import org.apache.abdera.parser.stax.StaxStreamWriter;
 import org.apache.abdera.protocol.server.CollectionInfo;
 import org.apache.abdera.protocol.server.RequestContext;
+import org.apache.abdera.protocol.server.TargetType;
 import org.apache.abdera.protocol.server.WorkspaceInfo;
 import org.apache.abdera.protocol.server.context.StreamWriterResponseContext;
 import org.apache.abdera.writer.StreamWriter;
@@ -31,6 +32,7 @@ import org.apache.chemistry.CMIS;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryInfo;
+import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.URITemplate;
 import org.w3c.dom.Document;
@@ -65,7 +67,9 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
                 request)) {
             sw.startWorkspace();
             sw.writeTitle(wi.getTitle(request));
+            // repository info
             RepositoryInfoWriter.write(sw, provider);
+            // collections
             for (CollectionInfo ci : wi.getCollections(request)) {
                 sw.startCollection(ci.getHref(request));
                 sw.writeAttribute(AtomPubCMIS.COLLECTION_TYPE,
@@ -75,6 +79,14 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
                 // no AtomPub categories
                 sw.endCollection();
             }
+            // CMIS links
+            sw.startElement(AtomPub.ATOM_LINK);
+            sw.writeAttribute("type", "application/cmistree+xml");
+            sw.writeAttribute("rel", AtomPubCMIS.LINK_TYPES_DESCENDANTS);
+            String tdurl = request.absoluteUrlFor(TargetType.TYPE_SERVICE, null);
+            tdurl = tdurl.replaceFirst("/repository$", "/typesdescendants/"); // XXX
+            sw.writeAttribute("href", tdurl);
+            sw.endElement();
             // URI templates
             for (URITemplate info : provider.getURITemplates(request)) {
                 sw.startElement(AtomPubCMIS.URI_TEMPLATE);

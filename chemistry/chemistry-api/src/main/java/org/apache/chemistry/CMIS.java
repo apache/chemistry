@@ -105,14 +105,6 @@ public class CMIS {
 
     public static final QName REPOSITORY_SPECIFIC_INFORMATION = CMISName("repositorySpecificInformation");
 
-    public static final QName DOCUMENT_TYPE = CMISName("documentType");
-
-    public static final QName FOLDER_TYPE = CMISName("folderType");
-
-    public static final QName RELATIONSHIP_TYPE = CMISName("relationshipType");
-
-    public static final QName POLICY_TYPE = CMISName("policyType");
-
     public static final QName BASE_TYPE_ID = CMISName("baseTypeId");
 
     public static final QName ID = CMISName("id");

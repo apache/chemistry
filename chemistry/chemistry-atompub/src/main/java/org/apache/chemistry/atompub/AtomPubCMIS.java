@@ -60,6 +60,8 @@ public class AtomPubCMIS {
 
     public static final QName OBJECT = CMISRAName("object");
 
+    public static final QName CHILDREN = CMISRAName("children");
+
     /*
      * ----- AtomPub Collection Types -----
      */
