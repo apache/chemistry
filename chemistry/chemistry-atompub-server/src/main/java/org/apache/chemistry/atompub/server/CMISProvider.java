@@ -106,7 +106,7 @@ public class CMISProvider extends AbstractProvider {
         // ?
         targetResolver.setPattern("/types/([^/?]+)",
                 TargetType.TYPE_COLLECTION, "typeid");
-        targetResolver.setPattern("/typesdescendants/([^/?]*)",
+        targetResolver.setPattern("/typesdescendants/([^/?]*)(\\?.*)?",
                 TargetType.TYPE_COLLECTION, "typeid");
 
         // CMIS workspaces available
