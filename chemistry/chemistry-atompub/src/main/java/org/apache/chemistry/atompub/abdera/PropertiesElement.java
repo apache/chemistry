@@ -17,7 +17,6 @@
 package org.apache.chemistry.atompub.abdera;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -176,14 +175,18 @@ public class PropertiesElement extends ExtensibleElementWrapper {
      * @return the list of serialized strings
      */
     // TODO move this to a helper somewhere else
-    @SuppressWarnings("null")
+    @SuppressWarnings( { "null", "unchecked" })
     public static List<String> getStringsForValue(Serializable value,
             PropertyDefinition propertyDefinition) {
         boolean multi = propertyDefinition.isMultiValued();
         List<String> values = null;
         if (multi) {
             if (value.getClass().isArray()) {
-                values = new ArrayList<String>(Array.getLength(value));
+                // turn it into a list to work with it easily
+                value = (Serializable) Arrays.asList((Serializable[]) value);
+            }
+            if (value instanceof List<?>) {
+                values = new ArrayList<String>(((List<?>) value).size());
             } else {
                 // TODO: complex property don't know how to handle skip it
                 return null;
@@ -194,14 +197,14 @@ public class PropertiesElement extends ExtensibleElementWrapper {
         case PropertyType.STRING_ORD:
         case PropertyType.ID_ORD:
             if (multi) {
-                values.addAll(Arrays.asList((String[]) value));
+                values.addAll((List<? extends String>) value);
             } else {
                 values = Collections.singletonList((String) value);
             }
             break;
         case PropertyType.DECIMAL_ORD:
             if (multi) {
-                for (BigDecimal v : (BigDecimal[]) value) {
+                for (BigDecimal v : (List<? extends BigDecimal>) value) {
                     values.add(v.toString());
                 }
             } else {
@@ -210,7 +213,7 @@ public class PropertiesElement extends ExtensibleElementWrapper {
             break;
         case PropertyType.INTEGER_ORD:
             if (multi) {
-                for (Number v : (Number[]) value) {
+                for (Number v : (List<? extends Number>) value) {
                     values.add(v.toString());
                 }
             } else {
@@ -219,7 +222,7 @@ public class PropertiesElement extends ExtensibleElementWrapper {
             break;
         case PropertyType.BOOLEAN_ORD:
             if (multi) {
-                for (Boolean v : (Boolean[]) value) {
+                for (Boolean v : (List<? extends Boolean>) value) {
                     values.add(v.toString());
                 }
             } else {
@@ -228,7 +231,7 @@ public class PropertiesElement extends ExtensibleElementWrapper {
             break;
         case PropertyType.DATETIME_ORD:
             if (multi) {
-                for (Calendar v : (Calendar[]) value) {
+                for (Calendar v : (List<? extends Calendar>) value) {
                     values.add(calendarString(v));
                 }
             } else {

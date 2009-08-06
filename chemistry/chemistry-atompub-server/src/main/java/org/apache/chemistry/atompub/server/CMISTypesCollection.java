@@ -40,6 +40,7 @@ import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.abdera.PropertiesElement;
 
@@ -104,10 +105,10 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         }
 
         String link = getLink(type, feedIri, request);
-        entry.addLink(link, "self");
-        entry.addLink(link, "edit");
+        entry.addLink(link, AtomPub.LINK_SELF);
+        entry.addLink(link, AtomPub.LINK_EDIT);
         // alternate is mandated by Atom when there is no atom:content
-        entry.addLink(link, "alternate");
+        entry.addLink(link, AtomPub.LINK_ALTERNATE);
         // CMIS links
 
         // CMIS-specific
@@ -342,7 +343,12 @@ public class CMISTypesCollection extends CMISCollection<Type> {
 
     @Override
     public String getResourceName(RequestContext request) {
-        return request.getTarget().getParameter("typeid");
+        String resourceName = request.getTarget().getParameter("typeid");
+        // TODO decode properly
+        resourceName = resourceName.replace("%3a", ":");
+        resourceName = resourceName.replace("%3A", ":");
+        resourceName = resourceName.replace("%20", " ");
+        return resourceName;
     }
 
     @Override

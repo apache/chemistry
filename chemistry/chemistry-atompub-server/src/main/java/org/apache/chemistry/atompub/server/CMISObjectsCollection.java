@@ -366,8 +366,6 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         SPI spi = repository.getSPI(); // TODO XXX connection leak
         if ("path".equals(getType())) {
             String path = "/" + resourceName;
-            // TODO decode properly
-            path = path.replace("%20", " ");
             return spi.getObjectByPath(path, null, false, false);
         } else { // object
             String id = resourceName;
@@ -383,7 +381,12 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         } else {
             name = "objectid";
         }
-        return request.getTarget().getParameter(name);
+        String resourceName = request.getTarget().getParameter(name);
+        // TODO decode properly
+        resourceName = resourceName.replace("%3a", ":");
+        resourceName = resourceName.replace("%3A", ":");
+        resourceName = resourceName.replace("%20", " ");
+        return resourceName;
     }
 
     @Override
