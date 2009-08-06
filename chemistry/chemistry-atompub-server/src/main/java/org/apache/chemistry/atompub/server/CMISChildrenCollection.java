@@ -18,12 +18,15 @@ package org.apache.chemistry.atompub.server;
 
 import java.util.List;
 
+import org.apache.abdera.model.Feed;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.Property;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
+import org.apache.chemistry.atompub.AtomPub;
 
 /**
  * CMIS Collection for the children of an object.
@@ -33,6 +36,36 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
     public CMISChildrenCollection(String type, String id, Repository repository) {
         super(type, "children", id, repository);
     }
+
+    /*
+     * ----- AbstractCollectionAdapter -----
+     */
+
+    @Override
+    protected Feed createFeedBase(RequestContext request) {
+        Feed feed = super.createFeedBase(request);
+
+        feed.addLink(getChildrenLink(id, request), AtomPub.LINK_SELF,
+                AtomPub.MEDIA_TYPE_ATOM_FEED, null, null, -1);
+
+        // link to parent children feed, needs parent id
+        SPI spi = repository.getSPI();
+        ObjectEntry entry = spi.getProperties(spi.newObjectId(id), null, false,
+                false);
+        String pid = (String) entry.getValue(Property.PARENT_ID);
+        if (pid != null) {
+            feed.addLink(getChildrenLink(pid, request), AtomPub.LINK_UP,
+                    AtomPub.MEDIA_TYPE_ATOM_FEED, null, null, -1);
+        }
+        spi.close();
+
+        // RFC 5005 paging
+        return feed;
+    }
+
+    /*
+     * ----- AbstractEntityCollectionAdapter -----
+     */
 
     @Override
     public Iterable<ObjectEntry> getEntries(RequestContext request)

@@ -83,12 +83,10 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         feed.setTitle(getTitle(request));
         feed.addAuthor(getAuthor(request));
         feed.setUpdated(new Date()); // XXX
-
-        feed.addLink(getChildrenLink(id, request), "self");
-        feed.addLink(getObjectLink(id, request), AtomPubCMIS.LINK_SOURCE);
-
-        // RFC 5005 paging
-
+        feed.addLink(getServiceLink(request), AtomPub.LINK_SERVICE,
+                AtomPub.MEDIA_TYPE_ATOM_SERVICE, null, null, -1);
+        feed.addLink(getObjectLink(id, request), AtomPub.LINK_VIA,
+                AtomPub.MEDIA_TYPE_ATOM_ENTRY, null, null, -1);
         return feed;
     }
 
@@ -129,6 +127,8 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     protected String addEntryDetails(RequestContext request, Entry entry,
             IRI feedIri, ObjectEntry object) throws ResponseContextException {
         Factory factory = request.getAbdera().getFactory();
+        String oid = object.getId();
+        String typeId = object.getTypeId();
 
         entry.declareNS(CMIS.CMIS_NS, CMIS.CMIS_PREFIX);
 
@@ -146,17 +146,20 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             entry.setSummaryElement(t);
         }
 
+        entry.addLink(getServiceLink(request), AtomPub.LINK_SERVICE,
+                AtomPub.MEDIA_TYPE_ATOM_SERVICE, null, null, -1);
         String link = getLink(object, feedIri, request);
-        entry.addLink(link, "self");
-        entry.addLink(link, "edit");
+        entry.addLink(link, AtomPub.LINK_SELF, AtomPub.MEDIA_TYPE_ATOM_ENTRY,
+                null, null, -1);
+        entry.addLink(link, AtomPub.LINK_EDIT, AtomPub.MEDIA_TYPE_ATOM_ENTRY,
+                null, null, -1);
         // alternate is mandated by Atom when there is no atom:content
-        entry.addLink(link, "alternate");
-        String typeId = object.getTypeId();
-        entry.addLink(getTypeLink(typeId, request), AtomPub.LINK_DESCRIBED_BY);
-        entry.addLink(getServiceLink(request), AtomPub.LINK_SERVICE);
+        entry.addLink(link, AtomPub.LINK_ALTERNATE,
+                AtomPub.MEDIA_TYPE_ATOM_ENTRY, null, null, -1);
 
-        // CMIS links
-        String oid = object.getId();
+        entry.addLink(getTypeLink(typeId, request), AtomPub.LINK_DESCRIBED_BY,
+                AtomPub.MEDIA_TYPE_ATOM_ENTRY, null, null, -1);
+
         BaseType baseType = object.getBaseType();
         if (baseType == BaseType.FOLDER) {
             String pid = (String) object.getValue(Property.PARENT_ID);

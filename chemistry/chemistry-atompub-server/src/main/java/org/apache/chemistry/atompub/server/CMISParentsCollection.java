@@ -18,18 +18,37 @@ package org.apache.chemistry.atompub.server;
 
 import java.util.Collection;
 
+import org.apache.abdera.model.Feed;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
+import org.apache.chemistry.atompub.AtomPub;
 
 public class CMISParentsCollection extends CMISObjectsCollection {
 
     public CMISParentsCollection(String type, String id, Repository repository) {
         super(type, "parents", id, repository);
     }
+
+    /*
+     * ----- AbstractCollectionAdapter -----
+     */
+
+    @Override
+    protected Feed createFeedBase(RequestContext request) {
+        Feed feed = super.createFeedBase(request);
+        feed.addLink(getParentsLink(id, request), AtomPub.LINK_SELF,
+                AtomPub.MEDIA_TYPE_ATOM_FEED, null, null, -1);
+        // RFC 5005 paging
+        return feed;
+    }
+
+    /*
+     * ----- AbstractEntityCollectionAdapter -----
+     */
 
     @Override
     public Iterable<ObjectEntry> getEntries(RequestContext request)
