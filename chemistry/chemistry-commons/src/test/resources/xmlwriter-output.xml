@@ -5,4 +5,9 @@
     <cmis:object/>
   </ws2>
   <ws3 key="val"/>
+  <ws4 key="a&amp;b&lt;c&gt;d&quot;e&apos;f"/>
+  <ws5>a&amp;b&lt;c&gt;d"e'f</ws5>
+  <ws6>YWJjZGVmZ2hpamFiY2RlZmdoaWphYmNkZWZnaGlqYWJjZGVmZ2hpamFiY2RlZmdoaWphYmNkZWZn
+aGlqYWJjZGVmZ2hpag==
+</ws6>
 </service>

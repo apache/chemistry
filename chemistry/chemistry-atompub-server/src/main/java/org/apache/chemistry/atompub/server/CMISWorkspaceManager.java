@@ -37,15 +37,18 @@ public class CMISWorkspaceManager extends AbstractWorkspaceManager {
     public CollectionAdapter getCollectionAdapter(RequestContext request) {
         Repository repository = provider.getRepository();
         String uri = request.getUri().toString();
+        if (uri.indexOf('?') > 0) {
+            uri = uri.substring(0, uri.lastIndexOf('?'));
+        }
         String spath = request.getTargetBasePath();
         String path = spath == null ? uri : uri.substring(spath.length());
         String paths = path + '/';
-        if (paths.startsWith("/types/") || paths.startsWith("/types?")) {
+        if (paths.startsWith("/types/")) {
             return new CMISTypesCollection(null, null, repository);
         }
         if (paths.startsWith("/typesdescendants/")) {
             String id = request.getTarget().getParameter("typeid");
-            if (id.equals("")) {
+            if ("".equals(id)) {
                 id = null;
             }
             return new CMISTypesCollection(AtomPubCMIS.COL_TYPES_DESCENDANTS,

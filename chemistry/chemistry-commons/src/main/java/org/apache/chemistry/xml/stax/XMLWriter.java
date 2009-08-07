@@ -20,6 +20,7 @@
 package org.apache.chemistry.xml.stax;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +31,7 @@ import java.util.TimeZone;
 import javax.xml.namespace.QName;
 
 import org.apache.chemistry.util.GregorianCalendar;
+import org.apache.commons.codec.binary.Base64;
 
 // This file contains code from org.apache.commons.betwixt.XMLUtils
 /**
@@ -229,6 +231,42 @@ public class XMLWriter {
         start();
         depth--;
         writer.write(text);
+        Element elem = pop(); // close myself
+        writer.write("</");
+        writer.write(elem.name);
+        writer.write(">");
+        return this;
+    }
+
+    public XMLWriter contentBase64(InputStream in) throws IOException {
+        start();
+        depth--;
+
+        byte[] buf = new byte[3 * 19];
+        char[] chars = new char[4 * 19];
+        while (true) {
+            int n = in.read(buf);
+            if (n == 0) {
+                break;
+            }
+            byte[] bytes;
+            if (n < buf.length) {
+                bytes = new byte[n];
+                System.arraycopy(buf, 0, bytes, 0, n);
+            } else {
+                bytes = buf;
+            }
+            byte[] encoded = Base64.encodeBase64(bytes);
+            for (int i = 0; i < encoded.length; i++) {
+                chars[i] = (char) encoded[i];
+            }
+            writer.write(chars, 0, encoded.length);
+            writer.write("\n");
+            if (n < buf.length) {
+                break;
+            }
+        }
+
         Element elem = pop(); // close myself
         writer.write("</");
         writer.write(elem.name);

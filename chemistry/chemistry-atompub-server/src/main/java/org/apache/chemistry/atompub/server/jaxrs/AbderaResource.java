@@ -157,6 +157,28 @@ public class AbderaResource {
 
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
+    @Path("typesdescendants")
+    public Response doGetTypesDescendantsAll() {
+        return getAbderaFeed(1);
+    }
+
+    @GET
+    @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
+    @Path("typesdescendants/{typeid}")
+    public Response doGetTypesDescendantsTyped() {
+        return getAbderaFeed(2);
+    }
+
+    @GET
+    @Produces(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
+    @Path("type/{typeid}")
+    public Response doGetType() {
+        // typeid decoded by Abdera getCollectionAdapter
+        return getAbderaEntry(2);
+    }
+
+    @GET
+    @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
     @Path("children/{objectid}")
     public Response doGetChildren() {
         // objectid decoded by Abdera getCollectionAdapter

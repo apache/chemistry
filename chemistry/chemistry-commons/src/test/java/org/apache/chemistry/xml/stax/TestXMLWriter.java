@@ -17,6 +17,7 @@
  */
 package org.apache.chemistry.xml.stax;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -53,10 +54,30 @@ public class TestXMLWriter extends TestCase {
     public void testXMLWriter() throws Exception {
         Writer w = new StringWriter();
         XMLWriter x = new XMLWriter(w, 2);
-        x.start().element("service").xmlns("cmis", CMIS_NS).attr("version",
-                "1.0").start().element("ws1").attr("k", "v").content("test").element(
-                "ws2").attr("key", "val").start().element(OBJECT).end().element(
-                "ws3").attr("key", "val").end().end();
+        String s = "abcdefghij";
+        InputStream in = new ByteArrayInputStream(
+                (s + s + s + s + s + s + s).getBytes("UTF-8"));
+        x.start();
+        {
+            x.element("service");
+            x.xmlns("cmis", CMIS_NS).attr("version", "1.0");
+            x.start();
+            {
+                x.element("ws1").attr("k", "v").content("test");
+                x.element("ws2").attr("key", "val");
+                x.start();
+                {
+                    x.element(OBJECT);
+                }
+                x.end();
+                x.element("ws3").attr("key", "val");
+                x.element("ws4").eattr("key", "a&b<c>d\"e'f");
+                x.element("ws5").econtent("a&b<c>d\"e'f");
+                x.element("ws6").contentBase64(in);
+            }
+            x.end();
+        }
+        x.end();
         String actual = w.toString();
 
         InputStream stream = this.getClass().getClassLoader().getResourceAsStream(

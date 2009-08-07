@@ -58,7 +58,7 @@ public abstract class ObjectEntryWriter extends
             }
             xw.element("title").content(title);
             xw.element("updated").content(new Date());
-            xw.element("content").content(""); // TODO fake content for now
+            writeContent(object, xw);
             writeCmisObject(object, xw);
             xw.end();
             xw.end();
@@ -69,6 +69,9 @@ public abstract class ObjectEntryWriter extends
             xw.close();
         }
     }
+
+    protected abstract void writeContent(ObjectEntry object, XMLWriter xw)
+            throws IOException;
 
     protected abstract void writeCmisObject(ObjectEntry object, XMLWriter xw)
             throws IOException;

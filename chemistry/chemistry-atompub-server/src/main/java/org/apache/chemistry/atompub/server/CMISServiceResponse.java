@@ -84,7 +84,7 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
             sw.writeAttribute("type", "application/cmistree+xml");
             sw.writeAttribute("rel", AtomPubCMIS.LINK_TYPES_DESCENDANTS);
             String tdurl = request.absoluteUrlFor(TargetType.TYPE_SERVICE, null);
-            tdurl = tdurl.replaceFirst("/repository$", "/typesdescendants/"); // XXX
+            tdurl = tdurl.replaceFirst("/repository$", "/typesdescendants"); // XXX
             sw.writeAttribute("href", tdurl);
             sw.endElement();
             // URI templates

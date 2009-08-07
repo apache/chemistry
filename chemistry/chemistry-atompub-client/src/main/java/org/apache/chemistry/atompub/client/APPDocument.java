@@ -54,6 +54,10 @@ public class APPDocument extends APPObject implements Document {
     }
 
     public ContentStream getContentStream() {
+        ContentStream contentStream = entry.getContentStream();
+        if (contentStream != APPObjectEntry.REMOTE_CONTENT_STREAM) {
+            return contentStream;
+        }
         String url = entry.getLink(AtomPub.LINK_EDIT_MEDIA);
         return url == null ? null : new APPContentStream(url);
     }
@@ -123,7 +127,7 @@ public class APPDocument extends APPObject implements Document {
 
     public void setContentStream(ContentStream contentStream)
             throws IOException {
-        throw new UnsupportedOperationException("Not yet implemented");
+        entry.setContentStream(contentStream);
     }
 
     public void cancelCheckOut() {

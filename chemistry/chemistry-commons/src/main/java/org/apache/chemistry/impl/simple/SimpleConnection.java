@@ -413,6 +413,25 @@ public class SimpleConnection implements Connection, SPI {
         }
         SimpleData data = new SimpleData(typeId, type.getBaseType());
         data.putAll(properties);
+        // TODO check presence allowed
+        if (contentStream != null) {
+            data.put(Property.CONTENT_STREAM_LENGTH,
+                    Integer.valueOf((int) contentStream.getLength())); // TODO-Long
+            String mt = contentStream.getMimeType();
+            if (mt != null) {
+                data.put(Property.CONTENT_STREAM_MIME_TYPE, mt);
+            }
+            String fn = contentStream.getFileName();
+            if (fn != null) {
+                data.put(Property.CONTENT_STREAM_FILE_NAME, fn);
+            }
+            try {
+                data.put(SimpleProperty.CONTENT_BYTES_KEY,
+                        SimpleContentStream.getBytes(contentStream.getStream()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         if (folder != null) {
             data.put(Property.PARENT_ID, folder.getId());
         }

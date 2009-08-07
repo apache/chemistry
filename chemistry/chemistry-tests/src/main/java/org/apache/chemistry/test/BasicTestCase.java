@@ -38,6 +38,7 @@ import org.apache.chemistry.Property;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.util.GregorianCalendar;
 import org.apache.commons.io.IOUtils;
 
@@ -259,7 +260,7 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals(array.length, cs.getLength());
     }
 
-    public void testNewDocument() {
+    public void testNewDocument() throws Exception {
         Folder root = conn.getRootFolder();
         assertNull(getDocumentChild(root));
         Document doc = root.newDocument("doc");
@@ -273,6 +274,12 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals("GregorianCalendar(2009-07-14T12:00:00.000+05:00)",
                 cal.toString());
         doc.setValue("date", cal);
+        // content stream
+        String blobText = "Another file...\n";
+        byte[] blobBytes = blobText.getBytes("UTF-8");
+        ContentStream cs = new SimpleContentStream(blobBytes, "text/plain",
+                "mydoc.txt");
+        doc.setContentStream(cs);
         assertNull(doc.getId()); // not yet saved
         doc.save();
         String id = doc.getId();
@@ -289,6 +296,17 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals("mytitle", doc.getString("title"));
         Calendar cal2 = doc.getDateTime("date");
         assertEquals(cal.toString(), cal2.toString());
+        cs = doc.getContentStream();
+        assertNotNull(cs);
+        assertTrue(cs.getLength() != 0);
+        assertEquals("mydoc.txt", cs.getFileName());
+        assertEquals("text/plain", cs.getMimeType());
+        assertNotNull(cs.getStream());
+        InputStream in = doc.getContentStream().getStream();
+        assertNotNull(in);
+        byte[] array = IOUtils.toByteArray(in);
+        assertEquals(blobBytes.length, array.length);
+        assertEquals(blobBytes.length, cs.getLength());
     }
 
     @SuppressWarnings("null")

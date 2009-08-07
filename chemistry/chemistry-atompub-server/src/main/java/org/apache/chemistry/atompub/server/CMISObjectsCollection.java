@@ -16,6 +16,7 @@
  */
 package org.apache.chemistry.atompub.server;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -58,6 +59,7 @@ import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.abdera.ObjectElement;
+import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.util.GregorianCalendar;
 
 /**
@@ -204,6 +206,39 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         if (entry == null /* || !ProviderHelper.isValidEntry(entry) TODO XXX TCK */) {
             return new EmptyResponseContext(400);
         }
+        InputStream stream;
+        String mimeType;
+        try {
+            org.apache.abdera.model.Content.Type ct = entry.getContentType();
+            switch (ct) {
+            case TEXT:
+                mimeType = "text/plain";
+                break;
+            case HTML:
+                mimeType = "text/html";
+                break;
+            case XHTML:
+                mimeType = "application/xhtml+xml";
+                break;
+            case XML:
+                mimeType = "application/xml";
+                break;
+            case MEDIA:
+                mimeType = entry.getContentMimeType().toString();
+                break;
+            default:
+                throw new AssertionError(ct.toString());
+            }
+            if (ct == org.apache.abdera.model.Content.Type.MEDIA) {
+                stream = entry.getContentStream();
+            } else {
+                stream = new ByteArrayInputStream(entry.getContent().getBytes(
+                        "UTF-8"));
+            }
+        } catch (IOException e1) {
+            return createErrorResponse(new ResponseContextException(
+                    "cannot get stream", 500));
+        }
 
         Element obb = entry.getFirstChild(AtomPubCMIS.OBJECT);
         ObjectElement objectElement = new ObjectElement(obb, repository);
@@ -248,7 +283,14 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         ObjectId objectId;
         switch (type.getBaseType()) {
         case DOCUMENT:
-            ContentStream contentStream = null; // TODO
+            String filename = (String) properties.get(Property.CONTENT_STREAM_FILE_NAME);
+            ContentStream contentStream;
+            try {
+                contentStream = new SimpleContentStream(stream, mimeType,
+                        filename);
+            } catch (IOException e) {
+                return createErrorResponse(new ResponseContextException(500, e));
+            }
             VersioningState versioningState = null; // TODO
             objectId = spi.createDocument(properties, folderId, contentStream,
                     versioningState);

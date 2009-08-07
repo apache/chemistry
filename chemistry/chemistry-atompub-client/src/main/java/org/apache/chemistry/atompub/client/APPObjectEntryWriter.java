@@ -28,6 +28,12 @@ import org.apache.chemistry.xml.stax.XMLWriter;
 public class APPObjectEntryWriter extends ObjectEntryWriter {
 
     @Override
+    protected void writeContent(ObjectEntry object, XMLWriter xw)
+            throws IOException {
+        ((APPObjectEntry) object).writeContentTo(xw);
+    }
+
+    @Override
     protected void writeCmisObject(ObjectEntry object, XMLWriter xw)
             throws IOException {
         ((APPObjectEntry) object).writeObjectTo(xw);

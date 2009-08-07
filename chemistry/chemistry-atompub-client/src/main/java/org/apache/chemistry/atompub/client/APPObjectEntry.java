@@ -19,6 +19,7 @@ package org.apache.chemistry.atompub.client;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,22 +33,30 @@ import javax.xml.namespace.QName;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMIS;
 import org.apache.chemistry.ChangeInfo;
+import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.ValueAdapter;
 import org.apache.chemistry.atompub.client.stax.XmlProperty;
+import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.xml.stax.XMLWriter;
+import org.apache.commons.io.IOUtils;
 
 /**
  *
  */
 public class APPObjectEntry implements ObjectEntry {
 
+    protected static final ContentStream REMOTE_CONTENT_STREAM = new SimpleContentStream(
+            new byte[0], null, null);
+
     protected APPConnection connection;
 
     protected Map<String, XmlProperty> properties;
+
+    protected ContentStream localContentStream = REMOTE_CONTENT_STREAM;
 
     protected Map<QName, Boolean> allowableActions;
 
@@ -184,6 +193,16 @@ public class APPObjectEntry implements ObjectEntry {
         }
     }
 
+    protected void setContentStream(ContentStream contentStream) {
+        localContentStream = contentStream;
+        setValue(Property.CONTENT_STREAM_FILE_NAME,
+                contentStream == null ? null : contentStream.getFileName());
+    }
+
+    protected ContentStream getContentStream() {
+        return localContentStream;
+    }
+
     // public Document getDocument() {
     // return (APPDocument) getConnector().getObject(
     // new ReadContext(getConnection(), getType()), getEditLink());
@@ -209,6 +228,50 @@ public class APPObjectEntry implements ObjectEntry {
     public String toString() {
         return getClass().getSimpleName() + '(' + getTypeId() + ',' + getId()
                 + ')';
+    }
+
+    public void writeContentTo(XMLWriter xw) throws IOException {
+        if (localContentStream == null
+                || localContentStream == REMOTE_CONTENT_STREAM) {
+            xw.element("content").content("");
+            return;
+        }
+        xw.element("content");
+        String mimeType = localContentStream.getMimeType();
+        // String mimeTypeLower = mimeType.toLowerCase();
+        if (mimeType.startsWith("text/")) {
+            // Atom requires this to be sent in clear text
+            String encoding = "UTF-8";
+            mimeType = mimeType.replace(" ", "");
+            if (mimeType.indexOf(';') > 0) {
+                String[] strings = mimeType.split(";");
+                mimeType = strings[0];
+                if (strings[1].startsWith("encoding=")) {
+                    encoding = strings[1].substring("encoding=".length());
+                }
+            }
+            if (mimeType.equals("text/plain")) {
+                mimeType = "text";
+            } else if (mimeType.equals("text/html")) {
+                mimeType = "html";
+            }
+            xw.attr("type", mimeType);
+            // TODO stream bytes
+            byte[] array = IOUtils.toByteArray(localContentStream.getStream());
+            String text;
+            try {
+                text = new String(array, encoding);
+            } catch (UnsupportedEncodingException e) {
+                text = new String(array, "ISO-8859-1");
+            }
+            xw.econtent(text);
+            // } else if (mimeTypeLower.endsWith("+xml")
+            // || mimeTypeLower.endsWith("/xml")) {
+            // ...
+        } else {
+            // encode as base64
+            xw.contentBase64(localContentStream.getStream());
+        }
     }
 
     public void writeObjectTo(XMLWriter xw) throws IOException {
