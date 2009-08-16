@@ -92,45 +92,15 @@
 
   <developers>
     <developer>
-      <name>Florent Guillaume</name>
-      <roles>
-        <role>committer</role>
-      </roles>
-    </developer>
-    <developer>
       <name>Bogdan Stefanescu</name>
+      <id>bs</id>
       <roles>
         <role>committer</role>
       </roles>
     </developer>
     <developer>
-      <name>Stéphane Lacoin</name>
-      <roles>
-        <role>committer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Sun Seng David Tan</name>
-      <roles>
-        <role>committer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Gabriele Columbro</name>
-      <roles>
-        <role>committer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>David Nuescheler</name>
-      <id>uncled</id>
-      <roles>
-        <role>committer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Paolo Mottadelli</name>
-      <id>paolo</id>
+      <name>David Caruana</name>
+      <id>dcaruana</id>
       <roles>
         <role>committer</role>
       </roles>
@@ -143,16 +113,52 @@
       </roles>
     </developer>
     <developer>
-      <name>Stéfane Fermigier</name>
+      <name>Florent Guillaume</name>
+      <id>fguillaume</id>
       <roles>
         <role>committer</role>
       </roles>
     </developer>
     <developer>
-      <name>Jukka Zitting</name>
-      <id>jukka</id>
+      <name>Gabriele Columbro</name>
+      <id>gabriele</id>
       <roles>
-        <role>mentor</role>
+        <role>committer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Paolo Mottadelli</name>
+      <id>paolo</id>
+      <roles>
+        <role>committer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Stéfane Fermigier</name>
+      <id>sfermigier</id>
+      <roles>
+        <role>committer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Stéphane Lacoin</name>
+      <id>slacoin</id>
+      <roles>
+        <role>committer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Sun Seng David Tan</name>
+      <id>stan</id>
+      <roles>
+        <role>committer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>David Nuescheler</name>
+      <id>uncled</id>
+      <roles>
+        <role>committer</role>
       </roles>
     </developer>
     <developer>
@@ -165,6 +171,13 @@
     <developer>
       <name>Gianugo Rabellino</name>
       <id>gianugo</id>
+      <roles>
+        <role>mentor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Jukka Zitting</name>
+      <id>jukka</id>
       <roles>
         <role>mentor</role>
       </roles>
