@@ -105,6 +105,7 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
         }
         sw.endService();
         sw.endDocument();
+        sw.flush();
     }
 
     public static class RepositoryInfoWriter {
