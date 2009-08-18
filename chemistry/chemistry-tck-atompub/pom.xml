@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+  <!--
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.chemistry</groupId>
+  <artifactId>chemistry-tck-atompub</artifactId>
+  <name>Chemistry TCK AtomPub</name>
+  <packaging>jar</packaging>
+  <version>1.0.0-SNAPSHOT</version>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.6</version>
+    </dependency>
+    <dependency>
+      <!-- NOTE: use recent xerces for validating CMIS schema -->
+      <!--       which uses xsi:type. Fails with JDK 5 xerces -->
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.9.1</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.12</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <version>3.1</version>
+    </dependency>
+    <dependency>
+      <artifactId>abdera-core</artifactId>
+      <groupId>org.apache.abdera</groupId>
+      <version>0.4.0-incubating</version>
+    </dependency>
+    <dependency>
+      <artifactId>abdera-extensions-json</artifactId>
+      <groupId>org.apache.abdera</groupId>
+      <version>0.4.0-incubating</version>
+    </dependency>
+    <dependency>
+      <artifactId>abdera-parser</artifactId>
+      <groupId>org.apache.abdera</groupId>
+      <version>0.4.0-incubating</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <port>8081</port>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <systemProperties>
+            <property>
+              <!-- NOTE: use recent xerces for validating CMIS schema -->
+              <!--       which uses xsi:type. Fails with JDK 5 xerces -->
+              <name>javax.xml.parsers.DocumentBuilderFactory</name>
+              <value>org.apache.xerces.jaxp.DocumentBuilderFactoryImpl</value>
+            </property>
+            <property>
+              <!-- NOTE: use recent xerces for validating CMIS schema -->
+              <!--       which uses xsi:type. Fails with JDK 5 xerces -->
+              <name>javax.xml.validation.SchemaFactory:http://www.w3.org/2001/XMLSchema</name>
+              <value>org.apache.xerces.jaxp.SAXParserFactoryImpl</value>
+            </property>
+            <property>
+              <name>chemistry.tck.validate</name>
+              <value>true</value>
+            </property>
+            <property>
+              <name>chemistry.tck.failOnValidationError</name>
+              <value>false</value>
+            </property>
+            <property>
+              <name>chemistry.tck.traceRequests</name>
+              <value>false</value>
+            </property>
+          </systemProperties>
+          <skipTests>true</skipTests>
+          <excludes>
+            <!-- NOTE: Exclude tests based on custom types until solution -->
+            <!--       for registering types on a per server basis -->
+            <exclude>**/test/custom/**/*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
+  <profiles>
+    <profile>
+      <id>example</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <skipTests>false</skipTests>
+              <systemProperties>
+                <property>
+                  <name>chemistry.tck.serviceUrl</name>
+                  <value>http://localhost/cmis</value>
+                </property>
+                <property>
+                  <name>chemistry.tck.user</name>
+                  <value>cmisuser</value>
+                </property>
+                <property>
+                  <name>chemistry.tck.password</name>
+                  <value>cmispassword</value>
+                </property>
+              </systemProperties>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>
