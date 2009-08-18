@@ -77,7 +77,8 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
      */
 
     @Override
-    protected Feed createFeedBase(RequestContext request) {
+    protected Feed createFeedBase(RequestContext request)
+            throws ResponseContextException {
         Factory factory = request.getAbdera().getFactory();
         Feed feed = factory.newFeed();
         feed.declareNS(CMIS.CMIS_NS, CMIS.CMIS_PREFIX);

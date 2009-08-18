@@ -38,7 +38,8 @@ public class CMISParentsCollection extends CMISObjectsCollection {
      */
 
     @Override
-    protected Feed createFeedBase(RequestContext request) {
+    protected Feed createFeedBase(RequestContext request)
+            throws ResponseContextException {
         Feed feed = super.createFeedBase(request);
         feed.addLink(getParentsLink(id, request), AtomPub.LINK_SELF,
                 AtomPub.MEDIA_TYPE_ATOM_FEED, null, null, -1);

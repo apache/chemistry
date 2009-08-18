@@ -42,7 +42,8 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
      */
 
     @Override
-    protected Feed createFeedBase(RequestContext request) {
+    protected Feed createFeedBase(RequestContext request)
+            throws ResponseContextException {
         Feed feed = super.createFeedBase(request);
 
         feed.addLink(getChildrenLink(id, request), AtomPub.LINK_SELF,
@@ -52,6 +53,9 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
         SPI spi = repository.getSPI();
         ObjectEntry entry = spi.getProperties(spi.newObjectId(id), null, false,
                 false);
+        if (entry == null) {
+            throw new ResponseContextException("Not found: " + id, 404);
+        }
         String pid = (String) entry.getValue(Property.PARENT_ID);
         if (pid != null) {
             feed.addLink(getChildrenLink(pid, request), AtomPub.LINK_UP,
