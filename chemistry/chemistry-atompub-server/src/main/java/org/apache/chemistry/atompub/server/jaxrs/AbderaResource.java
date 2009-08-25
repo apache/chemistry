@@ -39,6 +39,7 @@ import org.apache.chemistry.Repository;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.server.CMISProvider;
+import org.apache.chemistry.atompub.server.jaxrs.AbderaResource.PathMunger.ContextAndServletPath;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -62,6 +63,20 @@ public class AbderaResource {
     // TODO inject repository somehow
     public static Repository repository;
 
+    // TODO configure somehow
+    public static PathMunger pathMunger;
+
+    public interface PathMunger {
+        public static class ContextAndServletPath {
+            public String contextPath;
+
+            public String servletPath;
+        }
+
+        ContextAndServletPath munge(HttpServletRequest request,
+                String contextPath, String servletPath);
+    }
+
     public AbderaResource() throws Exception {
         try {
             provider = new CMISProvider(repository);
@@ -76,8 +91,8 @@ public class AbderaResource {
     /**
      * Gets a {@link ServletRequestContext} wrapping the httpRequest.
      * <p>
-     * Wrapping is needed to fixup the servlet path to take include this
-     * Resource's path.
+     * Wrapping is needed to fixup the servlet path to include this Resource's
+     * path.
      * <p>
      * We need to pass an explicit number of segments because
      * UriInfo.getMatchedURIs is buggy for RESTEasy
@@ -87,7 +102,8 @@ public class AbderaResource {
      *            to determine the Resource path
      */
     protected ServletRequestContext getRequestContext(int segments) {
-        // actual servlet path
+        // actual context & servlet path
+        String cpath = httpRequest.getContextPath();
         String spath = httpRequest.getServletPath();
         // find this Resource path (remove some segments from it)
         String rpath = ui.getPath();
@@ -97,18 +113,45 @@ public class AbderaResource {
                 rpath = rpath.substring(0, rpath.lastIndexOf('/'));
             }
         }
+        // find the pretend context & servlet path
+        final String contextPath;
+        final String servletPath;
+        final String resourcePath = rpath;
+        if (pathMunger == null) {
+            contextPath = cpath;
+            servletPath = spath;
+        } else {
+            ContextAndServletPath cs = pathMunger.munge(httpRequest, cpath,
+                    spath);
+            contextPath = cs.contextPath;
+            servletPath = cs.servletPath;
+        }
         HttpServletRequest wrapper;
-        if (rpath.length() == 0) {
-            // no resource path to fake
+        if (cpath.equals(contextPath)
+                && spath.equals(servletPath + resourcePath)) {
+            // no path to fake
             wrapper = httpRequest;
         } else {
-            // this gives the pretend servlet path
-            final String pspath = spath + rpath;
-            // wrap HttpServletRequest to pretend to have this servlet path
+            // wrap HttpServletRequest to pretend to have this context & servlet
+            // path
             wrapper = new HttpServletRequestWrapper(httpRequest) {
                 @Override
+                public String getContextPath() {
+                    return contextPath;
+                }
+
+                @Override
                 public String getServletPath() {
-                    return pspath;
+                    return servletPath + resourcePath;
+                }
+
+                @Override
+                public String getRequestURI() {
+                    String uri = super.getRequestURI();
+                    String cs = super.getContextPath() + super.getServletPath();
+                    // strip original context + servlet, add our own
+                    return contextPath + servletPath
+                            + uri.substring(cs.length());
                 }
             };
         }
@@ -124,18 +167,27 @@ public class AbderaResource {
     protected Response getAbderaFeed(int skipSegments) {
         RequestContext requestContext = getRequestContext(skipSegments);
         CollectionAdapter adapter = getAbderaCollectionAdapter(requestContext);
+        if (adapter == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
         return Response.ok(adapter.getFeed(requestContext)).build();
     }
 
     protected Response getAbderaEntry(int skipSegments) {
         RequestContext requestContext = getRequestContext(skipSegments);
         CollectionAdapter adapter = getAbderaCollectionAdapter(requestContext);
+        if (adapter == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
         return Response.ok(adapter.getEntry(requestContext)).build();
     }
 
     protected Response getAbderaPostFeed(int skipSegments) {
         RequestContext requestContext = getRequestContext(skipSegments);
         CollectionAdapter adapter = getAbderaCollectionAdapter(requestContext);
+        if (adapter == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
         return Response.ok(adapter.postEntry(requestContext)).build();
     }
 
