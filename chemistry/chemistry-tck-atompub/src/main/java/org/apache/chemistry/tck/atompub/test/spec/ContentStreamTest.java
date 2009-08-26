@@ -35,7 +35,7 @@ public class ContentStreamTest extends TCKTest {
 
     public void testContentStreamEmpty() throws Exception {
         // create document for setting / getting content
-        Entry document = fixture.createTestDocument("testContent", "createDocumentNoContent.atomentry.xml");
+        Entry document = fixture.createTestDocument("testContent", "createdocumentNoContent.atomentry.xml");
 
         // retrieve content
         client.executeRequest(new GetRequest(document.getContentSrc().toString()), 404);

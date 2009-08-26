@@ -13,8 +13,8 @@
     <level value="error" />
   </logger>
 
-  <logger name="org.apache.chemistry.tck.atompub.TCKLogger">
-    <level value="info" />
+  <logger name="org.apache.chemistry.tck.atompub.TCKMessageWriter">
+    <level value="trace" />
   </logger>
 
   <root>

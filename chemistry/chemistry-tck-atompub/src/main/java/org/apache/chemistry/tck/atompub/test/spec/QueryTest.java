@@ -28,6 +28,7 @@ import org.apache.chemistry.abdera.ext.CMISAllowableActions;
 import org.apache.chemistry.abdera.ext.CMISCapabilities;
 import org.apache.chemistry.abdera.ext.CMISConstants;
 import org.apache.chemistry.abdera.ext.CMISObject;
+import org.apache.chemistry.tck.atompub.TCKSkipCapabilityException;
 import org.apache.chemistry.tck.atompub.TCKTest;
 import org.apache.chemistry.tck.atompub.http.PostRequest;
 import org.apache.chemistry.tck.atompub.http.Request;
@@ -73,9 +74,8 @@ public class QueryTest extends TCKTest {
     public void testQueryFolderMetaData() throws Exception {
         CMISCapabilities capabilities = client.getCapabilities();
         String capability = capabilities.getQuery();
-        if (!(capability.equals("metadataonly") && capability.equals("bothseperate") && capability.equals("bothcombined"))) {
-            skipTest("Query capability: " + capability);
-            return;
+        if (!(capability.equals("metadataonly") || capability.equals("bothseperate") || capability.equals("bothcombined"))) {
+        	throw new TCKSkipCapabilityException("query", "metadataonly or bothseparate or bothcombined", capability);
         }
 
         IRI queryHREF = client.getQueryCollection(client.getWorkspace());
@@ -106,10 +106,8 @@ public class QueryTest extends TCKTest {
     public void testQueryDocumentMetaData() throws Exception {
         CMISCapabilities capabilities = client.getCapabilities();
         String capability = capabilities.getQuery();
-        if (!(capability.equals("metadataonly") && capability.equals("bothseperate") && capability
-                .equals("bothcombined"))) {
-            skipTest("Query capability: " + capability);
-            return;
+        if (!(capability.equals("metadataonly") || capability.equals("bothseperate") || capability.equals("bothcombined"))) {
+        	throw new TCKSkipCapabilityException("query", "metadataonly or bothseparate or bothcombined", capability);
         }
 
         IRI queryHREF = client.getQueryCollection(client.getWorkspace());
@@ -141,9 +139,8 @@ public class QueryTest extends TCKTest {
     public void testQueryDocumentFullText() throws Exception {
         CMISCapabilities capabilities = client.getCapabilities();
         String capability = capabilities.getQuery();
-        if (!(capability.equals("fulltextonly") && capability.equals("bothseperate") && capability.equals("bothcombined"))) {
-            skipTest("Query capability: " + capability);
-            return;
+        if (!(capability.equals("fulltextonly") || capability.equals("bothseperate") || capability.equals("bothcombined"))) {
+        	throw new TCKSkipCapabilityException("query", "fulltextonly or bothseparate or bothcombined", capability);
         }
 
         IRI queryHREF = client.getQueryCollection(client.getWorkspace());
@@ -176,8 +173,7 @@ public class QueryTest extends TCKTest {
         CMISCapabilities capabilities = client.getCapabilities();
         String capability = capabilities.getQuery();
         if (!capability.equals("bothcombined")) {
-            skipTest("Query capability: " + capability);
-            return;
+        	throw new TCKSkipCapabilityException("query", "bothcombined", capability);
         }
 
         IRI queryHREF = client.getQueryCollection(client.getWorkspace());
@@ -211,8 +207,7 @@ public class QueryTest extends TCKTest {
         CMISCapabilities capabilities = client.getCapabilities();
         String capability = capabilities.getQuery();
         if (capability.equals("none")) {
-            skipTest("Query capability: " + capability);
-            return;
+        	throw new TCKSkipCapabilityException("query", "anything other than none", capability);
         }
 
         // retrieve query collection

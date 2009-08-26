@@ -39,7 +39,7 @@ import org.apache.chemistry.abdera.ext.CMISCapabilities;
 import org.apache.chemistry.abdera.ext.CMISConstants;
 import org.apache.chemistry.abdera.ext.CMISObject;
 import org.apache.chemistry.abdera.ext.CMISRepositoryInfo;
-import org.apache.chemistry.tck.atompub.TCKLogger;
+import org.apache.chemistry.tck.atompub.TCKMessageWriter;
 import org.apache.chemistry.tck.atompub.http.Connection;
 import org.apache.chemistry.tck.atompub.http.GetRequest;
 import org.apache.chemistry.tck.atompub.http.PostRequest;
@@ -58,6 +58,8 @@ import org.xml.sax.SAXException;
  */
 public class CMISClient {
 
+	private TCKMessageWriter messageWriter;
+	
     private Connection connection;
     private boolean traceConnection;
 
@@ -75,9 +77,10 @@ public class CMISClient {
     private CMISCapabilities cmisCapabilities = null;
 
 
-    public CMISClient(Connection connection, String serviceUrl) {
+    public CMISClient(Connection connection, String serviceUrl, TCKMessageWriter messageWriter) {
         this.connection = connection;
         this.serviceUrl = serviceUrl;
+    	this.messageWriter = messageWriter;
     }
 
     public void setValidate(boolean validate) {
@@ -345,16 +348,16 @@ public class CMISClient {
      * @throws IOException
      */
     public Response executeRequest(Request req, int expectedStatus, Validator validator) throws IOException {
-        if (traceConnection && TCKLogger.logger.isInfoEnabled()) {
-            TCKLogger.logger.info("Request: " + req.getMethod() + " " + req.getFullUri()
+        if (traceConnection) {
+            messageWriter.trace("Request: " + req.getMethod() + " " + req.getFullUri()
                     + (req.getBody() == null ? "" : "\n" + new String(req.getBody(), req.getEncoding())));
         }
 
         Response res = connection.executeRequest(req);
 
-        if (traceConnection && TCKLogger.logger.isInfoEnabled()) {
-            TCKLogger.logger.info("Response: " + res.getStatus() + " " + req.getMethod() + " " + req.getFullUri()
-                    + (res.getContentAsString() == null ? "" : "\n" + res.getContentAsString()));
+        if (traceConnection) {
+            messageWriter.trace("Response: " + res.getStatus() + " " + req.getMethod() + " "
+                    + req.getFullUri() + (res.getContentAsString() == null ? "" : "\n" + res.getContentAsString()));
         }
 
         if (expectedStatus > -1)
@@ -396,9 +399,7 @@ public class CMISClient {
                 Document document = cmisValidator.getDocumentBuilder().parse(new InputSource(new StringReader(xml)));
                 validator.validate(new DOMSource(document));
             } catch (SAXException e) {
-                if (TCKLogger.logger.isInfoEnabled()) {
-                    TCKLogger.logger.info("Failed Validation: " + cmisValidator.toString(e, null));
-                }
+                messageWriter.info("Failed Validation: " + cmisValidator.toString(e, null));
                 if (failOnValidationError) {
                     Assert.fail(cmisValidator.toString(e, xml));
                 }

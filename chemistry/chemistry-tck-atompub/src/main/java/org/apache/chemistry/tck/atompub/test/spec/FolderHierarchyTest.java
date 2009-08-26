@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Link;
 import org.apache.chemistry.abdera.ext.CMISCapabilities;
+import org.apache.chemistry.tck.atompub.TCKSkipCapabilityException;
 import org.apache.chemistry.tck.atompub.TCKTest;
 import org.apache.chemistry.tck.atompub.fixture.AssertValidObjectParentsVisitor;
 import org.apache.chemistry.tck.atompub.fixture.CMISTree;
@@ -34,22 +35,6 @@ import org.junit.Assert;
  * CMIS Folder Hierarchy Tests
  */
 public class FolderHierarchyTest extends TCKTest {
-
-    public void testGetFolderTreeMinusOne() throws Exception {
-        getFolderTreeDepthN(3, -1);
-    }
-
-    public void testGetFolderTreeOne() throws Exception {
-        getFolderTreeDepthN(3, 1);
-    }
-
-    public void testGetFolderTreeExactDepth() throws Exception {
-        getFolderTreeDepthN(3, 3);
-    }
-
-    public void testGetFolderTreeOverDepth() throws Exception {
-        getFolderTreeDepthN(3, 4);
-    }
 
     private void getFolderTreeDepthN(int depth, int getDepth) throws Exception {
         // construct hierarchy of folders and docs
@@ -69,40 +54,20 @@ public class FolderHierarchyTest extends TCKTest {
         Assert.assertFalse(folderTree.equalsTree(retrievedFoldersOnly));
     }
 
-    public void testGetDescendantsMinusOne() throws Exception {
-        CMISCapabilities capabilities = client.getCapabilities();
-        if (!capabilities.getDescendants()) {
-            skipTest("Capabilities Get Descendants: false");
-            return;
-        }
-        getDescendantsDepthN(3, -1);
+    public void testGetFolderTreeMinusOne() throws Exception {
+        getFolderTreeDepthN(3, -1);
     }
 
-    public void testGetDescendantsOne() throws Exception {
-        CMISCapabilities capabilities = client.getCapabilities();
-        if (!capabilities.getDescendants()) {
-            skipTest("Capabilities Get Descendants: false");
-            return;
-        }
-        getDescendantsDepthN(3, 1);
+    public void testGetFolderTreeOne() throws Exception {
+        getFolderTreeDepthN(3, 1);
     }
 
-    public void testGetDescendantsExactDepth() throws Exception {
-        CMISCapabilities capabilities = client.getCapabilities();
-        if (!capabilities.getDescendants()) {
-            skipTest("Capabilities Get Descendants: false");
-            return;
-        }
-        getDescendantsDepthN(3, 3);
+    public void testGetFolderTreeExactDepth() throws Exception {
+        getFolderTreeDepthN(3, 3);
     }
 
-    public void testGetDescendantsOverDepth() throws Exception {
-        CMISCapabilities capabilities = client.getCapabilities();
-        if (!capabilities.getDescendants()) {
-            skipTest("Capabilities Get Descendants: false");
-            return;
-        }
-        getDescendantsDepthN(3, 4);
+    public void testGetFolderTreeOverDepth() throws Exception {
+        getFolderTreeDepthN(3, 4);
     }
 
     private void getDescendantsDepthN(int depth, int getDepth) throws Exception {
@@ -120,6 +85,33 @@ public class FolderHierarchyTest extends TCKTest {
         EntryTree constructedDescendantsOnly = new EntryTree(descendantsTree, getDepth);
         EntryTree retrievedDescendantsOnly = new CMISTree(descendantsTree, descendants);
         Assert.assertTrue(constructedDescendantsOnly.equalsTree(retrievedDescendantsOnly));
+    }
+    
+    private void checkGetDescendantsCapability() throws TCKSkipCapabilityException, Exception {
+        CMISCapabilities capabilities = client.getCapabilities();
+        if (!capabilities.getDescendants()) {
+        	throw new TCKSkipCapabilityException("getDescendants", "true", "false");
+        }
+    }
+    
+    public void testGetDescendantsMinusOne() throws Exception {
+    	checkGetDescendantsCapability();    	
+        getDescendantsDepthN(3, -1);
+    }
+
+    public void testGetDescendantsOne() throws Exception {
+    	checkGetDescendantsCapability();    	
+        getDescendantsDepthN(3, 1);
+    }
+
+    public void testGetDescendantsExactDepth() throws Exception {
+    	checkGetDescendantsCapability();    	
+        getDescendantsDepthN(3, 3);
+    }
+
+    public void testGetDescendantsOverDepth() throws Exception {
+    	checkGetDescendantsCapability();    	
+        getDescendantsDepthN(3, 4);
     }
 
     public void testGetObjectParents() throws Exception {

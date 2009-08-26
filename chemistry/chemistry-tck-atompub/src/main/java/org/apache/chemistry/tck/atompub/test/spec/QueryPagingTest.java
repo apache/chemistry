@@ -28,6 +28,7 @@ import org.apache.abdera.model.Link;
 import org.apache.chemistry.abdera.ext.CMISCapabilities;
 import org.apache.chemistry.abdera.ext.CMISConstants;
 import org.apache.chemistry.abdera.ext.CMISObject;
+import org.apache.chemistry.tck.atompub.TCKSkipCapabilityException;
 import org.apache.chemistry.tck.atompub.TCKTest;
 import org.apache.chemistry.tck.atompub.fixture.EntryTree;
 import org.apache.chemistry.tck.atompub.http.PostRequest;
@@ -57,8 +58,7 @@ public class QueryPagingTest extends TCKTest {
         CMISCapabilities capabilities = client.getCapabilities();
         String capability = capabilities.getQuery();
         if (capability.equals("none")) {
-            skipTest("Query capability: " + capability);
-            return;
+        	throw new TCKSkipCapabilityException("query", "anything other than none", capability);
         }
 
         // create folder and children to page through

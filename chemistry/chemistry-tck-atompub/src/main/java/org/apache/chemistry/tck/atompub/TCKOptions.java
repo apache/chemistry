@@ -17,25 +17,88 @@
  */
 package org.apache.chemistry.tck.atompub;
 
+import java.io.Serializable;
+import java.util.Properties;
+
 
 /**
  * TCK Options
  */
-public interface TCKOptions {
+public class TCKOptions implements Serializable{
 
-    public String getServiceUrl();
+    public final static String PROP_SERVICE_URL = "chemistry.tck.serviceUrl";
+    public final static String PROP_USERNAME = "chemistry.tck.user";
+    public final static String PROP_PASSWORD = "chemistry.tck.password";
+    public final static String PROP_VALIDATE = "chemistry.tck.validate";
+    public final static String PROP_FAIL_ON_VALIDATION_ERROR = "chemistry.tck.failOnValidationError";
+    public final static String PROP_TRACE_REQUESTS = "chemistry.tck.traceRequests";
+    public final static String PROP_DELETE_TEST_FIXTURE = "chemistry.tck.deleteTestFixture";
 
-    public String getUser();
+    private static final long serialVersionUID = 5805080271712377369L;
+    protected Properties properties;
+    
+    public TCKOptions(Properties properties) {
+    	this.properties = properties;
+    }
 
-    public String getPassword();
+    /**
+     * @return  username  (default: null, if not specified, or empty string)
+     */
+    public String getUsername() {
+        String val = properties.getProperty(PROP_USERNAME);
+        return val != null && val.length() > 0 ? val : null;
+    }
 
-    public Boolean getValidate();
+    /**
+     * @return  password  (default: null)
+     */
+    public String getPassword() {
+        String val = properties.getProperty(PROP_PASSWORD);
+        return val;
+    }
 
-    public Boolean getFailOnValidationError();
+    /**
+     * @return  serviceUrl  (default: null, if not specified, or empty string)
+     */
+    public String getServiceUrl() {
+        String val = properties.getProperty(PROP_SERVICE_URL);
+        return val != null && val.length() > 0 ? val : null;
+    }
 
-    public Boolean getTraceRequests();
+    /**
+     * @return  validate  (default: true)
+     */
+    public boolean getValidate() {
+        String val = properties.getProperty(PROP_VALIDATE, "true");
+        return Boolean.valueOf(val);
+    }
 
-    public Boolean getDeleteTestFixture();
+    /**
+     * @return  fail on validation error  (default: false)
+     */
+    public boolean getFailOnValidationError() {
+        String val = properties.getProperty(PROP_FAIL_ON_VALIDATION_ERROR, "false");
+        return Boolean.valueOf(val);
+    }
 
-    public String getConnectionFactory();
+    /**
+     * @return  trace requests  (default: false)
+     */
+    public boolean getTraceRequests() {
+        String val = properties.getProperty(PROP_TRACE_REQUESTS, "false");
+        return Boolean.valueOf(val);
+    }
+
+    /**
+     * @return  delete fixture data  (default: true)
+     */
+    public boolean getDeleteTestFixture() {
+        String val = properties.getProperty(PROP_DELETE_TEST_FIXTURE, "true");
+        return Boolean.valueOf(val);
+    }
+
+    public String getConnectionFactory() {
+        return null;
+    }
+
 }

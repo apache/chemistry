@@ -88,24 +88,11 @@
               <value>org.apache.xerces.jaxp.SAXParserFactoryImpl</value>
             </property>
             <property>
-              <name>chemistry.tck.validate</name>
-              <value>true</value>
-            </property>
-            <property>
-              <name>chemistry.tck.failOnValidationError</name>
-              <value>false</value>
-            </property>
-            <property>
-              <name>chemistry.tck.traceRequests</name>
-              <value>false</value>
+              <!-- NOTE: execute no TCK tests by default -->
+              <name>chemistry.tck.tests</name>
+              <value></value>
             </property>
           </systemProperties>
-          <skipTests>true</skipTests>
-          <excludes>
-            <!-- NOTE: Exclude tests based on custom types until solution -->
-            <!--       for registering types on a per server basis -->
-            <exclude>**/test/custom/**/*.java</exclude>
-          </excludes>
         </configuration>
       </plugin>
     </plugins>
@@ -127,8 +114,11 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
-              <skipTests>false</skipTests>
               <systemProperties>
+                <property>
+                  <name>chemistry.tck.tests</name>
+                  <value>*</value>
+                </property>
                 <property>
                   <name>chemistry.tck.serviceUrl</name>
                   <value>http://localhost/cmis</value>
@@ -140,6 +130,18 @@
                 <property>
                   <name>chemistry.tck.password</name>
                   <value>cmispassword</value>
+                </property>
+                <property>
+                  <name>chemistry.tck.validate</name>
+                  <value>true</value>
+                </property>
+                <property>
+                  <name>chemistry.tck.failOnValidationError</name>
+                  <value>false</value>
+                </property>
+                <property>
+                  <name>chemistry.tck.traceRequests</name>
+                  <value>false</value>
                 </property>
               </systemProperties>
             </configuration>

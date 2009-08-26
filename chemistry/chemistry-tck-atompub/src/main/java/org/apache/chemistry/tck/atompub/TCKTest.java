@@ -18,6 +18,7 @@
 package org.apache.chemistry.tck.atompub;
 
 import junit.framework.TestCase;
+import junit.framework.TestResult;
 
 import org.apache.chemistry.tck.atompub.client.CMISAppModel;
 import org.apache.chemistry.tck.atompub.client.CMISClient;
@@ -25,50 +26,63 @@ import org.apache.chemistry.tck.atompub.fixture.CMISTestFixture;
 import org.apache.chemistry.tck.atompub.http.Connection;
 import org.apache.chemistry.tck.atompub.http.ConnectionFactory;
 import org.apache.chemistry.tck.atompub.http.httpclient.HttpClientConnectionFactory;
+import org.apache.chemistry.tck.atompub.utils.LogMessageWriter;
 import org.apache.chemistry.tck.atompub.utils.ResourceLoader;
-import org.apache.chemistry.tck.atompub.utils.SystemPropertyOptions;
 
 /**
  * Base Test Class for TCK Tests
  */
 public class TCKTest extends TestCase {
 
+	protected TCKMessageWriter messageWriter = null;
     protected TCKOptions options = null;
     protected CMISClient client;
     protected CMISAppModel model;
     protected CMISTestFixture fixture;
     protected ResourceLoader templates;
 
-    public void setOptions(TCKOptions properties) {
-        this.options = properties;
+    
+    public void setMessageWriter(TCKMessageWriter messageWriter) {
+    	this.messageWriter = messageWriter;
+    }
+    
+    public void setOptions(TCKOptions options) {
+        this.options = options;
     }
 
     @Override
     public void setUp() {
         // construct TCK properties
         if (options == null)
-            options = new SystemPropertyOptions();
+            options = new TCKOptions(System.getProperties());
+        
+        // construct TCK message writer
+        if (messageWriter == null)
+        	messageWriter = new LogMessageWriter();
 
         // construct connection to server
         // TODO: allow configuration of different connection factory
         ConnectionFactory connFactory = new HttpClientConnectionFactory();
-        String user = options.getUser();
+        String user = options.getUsername();
         String password = options.getPassword();
-        Connection connection = (user == null) ? connFactory.createConnection() : connFactory.createConnection(user,
-                password);
-
+        Connection connection;
+        if (user == null) {
+            connection = connFactory.createConnection();
+        } else {
+            connection = connFactory.createConnection(user, password);
+        }
+        
         // construct CMIS test client
         String url = options.getServiceUrl();
         if (url == null)
             fail("CMIS Service URL not specified");
-        client = new CMISClient(connection, url);
-        Boolean validate = (options.getValidate() == null) ? true : options.getValidate();
+        client = new CMISClient(connection, url, messageWriter);
+        boolean validate = options.getValidate();
         client.setValidate(validate);
-        Boolean failOnValidationError = (options.getFailOnValidationError() == null) ? false : options
-                .getFailOnValidationError();
+        boolean failOnValidationError = options.getFailOnValidationError();
         client.setFailOnValidationError(failOnValidationError);
-        Boolean trace = (options.getTraceRequests() == null) ? true : options.getTraceRequests();
-        client.setTrace(trace);
+        boolean traceRequests = options.getTraceRequests();
+        client.setTrace(traceRequests);
 
         // construct model helper
         model = new CMISAppModel();
@@ -79,29 +93,28 @@ public class TCKTest extends TestCase {
         // construct test fixture
         fixture = new CMISTestFixture(client, getName());
 
-        if (TCKLogger.logger.isInfoEnabled()) {
-            TCKLogger.logger.info("Start Test: " + getClass().getName() + "." + getName());
-            TCKLogger.logger.info("Service URL: " + url);
-            TCKLogger.logger.info("User: " + user);
-            TCKLogger.logger.info("Password: " + password);
-            TCKLogger.logger.info("Validate: " + validate);
-            TCKLogger.logger.info("Fail on Validation Error: " + failOnValidationError);
-            TCKLogger.logger.info("Trace Requests: " + trace);
-        }
+        messageWriter.info("Start Test: " + getClass().getName() + "." + getName());
+        messageWriter.info("Service URL: " + url);
+        messageWriter.info("User: " + user);
+        messageWriter.info("Password: " + password);
+        messageWriter.info("Validate: " + validate);
+        messageWriter.info("Fail on Validation Error: " + failOnValidationError);
+        messageWriter.info("Trace Requests: " + traceRequests);
     }
 
     @Override
-    public void tearDown() throws Exception {
-        Boolean delete = (options.getDeleteTestFixture() == null) ? true : options.getDeleteTestFixture();
-        if (delete)
-            fixture.delete();
-
-        if (TCKLogger.logger.isInfoEnabled())
-            TCKLogger.logger.info("End Test: " + getClass().getName() + "." + getName());
+    public void run(TestResult result) {
+        super.run(new TCKTestResult(result, messageWriter));
     }
 
-    public void skipTest(String reason) {
-        if (TCKLogger.logger.isInfoEnabled())
-            TCKLogger.logger.info("Skiped Test: " + getClass().getName() + "." + getName() + ": " + reason);
+	@Override
+    public void tearDown() throws Exception {
+        if (options.getDeleteTestFixture()) {
+            fixture.delete();
+        } else {
+        	messageWriter.warn("Kept Test Data: " + getClass().getName() + "." + getName());
+        }
+
+        messageWriter.info("End Test: " + getClass().getName() + "." + getName());
     }
 }
