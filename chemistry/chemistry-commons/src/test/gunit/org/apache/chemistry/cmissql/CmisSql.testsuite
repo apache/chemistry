@@ -73,10 +73,18 @@ column_reference:
 "foo" -> (COL foo)
 "bar.foo" -> (COL bar foo)
 
-table_reference:
-"foo" -> "foo"
+from_clause:
+"FROM foo JOIN bar ON x = y" -> (FROM (TABLE foo) (JOIN INNER (TABLE bar) (ON (COL x) = (COL y))))
+
+table_join:
+"LEFT OUTER JOIN foo ON x = y" -> (JOIN LEFT (TABLE foo) (ON (COL x) = (COL y)))
+"INNER JOIN foo" -> (JOIN INNER (TABLE foo))
+
+one_table:
+"foo" -> (TABLE foo)
 "foo bar" -> (TABLE foo bar)
 "foo AS bar" -> (TABLE foo bar)
+"(foo)" -> (TABLE foo)
 
 in_predicate:
 "foo IN ( 'a', 'b', 'c')" -> (BIN_OP IN (COL foo) (LIST 'a' 'b' 'c'))
@@ -113,9 +121,9 @@ search_condition:
 "a = 1 AND b <> 2 OR c >= 3 AND NOT d <= 4" -> (OR (AND (BIN_OP = (COL a) 1) (BIN_OP <> (COL b) 2)) (AND (BIN_OP >= (COL c) 3) (NOT (BIN_OP <= (COL d) 4))))
 
 query:
-"SELECT * FROM Document" -> (SELECT * (FROM Document))
-"SELECT a, b, c FROM Document" -> (SELECT (LIST (COL a) (COL b) (COL c)) (FROM Document))
-"SELECT a, b FROM Document ORDER BY a, b" -> (SELECT (LIST (COL a) (COL b)) (FROM Document) (ORDER_BY a ASC b ASC))
+"SELECT * FROM Document" -> (SELECT * (FROM (TABLE Document)))
+"SELECT a, b, c FROM Document" -> (SELECT (LIST (COL a) (COL b) (COL c)) (FROM (TABLE Document)))
+"SELECT a, b FROM Document ORDER BY a, b" -> (SELECT (LIST (COL a) (COL b)) (FROM (TABLE Document)) (ORDER_BY a ASC b ASC))
 
 
 // Examples from the specs.
@@ -124,7 +132,7 @@ query:
 SELECT TITLE, AUTHORS, DATE
 FROM WHITE_PAPER
 WHERE ( IN_TREE('ID00093854763') ) AND ( 'SMITH' = ANY AUTHORS )
->> -> (SELECT (LIST (COL TITLE) (COL AUTHORS) (COL DATE)) (FROM WHITE_PAPER) (WHERE (AND (FUNC IN_TREE 'ID00093854763') (BIN_OP_ANY = 'SMITH' (COL AUTHORS)))))
+>> -> (SELECT (LIST (COL TITLE) (COL AUTHORS) (COL DATE)) (FROM (TABLE WHITE_PAPER)) (WHERE (AND (FUNC IN_TREE 'ID00093854763') (BIN_OP_ANY = 'SMITH' (COL AUTHORS)))))
 
 <<
 SELECT OBJECT_ID, SCORE() AS X, DESTINATION, DEPARTURE_DATES
@@ -141,8 +149,8 @@ WHERE ( LOWER(MAKE) = 'buick' ) OR
   ( ANY FEATURES IN ('NAVIGATION SYSTEM', 'SATELLITE RADIO', 'MP3' ) )
 >> OK
 
-/* JOINs not working yet.
-<<SELECT Y.CLAIM_NUM, X.PROPERTY_ADDRESS, Y.DAMAGE_ESTIMATES
+<<
+SELECT Y.CLAIM_NUM, X.PROPERTY_ADDRESS, Y.DAMAGE_ESTIMATES
 FROM POLICY AS X JOIN CLAIMS AS Y ON X.POLICY_NUM = Y.POLICY_NUM
-WHERE ( 100000 <= ANY Y.DAMAGE_ESTIMATES ) AND ( Y.CAUSE NOT LIKE '%Katrina%' )>> OK
-*/
+WHERE ( 100000 <= ANY Y.DAMAGE_ESTIMATES ) AND ( Y.CAUSE NOT LIKE '%Katrina%' )
+>> OK

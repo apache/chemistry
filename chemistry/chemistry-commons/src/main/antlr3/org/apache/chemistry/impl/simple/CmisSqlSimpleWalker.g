@@ -107,14 +107,29 @@ from_clause returns [String tableName]:
     ;
 
 table_reference returns [String tableName]:
-      table_name
-        {
-            $tableName = $table_name.text;
-        }
-    | ^(TABLE table_name correlation_name)
-        {
-            $tableName = $table_name.text;
-        }
+    one_table table_join*
+      {
+          $tableName = $one_table.tableName;
+          // TODO joins
+      }
+    ;
+
+table_join:
+    ^(JOIN join_kind one_table join_specification?)
+    ;
+
+one_table returns [String tableName]:
+    ^(TABLE table_name correlation_name?)
+      {
+          $tableName = $table_name.text;
+      }
+    ;
+
+join_kind:
+    INNER | LEFT | OUTER;
+
+join_specification:
+    ^(ON column_reference EQ column_reference)
     ;
 
 where_clause returns [boolean matches]:

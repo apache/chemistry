@@ -96,21 +96,36 @@ qualifier:
 from_clause: FROM^ table_reference;
 
 table_reference:
-      table_name
+    one_table table_join*
+    ;
+
+table_join:
+    join_kind one_table join_specification?
+    -> ^(JOIN join_kind one_table join_specification?)
+    ;
+
+one_table:
+      LPAR! table_reference RPAR!
+    | table_name
+        -> ^(TABLE table_name)
     | table_name AS? correlation_name
-      -> ^(TABLE table_name correlation_name)
-    | joined_table
+        -> ^(TABLE table_name correlation_name)
     ;
 
-joined_table
-    : LPAR joined_table RPAR
-    //| table_reference join_type? 'JOIN' table_reference join_specification?
+join_kind:
+      JOIN
+        -> INNER
+    | INNER JOIN
+        -> INNER
+    | LEFT OUTER? JOIN
+        -> LEFT
+    | RIGHT OUTER? JOIN
+        -> RIGHT
     ;
-
-join_type: INNER | LEFT OUTER?;
 
 join_specification:
-    ON^ column_reference EQ! column_reference;
+    ON^ column_reference EQ column_reference
+    ;
 
 where_clause: WHERE^ search_condition;
 
