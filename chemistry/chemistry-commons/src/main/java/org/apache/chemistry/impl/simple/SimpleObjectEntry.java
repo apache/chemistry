@@ -25,6 +25,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ChangeInfo;
+import org.apache.chemistry.Connection;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Property;
 
@@ -37,11 +38,11 @@ public class SimpleObjectEntry implements ObjectEntry {
 
     protected final SimpleData data;
 
-    protected final SimpleConnection connection;
+    protected final Connection connection;
 
     protected ChangeInfo changeInfo;
 
-    protected SimpleObjectEntry(SimpleData data, SimpleConnection connection) {
+    public SimpleObjectEntry(SimpleData data, Connection connection) {
         this.data = data;
         this.connection = connection;
     }

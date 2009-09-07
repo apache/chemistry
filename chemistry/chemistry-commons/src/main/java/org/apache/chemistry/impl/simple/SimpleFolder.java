@@ -44,11 +44,11 @@ public class SimpleFolder extends SimpleObject implements Folder {
     }
 
     public Collection<ObjectId> deleteTree(Unfiling unfiling) {
-        return entry.connection.deleteTree(this, unfiling, true);
+        return entry.connection.getSPI().deleteTree(this, unfiling, true);
     }
 
     public List<CMISObject> getChildren() {
-        SimpleRepository repository = entry.connection.repository;
+        SimpleRepository repository = (SimpleRepository) entry.connection.getRepository();
         Set<String> ids = repository.children.get(getId());
         List<CMISObject> children = new ArrayList<CMISObject>(ids.size());
         for (String id : ids) {

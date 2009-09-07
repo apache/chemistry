@@ -30,6 +30,7 @@ import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
+import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.impl.base.BaseObject;
 
@@ -44,11 +45,11 @@ public class SimpleObject extends BaseObject {
 
     protected SimpleObject(SimpleObjectEntry entry) {
         this.entry = entry;
-        type = entry.connection.repository.getType(entry.getTypeId());
+        type = entry.connection.getRepository().getType(entry.getTypeId());
     }
 
     protected static SimpleObject construct(SimpleObjectEntry entry) {
-        BaseType baseType = entry.connection.repository.getType(
+        BaseType baseType = entry.connection.getRepository().getType(
                 entry.getTypeId()).getBaseType();
         switch (baseType) {
         case DOCUMENT:
@@ -70,7 +71,7 @@ public class SimpleObject extends BaseObject {
     }
 
     public void delete() {
-        entry.connection.deleteObject(this, false);
+        entry.connection.getSPI().deleteObject(this, false);
     }
 
     public void unfile() {
@@ -79,7 +80,8 @@ public class SimpleObject extends BaseObject {
     }
 
     public Folder getParent() {
-        Set<String> parents = entry.connection.repository.parents.get(getId());
+        SimpleConnection connection = (SimpleConnection) entry.connection;
+        Set<String> parents = connection.repository.parents.get(getId());
         if (parents == SimpleRepository.NO_PARENT) {
             return null;
         }
@@ -87,8 +89,8 @@ public class SimpleObject extends BaseObject {
             throw new RuntimeException("Several parents for: " + getId()); // TODO
         }
         String pid = parents.iterator().next();
-        SimpleData data = entry.connection.repository.datas.get(pid);
-        return new SimpleFolder(new SimpleObjectEntry(data, entry.connection));
+        SimpleData data = connection.repository.datas.get(pid);
+        return new SimpleFolder(new SimpleObjectEntry(data, connection));
     }
 
     public Collection<Folder> getParents() {
@@ -153,7 +155,7 @@ public class SimpleObject extends BaseObject {
 
     public void save() {
         if (getId() == null) {
-            entry.connection.saveObject(this);
+            ((SimpleConnection) entry.connection).saveObject(this);
         }
     }
 
