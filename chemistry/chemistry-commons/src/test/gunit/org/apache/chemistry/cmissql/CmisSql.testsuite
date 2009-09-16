@@ -64,10 +64,10 @@ literal:
 "'abc'" OK
 
 order_by_clause:
-"ORDER BY foo" -> (ORDER_BY foo ASC)
-"ORDER BY foo ASC" -> (ORDER_BY foo ASC)
-"ORDER BY foo DESC" -> (ORDER_BY foo DESC)
-"ORDER BY foo, bar DESC" -> (ORDER_BY foo ASC bar DESC)
+"ORDER BY foo" -> (ORDER_BY (COL foo) ASC)
+"ORDER BY foo ASC" -> (ORDER_BY (COL foo) ASC)
+"ORDER BY foo DESC" -> (ORDER_BY (COL foo) DESC)
+"ORDER BY t.foo, bar DESC" -> (ORDER_BY (COL t foo) ASC (COL bar) DESC)
 
 column_reference:
 "foo" -> (COL foo)
@@ -123,7 +123,7 @@ search_condition:
 query:
 "SELECT * FROM Document" -> (SELECT * (FROM (TABLE Document)))
 "SELECT a, b, c FROM Document" -> (SELECT (LIST (COL a) (COL b) (COL c)) (FROM (TABLE Document)))
-"SELECT a, b FROM Document ORDER BY a, b" -> (SELECT (LIST (COL a) (COL b)) (FROM (TABLE Document)) (ORDER_BY a ASC b ASC))
+"SELECT a, b FROM Document ORDER BY a, b" -> (SELECT (LIST (COL a) (COL b)) (FROM (TABLE Document)) (ORDER_BY (COL a) ASC (COL b) ASC))
 
 
 // Examples from the specs.

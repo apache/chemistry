@@ -33,8 +33,12 @@ public class SimpleData extends ConcurrentHashMap<String, Serializable> {
     private static final long serialVersionUID = 1L;
 
     public SimpleData(String typeId, BaseType baseType) {
-        put(Property.TYPE_ID, typeId);
-        put(Property.BASE_TYPE_ID, baseType.getId());
+        if (typeId != null) {
+            put(Property.TYPE_ID, typeId);
+        }
+        if (baseType != null) {
+            put(Property.BASE_TYPE_ID, baseType.getId());
+        }
     }
 
 }

@@ -56,7 +56,8 @@ public class SimpleObjectEntry implements ObjectEntry {
     }
 
     public BaseType getBaseType() {
-        return BaseType.get((String) data.get(Property.BASE_TYPE_ID));
+        String baseTypeId = (String) data.get(Property.BASE_TYPE_ID);
+        return baseTypeId == null ? null : BaseType.get(baseTypeId);
     }
 
     public ChangeInfo getChangeInfo() {
