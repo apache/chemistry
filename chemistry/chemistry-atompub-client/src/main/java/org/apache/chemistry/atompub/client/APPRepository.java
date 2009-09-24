@@ -118,6 +118,7 @@ public class APPRepository implements Repository {
     }
 
     public Collection<Type> getTypes(String typeId) {
+        loadTypes();
         return typeManager.getTypes(typeId);
     }
 
