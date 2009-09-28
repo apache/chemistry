@@ -237,4 +237,13 @@
     </repository>
   </repositories>
 
+  <distributionManagement>
+    <!-- dummy repository, needed by Hudson so that it can override it -->
+    <snapshotRepository>
+      <id>apache.incubator.snapshots</id>
+      <name>Apache Incubator Snapshots Repository</name>
+      <url>scp://people.apache.org/www/people.apache.org/repo/m2-incubating-repository</url>
+    </snapshotRepository>
+  </distributionManagement>
+
 </project>
