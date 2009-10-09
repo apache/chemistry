@@ -26,8 +26,6 @@ import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Link;
 import org.apache.chemistry.abdera.ext.CMISConstants;
 import org.apache.chemistry.tck.atompub.TCKTest;
-import org.apache.chemistry.tck.atompub.http.GetRequest;
-import org.apache.chemistry.tck.atompub.http.Response;
 import org.junit.Assert;
 
 

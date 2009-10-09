@@ -25,9 +25,9 @@ import javax.xml.namespace.QName;
 public interface CMISConstants {
     
     // Namespace
-    public static final String CMIS_NS = "http://docs.oasis-open.org/ns/cmis/core/200901";
-    public static final String CMISRA_NS = "http://docs.oasis-open.org/ns/cmis/restatom/200901";
-    public static final String CMISLINK_NS = "http://docs.oasis-open.org/ns/cmis/link/200901";
+    public static final String CMIS_NS = "http://docs.oasis-open.org/ns/cmis/core/200908/";
+    public static final String CMISRA_NS = "http://docs.oasis-open.org/ns/cmis/restatom/200908/";
+    public static final String CMISLINK_NS = "http://docs.oasis-open.org/ns/cmis/link/200908/";
 
     // Mimetypes
     public static final String MIMETYPE_ENTRY = "application/atom+xml;type=entry";
@@ -73,7 +73,7 @@ public interface CMISConstants {
     // CMIS Object
     public static final QName OBJECT = new QName(CMISRA_NS, "object");
     public static final QName PROPERTIES = new QName(CMIS_NS, "properties");
-    public static final QName PROPERTY_ID = new QName("pdid");
+    public static final QName PROPERTY_ID = new QName("propertyDefinitionId");
     public static final QName PROPERTY_DISPLAY_NAME = new QName("displayName");
     public static final QName PROPERTY_VALUE = new QName(CMIS_NS, "value");
     public static final QName STRING_PROPERTY = new QName(CMIS_NS, "propertyString");
@@ -83,9 +83,16 @@ public interface CMISConstants {
     public static final QName DATETIME_PROPERTY = new QName(CMIS_NS, "propertyDateTime");
     public static final QName URI_PROPERTY = new QName(CMIS_NS, "propertyUri");
     public static final QName ID_PROPERTY = new QName(CMIS_NS, "propertyId");
-    public static final QName XML_PROPERTY = new QName(CMIS_NS, "propertyXml");
     public static final QName HTML_PROPERTY = new QName(CMIS_NS, "propertyHtml");
 
+    // CMIS Content
+    public static final QName CONTENT = new QName(CMISRA_NS, "content");
+    public static final QName CONTENT_MEDIATYPE = new QName(CMISRA_NS, "mediatype");
+    public static final QName CONTENT_BASE64 = new QName(CMISRA_NS, "base64");
+    
+    // CMIS Number of Items
+    public static final QName NUM_ITEMS = new QName(CMISRA_NS, "numItems");
+    
     // CMIS Data Types
     public static final String DATATYPE_STRING = "string";
     public static final String DATATYPE_DECIMAL = "decimal";
@@ -94,7 +101,6 @@ public interface CMISConstants {
     public static final String DATATYPE_DATETIME = "datetime";
     public static final String DATATYPE_URI = "uri";
     public static final String DATATYPE_ID = "id";
-    public static final String DATATYPE_XML = "xml";
     public static final String DATATYPE_HTML = "html";
 
     // CMIS Relationships
@@ -102,7 +108,7 @@ public interface CMISConstants {
     public static final String REL_UP = "up";
     public static final String REL_DOWN = "down";
     public static final String REL_DESCRIBED_BY = "describedby";
-    public static final String REL_VERSION_HISTORY = "all-versions";
+    public static final String REL_VERSION_HISTORY = "version-history";
     public static final String REL_CURRENT_VERSION = "current-version";
     public static final String REL_WORKING_COPY = "working-copy";
     public static final String REL_ROOT_DESCENDANTS = CMISLINK_NS + "/rootdescendants";
@@ -125,7 +131,6 @@ public interface CMISConstants {
     public static final String PROP_TYPE_DATETIME = "datetime";
     public static final String PROP_TYPE_URI = "uri";
     public static final String PROP_TYPE_ID = "id";
-    public static final String PROP_TYPE_XML = "xml";
     public static final String PROP_TYPE_HTML = "html";
 
     // CMIS Allowable Actions
@@ -133,10 +138,11 @@ public interface CMISConstants {
     public static final QName CAN_DELETE = new QName(CMIS_NS, "canDelete");
     public static final QName CAN_UPDATE_PROPERTIES = new QName(CMIS_NS, "canUpdateProperties");
     public static final QName CAN_GET_PROPERTIES = new QName(CMIS_NS, "canGetProperties");
-    public static final QName CAN_GET_RELATIONSHIPS = new QName(CMIS_NS, "canGetRelationships");
+    public static final QName CAN_GET_OBJECT_RELATIONSHIPS = new QName(CMIS_NS, "canGetObjectRelationships");
     public static final QName CAN_GET_PARENTS = new QName(CMIS_NS, "canGetParents");
     public static final QName CAN_GET_FOLDER_PARENT = new QName(CMIS_NS, "canGetFolderParent");
     public static final QName CAN_GET_DESCENDANTS = new QName(CMIS_NS, "canGetDescendants");
+    public static final QName CAN_GET_FOLDER_TREE = new QName(CMIS_NS, "canGetFolderTree");
     public static final QName CAN_MOVE = new QName(CMIS_NS, "canMove");
     public static final QName CAN_DELETE_VERSION = new QName(CMIS_NS, "canDeleteVersion");
     public static final QName CAN_DELETE_CONTENT = new QName(CMIS_NS, "canDeleteContent");
@@ -165,31 +171,31 @@ public interface CMISConstants {
     public static final String TYPE_POLICY = "cmis:policy";
 
     // CMIS Properties Names
-    public static final String PROP_NAME = "cmis:Name";
-    public static final String PROP_OBJECT_ID = "cmis:ObjectId";
-    public static final String PROP_BASE_TYPE_ID = "cmis:BaseTypeId";
-    public static final String PROP_OBJECT_TYPE_ID = "cmis:ObjectTypeId";
-    public static final String PROP_CREATED_BY = "cmis:CreatedBy";
-    public static final String PROP_CREATION_DATE = "cmis:CreationDate";
-    public static final String PROP_LAST_MODIFIED_BY = "cmis:LastModifiedBy";
-    public static final String PROP_LAST_MODIFICATION_DATE = "cmis:LastModificationDate";
-    public static final String PROP_IS_IMMUTABLE = "cmis:IsImmutable";
-    public static final String PROP_IS_LATEST_VERSION = "cmis:IsLatestVersion";
-    public static final String PROP_IS_MAJOR_VERSION = "cmis:IsMajorVersion";
-    public static final String PROP_IS_LATEST_MAJOR_VERSION = "cmis:IsLatestMajorVersion";
-    public static final String PROP_VERSION_LABEL = "cmis:VersionLabel";
-    public static final String PROP_VERSION_SERIES_ID = "cmis:VersionSeriesId";
-    public static final String PROP_IS_VERSION_SERIES_CHECKED_OUT = "cmis:IsVersionSeriesCheckedOut";
-    public static final String PROP_VERSION_SERIES_CHECKED_OUT_BY = "cmis:VersionSeriesCheckedOutBy";
-    public static final String PROP_VERSION_SERIES_CHECKED_OUT_ID = "cmis:VersionSeriesCheckedOutId";
-    public static final String PROP_CHECKIN_COMMENT = "cmis:CheckinComment";
-    public static final String PROP_CONTENT_STREAM_LENGTH = "cmis:ContentStreamLength";
-    public static final String PROP_CONTENT_STREAM_MIMETYPE = "cmis:ContentStreamMimetype";
-    public static final String PROP_CONTENT_STREAM_FILENAME = "cmis:ContentStreamFilename";
-    public static final String PROP_CONTENT_STREAM_ID = "cmis:ContentStreamId";
-    public static final String PROP_PATH = "cmis:PathName";
-    public static final String PROP_SOURCE_ID = "cmis:SourceId";
-    public static final String PROP_TARGET_ID = "cmis:TargetId";
-    public static final String PROP_PARENT_ID = "cmis:ParentId";
+    public static final String PROP_NAME = "cmis:name";
+    public static final String PROP_OBJECT_ID = "cmis:objectId";
+    public static final String PROP_BASE_TYPE_ID = "cmis:baseTypeId";
+    public static final String PROP_OBJECT_TYPE_ID = "cmis:objectTypeId";
+    public static final String PROP_CREATED_BY = "cmis:createdBy";
+    public static final String PROP_CREATION_DATE = "cmis:creationDate";
+    public static final String PROP_LAST_MODIFIED_BY = "cmis:lastModifiedBy";
+    public static final String PROP_LAST_MODIFICATION_DATE = "cmis:lastModificationDate";
+    public static final String PROP_IS_IMMUTABLE = "cmis:isImmutable";
+    public static final String PROP_IS_LATEST_VERSION = "cmis:isLatestVersion";
+    public static final String PROP_IS_MAJOR_VERSION = "cmis:isMajorVersion";
+    public static final String PROP_IS_LATEST_MAJOR_VERSION = "cmis:isLatestMajorVersion";
+    public static final String PROP_VERSION_LABEL = "cmis:versionLabel";
+    public static final String PROP_VERSION_SERIES_ID = "cmis:versionSeriesId";
+    public static final String PROP_IS_VERSION_SERIES_CHECKED_OUT = "cmis:isVersionSeriesCheckedOut";
+    public static final String PROP_VERSION_SERIES_CHECKED_OUT_BY = "cmis:versionSeriesCheckedOutBy";
+    public static final String PROP_VERSION_SERIES_CHECKED_OUT_ID = "cmis:versionSeriesCheckedOutId";
+    public static final String PROP_CHECKIN_COMMENT = "cmis:checkinComment";
+    public static final String PROP_CONTENT_STREAM_LENGTH = "cmis:contentStreamLength";
+    public static final String PROP_CONTENT_STREAM_MIMETYPE = "cmis:contentStreamMimetype";
+    public static final String PROP_CONTENT_STREAM_FILENAME = "cmis:contentStreamFilename";
+    public static final String PROP_CONTENT_STREAM_ID = "cmis:contentStreamId";
+    public static final String PROP_PATH = "cmis:path";
+    public static final String PROP_SOURCE_ID = "cmis:sourceId";
+    public static final String PROP_TARGET_ID = "cmis:targetId";
+    public static final String PROP_PARENT_ID = "cmis:parentId";
 
 }

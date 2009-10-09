@@ -40,7 +40,7 @@ CMIS AtomPub Tck Basic Usage Instructions
 
 Tests are executed with:
 
-mvn test -p<provider>
+mvn test -P<provider>
 
 where:
 

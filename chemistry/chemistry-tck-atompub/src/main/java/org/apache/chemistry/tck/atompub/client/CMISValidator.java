@@ -73,10 +73,8 @@ public class CMISValidator {
     public Validator getAppValidator() throws IOException, SAXException {
         if (appValidator == null) {
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Source APPFile = new StreamSource(getClass().getResourceAsStream(
-                    "/org/apache/chemistry/tck/atompub/xsd/APP.xsd"), getClass().getResource(
-                    "/org/apache/chemistry/tck/atompub/xsd/APP.xsd").toExternalForm());
-            Schema schema = factory.newSchema(APPFile);
+            Source[] schemas = new Source[] { getAPPSource(), getCMISCoreSource(), getCMISRestAtomSource() };
+            Schema schema = factory.newSchema(schemas);
             appValidator = schema.newValidator();
         }
         return appValidator;
@@ -92,13 +90,10 @@ public class CMISValidator {
     public Validator getCMISAtomValidator() throws IOException, SAXException {
         if (atomValidator == null) {
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Source ATOMFile = new StreamSource(getClass().getResourceAsStream(
-                    "/org/apache/chemistry/tck/atompub/xsd/ATOM.xsd"), getClass().getResource(
-                    "/org/apache/chemistry/tck/atompub/xsd/ATOM.xsd").toExternalForm());
-            Schema schema = factory.newSchema(ATOMFile);
+            Source[] schemas = new Source[] { getATOMSource(), getCMISCoreSource(), getCMISRestAtomSource() };
+            Schema schema = factory.newSchema(schemas);
             atomValidator = schema.newValidator();
         }
-
         return atomValidator;
     }
 
@@ -118,6 +113,46 @@ public class CMISValidator {
         validator.validate(new DOMSource(document));
     }
 
+    /**
+     * @return ATOM.xsd source
+     */
+    private Source getATOMSource()
+    {
+        return new StreamSource(getClass().getResourceAsStream(
+                "/org/apache/chemistry/tck/atompub/xsd/ATOM.xsd"), getClass().getResource(
+                "/org/apache/chemistry/tck/atompub/xsd/ATOM.xsd").toExternalForm());
+    }
+
+    /**
+     * @return APP.xsd source
+     */
+    private Source getAPPSource()
+    {
+        return new StreamSource(getClass().getResourceAsStream(
+                "/org/apache/chemistry/tck/atompub/xsd/APP.xsd"), getClass().getResource(
+                "/org/apache/chemistry/tck/atompub/xsd/APP.xsd").toExternalForm());
+    }
+
+    /**
+     * @return CMIS-Core.xsd source
+     */
+    private Source getCMISCoreSource()
+    {
+        return new StreamSource(getClass().getResourceAsStream(
+                "/org/apache/chemistry/tck/atompub/xsd/CMIS-Core.xsd"), getClass().getResource(
+                "/org/apache/chemistry/tck/atompub/xsd/CMIS-Core.xsd").toExternalForm());
+    }
+
+    /**
+     * @return CMIS-RestAtom.xsd source
+     */
+    private Source getCMISRestAtomSource()
+    {
+        return new StreamSource(getClass().getResourceAsStream(
+                "/org/apache/chemistry/tck/atompub/xsd/CMIS-RestAtom.xsd"), getClass().getResource(
+                "/org/apache/chemistry/tck/atompub/xsd/CMIS-RestAtom.xsd").toExternalForm());
+    }
+    
     /**
      * Convert SAX Exception to String
      * 

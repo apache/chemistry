@@ -25,7 +25,6 @@ import org.apache.chemistry.abdera.ext.CMISProperty.CMISPropertyId;
 import org.apache.chemistry.abdera.ext.CMISProperty.CMISPropertyInteger;
 import org.apache.chemistry.abdera.ext.CMISProperty.CMISPropertyString;
 import org.apache.chemistry.abdera.ext.CMISProperty.CMISPropertyUri;
-import org.apache.chemistry.abdera.ext.CMISProperty.CMISPropertyXml;
 
 
 /**
@@ -38,6 +37,8 @@ public class CMISExtensionFactory extends AbstractExtensionFactory implements CM
         addImpl(REPOSITORY_INFO, CMISRepositoryInfo.class);
         addImpl(CAPABILITIES, CMISCapabilities.class);
         addImpl(OBJECT, CMISObject.class);
+        addImpl(CONTENT, CMISContent.class);
+        addImpl(NUM_ITEMS, CMISNumItems.class);
         addImpl(PROPERTIES, CMISProperties.class);
         addImpl(STRING_PROPERTY, CMISPropertyString.class);
         addImpl(DECIMAL_PROPERTY, CMISPropertyDecimal.class);
@@ -46,14 +47,13 @@ public class CMISExtensionFactory extends AbstractExtensionFactory implements CM
         addImpl(DATETIME_PROPERTY, CMISPropertyDateTime.class);
         addImpl(URI_PROPERTY, CMISPropertyUri.class);
         addImpl(ID_PROPERTY, CMISPropertyId.class);
-        addImpl(XML_PROPERTY, CMISPropertyXml.class);
         addImpl(HTML_PROPERTY, CMISPropertyHtml.class);
         addImpl(PROPERTY_VALUE, CMISValue.class);
         addImpl(ALLOWABLE_ACTIONS, CMISAllowableActions.class);
         addImpl(CAN_DELETE, CMISAllowableAction.class);
         addImpl(CAN_UPDATE_PROPERTIES, CMISAllowableAction.class);
         addImpl(CAN_GET_PROPERTIES, CMISAllowableAction.class);
-        addImpl(CAN_GET_RELATIONSHIPS, CMISAllowableAction.class);
+        addImpl(CAN_GET_OBJECT_RELATIONSHIPS, CMISAllowableAction.class);
         addImpl(CAN_GET_PARENTS, CMISAllowableAction.class);
         addImpl(CAN_GET_FOLDER_PARENT, CMISAllowableAction.class);
         addImpl(CAN_GET_DESCENDANTS, CMISAllowableAction.class);

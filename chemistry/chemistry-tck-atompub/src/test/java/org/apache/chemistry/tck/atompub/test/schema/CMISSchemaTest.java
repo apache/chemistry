@@ -45,6 +45,11 @@ public class CMISSchemaTest extends TestCase {
         examples = new ResourceLoader("/org/apache/chemistry/tck/atompub/examples/");
     }
 
+    public void testACL() throws Exception {
+        String xml = examples.load("ACL.xml");
+        assertValidXML(xml, cmisValidator.getCMISAtomValidator());
+    }
+
     public void testAllowableActions() throws Exception {
         String xml = examples.load("AllowableActions.xml");
         assertValidXML(xml, cmisValidator.getCMISAtomValidator());
@@ -105,6 +110,11 @@ public class CMISSchemaTest extends TestCase {
         assertValidXML(xml, cmisValidator.getAppValidator());
     }
 
+    public void testTypeChildren() throws Exception {
+        String xml = examples.load("TypeChildren.xml");
+        assertValidXML(xml, cmisValidator.getCMISAtomValidator());
+    }
+    
     public void testTypeDocumentWith() throws Exception {
         String xml = examples.load("TypeDocumentWith.xml");
         assertValidXML(xml, cmisValidator.getCMISAtomValidator());
@@ -132,6 +142,16 @@ public class CMISSchemaTest extends TestCase {
 
     public void testTypeRelationshipWithOut() throws Exception {
         String xml = examples.load("TypeRelationshipWithout.xml");
+        assertValidXML(xml, cmisValidator.getCMISAtomValidator());
+    }
+
+    public void testTypePolicyWith() throws Exception {
+        String xml = examples.load("TypePolicyWith.xml");
+        assertValidXML(xml, cmisValidator.getCMISAtomValidator());
+    }
+
+    public void testTypePolicyWithOut() throws Exception {
+        String xml = examples.load("TypePolicyWithout.xml");
         assertValidXML(xml, cmisValidator.getCMISAtomValidator());
     }
 

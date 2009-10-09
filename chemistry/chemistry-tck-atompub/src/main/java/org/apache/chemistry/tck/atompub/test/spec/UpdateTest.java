@@ -28,6 +28,7 @@ import org.apache.chemistry.tck.atompub.http.PatchRequest;
 import org.apache.chemistry.tck.atompub.http.PutRequest;
 import org.apache.chemistry.tck.atompub.http.Request;
 import org.apache.chemistry.tck.atompub.http.Response;
+import org.apache.commons.codec.binary.Base64;
 import org.junit.Assert;
 
 
@@ -68,10 +69,44 @@ public class UpdateTest extends TCKTest {
         Response contentRes = client.executeRequest(new GetRequest(updated.getContentSrc().toString()), 200);
         Assert.assertEquals("updated content " + guid, contentRes.getContentAsString());
     }
-
-    public void testUpdatePut() throws Exception {
+    
+    public void testUpdatePutCMISContent() throws Exception {
         // retrieve test folder for update
-        Entry document = fixture.createTestDocument("testUpdatePut");
+        Entry document = fixture.createTestDocument("testUpdatePutCMISContent");
+        String mimetype = (document.getContentMimeType() != null) ? document.getContentMimeType().toString() : null;
+        if (mimetype != null) {
+            Assert.assertEquals("text/html", mimetype);
+        }
+
+        // TODO: check for content update allowable action
+        // if update allowed, perform update, else update and check for
+        // appropriate error
+
+        // update
+        String updateFile = templates.load("updatedocument.cmisatomentry.xml");
+        // FIXME: Add a decent UID generation policy
+        // String guid = GUID.generate();
+        String guid = System.currentTimeMillis() + "";
+        updateFile = updateFile.replace("${NAME}", guid);
+        updateFile = updateFile.replace("${CMISCONTENT}", new String(Base64.encodeBase64(("updated content " + guid).getBytes())));
+        Request putReq = new PutRequest(document.getSelfLink().getHref().toString(), updateFile, CMISConstants.MIMETYPE_ENTRY);
+        Response res = client.executeRequest(putReq, 200, client.getAtomValidator());
+        Assert.assertNotNull(res);
+        Entry updated = model.parseEntry(new StringReader(res.getContentAsString()), null);
+
+        // ensure update occurred
+        Assert.assertEquals(document.getId(), updated.getId());
+        Assert.assertEquals(document.getPublished(), updated.getPublished());
+        Assert.assertEquals("Updated Title " + guid, updated.getTitle());
+        // TODO: why is this testing for text/plain? it should be text/html
+        Assert.assertEquals("text/plain", updated.getContentMimeType().toString());
+        Response contentRes = client.executeRequest(new GetRequest(updated.getContentSrc().toString()), 200);
+        Assert.assertEquals("updated content " + guid, contentRes.getContentAsString());
+    }
+
+    public void testUpdatePutAtomContent() throws Exception {
+        // retrieve test folder for update
+        Entry document = fixture.createTestDocument("testUpdatePutAtomContent");
         String mimetype = (document.getContentMimeType() != null) ? document.getContentMimeType().toString() : null;
         if (mimetype != null) {
             Assert.assertEquals("text/html", mimetype);

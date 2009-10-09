@@ -48,7 +48,7 @@ public class CreateTest extends TCKTest
         Assert.assertNotNull(entry);
     }
     
-    public void testCreateDocument()
+    public void testCreateDocumentCMISContent()
         throws Exception
     {
         Entry testFolder = fixture.getTestCaseFolder();
@@ -57,7 +57,27 @@ public class CreateTest extends TCKTest
         Feed children = client.getFeed(childrenLink.getHref());
         Assert.assertNotNull(children);
         int entriesBefore = children.getEntries().size();
-        Entry document = client.createDocument(children.getSelfLink().getHref(), "testCreateDocument");
+        Entry document = client.createDocument(children.getSelfLink().getHref(), "testCreateDocumentCMISContent", "createdocumentBase64.cmisatomentry.xml");
+        Response documentContentRes = client.executeRequest(new GetRequest(document.getContentSrc().toString()), 200);
+        String resContent = documentContentRes.getContentAsString();
+        Assert.assertEquals(document.getTitle(), resContent);
+        Feed feedFolderAfter = client.getFeed(childrenLink.getHref());
+        int entriesAfter = feedFolderAfter.getEntries().size();
+        Assert.assertEquals(entriesBefore +1, entriesAfter);
+        Entry entry = feedFolderAfter.getEntry(document.getId().toString());
+        Assert.assertNotNull(entry);
+    }
+
+    public void testCreateDocumentAtomContent()
+        throws Exception
+    {
+        Entry testFolder = fixture.getTestCaseFolder();
+        Link childrenLink = client.getChildrenLink(testFolder);
+        Assert.assertNotNull(childrenLink);
+        Feed children = client.getFeed(childrenLink.getHref());
+        Assert.assertNotNull(children);
+        int entriesBefore = children.getEntries().size();
+        Entry document = client.createDocument(children.getSelfLink().getHref(), "testCreateDocumentAtomContent");
         Response documentContentRes = client.executeRequest(new GetRequest(document.getContentSrc().toString()), 200);
         String resContent = documentContentRes.getContentAsString();
         Assert.assertEquals(document.getTitle(), resContent);

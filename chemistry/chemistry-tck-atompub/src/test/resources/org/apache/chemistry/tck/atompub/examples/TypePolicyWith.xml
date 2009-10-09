@@ -5,27 +5,27 @@
         <atom:uri>http://www.ibm.com/</atom:uri>
         <atom:email>albertcbrown@us.ibm.com</atom:email>
     </atom:author>
-    <atom:content>Type Definition for customer-relationship</atom:content>
-    <atom:id>http://cmisexample.oasis-open.org/rep1/type/customer-relationship</atom:id>
-    <atom:link type="application/atom+xml;type=entry" rel="self" href="http://cmisexample.oasis-open.org/rep1/type/customer-relationship"/>
-    <atom:link type="application/atomsvc+xml" rel="service" href="http://cmisexample.oasis-open.org/rep1/type/customer-relationship"/>
-    <atom:link type="application/atom+xml;type=entry" rel="describedby" href="http://cmisexample.oasis-open.org/rep1/type/cmis:relationship"/>
-    <atom:link type="application/atom+xml;type=entry" rel="up" href="http://cmisexample.oasis-open.org/rep1/type/customer-relationship/parent"/>
-    <atom:link type="application/atom+xml;type=feed" rel="down" href="http://cmisexample.oasis-open.org/rep1/type/customer-relationship/children/flat"/>
-    <atom:link type="application/cmistree+xml" rel="down" href="http://cmisexample.oasis-open.org/rep1/type/customer-relationship/children/tree"/>
-    <atom:published>2009-09-25T12:33:21.062-07:00</atom:published>
-    <atom:summary type="html">HTML summary of Type Definition  customer-relationship</atom:summary>
-    <atom:title type="text">Type Definition - customer-relationship</atom:title>
-    <atom:updated>2009-09-25T12:33:21.062-07:00</atom:updated>
-    <app:edited>2009-09-25T12:33:21.062-07:00</app:edited>
-    <cmisra:type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="cmis:cmisTypeRelationshipDefinitionType" cmisra:id="customer-relationship">
-        <cmis:id>dtcustomer-relationship</cmis:id>
-        <cmis:localName>myrepname-customer-relationship</cmis:localName>
+    <atom:content>Type Definition for security-policy</atom:content>
+    <atom:id>http://cmisexample.oasis-open.org/rep1/type/security-policy</atom:id>
+    <atom:link type="application/atom+xml;type=entry" rel="self" href="http://cmisexample.oasis-open.org/rep1/type/security-policy"/>
+    <atom:link type="application/atomsvc+xml" rel="service" href="http://cmisexample.oasis-open.org/rep1/type/security-policy"/>
+    <atom:link type="application/atom+xml;type=entry" rel="describedby" href="http://cmisexample.oasis-open.org/rep1/type/cmis:policy"/>
+    <atom:link type="application/atom+xml;type=entry" rel="up" href="http://cmisexample.oasis-open.org/rep1/type/security-policy/parent"/>
+    <atom:link type="application/atom+xml;type=feed" rel="down" href="http://cmisexample.oasis-open.org/rep1/type/security-policy/children/flat"/>
+    <atom:link type="application/cmistree+xml" rel="down" href="http://cmisexample.oasis-open.org/rep1/type/security-policy/children/tree"/>
+    <atom:published>2009-09-25T12:33:21.343-07:00</atom:published>
+    <atom:summary type="html">HTML summary of Type Definition  security-policy</atom:summary>
+    <atom:title type="text">Type Definition - security-policy</atom:title>
+    <atom:updated>2009-09-25T12:33:21.343-07:00</atom:updated>
+    <app:edited>2009-09-25T12:33:21.343-07:00</app:edited>
+    <cmisra:type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="cmis:cmisTypePolicyDefinitionType" cmisra:id="security-policy">
+        <cmis:id>dtsecurity-policy</cmis:id>
+        <cmis:localName>myrepname-security-policy</cmis:localName>
         <cmis:localNamespace xsi:nil="true"/>
-        <cmis:displayName>customer-relationship</cmis:displayName>
-        <cmis:queryName>customer-relationship</cmis:queryName>
-        <cmis:description>Description for type definition customer-relationship</cmis:description>
-        <cmis:baseId>cmis:relationship</cmis:baseId>
+        <cmis:displayName>security-policy</cmis:displayName>
+        <cmis:queryName>security-policy</cmis:queryName>
+        <cmis:description>Description for type definition security-policy</cmis:description>
+        <cmis:baseId>cmis:policy</cmis:baseId>
         <cmis:parentId>parent</cmis:parentId>
         <cmis:creatable>true</cmis:creatable>
         <cmis:fileable>false</cmis:fileable>
@@ -180,12 +180,12 @@
             <cmis:openChoice>false</cmis:openChoice>
             <cmis:maxLength>128</cmis:maxLength>
         </cmis:propertyStringDefinition>
-        <cmis:propertyIdDefinition>
-            <cmis:id>cmis:sourceId</cmis:id>
-            <cmis:localName>rep-cmis:sourceId</cmis:localName>
-            <cmis:displayName>cmis:sourceId</cmis:displayName>
-            <cmis:description>Description for cmis:sourceId</cmis:description>
-            <cmis:propertyType>id</cmis:propertyType>
+        <cmis:propertyStringDefinition>
+            <cmis:id>cmis:policyText</cmis:id>
+            <cmis:localName>rep-cmis:policyText</cmis:localName>
+            <cmis:displayName>cmis:policyText</cmis:displayName>
+            <cmis:description>Description for cmis:policyText</cmis:description>
+            <cmis:propertyType>string</cmis:propertyType>
             <cmis:cardinality>single</cmis:cardinality>
             <cmis:updatability>readwrite</cmis:updatability>
             <cmis:inherited>true</cmis:inherited>
@@ -193,23 +193,7 @@
             <cmis:queryable>true</cmis:queryable>
             <cmis:orderable>true</cmis:orderable>
             <cmis:openChoice>false</cmis:openChoice>
-        </cmis:propertyIdDefinition>
-        <cmis:propertyIdDefinition>
-            <cmis:id>cmis:targetId</cmis:id>
-            <cmis:localName>rep-cmis:targetId</cmis:localName>
-            <cmis:displayName>cmis:targetId</cmis:displayName>
-            <cmis:description>Description for cmis:targetId</cmis:description>
-            <cmis:propertyType>id</cmis:propertyType>
-            <cmis:cardinality>single</cmis:cardinality>
-            <cmis:updatability>readwrite</cmis:updatability>
-            <cmis:inherited>true</cmis:inherited>
-            <cmis:required>false</cmis:required>
-            <cmis:queryable>true</cmis:queryable>
-            <cmis:orderable>true</cmis:orderable>
-            <cmis:openChoice>false</cmis:openChoice>
-        </cmis:propertyIdDefinition>
-        <cmis:allowedSourceTypes>invoice</cmis:allowedSourceTypes>
-        <cmis:allowedSourceTypes>capitalinvoice</cmis:allowedSourceTypes>
-        <cmis:allowedTargetTypes>customer</cmis:allowedTargetTypes>
+            <cmis:maxLength>128</cmis:maxLength>
+        </cmis:propertyStringDefinition>
     </cmisra:type>
 </atom:entry>

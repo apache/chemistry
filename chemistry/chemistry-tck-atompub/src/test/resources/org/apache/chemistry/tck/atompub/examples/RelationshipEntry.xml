@@ -1,62 +1,70 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<atom:entry xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200901" xmlns:cmism="http://docs.oasis-open.org/ns/cmis/messaging/200901" xmlns:atom="http://www.w3.org/2005/Atom"
-  xmlns:app="http://www.w3.org/2007/app" xmlns:cmisra="http://docs.oasis-open.org/ns/cmis/restatom/200901">
-  <atom:author>
-    <atom:name>Al Brown</atom:name>
-    <atom:uri>http://www.ibm.com/</atom:uri>
-    <atom:email>albertcbrown@us.ibm.com</atom:email>
-  </atom:author>
-  <atom:content src="http://cmisexample.oasis-open.org/rep1/bfe1e986-a166-4abf-b2a2-e164ca954738" />
-  <atom:id>urn:uuid:bfe1e986-a166-4abf-b2a2-e164ca954738</atom:id>
-  <atom:link rel="self" href="http://cmisexample.oasis-open.org/rep1/bfe1e986-a166-4abf-b2a2-e164ca954738" />
-  <atom:link rel="edit" href="http://cmisexample.oasis-open.org/rep1/bfe1e986-a166-4abf-b2a2-e164ca954738" />
-  <atom:link type="application/cmis+xml;type=allowableActions" rel="allowableactions" href="http://cmisexample.oasis-open.org/rep1/bfe1e986-a166-4abf-b2a2-e164ca954738/allowableactions" />
-  <atom:link type="application/atom+xml;type=entry" rel="type" href="http://cmisexample.oasis-open.org/rep1/bfe1e986-a166-4abf-b2a2-e164ca954738/type" />
-  <atom:published>2009-07-17T09:13:32.984-07:00</atom:published>
-  <atom:summary type="html">HTML summary of Entry bfe1e986-a166-4abf-b2a2-e164ca954738</atom:summary>
-  <atom:title type="text">CMIS Example Relationship as Compound Document type</atom:title>
-  <atom:updated>2009-07-17T09:13:32.984-07:00</atom:updated>
-  <atom:link type="application/atom+xml;type=entry" rel="source" href="http://cmisexample.oasis-open.org/rep1/bfe1e986-a166-4abf-b2a2-e164ca954738/source" />
-  <atom:link type="application/atom+xml;type=entry" rel="target" href="http://cmisexample.oasis-open.org/rep1/bfe1e986-a166-4abf-b2a2-e164ca954738/target" />
-  <cmisra:object>
-    <cmis:properties>
-      <cmis:propertyBoolean localname="rep-cmis:IsImmutable" pdid="cmis:IsImmutable">
-        <cmis:value>false</cmis:value>
-      </cmis:propertyBoolean>
-      <cmis:propertyDateTime localname="rep-cmis:CreationDate" pdid="cmis:CreationDate">
-        <cmis:value>2009-07-17T09:13:32.984-07:00</cmis:value>
-      </cmis:propertyDateTime>
-      <cmis:propertyDateTime localname="rep-cmis:LastModificationDate" pdid="cmis:LastModificationDate">
-        <cmis:value>2009-07-17T09:13:32.984-07:00</cmis:value>
-      </cmis:propertyDateTime>
-      <cmis:propertyId localname="rep-cmis:ObjectId" pdid="cmis:ObjectId">
-        <cmis:value>bfe1e986-a166-4abf-b2a2-e164ca954738</cmis:value>
-      </cmis:propertyId>
-      <cmis:propertyId localname="rep-cmis:ObjectTypeId" pdid="cmis:ObjectTypeId">
-        <cmis:value>compounddocument</cmis:value>
-      </cmis:propertyId>
-      <cmis:propertyId localname="rep-cmis:BaseTypeId" pdid="cmis:BaseTypeId">
-        <cmis:value>cmis:relationship</cmis:value>
-      </cmis:propertyId>
-      <cmis:propertyString localname="rep-cmis:LastModifiedBy" pdid="cmis:LastModifiedBy">
-        <cmis:value>Al Brown</cmis:value>
-      </cmis:propertyString>
-      <cmis:propertyString localname="rep-cmis:CreatedBy" pdid="cmis:CreatedBy">
-        <cmis:value>Al Brown</cmis:value>
-      </cmis:propertyString>
-    </cmis:properties>
-    <cmis:allowableActions>
-      <cmis:canDeleteObject>true</cmis:canDeleteObject>
-      <cmis:canUpdateProperties>true</cmis:canUpdateProperties>
-      <cmis:canGetProperties>true</cmis:canGetProperties>
-      <cmis:canGetRelationships>true</cmis:canGetRelationships>
-      <cmis:canMoveObject>true</cmis:canMoveObject>
-      <cmis:canAddObjectToFolder>true</cmis:canAddObjectToFolder>
-      <cmis:canRemoveObjectFromFolder>true</cmis:canRemoveObjectFromFolder>
-      <cmis:canApplyPolicy>true</cmis:canApplyPolicy>
-      <cmis:canGetAppliedPolicies>true</cmis:canGetAppliedPolicies>
-      <cmis:canRemovePolicy>true</cmis:canRemovePolicy>
-      <cmis:canCreateRelationship>true</cmis:canCreateRelationship>
-    </cmis:allowableActions>
-  </cmisra:object>
+<atom:entry xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200908/" xmlns:cmism="http://docs.oasis-open.org/ns/cmis/messaging/200908/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:app="http://www.w3.org/2007/app" xmlns:cmisra="http://docs.oasis-open.org/ns/cmis/restatom/200908/">
+    <atom:author>
+        <atom:name>Al Brown</atom:name>
+        <atom:uri>http://www.ibm.com/</atom:uri>
+        <atom:email>albertcbrown@us.ibm.com</atom:email>
+    </atom:author>
+    <atom:content src="http://cmisexample.oasis-open.org/rep1/f1f9d566-55a8-4b9e-ac41-c652f97700ae"/>
+    <atom:id>urn:uuid:f1f9d566-55a8-4b9e-ac41-c652f97700ae</atom:id>
+    <atom:title type="text">CMIS Example Relationship as Compound Document type</atom:title>
+    <atom:updated>2009-09-25T12:33:18.781-07:00</atom:updated>
+    <atom:link rel="self" href="http://cmisexample.oasis-open.org/rep1/f1f9d566-55a8-4b9e-ac41-c652f97700ae"/>
+    <atom:link rel="edit" href="http://cmisexample.oasis-open.org/rep1/f1f9d566-55a8-4b9e-ac41-c652f97700ae"/>
+    <atom:link type="application/cmis+xml;type=allowableActions" rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://cmisexample.oasis-open.org/rep1/f1f9d566-55a8-4b9e-ac41-c652f97700ae/allowableactions"/>
+    <atom:link type="application/atom+xml;type=entry" rel="describedby" href="http://cmisexample.oasis-open.org/rep1/f1f9d566-55a8-4b9e-ac41-c652f97700ae/type"/>
+    <atom:link type="application/atomsvc+xml" rel="service" href="http://cmisexample.oasis-open.org/rep1//service"/>
+    <atom:published>2009-09-25T12:33:18.781-07:00</atom:published>
+    <atom:summary type="html">HTML summary of Entry  f1f9d566-55a8-4b9e-ac41-c652f97700ae</atom:summary>
+    <atom:link type="application/atom+xml;type=entry" rel="http://docs.oasis-open.org/ns/cmis/link/200908/source" href="http://cmisexample.oasis-open.org/rep1/f1f9d566-55a8-4b9e-ac41-c652f97700ae/source"/>
+    <atom:link type="application/atom+xml;type=entry" rel="http://docs.oasis-open.org/ns/cmis/link/200908/target" href="http://cmisexample.oasis-open.org/rep1/f1f9d566-55a8-4b9e-ac41-c652f97700ae/target"/>
+    <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/policies" href="http://cmisexample.oasis-open.org/rep1/f1f9d566-55a8-4b9e-ac41-c652f97700ae/policies"/>
+    <atom:link type="application/cmisacl+xml" rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://cmisexample.oasis-open.org/rep1/f1f9d566-55a8-4b9e-ac41-c652f97700ae/acl"/>
+    <cmisra:object>
+        <cmis:properties>
+            <cmis:propertyId localName="rep-cmis:objectId" propertyDefinitionId="cmis:objectId">
+                <cmis:value>f1f9d566-55a8-4b9e-ac41-c652f97700ae</cmis:value>
+            </cmis:propertyId>
+            <cmis:propertyId localName="rep-cmis:objectTypeId" propertyDefinitionId="cmis:objectTypeId">
+                <cmis:value>compounddocument</cmis:value>
+            </cmis:propertyId>
+            <cmis:propertyString localName="rep-cmis:name" propertyDefinitionId="cmis:name">
+                <cmis:value>CMIS Example Relationship as Compound Document type</cmis:value>
+            </cmis:propertyString>
+            <cmis:propertyDateTime localName="rep-cmis:creationDate" propertyDefinitionId="cmis:creationDate">
+                <cmis:value>2009-09-25T12:33:18.781-07:00</cmis:value>
+            </cmis:propertyDateTime>
+            <cmis:propertyDateTime localName="rep-cmis:lastModificationDate" propertyDefinitionId="cmis:lastModificationDate">
+                <cmis:value>2009-09-25T12:33:18.781-07:00</cmis:value>
+            </cmis:propertyDateTime>
+            <cmis:propertyId localName="rep-cmis:baseTypeId" propertyDefinitionId="cmis:baseTypeId">
+                <cmis:value>cmis:relationship</cmis:value>
+            </cmis:propertyId>
+            <cmis:propertyString localName="rep-cmis:lastModifiedBy" propertyDefinitionId="cmis:lastModifiedBy">
+                <cmis:value>Al Brown</cmis:value>
+            </cmis:propertyString>
+            <cmis:propertyString localName="rep-cmis:createdBy" propertyDefinitionId="cmis:createdBy">
+                <cmis:value>Al Brown</cmis:value>
+            </cmis:propertyString>
+            <cmis:propertyId localName="rep-cmis:sourceId" propertyDefinitionId="cmis:sourceId">
+                <cmis:value>3ca9fa87-8c9c-4fc0-bd7d-1374c55caaa6</cmis:value>
+            </cmis:propertyId>
+            <cmis:propertyId localName="rep-cmis:targetId" propertyDefinitionId="cmis:targetId">
+                <cmis:value>f05b5fe3-428e-44b9-a972-9e69950797dc</cmis:value>
+            </cmis:propertyId>
+        </cmis:properties>
+        <cmis:allowableActions>
+            <cmis:canDeleteObject>true</cmis:canDeleteObject>
+            <cmis:canUpdateProperties>true</cmis:canUpdateProperties>
+            <cmis:canGetProperties>true</cmis:canGetProperties>
+            <cmis:canGetObjectRelationships>true</cmis:canGetObjectRelationships>
+            <cmis:canMoveObject>true</cmis:canMoveObject>
+            <cmis:canAddObjectToFolder>true</cmis:canAddObjectToFolder>
+            <cmis:canRemoveObjectFromFolder>true</cmis:canRemoveObjectFromFolder>
+            <cmis:canApplyPolicy>true</cmis:canApplyPolicy>
+            <cmis:canGetAppliedPolicies>true</cmis:canGetAppliedPolicies>
+            <cmis:canRemovePolicy>true</cmis:canRemovePolicy>
+            <cmis:canCreateRelationship>true</cmis:canCreateRelationship>
+        </cmis:allowableActions>
+    </cmisra:object>
 </atom:entry>

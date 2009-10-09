@@ -30,6 +30,7 @@ import javax.xml.validation.Validator;
 
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.Collection;
+import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Link;
@@ -130,8 +131,8 @@ public class CMISClient {
     public Collection getCMISCollection(Workspace workspace, String collectionId) {
         List<Collection> collections = workspace.getCollections();
         for (Collection collection : collections) {
-            String id = collection.getAttributeValue(CMISConstants.COLLECTION_TYPE);
-            if (id != null && id.equals(collectionId)) {
+            Element collectionType = collection.getFirstChild(CMISConstants.COLLECTION_TYPE);
+            if (collectionType != null && collectionId.equals(collectionType.getText())) {
                 return collection;
             }
         }
@@ -295,6 +296,7 @@ public class CMISClient {
         Entry createEntry = appModel.parseEntry(new StringReader(createFile), null);
         MimeType mimeType = createEntry.getContentMimeType();
         boolean mediaType = (mimeType != null);
+        createFile = createFile.replace("${CMISCONTENT}", new String(Base64.encodeBase64(name.getBytes())));
         createFile = createFile.replace("${CONTENT}", mediaType ? new String(Base64.encodeBase64(name.getBytes())) : name);
         Request req = new PostRequest(parent.toString(), createFile, CMISConstants.MIMETYPE_ENTRY);
         Response res = executeRequest(req, 201, cmisValidator.getCMISAtomValidator());

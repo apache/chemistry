@@ -371,30 +371,6 @@ public abstract class CMISProperty extends ExtensibleElementWrapper {
     }
 
     /**
-     * XML Property
-     */
-    public static class CMISPropertyXml extends CMISPropertyString {
-        public CMISPropertyXml(Element internal) {
-            super(internal);
-        }
-
-        public CMISPropertyXml(Factory factory, QName qname) {
-            super(factory, qname);
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see
-         * org.apache.abdera.ext.cmis.CMISProperty.CMISPropertyString#getType()
-         */
-        @Override
-        public String getType() {
-            return CMISConstants.PROP_TYPE_XML;
-        }
-    }
-
-    /**
      * HTML Property
      */
     public static class CMISPropertyHtml extends CMISPropertyString {
