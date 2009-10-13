@@ -83,7 +83,7 @@ public class VersionsTest extends TCKTest {
         Entry document = fixture.createTestDocument("testCheckout");
         CMISObject docObject = document.getExtension(CMISConstants.OBJECT);
         Request documentReq = new GetRequest(document.getSelfLink().getHref().toString());
-        Response documentRes = client.executeRequest(documentReq, 200, client.getAtomValidator());
+        Response documentRes = client.executeRequest(documentReq, 200);
         Assert.assertNotNull(documentRes);
         String documentXML = documentRes.getContentAsString();
         Assert.assertNotNull(documentXML);
@@ -91,7 +91,7 @@ public class VersionsTest extends TCKTest {
         // checkout
         IRI checkedoutHREF = client.getCheckedOutCollection(client.getWorkspace());
         Request checkoutReq = new PostRequest(checkedoutHREF.toString(), documentXML, CMISConstants.MIMETYPE_ENTRY);
-        Response pwcRes = client.executeRequest(checkoutReq, 201, client.getAtomValidator());
+        Response pwcRes = client.executeRequest(checkoutReq, 201);
         Assert.assertNotNull(pwcRes);
         String pwcXml = pwcRes.getContentAsString();
         Assert.assertNotNull(pwcXml);
@@ -132,7 +132,7 @@ public class VersionsTest extends TCKTest {
         // create document for checkout
         Entry document = fixture.createTestDocument("testCancelCheckout");
         Request documentReq = new GetRequest(document.getSelfLink().getHref().toString());
-        Response documentRes = client.executeRequest(documentReq, 200, client.getAtomValidator());
+        Response documentRes = client.executeRequest(documentReq, 200);
         Assert.assertNotNull(documentRes);
         String xml = documentRes.getContentAsString();
         Assert.assertNotNull(xml);
@@ -140,7 +140,7 @@ public class VersionsTest extends TCKTest {
         // checkout
         IRI checkedoutHREF = client.getCheckedOutCollection(client.getWorkspace());
         Request checkoutReq = new PostRequest(checkedoutHREF.toString(), xml, CMISConstants.MIMETYPE_ENTRY);
-        Response pwcRes = client.executeRequest(checkoutReq, 201, client.getAtomValidator());
+        Response pwcRes = client.executeRequest(checkoutReq, 201);
         Assert.assertNotNull(pwcRes);
         String pwcXml = pwcRes.getContentAsString();
 
@@ -170,7 +170,7 @@ public class VersionsTest extends TCKTest {
         // create document for checkout
         Entry document = fixture.createTestDocument("testCheckin");
         Request documentReq = new GetRequest(document.getSelfLink().getHref().toString());
-        Response documentRes = client.executeRequest(documentReq, 200, client.getAtomValidator());
+        Response documentRes = client.executeRequest(documentReq, 200);
         Assert.assertNotNull(documentRes);
         String xml = documentRes.getContentAsString();
         Assert.assertNotNull(xml);
@@ -178,7 +178,7 @@ public class VersionsTest extends TCKTest {
         // checkout
         IRI checkedoutHREF = client.getCheckedOutCollection(client.getWorkspace());
         Request checkoutReq = new PostRequest(checkedoutHREF.toString(), xml, CMISConstants.MIMETYPE_ENTRY);
-        Response pwcRes = client.executeRequest(checkoutReq, 201, client.getAtomValidator());
+        Response pwcRes = client.executeRequest(checkoutReq, 201);
         Assert.assertNotNull(pwcRes);
         Entry pwc = model.parseEntry(new StringReader(pwcRes.getContentAsString()), null);
         Assert.assertNotNull(pwc);
@@ -211,7 +211,7 @@ public class VersionsTest extends TCKTest {
         String guid = System.currentTimeMillis() + "";
         updateFile = updateFile.replace("${NAME}", guid);
         Request updateReq = new PatchRequest(pwc.getEditLink().getHref().toString(), updateFile, CMISConstants.MIMETYPE_ENTRY);
-        Response pwcUpdatedres = client.executeRequest(updateReq, 200, client.getAtomValidator());
+        Response pwcUpdatedres = client.executeRequest(updateReq, 200);
         Assert.assertNotNull(pwcUpdatedres);
         Entry updated = model.parseEntry(new StringReader(pwcUpdatedres.getContentAsString()), null);
         // ensure update occurred
@@ -229,7 +229,7 @@ public class VersionsTest extends TCKTest {
         args2.put("checkinComment", guid);
         args2.put("checkin", "true");
         Request checkinReq = new PatchRequest(checkinUrl, checkinFile, CMISConstants.MIMETYPE_ENTRY).setArgs(args2);
-        Response checkinRes = client.executeRequest(checkinReq, 200, client.getAtomValidator());
+        Response checkinRes = client.executeRequest(checkinReq, 200);
         Assert.assertNotNull(checkinRes);
         String checkinResXML = checkinRes.getContentAsString();
 
@@ -263,7 +263,7 @@ public class VersionsTest extends TCKTest {
         // create document for checkout
         Entry document = fixture.createTestDocument("testUpdateOnCheckIn");
         Request documentReq = new GetRequest(document.getSelfLink().getHref().toString());
-        Response documentRes = client.executeRequest(documentReq, 200, client.getAtomValidator());
+        Response documentRes = client.executeRequest(documentReq, 200);
         Assert.assertNotNull(documentRes);
         String xml = documentRes.getContentAsString();
         Assert.assertNotNull(xml);
@@ -271,7 +271,7 @@ public class VersionsTest extends TCKTest {
         // checkout
         IRI checkedoutHREF = client.getCheckedOutCollection(client.getWorkspace());
         Request checkoutReq = new PostRequest(checkedoutHREF.toString(), xml, CMISConstants.MIMETYPE_ENTRY);
-        Response pwcRes = client.executeRequest(checkoutReq, 201, client.getAtomValidator());
+        Response pwcRes = client.executeRequest(checkoutReq, 201);
         Assert.assertNotNull(pwcRes);
         Entry pwc = model.parseEntry(new StringReader(pwcRes.getContentAsString()), null);
         Assert.assertNotNull(pwc);
@@ -297,7 +297,7 @@ public class VersionsTest extends TCKTest {
         args2.put("checkinComment", guid);
         args2.put("checkin", "true");
         Request checkinReq = new PatchRequest(checkinUrl, checkinFile, CMISConstants.MIMETYPE_ENTRY).setArgs(args2);
-        Response checkinRes = client.executeRequest(checkinReq, 200, client.getAtomValidator());
+        Response checkinRes = client.executeRequest(checkinReq, 200);
         Assert.assertNotNull(checkinRes);
         String checkinResXML = checkinRes.getContentAsString();
 
@@ -323,7 +323,7 @@ public class VersionsTest extends TCKTest {
         // create document for checkout
         Entry document = fixture.createTestDocument("testGetAllVersions");
         Request documentReq = new GetRequest(document.getSelfLink().getHref().toString());
-        Response documentRes = client.executeRequest(documentReq, 200, client.getAtomValidator());
+        Response documentRes = client.executeRequest(documentReq, 200);
         Assert.assertNotNull(documentRes);
         String xml = documentRes.getContentAsString();
         Assert.assertNotNull(xml);
@@ -332,7 +332,7 @@ public class VersionsTest extends TCKTest {
         for (int i = 0; i < NUMBER_OF_VERSIONS; i++) {
             // checkout
             Request checkoutReq = new PostRequest(checkedoutHREF.toString(), xml, CMISConstants.MIMETYPE_ENTRY);
-            Response pwcRes = client.executeRequest(checkoutReq, 201, client.getAtomValidator());
+            Response pwcRes = client.executeRequest(checkoutReq, 201);
             Assert.assertNotNull(pwcRes);
             Entry pwc = model.parseEntry(new StringReader(pwcRes.getContentAsString()), null);
             Assert.assertNotNull(pwc);
@@ -345,7 +345,7 @@ public class VersionsTest extends TCKTest {
             args2.put("checkinComment", "checkin" + i);
             args2.put("checkin", "true");
             Request checkinReq = new PutRequest(checkinUrl, checkinFile, CMISConstants.MIMETYPE_ENTRY).setArgs(args2);
-            Response checkinRes = client.executeRequest(checkinReq, 200, client.getAtomValidator());
+            Response checkinRes = client.executeRequest(checkinReq, 200);
             Assert.assertNotNull(checkinRes);
 
             // use result of checkin (i.e. document returned), for next checkout

@@ -56,7 +56,7 @@ public class UpdateTest extends TCKTest {
         String guid = System.currentTimeMillis() + "";
         updateFile = updateFile.replace("${NAME}", guid);
         Request patchReq = new PatchRequest(document.getSelfLink().getHref().toString(), updateFile, CMISConstants.MIMETYPE_ENTRY);
-        Response res = client.executeRequest(patchReq, 200, client.getAtomValidator());
+        Response res = client.executeRequest(patchReq, 200);
         Assert.assertNotNull(res);
         Entry updated = model.parseEntry(new StringReader(res.getContentAsString()), null);
 
@@ -90,7 +90,7 @@ public class UpdateTest extends TCKTest {
         updateFile = updateFile.replace("${NAME}", guid);
         updateFile = updateFile.replace("${CMISCONTENT}", new String(Base64.encodeBase64(("updated content " + guid).getBytes())));
         Request putReq = new PutRequest(document.getSelfLink().getHref().toString(), updateFile, CMISConstants.MIMETYPE_ENTRY);
-        Response res = client.executeRequest(putReq, 200, client.getAtomValidator());
+        Response res = client.executeRequest(putReq, 200);
         Assert.assertNotNull(res);
         Entry updated = model.parseEntry(new StringReader(res.getContentAsString()), null);
 
@@ -123,7 +123,7 @@ public class UpdateTest extends TCKTest {
         String guid = System.currentTimeMillis() + "";
         updateFile = updateFile.replace("${NAME}", guid);
         Request putReq = new PutRequest(document.getSelfLink().getHref().toString(), updateFile, CMISConstants.MIMETYPE_ENTRY);
-        Response res = client.executeRequest(putReq, 200, client.getAtomValidator());
+        Response res = client.executeRequest(putReq, 200);
         Assert.assertNotNull(res);
         Entry updated = model.parseEntry(new StringReader(res.getContentAsString()), null);
 
@@ -148,7 +148,7 @@ public class UpdateTest extends TCKTest {
 
         // put document
         Request putReq = new PutRequest(document.getSelfLink().getHref().toString(), writer.toString(), CMISConstants.MIMETYPE_ENTRY);
-        Response res = client.executeRequest(putReq, 200, client.getAtomValidator());
+        Response res = client.executeRequest(putReq, 200);
         Assert.assertNotNull(res);
         Entry updated = model.parseEntry(new StringReader(res.getContentAsString()), null);
         Assert.assertEquals(updatedTitle, updated.getTitle());

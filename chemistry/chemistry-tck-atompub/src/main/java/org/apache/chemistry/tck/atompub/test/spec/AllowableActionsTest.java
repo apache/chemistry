@@ -47,7 +47,7 @@ public class AllowableActionsTest extends TCKTest {
 
         Link allowableActionsLink = folder.getLink(CMISConstants.REL_ALLOWABLE_ACTIONS);
         Request req = new GetRequest(allowableActionsLink.getHref().toString());
-        Response allowableActionsRes = client.executeRequest(req, 200, client.getAtomValidator());
+        Response allowableActionsRes = client.executeRequest(req, 200);
         Assert.assertNotNull(allowableActionsRes);
         Element allowableActions = model.parse(new StringReader(allowableActionsRes.getContentAsString()), null);
         Assert.assertNotNull(allowableActions);
@@ -75,7 +75,7 @@ public class AllowableActionsTest extends TCKTest {
 
         Link allowableActionsLink = document.getLink(CMISConstants.REL_ALLOWABLE_ACTIONS);
         Request req = new GetRequest(allowableActionsLink.getHref().toString());
-        Response allowableActionsRes = client.executeRequest(req, 200, client.getAtomValidator());
+        Response allowableActionsRes = client.executeRequest(req, 200);
         Assert.assertNotNull(allowableActionsRes);
         Element allowableActions = model.parse(new StringReader(allowableActionsRes.getContentAsString()), null);
         Assert.assertNotNull(allowableActions);
@@ -119,7 +119,7 @@ public class AllowableActionsTest extends TCKTest {
             // retrieve allowable actions from link
             Link allowableActionsLink = child.getLink(CMISConstants.REL_ALLOWABLE_ACTIONS);
             Request req = new GetRequest(allowableActionsLink.getHref().toString());
-            Response allowableActionsRes = client.executeRequest(req, 200, client.getAtomValidator());
+            Response allowableActionsRes = client.executeRequest(req, 200);
             Assert.assertNotNull(allowableActionsRes);
             Element allowableActions = model.parse(new StringReader(allowableActionsRes.getContentAsString()), null);
             Assert.assertNotNull(allowableActions);

@@ -111,7 +111,7 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         String guid = System.currentTimeMillis() + "";
         updateFile = updateFile.replace("${NAME}", guid);
         Response res = client.executeRequest(new PatchRequest(document.getSelfLink().getHref().toString(), updateFile,
-                CMISConstants.MIMETYPE_ENTRY), 200, client.getAtomValidator());
+                CMISConstants.MIMETYPE_ENTRY), 200);
         assertNotNull(res);
         Entry updated = model.parseEntry(new StringReader(res.getContentAsString()), null);
 
@@ -150,7 +150,7 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         String guid = System.currentTimeMillis() + "";
         updateFile = updateFile.replace("${NAME}", guid);
         Response res = client.executeRequest(new PutRequest(document.getSelfLink().getHref().toString(), updateFile,
-                CMISConstants.MIMETYPE_ENTRY), 200, client.getAtomValidator());
+                CMISConstants.MIMETYPE_ENTRY), 200);
         assertNotNull(res);
         Entry updated = model.parseEntry(new StringReader(res.getContentAsString()), null);
 
@@ -182,8 +182,7 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         // create document for delete
         Entry document = client.createDocument(childrenLink.getHref(), "testDeleteCustomDocument",
                 "/org/apache/chemistry/tck/atompub/test/createcustomdocument.atomentry.xml");
-        Response documentRes = client.executeRequest(new GetRequest(document.getSelfLink().getHref().toString()), 200,
-                client.getAtomValidator());
+        Response documentRes = client.executeRequest(new GetRequest(document.getSelfLink().getHref().toString()), 200);
         assertNotNull(documentRes);
 
         // ensure document has been created

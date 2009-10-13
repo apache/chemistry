@@ -36,7 +36,7 @@ public class RepositoryServiceTest extends TCKTest {
 
     public void testGetRootCollection() throws Exception {
         IRI rootHREF = client.getRootCollection(client.getWorkspace());
-        client.executeRequest(new GetRequest(rootHREF.toString()), 200, client.getAtomValidator());
+        client.executeRequest(new GetRequest(rootHREF.toString()), 200);
     }
 
 }
