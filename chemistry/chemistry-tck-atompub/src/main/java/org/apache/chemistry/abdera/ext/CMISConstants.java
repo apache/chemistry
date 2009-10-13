@@ -30,6 +30,8 @@ public interface CMISConstants {
     public static final String CMISLINK_NS = "http://docs.oasis-open.org/ns/cmis/link/200908/";
 
     // Mimetypes
+    public static final String MIMETYPE_APP = "application/atomsvc+xml";
+    public static final String MIMETYPE_ATOM = "application/atom+xml";
     public static final String MIMETYPE_ENTRY = "application/atom+xml;type=entry";
     public static final String MIMETYPE_FEED = "application/atom+xml;type=feed";
     public static final String MIMETYPE_TEXT = "text/plain";

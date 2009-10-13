@@ -27,6 +27,7 @@ import org.apache.chemistry.tck.atompub.test.spec.DeleteTest;
 import org.apache.chemistry.tck.atompub.test.spec.FolderChildrenTest;
 import org.apache.chemistry.tck.atompub.test.spec.FolderHierarchyTest;
 import org.apache.chemistry.tck.atompub.test.spec.GetTest;
+import org.apache.chemistry.tck.atompub.test.spec.MoveTest;
 import org.apache.chemistry.tck.atompub.test.spec.QueryPagingTest;
 import org.apache.chemistry.tck.atompub.test.spec.QueryTest;
 import org.apache.chemistry.tck.atompub.test.spec.RepositoryServiceTest;
@@ -53,6 +54,7 @@ public class TCKTestSuite extends TestCase {
         suite.addTestSuite(FolderHierarchyTest.class);
         suite.addTestSuite(ContentStreamTest.class);
         suite.addTestSuite(UpdateTest.class);
+        suite.addTestSuite(MoveTest.class);
         suite.addTestSuite(QueryTest.class);
         suite.addTestSuite(QueryPagingTest.class);
         suite.addTestSuite(AllowableActionsTest.class);

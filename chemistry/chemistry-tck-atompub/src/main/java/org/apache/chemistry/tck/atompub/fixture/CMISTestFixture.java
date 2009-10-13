@@ -112,7 +112,8 @@ public class CMISTestFixture {
 
         // do deeper, if required
         if (depth > 0) {
-            Entry subFolder = client.createFolder(childrenLink.getHref(), name, folderTemplate);
+            String folderName = name + " (depth " + (0 - depth) + ")";
+            Entry subFolder = client.createFolder(childrenLink.getHref(), folderName, folderTemplate);
             folderEntry.children.add(createTree(entry, subFolder, depth - 1, docCount, folderTemplate, docTemplate));
         }
 

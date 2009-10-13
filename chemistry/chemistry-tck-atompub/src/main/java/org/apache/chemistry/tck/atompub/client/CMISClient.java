@@ -19,6 +19,7 @@ package org.apache.chemistry.tck.atompub.client;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -99,7 +100,7 @@ public class CMISClient {
     public Service getRepository() throws Exception {
         if (cmisService == null) {
             Request req = new GetRequest(serviceUrl);
-            Response res = executeRequest(req, 200, cmisValidator.getAppValidator());
+            Response res = executeRequest(req, 200);
             String xml = res.getContentAsString();
             Assert.assertNotNull(xml);
             Assert.assertTrue(xml.length() > 0);
@@ -237,7 +238,7 @@ public class CMISClient {
 
     public Entry getEntry(IRI href, Map<String, String> args) throws Exception {
         Request get = new GetRequest(href.toString()).setArgs(args);
-        Response res = executeRequest(get, 200, cmisValidator.getCMISAtomValidator());
+        Response res = executeRequest(get, 200);
         String xml = res.getContentAsString();
         Entry entry = appModel.parseEntry(new StringReader(xml), null);
         Assert.assertNotNull(entry);
@@ -254,7 +255,7 @@ public class CMISClient {
 
     public Feed getFeed(IRI href, Map<String, String> args) throws Exception {
         Request get = new GetRequest(href.toString()).setArgs(args);
-        Response res = executeRequest(get, 200, cmisValidator.getCMISAtomValidator());
+        Response res = executeRequest(get, 200);
         Assert.assertNotNull(res);
         String xml = res.getContentAsString();
         Feed feed = appModel.parseFeed(new StringReader(xml), null);
@@ -271,7 +272,7 @@ public class CMISClient {
         String createFolder = templates.load(atomEntryFile == null ? "createfolder.atomentry.xml" : atomEntryFile);
         createFolder = createFolder.replace("${NAME}", name);
         Request req = new PostRequest(parent.toString(), createFolder, CMISConstants.MIMETYPE_ENTRY);
-        Response res = executeRequest(req, 201, cmisValidator.getCMISAtomValidator());
+        Response res = executeRequest(req, 201);
         Assert.assertNotNull(res);
         String xml = res.getContentAsString();
         Entry entry = appModel.parseEntry(new StringReader(xml), null);
@@ -299,7 +300,7 @@ public class CMISClient {
         createFile = createFile.replace("${CMISCONTENT}", new String(Base64.encodeBase64(name.getBytes())));
         createFile = createFile.replace("${CONTENT}", mediaType ? new String(Base64.encodeBase64(name.getBytes())) : name);
         Request req = new PostRequest(parent.toString(), createFile, CMISConstants.MIMETYPE_ENTRY);
-        Response res = executeRequest(req, 201, cmisValidator.getCMISAtomValidator());
+        Response res = executeRequest(req, 201);
         Assert.assertNotNull(res);
         String xml = res.getContentAsString();
         Entry entry = appModel.parseEntry(new StringReader(xml), null);
@@ -323,7 +324,7 @@ public class CMISClient {
         createFile = createFile.replace("${RELTYPE}", type);
         createFile = createFile.replace("${TARGETID}", targetId);
         Request req = new PostRequest(parent.toString(), createFile, CMISConstants.MIMETYPE_ENTRY);
-        Response res = executeRequest(req, 201, cmisValidator.getCMISAtomValidator());
+        Response res = executeRequest(req, 201);
         Assert.assertNotNull(res);
         String xml = res.getContentAsString();
         Entry entry = appModel.parseEntry(new StringReader(xml), null);
@@ -336,10 +337,22 @@ public class CMISClient {
         return entry;
     }
 
-    public Response executeRequest(Request req, int expectedStatus) throws IOException {
-        return executeRequest(req, expectedStatus, null);
+    public Entry moveObject(IRI destFolder, Entry atomEntry, String sourceFolderId) throws Exception {
+        Response res = moveObjectRequest(destFolder, atomEntry, sourceFolderId, 201);
+        Assert.assertNotNull(res);
+        String xml = res.getContentAsString();
+        Entry entry = appModel.parseEntry(new StringReader(xml), null);
+        return entry;
     }
-
+    
+    public Response moveObjectRequest(IRI destFolder, Entry atomEntry, String sourceFolderId, int expectedStatus) throws Exception {
+        Map<String, String> args = new HashMap<String, String>();
+        args.put("sourceFolderId", sourceFolderId);
+        Request req = new PostRequest(destFolder.toString(), atomEntry.toString(), CMISConstants.MIMETYPE_ENTRY).setArgs(args);
+        Response res = executeRequest(req, expectedStatus);
+        return res;
+    }
+    
     /**
      * Execute Request
      *
@@ -349,7 +362,7 @@ public class CMISClient {
      * @return response
      * @throws IOException
      */
-    public Response executeRequest(Request req, int expectedStatus, Validator validator) throws IOException {
+    public Response executeRequest(Request req, int expectedStatus) throws IOException {
         if (traceConnection) {
             messageWriter.trace("Request: " + req.getMethod() + " " + req.getFullUri()
                     + (req.getBody() == null ? "" : "\n" + new String(req.getBody(), req.getEncoding())));
@@ -365,15 +378,34 @@ public class CMISClient {
         if (expectedStatus > -1)
             Assert.assertEquals("Request status for " + req.getFullUri(), expectedStatus, res.getStatus());
 
-        if (validator != null && validate) {
-            try {
-                String resXML = res.getContentAsString();
-                assertValid(resXML, validator);
-            } catch (ParserConfigurationException e) {
-                // @TODO: Maybe make a Chemistry specific exception
-                throw new RuntimeException("Failed to validate", e);
+        if (validate) {
+            Validator mimetypeValidator = null;
+            String contentType = res.getContentType();
+            if (contentType != null) {
+                try {
+                    // @TODO: register of mappings
+                    if (contentType.startsWith(CMISConstants.MIMETYPE_ATOM)) {
+                        mimetypeValidator = getAtomValidator();
+                    }
+                    else if (contentType.startsWith(CMISConstants.MIMETYPE_APP)) {
+                        mimetypeValidator = getAppValidator();
+                    }
+                } catch(SAXException e) {}
+                
+                if (mimetypeValidator != null) {
+                    try {
+                        messageWriter.trace("Validating Response of content type " + contentType);
+                        
+                        String resXML = res.getContentAsString();
+                        assertValid(resXML, mimetypeValidator);
+                    } catch (ParserConfigurationException e) {
+                        // @TODO: Maybe make a Chemistry specific exception
+                        throw new RuntimeException("Failed to validate", e);
+                    }
+                }
             }
         }
+        
         return res;
     }
 
