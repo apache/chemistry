@@ -131,7 +131,7 @@ public class CMISSchemaTest extends TestCase {
     }
 
     public void testTypeFolderWithOut() throws Exception {
-        String xml = examples.load("TypeFolderWithOut.xml");
+        String xml = examples.load("TypeFolderWithout.xml");
         assertValidXML(xml, cmisValidator.getCMISAtomValidator());
     }
 
@@ -157,7 +157,7 @@ public class CMISSchemaTest extends TestCase {
 
     /**
      * Assert XML is valid according to specified validator
-     * 
+     *
      * @param xml
      *            document to test
      * @param validator

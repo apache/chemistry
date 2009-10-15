@@ -367,7 +367,8 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     public boolean isMediaEntry(ObjectEntry object)
             throws ResponseContextException {
         SPI spi = repository.getSPI(); // TODO XXX connection leak
-        return spi.hasContentStream(object);
+        return getContentType(object) != null && getContentSize(object) != -1
+                && spi.hasContentStream(object);
     }
 
     @Override

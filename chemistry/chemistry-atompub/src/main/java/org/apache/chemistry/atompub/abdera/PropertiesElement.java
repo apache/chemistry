@@ -136,9 +136,20 @@ public class PropertiesElement extends ExtensibleElementWrapper {
     }
 
     public void setProperties(Map<String, Serializable> values, Type type) {
-        for (PropertyDefinition propertyDefinition : type.getPropertyDefinitions()) {
-            setProperty(values.get(propertyDefinition.getId()),
-                    propertyDefinition);
+        if (type != null) {
+            for (PropertyDefinition propertyDefinition : type.getPropertyDefinitions()) {
+                setProperty(values.get(propertyDefinition.getId()),
+                        propertyDefinition);
+            }
+        } else {
+            // this is a simple record set from a query result, guess the types
+            // TODO should get an ObjectEntry here, which should type its values
+            for (Entry<String, Serializable> entry : values.entrySet()) {
+                String key = entry.getKey();
+                Serializable value = entry.getValue();
+                PropertyType propertyType = guessType(key, value);
+                setProperty(key, value, propertyType);
+            }
         }
     }
 
@@ -148,8 +159,10 @@ public class PropertiesElement extends ExtensibleElementWrapper {
             // TODO assumes this isn't called several times
             return;
         }
-        QName qname = propertyQName(propertyDefinition);
-        List<String> values = getStringsForValue(value, propertyDefinition);
+        QName qname = propertyQName(propertyDefinition.getType());
+        List<String> values = getStringsForValue(value,
+                propertyDefinition.getType(),
+                propertyDefinition.isMultiValued());
         ExtensibleElement el = addExtension(qname);
         el.setAttributeValue(CMIS.PDID, propertyDefinition.getId());
         String localName = propertyDefinition.getLocalName();
@@ -167,6 +180,24 @@ public class PropertiesElement extends ExtensibleElementWrapper {
         }
     }
 
+    // sets a property without all the type information, used for result sets
+    public void setProperty(String key, Serializable value, PropertyType propertyType) {
+        if (value == null) {
+            // TODO assumes this isn't called several times
+            return;
+        }
+        QName qname = propertyQName(propertyType);
+        boolean multi = false;
+        List<String> values = getStringsForValue(value, propertyType, multi);
+        ExtensibleElement el = addExtension(qname);
+        el.setAttributeValue(CMIS.PDID, key);
+        for (String s : values) {
+            Element val = el.addExtension(CMIS.VALUE);
+            // don't merge these two lines as JDK 5 has problems compiling it
+            val.setText(s);
+        }
+    }
+
     /**
      * Finds the list of Strings that are the XML form for the value.
      *
@@ -177,8 +208,7 @@ public class PropertiesElement extends ExtensibleElementWrapper {
     // TODO move this to a helper somewhere else
     @SuppressWarnings( { "null", "unchecked" })
     public static List<String> getStringsForValue(Serializable value,
-            PropertyDefinition propertyDefinition) {
-        boolean multi = propertyDefinition.isMultiValued();
+            PropertyType propertyType, boolean multi) {
         List<String> values = null;
         if (multi) {
             if (value.getClass().isArray()) {
@@ -192,8 +222,7 @@ public class PropertiesElement extends ExtensibleElementWrapper {
                 return null;
             }
         }
-        PropertyType type = propertyDefinition.getType();
-        switch (type.ordinal()) {
+        switch (propertyType.ordinal()) {
         case PropertyType.STRING_ORD:
         case PropertyType.ID_ORD:
             if (multi) {
@@ -239,21 +268,21 @@ public class PropertiesElement extends ExtensibleElementWrapper {
             }
             break;
         case PropertyType.URI_ORD:
-            throw new UnsupportedOperationException(type.toString());
+            throw new UnsupportedOperationException(propertyType.toString());
         case PropertyType.XML_ORD:
-            throw new UnsupportedOperationException(type.toString());
+            throw new UnsupportedOperationException(propertyType.toString());
         case PropertyType.HTML_ORD:
-            throw new UnsupportedOperationException(type.toString());
+            throw new UnsupportedOperationException(propertyType.toString());
         case PropertyType.XHTML_ORD:
-            throw new UnsupportedOperationException(type.toString());
+            throw new UnsupportedOperationException(propertyType.toString());
         default:
-            throw new UnsupportedOperationException(type.toString());
+            throw new UnsupportedOperationException(propertyType.toString());
         }
         return values;
     }
 
-    protected static QName propertyQName(PropertyDefinition def) {
-        switch (def.getType().ordinal()) {
+    protected static QName propertyQName(PropertyType propertyType) {
+        switch (propertyType.ordinal()) {
         case PropertyType.STRING_ORD:
             return CMIS.PROPERTY_STRING;
         case PropertyType.DECIMAL_ORD:
@@ -275,8 +304,41 @@ public class PropertiesElement extends ExtensibleElementWrapper {
         case PropertyType.XHTML_ORD:
             return CMIS.PROPERTY_XHTML;
         default:
-            throw new UnsupportedOperationException(def.getType().toString());
+            throw new UnsupportedOperationException(propertyType.toString());
         }
+    }
+
+    // TODO XXX we shouldn't guess, values should be typed in ObjectEntry
+    protected static PropertyType guessType(String key, Serializable value) {
+        for (String n : Arrays.asList( //
+                Property.ID, //
+                Property.TYPE_ID, //
+                Property.BASE_TYPE_ID, //
+                Property.VERSION_SERIES_ID, //
+                Property.VERSION_SERIES_CHECKED_OUT_ID, //
+                Property.PARENT_ID, //
+                Property.SOURCE_ID, //
+                Property.TARGET_ID)) {
+            if (key.toUpperCase().endsWith(n.toUpperCase())) {
+                return PropertyType.ID;
+            }
+        }
+        if (value instanceof String) {
+            return PropertyType.STRING;
+        }
+        if (value instanceof BigDecimal) {
+            return PropertyType.DECIMAL;
+        }
+        if (value instanceof Number) {
+            return PropertyType.INTEGER;
+        }
+        if (value instanceof Boolean) {
+            return PropertyType.BOOLEAN;
+        }
+        if (value instanceof Calendar) {
+            return PropertyType.DATETIME;
+        }
+        return PropertyType.STRING;
     }
 
     @SuppressWarnings("boxing")

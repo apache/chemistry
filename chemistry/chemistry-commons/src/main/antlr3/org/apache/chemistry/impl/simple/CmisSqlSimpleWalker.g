@@ -271,7 +271,7 @@ order_by_clause:
     ;
 
 sort_specification:
-    column_name ( ASC | DESC )
+    column_reference ( ASC | DESC )
     ;
 
 correlation_name:

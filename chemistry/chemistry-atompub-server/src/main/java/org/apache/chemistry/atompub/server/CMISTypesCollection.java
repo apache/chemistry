@@ -228,7 +228,7 @@ public class CMISTypesCollection extends CMISCollection<Type> {
                 if (defaultValue != null) {
                     Element dv = factory.newElement(CMIS.DEFAULT_VALUE, def);
                     for (String s : PropertiesElement.getStringsForValue(
-                            defaultValue, pd)) {
+                            defaultValue, pd.getType(), pd.isMultiValued())) {
                         el = factory.newElement(CMIS.VALUE, dv);
                         el.setText(s);
                     }
