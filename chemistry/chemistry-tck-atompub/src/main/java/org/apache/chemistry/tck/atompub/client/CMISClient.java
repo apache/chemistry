@@ -422,7 +422,9 @@ public class CMISClient {
                 
                 if (mimetypeValidator != null) {
                     try {
-                        messageWriter.trace("Validating response of content type " + contentType);
+                        if (traceConnection) {
+                            messageWriter.trace("Validating response of content type " + contentType);
+                        }
                         
                         String resXML = res.getContentAsString();
                         assertValid(resXML, mimetypeValidator);
