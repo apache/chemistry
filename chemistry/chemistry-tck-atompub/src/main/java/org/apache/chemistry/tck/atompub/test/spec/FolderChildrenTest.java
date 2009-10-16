@@ -28,6 +28,9 @@ import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Link;
 import org.apache.chemistry.abdera.ext.CMISConstants;
 import org.apache.chemistry.abdera.ext.CMISObject;
+import org.apache.chemistry.abdera.ext.CMISPropertyDefinition;
+import org.apache.chemistry.abdera.ext.CMISTypeDefinition;
+import org.apache.chemistry.abdera.ext.CMISUriTemplate;
 import org.apache.chemistry.tck.atompub.TCKTest;
 import org.apache.chemistry.tck.atompub.fixture.AssertEntryInFeedVisitor;
 import org.apache.chemistry.tck.atompub.fixture.AssertValidFolderParentVisitor;
@@ -109,16 +112,36 @@ public class FolderChildrenTest extends TCKTest {
     public void testGetChildrenNamedPropertyFilter() throws Exception {
         EntryTree folder = fixture.createTestTree("children", 1, 1, null, null);
 
+        // retrieve query name for object id
+        CMISUriTemplate typeUriTemplate = client.getTypeByIdUriTemplate(client.getWorkspace());
+        Assert.assertNotNull(typeUriTemplate);
+        Map<String, Object> typeVariables = new HashMap<String, Object>();
+        typeVariables.put("id", CMISConstants.TYPE_DOCUMENT);
+        IRI docTypeUri = typeUriTemplate.generateUri(typeVariables);
+        Entry docTypeEntry = client.getEntry(docTypeUri);
+        Assert.assertNotNull(docTypeEntry);
+        CMISTypeDefinition docType = docTypeEntry.getExtension(CMISConstants.TYPE_DEFINITION);
+        Assert.assertNotNull(docType);
+        CMISPropertyDefinition objectIdpropDef = docType.getPropertyDefinition(CMISConstants.PROP_OBJECT_ID);
+        Assert.assertNotNull(objectIdpropDef);
+        String objectIdQueryName = objectIdpropDef.getQueryName();
+        Assert.assertNotNull(objectIdQueryName);
+        CMISPropertyDefinition objectTypePropDef = docType.getPropertyDefinition(CMISConstants.PROP_OBJECT_TYPE_ID);
+        Assert.assertNotNull(objectTypePropDef);
+        String objectTypeIdQueryName = objectTypePropDef.getQueryName();
+        Assert.assertNotNull(objectTypeIdQueryName);
+        
         // get children with object_id only
         Link childrenLink = client.getChildrenLink(folder.entry);
         Map<String, String> args = new HashMap<String, String>();
-        args.put("filter", CMISConstants.PROP_OBJECT_ID);
+        args.put("filter", objectIdQueryName + " " + objectTypeIdQueryName);
         Feed children = client.getFeed(childrenLink.getHref(), args);
 
         for (Entry entry : children.getEntries()) {
             CMISObject object = entry.getExtension(CMISConstants.OBJECT);
             Assert.assertNotNull(object.getObjectId().getStringValue());
-            Assert.assertNull(object.getObjectTypeId());
+            Assert.assertNotNull(object.getObjectTypeId());
+            Assert.assertNull(object.getBaseTypeId());
         }
     }
 

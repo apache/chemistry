@@ -37,39 +37,6 @@ import org.junit.Assert;
  */
 public class UpdateTest extends TCKTest {
     
-    public void testUpdatePatch() throws Exception {
-        // retrieve test folder for update
-        Entry document = fixture.createTestDocument("testUpdatePatch");
-        String mimetype = (document.getContentMimeType() != null) ? document.getContentMimeType().toString() : null;
-        if (mimetype != null) {
-            Assert.assertEquals("text/html", mimetype);
-        }
-
-        // TODO: check for content update allowable action
-        // if update allowed, perform update, else update and check for
-        // appropriate error
-
-        // update
-        String updateFile = templates.load("updatedocument.atomentry.xml");
-        // FIXME: Add a decent UID generation policy
-        // String guid = GUID.generate();
-        String guid = System.currentTimeMillis() + "";
-        updateFile = updateFile.replace("${NAME}", guid);
-        Request patchReq = new PatchRequest(document.getSelfLink().getHref().toString(), updateFile, CMISConstants.MIMETYPE_ENTRY);
-        Response res = client.executeRequest(patchReq, 200);
-        Assert.assertNotNull(res);
-        Entry updated = model.parseEntry(new StringReader(res.getContentAsString()), null);
-
-        // ensure update occurred
-        Assert.assertEquals(document.getId(), updated.getId());
-        Assert.assertEquals(document.getPublished(), updated.getPublished());
-        Assert.assertEquals("Updated Title " + guid, updated.getTitle());
-        // TODO: why is this testing for text/plain? it should be test/html
-        Assert.assertEquals("text/plain", updated.getContentMimeType().toString());
-        Response contentRes = client.executeRequest(new GetRequest(updated.getContentSrc().toString()), 200);
-        Assert.assertEquals("updated content " + guid, contentRes.getContentAsString());
-    }
-    
     public void testUpdatePutCMISContent() throws Exception {
         // retrieve test folder for update
         Entry document = fixture.createTestDocument("testUpdatePutCMISContent");

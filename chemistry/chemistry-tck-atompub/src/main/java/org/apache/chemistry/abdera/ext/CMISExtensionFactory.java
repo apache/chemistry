@@ -25,6 +25,14 @@ import org.apache.chemistry.abdera.ext.CMISProperty.CMISPropertyId;
 import org.apache.chemistry.abdera.ext.CMISProperty.CMISPropertyInteger;
 import org.apache.chemistry.abdera.ext.CMISProperty.CMISPropertyString;
 import org.apache.chemistry.abdera.ext.CMISProperty.CMISPropertyUri;
+import org.apache.chemistry.abdera.ext.CMISPropertyDefinition.CMISPropertyBooleanDefinition;
+import org.apache.chemistry.abdera.ext.CMISPropertyDefinition.CMISPropertyDateTimeDefinition;
+import org.apache.chemistry.abdera.ext.CMISPropertyDefinition.CMISPropertyDecimalDefinition;
+import org.apache.chemistry.abdera.ext.CMISPropertyDefinition.CMISPropertyHtmlDefinition;
+import org.apache.chemistry.abdera.ext.CMISPropertyDefinition.CMISPropertyIdDefinition;
+import org.apache.chemistry.abdera.ext.CMISPropertyDefinition.CMISPropertyIntegerDefinition;
+import org.apache.chemistry.abdera.ext.CMISPropertyDefinition.CMISPropertyStringDefinition;
+import org.apache.chemistry.abdera.ext.CMISPropertyDefinition.CMISPropertyUriDefinition;
 
 
 /**
@@ -36,6 +44,7 @@ public class CMISExtensionFactory extends AbstractExtensionFactory implements CM
         super(CMIS_NS, CMISRA_NS);
         addImpl(REPOSITORY_INFO, CMISRepositoryInfo.class);
         addImpl(CAPABILITIES, CMISCapabilities.class);
+        addImpl(URI_TEMPLATE, CMISUriTemplate.class);
         addImpl(OBJECT, CMISObject.class);
         addImpl(CONTENT, CMISContent.class);
         addImpl(NUM_ITEMS, CMISNumItems.class);
@@ -50,6 +59,15 @@ public class CMISExtensionFactory extends AbstractExtensionFactory implements CM
         addImpl(HTML_PROPERTY, CMISPropertyHtml.class);
         addImpl(PROPERTY_VALUE, CMISValue.class);
         addImpl(ALLOWABLE_ACTIONS, CMISAllowableActions.class);
+        addImpl(TYPE_DEFINITION, CMISTypeDefinition.class);
+        addImpl(STRING_PROPERTY_DEFINITION, CMISPropertyStringDefinition.class);
+        addImpl(DECIMAL_PROPERTY_DEFINITION, CMISPropertyDecimalDefinition.class);
+        addImpl(INTEGER_PROPERTY_DEFINITION, CMISPropertyIntegerDefinition.class);
+        addImpl(BOOLEAN_PROPERTY_DEFINITION, CMISPropertyBooleanDefinition.class);
+        addImpl(DATETIME_PROPERTY_DEFINITION, CMISPropertyDateTimeDefinition.class);
+        addImpl(URI_PROPERTY_DEFINITION, CMISPropertyUriDefinition.class);
+        addImpl(ID_PROPERTY_DEFINITION, CMISPropertyIdDefinition.class);
+        addImpl(HTML_PROPERTY_DEFINITION, CMISPropertyHtmlDefinition.class);
         addImpl(CAN_DELETE, CMISAllowableAction.class);
         addImpl(CAN_UPDATE_PROPERTIES, CMISAllowableAction.class);
         addImpl(CAN_GET_PROPERTIES, CMISAllowableAction.class);

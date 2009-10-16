@@ -17,6 +17,8 @@
  */
 package org.apache.chemistry.tck.atompub.http;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 /**
@@ -61,7 +63,10 @@ public class Request {
         if (args != null && args.size() > 0) {
             char prefix = (uri.indexOf('?') == -1) ? '?' : '&';
             for (Map.Entry<String, String> arg : args.entrySet()) {
-                fullUri += prefix + arg.getKey() + "=" + (arg.getValue() == null ? "" : arg.getValue());
+                // TODO: fix up url encoding
+                try {
+                    fullUri += prefix + arg.getKey() + "=" + (arg.getValue() == null ? "" : URLEncoder.encode(arg.getValue(), "UTF-8"));
+                } catch (UnsupportedEncodingException e) {}
                 prefix = '&';
             }
         }

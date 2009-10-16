@@ -60,6 +60,16 @@ public interface CMISConstants {
     public static final QName ROOT_FOLDER_ID = new QName(CMIS_NS, "rootFolderId");
     public static final QName VERSION_SUPPORTED = new QName(CMIS_NS, "cmisVersionSupported");
 
+    // CMIS URI Templates
+    public static final QName URI_TEMPLATE = new QName(CMISRA_NS, "uritemplate");
+    public static final QName URI_TEMPLATE_PATH = new QName(CMISRA_NS, "template");
+    public static final QName URI_TEMPLATE_TYPE = new QName(CMISRA_NS, "type");
+    public static final QName URI_TEMPLATE_MEDIATYPE = new QName(CMISRA_NS, "mediatype");
+    public static final String URI_OBJECT_BY_ID = "objectbyid";
+    public static final String URI_OBJECT_BY_PATH = "objectbypath";
+    public static final String URI_QUERY = "query";
+    public static final String URI_TYPE_BY_ID = "typebyid";
+    
     // CMIS Capabilities
     public static final QName CAPABILITIES = new QName(CMIS_NS, "capabilities");
     public static final QName CAPABILITY_GET_DESCENDANTS = new QName(CMIS_NS, "capabilityGetDescendants");
@@ -91,6 +101,48 @@ public interface CMISConstants {
     public static final QName CONTENT = new QName(CMISRA_NS, "content");
     public static final QName CONTENT_MEDIATYPE = new QName(CMISRA_NS, "mediatype");
     public static final QName CONTENT_BASE64 = new QName(CMISRA_NS, "base64");
+    
+    // CMIS Type Definition
+    public static final QName TYPE_DEFINITION = new QName(CMISRA_NS, "type");
+    public static final QName TYPE_ID = new QName(CMIS_NS, "id");
+    public static final QName TYPE_LOCAL_NAME = new QName(CMIS_NS, "localName");
+    public static final QName TYPE_LOCAL_NAMESPACE = new QName(CMIS_NS, "localNamespace");
+    public static final QName TYPE_DISPLAY_NAME = new QName(CMIS_NS, "displayName");
+    public static final QName TYPE_QUERY_NAME = new QName(CMIS_NS, "queryName");
+    public static final QName TYPE_DESCRIPTION = new QName(CMIS_NS, "description");
+    public static final QName TYPE_BASE_ID = new QName(CMIS_NS, "baseId");
+    public static final QName TYPE_CREATABLE = new QName(CMIS_NS, "creatable");
+    public static final QName TYPE_FILEABLE = new QName(CMIS_NS, "fileable");
+    public static final QName TYPE_QUERYABLE = new QName(CMIS_NS, "queryable");
+    public static final QName TYPE_FULL_TEXT_INDEXED = new QName(CMIS_NS, "fulltextIndexed");
+    public static final QName TYPE_INCLUDED_IN_SUPERTYPE_QUERY = new QName(CMIS_NS, "includedInSupertypeQuery");
+    public static final QName TYPE_CONTROLLABLE_POLICY = new QName(CMIS_NS, "controllablePolicy");
+    public static final QName TYPE_CONTROLLABLE_ACL = new QName(CMIS_NS, "controllableACL");
+    
+    // CMIS Property Definition
+    public static final QName STRING_PROPERTY_DEFINITION = new QName(CMIS_NS, "propertyStringDefinition");
+    public static final QName DECIMAL_PROPERTY_DEFINITION = new QName(CMIS_NS, "propertyDecimalDefinition");
+    public static final QName INTEGER_PROPERTY_DEFINITION = new QName(CMIS_NS, "propertyIntegerDefinition");
+    public static final QName BOOLEAN_PROPERTY_DEFINITION = new QName(CMIS_NS, "propertyBooleanDefinition");
+    public static final QName DATETIME_PROPERTY_DEFINITION = new QName(CMIS_NS, "propertyDateTimeDefinition");
+    public static final QName URI_PROPERTY_DEFINITION = new QName(CMIS_NS, "propertyUriDefinition");
+    public static final QName ID_PROPERTY_DEFINITION = new QName(CMIS_NS, "propertyIdDefinition");
+    public static final QName HTML_PROPERTY_DEFINITION = new QName(CMIS_NS, "propertyHtmlDefinition");
+    public static final QName PROPDEF_ID = new QName(CMIS_NS, "id");
+    public static final QName PROPDEF_LOCAL_NAME = new QName(CMIS_NS, "localName");
+    public static final QName PROPDEF_LOCAL_NAMESPACE = new QName(CMIS_NS, "localNamespace");
+    public static final QName PROPDEF_DISPLAY_NAME = new QName(CMIS_NS, "displayName");
+    public static final QName PROPDEF_QUERY_NAME = new QName(CMIS_NS, "queryName");
+    public static final QName PROPDEF_DESCRIPTION = new QName(CMIS_NS, "description");
+    public static final QName PROPDEF_PROPERTY_TYPE = new QName(CMIS_NS, "propertyType");
+    public static final QName PROPDEF_CARDINALITY = new QName(CMIS_NS, "cardinality");
+    public static final QName PROPDEF_UPDATABILITY = new QName(CMIS_NS, "updatability");
+    public static final QName PROPDEF_INHERITED = new QName(CMIS_NS, "inherited");
+    public static final QName PROPDEF_REQUIRED = new QName(CMIS_NS, "required");
+    public static final QName PROPDEF_QUERYABLE = new QName(CMIS_NS, "queryable");
+    public static final QName PROPDEF_ORDERABLE = new QName(CMIS_NS, "orderable");
+    public static final QName PROPDEF_OPEN_CHOICE = new QName(CMIS_NS, "openChoice");
+    // TODO: choice
     
     // CMIS Number of Items
     public static final QName NUM_ITEMS = new QName(CMISRA_NS, "numItems");
