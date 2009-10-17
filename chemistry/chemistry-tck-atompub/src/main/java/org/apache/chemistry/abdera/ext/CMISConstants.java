@@ -165,14 +165,14 @@ public interface CMISConstants {
     public static final String REL_VERSION_HISTORY = "version-history";
     public static final String REL_CURRENT_VERSION = "current-version";
     public static final String REL_WORKING_COPY = "working-copy";
-    public static final String REL_ROOT_DESCENDANTS = CMISLINK_NS + "/rootdescendants";
-    public static final String REL_TYPES_DESCENDANTS = CMISLINK_NS + "/typesdescendants";
-    public static final String REL_FOLDER_TREE = CMISLINK_NS + "/foldertree";
-    public static final String REL_ALLOWABLE_ACTIONS = CMISLINK_NS + "/allowableactions";
-    public static final String REL_POLICIES = CMISLINK_NS + "/policies";
-    public static final String REL_RELATIONSHIPS = CMISLINK_NS + "/relationships";
-    public static final String REL_ASSOC_SOURCE = CMISLINK_NS + "/source";
-    public static final String REL_ASSOC_TARGET = CMISLINK_NS + "/target";
+    public static final String REL_ROOT_DESCENDANTS = CMISLINK_NS + "rootdescendants";
+    public static final String REL_TYPES_DESCENDANTS = CMISLINK_NS + "typesdescendants";
+    public static final String REL_FOLDER_TREE = CMISLINK_NS + "foldertree";
+    public static final String REL_ALLOWABLE_ACTIONS = CMISLINK_NS + "allowableactions";
+    public static final String REL_POLICIES = CMISLINK_NS + "policies";
+    public static final String REL_RELATIONSHIPS = CMISLINK_NS + "relationships";
+    public static final String REL_ASSOC_SOURCE = CMISLINK_NS + "source";
+    public static final String REL_ASSOC_TARGET = CMISLINK_NS + "target";
 
     // CMIS Nested feed
     public static final QName CHILDREN = new QName(CMISRA_NS, "children");
