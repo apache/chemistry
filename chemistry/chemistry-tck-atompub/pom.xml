@@ -13,7 +13,7 @@
   <parent>
     <groupId>org.apache.chemistry</groupId>
     <artifactId>chemistry-parent</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.62-SNAPSHOT</version>
   </parent>
   <artifactId>chemistry-tck-atompub</artifactId>
   <name>Chemistry TCK AtomPub</name>

@@ -24,7 +24,7 @@
 
   <groupId>org.apache.chemistry</groupId>
   <artifactId>chemistry-parent</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.62-SNAPSHOT</version>
   <name>Chemistry Parent POM</name>
   <packaging>pom</packaging>
 
