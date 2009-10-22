@@ -265,6 +265,15 @@ public class CMISObject extends ExtensibleElementWrapper {
     }
 
     /**
+     * Path (Folder)
+     *  
+     * @return path
+     */
+    public CMISProperty getPath() {
+        return getProperties().find(CMISConstants.PROP_PATH);
+    }
+
+    /**
      * Source Id (Relationship)
      * 
      * @return source id property
@@ -281,4 +290,5 @@ public class CMISObject extends ExtensibleElementWrapper {
     public CMISProperty getTargetId() {
         return getProperties().find(CMISConstants.PROP_TARGET_ID);
     }
+    
 }

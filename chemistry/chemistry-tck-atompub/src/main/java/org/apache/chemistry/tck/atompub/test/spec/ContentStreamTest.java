@@ -80,7 +80,10 @@ public class ContentStreamTest extends TCKTest {
         Response res = client.executeRequest(new DeleteRequest(editMediaLink.getHref().toString()), 204);
         Assert.assertNotNull(res);
 
-        // retrieve deleted content
+        // retrieve document (ensure still exists)
+        client.getEntry(document.getSelfLink().getHref());
+        
+        // attempt to retrieve deleted content (ensure does not exist)
         client.executeRequest(new GetRequest(document.getContentSrc().toString()), 404);
     }
 

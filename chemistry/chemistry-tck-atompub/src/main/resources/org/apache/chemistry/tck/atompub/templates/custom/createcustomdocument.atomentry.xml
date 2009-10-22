@@ -6,7 +6,7 @@
   <cmisra:object>
     <cmis:properties>
       <cmis:propertyId propertyDefinitionId="cmis:objectTypeId">
-        <cmis:value>D/cmiscustom:document</cmis:value>
+        <cmis:value>D:cmiscustom:document</cmis:value>
       </cmis:propertyId>
       <cmis:propertyString propertyDefinitionId="cmiscustom:docprop_string">
         <cmis:value>custom string</cmis:value>

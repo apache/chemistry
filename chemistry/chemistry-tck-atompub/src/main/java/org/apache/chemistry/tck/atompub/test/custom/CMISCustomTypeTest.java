@@ -32,7 +32,6 @@ import org.apache.chemistry.abdera.ext.CMISProperties;
 import org.apache.chemistry.abdera.ext.CMISProperty;
 import org.apache.chemistry.tck.atompub.http.DeleteRequest;
 import org.apache.chemistry.tck.atompub.http.GetRequest;
-import org.apache.chemistry.tck.atompub.http.PatchRequest;
 import org.apache.chemistry.tck.atompub.http.PostRequest;
 import org.apache.chemistry.tck.atompub.http.PutRequest;
 import org.apache.chemistry.tck.atompub.http.Response;
@@ -54,14 +53,13 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         Feed children = client.getFeed(childrenLink.getHref());
         assertNotNull(children);
         int entriesBefore = children.getEntries().size();
-        Entry folder = client.createFolder(children.getSelfLink().getHref(), "testCreateCustomFolder",
-                "/org/apache/chemistry/tck/atompub/test/createcustomfolder.atomentry.xml");
+        Entry folder = client.createFolder(children.getSelfLink().getHref(), "testCreateCustomFolder", "custom/createcustomfolder.atomentry.xml");
         Feed feedFolderAfter = client.getFeed(childrenLink.getHref());
         int entriesAfter = feedFolderAfter.getEntries().size();
         assertEquals(entriesBefore + 1, entriesAfter);
         Entry entry = feedFolderAfter.getEntry(folder.getId().toString());
         CMISObject object = entry.getExtension(CMISConstants.OBJECT);
-        assertEquals("F/cmiscustom:folder", object.getObjectTypeId().getStringValue());
+        assertEquals("F:cmiscustom:folder", object.getObjectTypeId().getStringValue());
         CMISProperty customProp = object.getProperties().find("cmiscustom:folderprop_string");
         assertNotNull(customProp);
         assertEquals("custom string", customProp.getStringValue());
@@ -74,14 +72,13 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         Feed children = client.getFeed(childrenLink.getHref());
         assertNotNull(children);
         int entriesBefore = children.getEntries().size();
-        Entry document = client.createDocument(children.getSelfLink().getHref(), "testCreateCustomDocument",
-                "/org/apache/chemistry/tck/atompub/test/createcustomdocument.atomentry.xml");
+        Entry document = client.createDocument(children.getSelfLink().getHref(), "testCreateCustomDocument", "custom/createcustomdocument.atomentry.xml");
         Feed feedFolderAfter = client.getFeed(childrenLink.getHref());
         int entriesAfter = feedFolderAfter.getEntries().size();
         assertEquals(entriesBefore + 1, entriesAfter);
         Entry entry = feedFolderAfter.getEntry(document.getId().toString());
         CMISObject object = entry.getExtension(CMISConstants.OBJECT);
-        assertEquals("D/cmiscustom:document", object.getObjectTypeId().getStringValue());
+        assertEquals("D:cmiscustom:document", object.getObjectTypeId().getStringValue());
         CMISProperty customProp = object.getProperties().find("cmiscustom:docprop_string");
         assertNotNull(customProp);
         assertEquals("custom string", customProp.getStringValue());
@@ -94,53 +91,13 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         assertEquals(false, multiValues.get(1));
     }
 
-    public void testUpdatePatch() throws Exception {
-        // retrieve test folder for update
-        Entry testFolder = fixture.getTestCaseFolder();
-        Link childrenLink = client.getChildrenLink(testFolder);
-
-        // create document for update
-        Entry document = client.createDocument(childrenLink.getHref(), "testUpdatePatchCustomDocument",
-                "/org/apache/chemistry/tck/atompub/test/createcustomdocument.atomentry.xml");
-        assertNotNull(document);
-
-        // update
-        String updateFile = customTemplates.load("updatecustomdocument.atomentry.xml");
-        // FIXME: Add a decent UID generation policy
-        // String guid = GUID.generate();
-        String guid = System.currentTimeMillis() + "";
-        updateFile = updateFile.replace("${NAME}", guid);
-        Response res = client.executeRequest(new PatchRequest(document.getSelfLink().getHref().toString(), updateFile,
-                CMISConstants.MIMETYPE_ENTRY), 200);
-        assertNotNull(res);
-        Entry updated = model.parseEntry(new StringReader(res.getContentAsString()), null);
-
-        // ensure update occurred
-        assertEquals(document.getId(), updated.getId());
-        assertEquals(document.getPublished(), updated.getPublished());
-        assertEquals("Updated Title " + guid, updated.getTitle());
-        CMISObject object = updated.getExtension(CMISConstants.OBJECT);
-        assertEquals("D/cmiscustom:document", object.getObjectTypeId().getStringValue());
-        CMISProperty customProp = object.getProperties().find("cmiscustom:docprop_string");
-        assertNotNull(customProp);
-        assertEquals("custom " + guid, customProp.getStringValue());
-        CMISProperty multiProp = object.getProperties().find("cmiscustom:docprop_boolean_multi");
-        assertNotNull(multiProp);
-        List<Object> multiValues = multiProp.getNativeValues();
-        assertNotNull(multiValues);
-        assertEquals(2, multiValues.size());
-        assertEquals(false, multiValues.get(0));
-        assertEquals(true, multiValues.get(1));
-    }
-
     public void testUpdatePut() throws Exception {
         // retrieve test folder for update
         Entry testFolder = fixture.getTestCaseFolder();
         Link childrenLink = client.getChildrenLink(testFolder);
 
         // create document for update
-        Entry document = client.createDocument(childrenLink.getHref(), "testUpdatePutCustomDocument",
-                "/org/apache/chemistry/tck/atompub/test/createcustomdocument.atomentry.xml");
+        Entry document = client.createDocument(childrenLink.getHref(), "testUpdatePutCustomDocument", "custom/createcustomdocument.atomentry.xml");
         assertNotNull(document);
 
         // update
@@ -159,7 +116,7 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         assertEquals(document.getPublished(), updated.getPublished());
         assertEquals("Updated Title " + guid, updated.getTitle());
         CMISObject object = updated.getExtension(CMISConstants.OBJECT);
-        assertEquals("D/cmiscustom:document", object.getObjectTypeId().getStringValue());
+        assertEquals("D:cmiscustom:document", object.getObjectTypeId().getStringValue());
         CMISProperty customProp = object.getProperties().find("cmiscustom:docprop_string");
         assertNotNull(customProp);
         assertEquals("custom " + guid, customProp.getStringValue());
@@ -180,8 +137,7 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         int entriesBefore = children.getEntries().size();
 
         // create document for delete
-        Entry document = client.createDocument(childrenLink.getHref(), "testDeleteCustomDocument",
-                "/org/apache/chemistry/tck/atompub/test/createcustomdocument.atomentry.xml");
+        Entry document = client.createDocument(childrenLink.getHref(), "testDeleteCustomDocument", "custom/createcustomdocument.atomentry.xml");
         Response documentRes = client.executeRequest(new GetRequest(document.getSelfLink().getHref().toString()), 200);
         assertNotNull(documentRes);
 
@@ -219,27 +175,25 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         assertNotNull(document1Object);
         String doc2name = "name" + System.currentTimeMillis();
         // Custom documents
-        Entry document2 = client.createDocument(childrenLink.getHref(), doc2name,
-                "/org/apache/chemistry/tck/atompub/test/createcustomdocument.atomentry.xml");
+        Entry document2 = client.createDocument(childrenLink.getHref(), doc2name, "custom/createcustomdocument.atomentry.xml");
         assertNotNull(document2);
         CMISObject document2Object = document2.getExtension(CMISConstants.OBJECT);
         assertNotNull(document2Object);
-        Entry document3 = client.createDocument(childrenLink.getHref(), "banana1",
-                "/org/apache/chemistry/tck/atompub/test/createcustomdocument.atomentry.xml");
+        Entry document3 = client.createDocument(childrenLink.getHref(), "banana1", "custom/createcustomdocument.atomentry.xml");
         assertNotNull(document3);
         CMISObject document3Object = document3.getExtension(CMISConstants.OBJECT);
         assertNotNull(document3Object);
 
         // retrieve query request document
-        String queryDoc = customTemplates.load("query.cmisquery.xml");
+        String queryDoc = templates.load("query.cmisquery.xml");
 
         {
             // construct structured query
-            String query = "SELECT ObjectId, Name, ObjectTypeId, cmiscustom_docprop_string, cmiscustom_docprop_boolean_multi FROM cmiscustom_document "
+            String query = "SELECT cmis:objectId, cmis:name, cmis:objectTypeId, cmiscustom:docprop_string, cmiscustom:docprop_boolean_multi FROM cmiscustom:document "
                     + "WHERE IN_FOLDER('"
                     + testFolderObject.getObjectId().getStringValue()
                     + "') "
-                    + "AND cmiscustom_docprop_string = 'custom string' ";
+                    + "AND cmiscustom:docprop_string = 'custom string' ";
             String queryReq = queryDoc.replace("${STATEMENT}", query);
             queryReq = queryReq.replace("${SKIPCOUNT}", "0");
             queryReq = queryReq.replace("${PAGESIZE}", "5");
@@ -298,11 +252,9 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         assertNotNull(childrenLink);
         Feed children = client.getFeed(childrenLink.getHref());
         assertNotNull(children);
-        Entry source = client.createDocument(children.getSelfLink().getHref(), "testSource",
-                "/org/apache/chemistry/tck/atompub/test/createcustomdocument.atomentry.xml");
+        Entry source = client.createDocument(children.getSelfLink().getHref(), "testSource", "custom/createcustomdocument.atomentry.xml");
         assertNotNull(source);
-        Entry target = client.createDocument(children.getSelfLink().getHref(), "testTarget",
-                "/org/apache/chemistry/tck/atompub/test/createcustomdocument.atomentry.xml");
+        Entry target = client.createDocument(children.getSelfLink().getHref(), "testTarget", "custom/createcustomdocument.atomentry.xml");
         assertNotNull(target);
 
         // retrieve relationships feed on source
@@ -317,7 +269,7 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         assertNotNull(targetObject);
         String targetId = targetObject.getObjectId().getStringValue();
         assertNotNull(targetId);
-        Entry rel = client.createRelationship(relsLink.getHref(), "R/cmiscustom:assoc", targetId);
+        Entry rel = client.createRelationship(relsLink.getHref(), "R:cmiscustom:assoc", targetId);
         assertNotNull(rel);
 
         // check created relationship
@@ -327,7 +279,7 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         assertNotNull(sourceId);
         CMISObject relObject = rel.getExtension(CMISConstants.OBJECT);
         assertNotNull(relObject);
-        assertEquals("R/cmiscustom:assoc", relObject.getObjectTypeId().getStringValue());
+        assertEquals("R:cmiscustom:assoc", relObject.getObjectTypeId().getStringValue());
         assertEquals(sourceId, relObject.getSourceId().getStringValue());
         assertEquals(targetId, relObject.getTargetId().getStringValue());
         assertEquals(source.getSelfLink().getHref(), rel.getLink(CMISConstants.REL_ASSOC_SOURCE).getHref());
@@ -347,11 +299,9 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         assertNotNull(childrenLink);
         Feed children = client.getFeed(childrenLink.getHref());
         assertNotNull(children);
-        Entry source = client.createDocument(children.getSelfLink().getHref(), "testSource",
-                "/org/apache/chemistry/tck/atompub/test/createcustomdocument.atomentry.xml");
+        Entry source = client.createDocument(children.getSelfLink().getHref(), "testSource", "custom/createcustomdocument.atomentry.xml");
         assertNotNull(source);
-        Entry target = client.createDocument(children.getSelfLink().getHref(), "testTarget",
-                "/org/apache/chemistry/tck/atompub/test/createcustomdocument.atomentry.xml");
+        Entry target = client.createDocument(children.getSelfLink().getHref(), "testTarget", "custom/createcustomdocument.atomentry.xml");
         assertNotNull(target);
 
         // retrieve relationships feed on source
@@ -363,7 +313,7 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         assertNotNull(targetObject);
         String targetId = targetObject.getObjectId().getStringValue();
         assertNotNull(targetId);
-        Entry rel = client.createRelationship(relsLink.getHref(), "R/cmiscustom:assoc", targetId);
+        Entry rel = client.createRelationship(relsLink.getHref(), "R:cmiscustom:assoc", targetId);
         assertNotNull(rel);
 
         // get created relationship
@@ -384,11 +334,9 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         assertNotNull(childrenLink);
         Feed children = client.getFeed(childrenLink.getHref());
         assertNotNull(children);
-        Entry source = client.createDocument(children.getSelfLink().getHref(), "testSource",
-                "/org/apache/chemistry/tck/atompub/test/createcustomdocument.atomentry.xml");
+        Entry source = client.createDocument(children.getSelfLink().getHref(), "testSource", "custom/createcustomdocument.atomentry.xml");
         assertNotNull(source);
-        Entry target = client.createDocument(children.getSelfLink().getHref(), "testTarget",
-                "/org/apache/chemistry/tck/atompub/test/createcustomdocument.atomentry.xml");
+        Entry target = client.createDocument(children.getSelfLink().getHref(), "testTarget", "custom/createcustomdocument.atomentry.xml");
         assertNotNull(target);
 
         // retrieve relationships feed on source
@@ -403,7 +351,7 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         assertNotNull(targetObject);
         String targetId = targetObject.getObjectId().getStringValue();
         assertNotNull(targetId);
-        Entry rel = client.createRelationship(relsLink.getHref(), "R/cmiscustom:assoc", targetId);
+        Entry rel = client.createRelationship(relsLink.getHref(), "R:cmiscustom:assoc", targetId);
         assertNotNull(rel);
 
         // check relationships for created item

@@ -5,7 +5,7 @@
   <cmisra:object>
     <cmis:properties>
       <cmis:propertyId propertyDefinitionId="cmis:objectTypeId">
-        <cmis:value>F/cmiscustom:folder</cmis:value>
+        <cmis:value>F:cmiscustom:folder</cmis:value>
       </cmis:propertyId>
       <cmis:propertyString propertyDefinitionId="cmiscustom:folderprop_string">
         <cmis:value>custom string</cmis:value>

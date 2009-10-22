@@ -17,7 +17,14 @@
  */
 package org.apache.chemistry.tck.atompub.test.spec;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.Entry;
+import org.apache.chemistry.abdera.ext.CMISConstants;
+import org.apache.chemistry.abdera.ext.CMISObject;
+import org.apache.chemistry.abdera.ext.CMISUriTemplate;
 import org.apache.chemistry.tck.atompub.TCKTest;
 import org.apache.chemistry.tck.atompub.http.GetRequest;
 import org.junit.Assert;
@@ -54,4 +61,55 @@ public class GetTest extends TCKTest {
         client.executeRequest(new GetRequest(folder.getSelfLink().getHref().toString() + guid), 404);
     }
 
+    public void testObjectById() throws Exception
+    {
+        // construct document
+        Entry document = fixture.createTestDocument("testObjectById");
+        Assert.assertNotNull(document);
+        CMISObject documentObject = document.getExtension(CMISConstants.OBJECT);
+        Assert.assertNotNull(documentObject);
+        String objectId = documentObject.getObjectId().getStringValue();
+        Assert.assertNotNull(objectId);
+
+        // formulate get request via id
+        CMISUriTemplate objectByIdTemplate = client.getObjectByIdUriTemplate(client.getWorkspace());
+        Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put("id", objectId);
+        IRI objectByIdRequest = objectByIdTemplate.generateUri(variables);
+        
+        // get document
+        Entry documentById = client.getEntry(objectByIdRequest);
+        Assert.assertNotNull(documentById);
+        CMISObject documentByIdObject = document.getExtension(CMISConstants.OBJECT);
+        Assert.assertNotNull(documentByIdObject);
+        Assert.assertEquals(objectId, documentByIdObject.getObjectId().getStringValue());
+    }
+
+    public void testObjectByPath() throws Exception
+    {
+        // construct folder
+        Entry folder = fixture.createTestFolder("testObjectByPath");
+        Assert.assertNotNull(folder);
+        CMISObject folderObject = folder.getExtension(CMISConstants.OBJECT);
+        Assert.assertNotNull(folderObject);
+        String objectId = folderObject.getObjectId().getStringValue();
+        Assert.assertNotNull(objectId);
+        String path = folderObject.getPath().getStringValue();
+        Assert.assertNotNull(path);
+
+        // formulate get request via id
+        CMISUriTemplate objectByPathTemplate = client.getObjectByPathUriTemplate(client.getWorkspace());
+        Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put("path", path);
+        IRI objectByPathRequest = objectByPathTemplate.generateUri(variables);
+        
+        // get folder
+        Entry folderByPath = client.getEntry(objectByPathRequest);
+        Assert.assertNotNull(folderByPath);
+        CMISObject folderByPathObject = folder.getExtension(CMISConstants.OBJECT);
+        Assert.assertNotNull(folderByPathObject);
+        Assert.assertEquals(path, folderByPathObject.getPath().getStringValue());
+        Assert.assertEquals(objectId, folderByPathObject.getObjectId().getStringValue());
+    }
+    
 }
