@@ -61,6 +61,7 @@
         <configuration>
           <target>1.5</target>
           <source>1.5</source>
+          <encoding>UTF-8</encoding>          
         </configuration>
       </plugin>
       <!-- Enable maven-source-plugin -->
