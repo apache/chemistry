@@ -80,7 +80,7 @@ public class QueryPagingTest extends TCKTest {
         queryReq = queryReq.replace("${SKIPCOUNT}", "0");
         queryReq = queryReq.replace("${MAXITEMS}", "4");
         Response queryRes = client.executeRequest(new PostRequest(queryHREF.toString(), queryReq,
-                CMISConstants.MIMETYPE_CMIS_QUERY), 200);
+                CMISConstants.MIMETYPE_CMIS_QUERY), 201);
         Assert.assertNotNull(queryRes);
 
         // retrieve entries for first page

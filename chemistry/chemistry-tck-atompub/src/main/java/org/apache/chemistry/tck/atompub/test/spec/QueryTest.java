@@ -91,7 +91,7 @@ public class QueryTest extends TCKTest {
         queryReq = queryReq.replace("${MAXITEMS}", "5");
 
         Request postReq = new PostRequest(queryHREF.toString(), queryReq,  CMISConstants.MIMETYPE_CMIS_QUERY);
-        Response queryRes = client.executeRequest(postReq, 200);
+        Response queryRes = client.executeRequest(postReq, 201);
         Assert.assertNotNull(queryRes);
         Feed queryFeed = model.parseFeed(new StringReader(queryRes.getContentAsString()), null);
         Assert.assertNotNull(queryFeed);
@@ -124,7 +124,7 @@ public class QueryTest extends TCKTest {
         queryReq = queryReq.replace("${MAXITEMS}", "5");
 
         Request postReq = new PostRequest(queryHREF.toString(), queryReq, CMISConstants.MIMETYPE_CMIS_QUERY);
-        Response queryRes = client.executeRequest(postReq, 200);
+        Response queryRes = client.executeRequest(postReq, 201);
         Assert.assertNotNull(queryRes);
         Feed queryFeed = model.parseFeed(new StringReader(queryRes.getContentAsString()), null);
         Assert.assertNotNull(queryFeed);
@@ -157,7 +157,7 @@ public class QueryTest extends TCKTest {
         queryReq = queryReq.replace("${MAXITEMS}", "5");
 
         Request postReq = new PostRequest(queryHREF.toString(), queryReq, CMISConstants.MIMETYPE_CMIS_QUERY);
-        Response queryRes = client.executeRequest(postReq, 200);
+        Response queryRes = client.executeRequest(postReq, 201);
         Assert.assertNotNull(queryRes);
         Feed queryFeed = model.parseFeed(new StringReader(queryRes.getContentAsString()), null);
         Assert.assertNotNull(queryFeed);
@@ -191,7 +191,7 @@ public class QueryTest extends TCKTest {
         queryReq = queryReq.replace("${MAXITEMS}", "5");
 
         Request postReq = new PostRequest(queryHREF.toString(), queryReq, CMISConstants.MIMETYPE_CMIS_QUERY);
-        Response queryRes = client.executeRequest(postReq, 200);
+        Response queryRes = client.executeRequest(postReq, 201);
         Assert.assertNotNull(queryRes);
         Feed queryFeed = model.parseFeed(new StringReader(queryRes.getContentAsString()), null);
         Assert.assertNotNull(queryFeed);
@@ -225,7 +225,7 @@ public class QueryTest extends TCKTest {
 
         // issue structured query
         Request postReq = new PostRequest(queryHREF.toString(), queryReq, CMISConstants.MIMETYPE_CMIS_QUERY);
-        Response queryRes = client.executeRequest(postReq, 200);
+        Response queryRes = client.executeRequest(postReq, 201);
         Assert.assertNotNull(queryRes);
         Feed queryFeed = model.parseFeed(new StringReader(queryRes.getContentAsString()), null);
         Assert.assertNotNull(queryFeed);
