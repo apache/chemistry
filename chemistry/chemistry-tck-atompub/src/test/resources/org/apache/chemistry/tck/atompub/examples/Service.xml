@@ -39,7 +39,7 @@
             <cmis:productName>CMIS Prototype for VendorX</cmis:productName>
             <cmis:productVersion>0.62</cmis:productVersion>
             <cmis:rootFolderId>rootfolder</cmis:rootFolderId>
-            <cmis:latestChangeLogToken>token-Fri Sep 25 12:33:19 PDT 2009</cmis:latestChangeLogToken>
+            <cmis:latestChangeLogToken>token-Mon Oct 19 10:09:57 PDT 2009</cmis:latestChangeLogToken>
             <cmis:capabilities>
                 <cmis:capabilityACL>manage</cmis:capabilityACL>
                 <cmis:capabilityAllVersionsSearchable>true</cmis:capabilityAllVersionsSearchable>

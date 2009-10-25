@@ -6,13 +6,13 @@
         <atom:uri>http://www.ibm.com/</atom:uri>
         <atom:email>albertcbrown@us.ibm.com</atom:email>
     </atom:author>
-    <atom:updated>2009-09-25T12:33:19.531-07:00</atom:updated>
-    <atom:id>urn:uuid:c519c27c-c3e9-49a6-be2e-894e74336b2c</atom:id>
+    <atom:updated>2009-10-19T10:09:56.765-07:00</atom:updated>
+    <atom:id>urn:uuid:25a91820-3244-4f1e-b27d-30b7d14191f4</atom:id>
     <atom:link type="application/atom+xml;type=feed" rel="self" href="http://cmisexample.oasis-open.org/rep1/type1feed/3"/>
     <atom:link type="application/atomsvc+xml" rel="service" href="http://cmisexample.oasis-open.org/rep1//service"/>
     <atom:link type="application/atom+xml;type=entry" rel="via" href="http://cmisexample.oasis-open.org/rep1/type1feed"/>
     <atom:link type="application/cmistree+xml" rel="down" href="http://cmisexample.oasis-open.org/rep1/type1feed/tree"/>
-    <atom:link type="application/atom+xml;type=entry" rel="up" href="http://cmisexample.oasis-open.org/rep1/e70ea6fa-ef2c-485c-8863-3b40ee73a8de"/>
+    <atom:link type="application/atom+xml;type=entry" rel="up" href="http://cmisexample.oasis-open.org/rep1/f220dd26-0c84-497b-ac7f-2f20d629af65"/>
     <atom:link type="application/atom+xml;type=feed" rel="first" href="http://cmisexample.oasis-open.org/rep1/type1feed/first"/>
     <atom:link type="application/atom+xml;type=feed" rel="next" href="http://cmisexample.oasis-open.org/rep1/type1feed/4"/>
     <atom:link type="application/atom+xml;type=feed" rel="previous" href="http://cmisexample.oasis-open.org/rep1/type1feed/2"/>
@@ -35,11 +35,11 @@
         <atom:link type="application/atom+xml;type=entry" rel="up" href="http://cmisexample.oasis-open.org/rep1/type/document-invoice/parent"/>
         <atom:link type="application/atom+xml;type=feed" rel="down" href="http://cmisexample.oasis-open.org/rep1/type/document-invoice/children/flat"/>
         <atom:link type="application/cmistree+xml" rel="down" href="http://cmisexample.oasis-open.org/rep1/type/document-invoice/children/tree"/>
-        <atom:published>2009-09-25T12:33:19.531-07:00</atom:published>
+        <atom:published>2009-10-19T10:09:56.765-07:00</atom:published>
         <atom:summary type="html">HTML summary of Type Definition  document-invoice</atom:summary>
         <atom:title type="text">Type Definition - document-invoice</atom:title>
-        <atom:updated>2009-09-25T12:33:19.531-07:00</atom:updated>
-        <app:edited>2009-09-25T12:33:19.531-07:00</app:edited>
+        <atom:updated>2009-10-19T10:09:56.765-07:00</atom:updated>
+        <app:edited>2009-10-19T10:09:56.765-07:00</app:edited>
         <cmisra:type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="cmis:cmisTypeDocumentDefinitionType" cmisra:id="document-invoice">
             <cmis:id>dtdocument-invoice</cmis:id>
             <cmis:localName>myrepname-document-invoice</cmis:localName>
@@ -74,11 +74,11 @@
         <atom:link type="application/atom+xml;type=entry" rel="up" href="http://cmisexample.oasis-open.org/rep1/type/folder-invoice/parent"/>
         <atom:link type="application/atom+xml;type=feed" rel="down" href="http://cmisexample.oasis-open.org/rep1/type/folder-invoice/children/flat"/>
         <atom:link type="application/cmistree+xml" rel="down" href="http://cmisexample.oasis-open.org/rep1/type/folder-invoice/children/tree"/>
-        <atom:published>2009-09-25T12:33:19.531-07:00</atom:published>
+        <atom:published>2009-10-19T10:09:56.765-07:00</atom:published>
         <atom:summary type="html">HTML summary of Type Definition  folder-invoice</atom:summary>
         <atom:title type="text">Type Definition - folder-invoice</atom:title>
-        <atom:updated>2009-09-25T12:33:19.531-07:00</atom:updated>
-        <app:edited>2009-09-25T12:33:19.531-07:00</app:edited>
+        <atom:updated>2009-10-19T10:09:56.765-07:00</atom:updated>
+        <app:edited>2009-10-19T10:09:56.765-07:00</app:edited>
         <cmisra:type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="cmis:cmisTypeFolderDefinitionType" cmisra:id="folder-invoice">
             <cmis:id>dtfolder-invoice</cmis:id>
             <cmis:localName>myrepname-folder-invoice</cmis:localName>
@@ -111,11 +111,11 @@
         <atom:link type="application/atom+xml;type=entry" rel="up" href="http://cmisexample.oasis-open.org/rep1/type/customer-relationship/parent"/>
         <atom:link type="application/atom+xml;type=feed" rel="down" href="http://cmisexample.oasis-open.org/rep1/type/customer-relationship/children/flat"/>
         <atom:link type="application/cmistree+xml" rel="down" href="http://cmisexample.oasis-open.org/rep1/type/customer-relationship/children/tree"/>
-        <atom:published>2009-09-25T12:33:19.531-07:00</atom:published>
+        <atom:published>2009-10-19T10:09:56.765-07:00</atom:published>
         <atom:summary type="html">HTML summary of Type Definition  customer-relationship</atom:summary>
         <atom:title type="text">Type Definition - customer-relationship</atom:title>
-        <atom:updated>2009-09-25T12:33:19.531-07:00</atom:updated>
-        <app:edited>2009-09-25T12:33:19.531-07:00</app:edited>
+        <atom:updated>2009-10-19T10:09:56.765-07:00</atom:updated>
+        <app:edited>2009-10-19T10:09:56.765-07:00</app:edited>
         <cmisra:type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="cmis:cmisTypeRelationshipDefinitionType" cmisra:id="customer-relationship">
             <cmis:id>dtcustomer-relationship</cmis:id>
             <cmis:localName>myrepname-customer-relationship</cmis:localName>
@@ -151,11 +151,11 @@
         <atom:link type="application/atom+xml;type=entry" rel="up" href="http://cmisexample.oasis-open.org/rep1/type/security-policy/parent"/>
         <atom:link type="application/atom+xml;type=feed" rel="down" href="http://cmisexample.oasis-open.org/rep1/type/security-policy/children/flat"/>
         <atom:link type="application/cmistree+xml" rel="down" href="http://cmisexample.oasis-open.org/rep1/type/security-policy/children/tree"/>
-        <atom:published>2009-09-25T12:33:19.531-07:00</atom:published>
+        <atom:published>2009-10-19T10:09:56.765-07:00</atom:published>
         <atom:summary type="html">HTML summary of Type Definition  security-policy</atom:summary>
         <atom:title type="text">Type Definition - security-policy</atom:title>
-        <atom:updated>2009-09-25T12:33:19.531-07:00</atom:updated>
-        <app:edited>2009-09-25T12:33:19.531-07:00</app:edited>
+        <atom:updated>2009-10-19T10:09:56.765-07:00</atom:updated>
+        <app:edited>2009-10-19T10:09:56.765-07:00</app:edited>
         <cmisra:type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="cmis:cmisTypePolicyDefinitionType" cmisra:id="security-policy">
             <cmis:id>dtsecurity-policy</cmis:id>
             <cmis:localName>myrepname-security-policy</cmis:localName>
