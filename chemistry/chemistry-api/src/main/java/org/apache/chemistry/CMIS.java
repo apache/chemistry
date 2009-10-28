@@ -29,7 +29,7 @@ public class CMIS {
 
     public static final String CMIS_NS_BASE = "http://docs.oasis-open.org/ns/cmis/";
 
-    public static final String CMIS_NS = CMIS_NS_BASE + "core/200901";
+    public static final String CMIS_NS = CMIS_NS_BASE + "core/200908/";
 
     public static final String CMIS_PREFIX = "cmis";
 
@@ -41,8 +41,6 @@ public class CMIS {
 
     public static final QName REPOSITORY_NAME = CMISName("repositoryName");
 
-    public static final QName REPOSITORY_RELATIONSHIP = CMISName("repositoryRelationship");
-
     public static final QName REPOSITORY_DESCRIPTION = CMISName("repositoryDescription");
 
     public static final QName VENDOR_NAME = CMISName("vendorName");
@@ -53,7 +51,9 @@ public class CMIS {
 
     public static final QName ROOT_FOLDER_ID = CMISName("rootFolderId");
 
-    public static final QName LATEST_CHANGE_LOG_TOKEN = CMISName("latestChangeToken"); // TODO-0.63
+    public static final QName LATEST_CHANGE_LOG_TOKEN = CMISName("latestChangeLogToken");
+
+    public static final QName CHANGES_ON_TYPE = CMISName("changesOnType");
 
     public static final QName CAPABILITIES = CMISName("capabilities");
 
@@ -63,13 +63,15 @@ public class CMIS {
 
     public static final QName CAPABILITY_VERSION_SPECIFIC_FILING = CMISName("capabilityVersionSpecificFiling");
 
-    public static final QName CAPABILITY_PWC_UPDATEABLE = CMISName("capabilityPWCUpdateable");
+    public static final QName CAPABILITY_PWC_UPDATABLE = CMISName("capabilityPWCUpdatable");
 
     public static final QName CAPABILITY_PWC_SEARCHABLE = CMISName("capabilityPWCSearchable");
 
     public static final QName CAPABILITY_ALL_VERSIONS_SEARCHABLE = CMISName("capabilityAllVersionsSearchable");
 
     public static final QName CAPABILITY_CAN_GET_DESCENDANTS = CMISName("capabilityGetDescendants");
+
+    public static final QName CAPABILITY_CAN_GET_FOLDER_TREE = CMISName("capabilityGetFolderTree");
 
     public static final QName CAPABILITY_CONTENT_STREAM_UPDATABILITY = CMISName("capabilityContentStreamUpdatability");
 
@@ -80,8 +82,6 @@ public class CMIS {
     public static final QName CAPABILITY_RENDITIONS = CMISName("capabilityRenditions");
 
     public static final QName CAPABILITY_CHANGES = CMISName("capabilityChanges");
-
-    public static final QName CAPABILITY_CHANGES_ON_TYPE = CMISName("capabilityChangesOnType");
 
     public static final QName CAPABILITY_ACL = CMISName("capabilityACL");
 
@@ -105,7 +105,7 @@ public class CMIS {
 
     public static final QName REPOSITORY_SPECIFIC_INFORMATION = CMISName("repositorySpecificInformation");
 
-    public static final QName BASE_TYPE_ID = CMISName("baseTypeId");
+    public static final QName BASE_ID = CMISName("baseId");
 
     public static final QName ID = CMISName("id");
 
@@ -131,7 +131,7 @@ public class CMIS {
 
     public static final QName CONTROLLABLE_ACL = CMISName("controllableACL");
 
-    public static final QName FULLTEXT_INDEXED = CMISName("fulltextindexed");
+    public static final QName FULLTEXT_INDEXED = CMISName("fulltextIndexed");
 
     public static final QName VERSIONABLE = CMISName("versionable");
 
@@ -153,11 +153,7 @@ public class CMIS {
 
     public static final QName PROPERTY_ID_DEFINITION = CMISName("propertyIdDefinition");
 
-    public static final QName PROPERTY_XML_DEFINITION = CMISName("propertyXmlDefinition");
-
     public static final QName PROPERTY_HTML_DEFINITION = CMISName("propertyHtmlDefinition");
-
-    public static final QName PROPERTY_XHTML_DEFINITION = CMISName("propertyXhtmlDefinition");
 
     public static final QName PROPERTY_TYPE = CMISName("propertyType");
 
@@ -193,8 +189,6 @@ public class CMIS {
 
     public static final QName PROPERTY_HTML = CMISName("propertyHtml");
 
-    public static final QName PROPERTY_XHTML = CMISName("propertyXhtml");
-
     public static final QName VALUE = CMISName("value");
 
     public static final QName ALLOWABLE_ACTIONS = CMISName("allowableActions");
@@ -219,10 +213,10 @@ public class CMIS {
 
     // no namespace for attributes
 
-    public static final QName PDID = new QName("pdid");
+    public static final QName PDID = new QName("propertyDefinitionId");
 
-    public static final QName LOCALNAME = new QName("localname");
+    public static final QName LOCAL_NAME_NONS = new QName("localName");
 
-    public static final QName DISPLAYNAME = new QName("displayname");
+    public static final QName DISPLAY_NAME_NONS = new QName("displayName");
 
 }

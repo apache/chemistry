@@ -84,6 +84,9 @@ public class SimpleTypeManager implements TypeManager {
      */
     public Collection<Type> getTypes(String typeId, int depth,
             boolean returnPropertyDefinitions) {
+        if (depth == 0) {
+            throw new IllegalArgumentException("Depth 0 invalid");
+        }
         List<Type> list = new LinkedList<Type>();
         Set<String> done = new HashSet<String>();
         if (typeId == null) {

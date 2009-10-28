@@ -98,10 +98,6 @@ public class SimpleRepository extends BaseRepository {
      * ----- RepositoryEntry -----
      */
 
-    public String getRelationshipName() {
-        return null;
-    }
-
     public URI getThinClientURI() {
         return null;
     }
@@ -194,6 +190,10 @@ public class SimpleRepository extends BaseRepository {
 
     public boolean hasGetDescendants() {
         return true;
+    }
+
+    public boolean hasGetFolderTree() {
+        return false;
     }
 
     public boolean isContentStreamUpdatableAnytime() {

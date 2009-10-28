@@ -745,9 +745,9 @@ public class SimpleConnection implements Connection, SPI {
 
     public Iterator<ObjectEntry> getChangeLog(String changeLogToken,
             boolean includeProperties, int maxItems, boolean[] hasMoreItems,
-            String[] lastChangeLogToken) {
+            String[] latestChangeLogToken) {
         hasMoreItems[0] = false;
-        lastChangeLogToken[0] = null;
+        latestChangeLogToken[0] = null;
         return Collections.<ObjectEntry> emptyList().iterator();
     }
 

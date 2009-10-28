@@ -1,20 +1,20 @@
 <?xml version="1.0"?>
-<entry xmlns="http://www.w3.org/2005/Atom" xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200901">
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200908/">
   <cmis:object>
     <cmis:properties>
-      <cmis:propertyString pdid="string_null" />
-      <cmis:propertyString pdid="string">
+      <cmis:propertyString propertyDefinitionId="string_null" />
+      <cmis:propertyString propertyDefinitionId="string">
         <cmis:value>string1</cmis:value>
       </cmis:propertyString>
-      <cmis:propertyDateTime pdid="date">
+      <cmis:propertyDateTime propertyDefinitionId="date">
         <cmis:value>2009-03-17T17:55:08+01:00
         </cmis:value>
       </cmis:propertyDateTime>
-      <cmis:propertyString pdid="string_array">
+      <cmis:propertyString propertyDefinitionId="string_array">
         <cmis:value>string1</cmis:value>
         <cmis:value>string2</cmis:value>
       </cmis:propertyString>
-      <cmis:propertyDateTime pdid="date_array">
+      <cmis:propertyDateTime propertyDefinitionId="date_array">
         <cmis:value>2009-03-17T17:55:08+01:00
         </cmis:value>
         <cmis:value>2009-03-18T17:55:08+01:00

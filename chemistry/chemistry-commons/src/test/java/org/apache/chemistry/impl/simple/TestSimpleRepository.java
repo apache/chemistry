@@ -86,8 +86,8 @@ public class TestSimpleRepository extends TestCase {
         assertNotNull(info.getRootFolderId());
         assertEquals("Apache", info.getVendorName());
         assertEquals("Chemistry Simple Repository", info.getProductName());
-        assertEquals("0.1-SNAPSHOT", info.getProductVersion());
-        assertEquals("0.62", info.getVersionSupported());
+        assertEquals("1.0-SNAPSHOT", info.getProductVersion());
+        assertEquals("1.0", info.getVersionSupported());
         assertNull(info.getRepositorySpecificInformation());
 
         RepositoryCapabilities capabilities = info.getCapabilities();
@@ -111,8 +111,6 @@ public class TestSimpleRepository extends TestCase {
         assertNull(repo.getType("no-such-type"));
         assertEquals(3,
                 repo.getTypes(BaseType.DOCUMENT.getId(), -1, false).size());
-        assertEquals(0, // TODO spec unclear on depth 0
-                repo.getTypes(BaseType.DOCUMENT.getId(), 0, false).size());
         assertEquals(1,
                 repo.getTypes(BaseType.DOCUMENT.getId(), 1, false).size());
         assertEquals(2,
@@ -120,7 +118,6 @@ public class TestSimpleRepository extends TestCase {
         assertEquals(2,
                 repo.getTypes(BaseType.DOCUMENT.getId(), 3, false).size());
         assertEquals(2, repo.getTypes("doc", -1, false).size());
-        assertEquals(0, repo.getTypes("doc", 0, false).size());
         assertEquals(1, repo.getTypes("doc", 1, false).size());
         assertEquals(1, repo.getTypes("doc", 2, false).size());
         assertEquals(1, repo.getTypes("doc", 3, false).size());
@@ -253,13 +250,13 @@ public class TestSimpleRepository extends TestCase {
         res = conn.query("SELECT * FROM doc", false);
         assertEquals(1, res.size());
         res = conn.query(
-                "SELECT * FROM cmis:folder WHERE cmis:Name = ''",
+                "SELECT * FROM cmis:folder WHERE cmis:name = ''",
                 false);
         assertEquals(1, res.size());
-        res = conn.query("SELECT * FROM doc WHERE cmis:ObjectId = 'nosuchid'",
+        res = conn.query("SELECT * FROM doc WHERE cmis:objectId = 'nosuchid'",
                 false);
         assertEquals(0, res.size());
-        res = conn.query("SELECT * FROM doc WHERE cmis:ObjectId <> '123'",
+        res = conn.query("SELECT * FROM doc WHERE cmis:objectId <> '123'",
                 false);
         assertEquals(1, res.size());
     }

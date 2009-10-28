@@ -98,14 +98,13 @@ public class AtomPub {
     public static final String LINK_DOWN = "down";
 
     /*
-     * TODO-0.63 update to use properly
      * http://www.ietf.org/id/draft-brown-versioning-link-relations-01.txt
      */
 
-    public static final String LINK_VERSION_HISTORY = "allversions"; // TODO-0.63
+    public static final String LINK_VERSION_HISTORY = "version-history";
 
-    public static final String LINK_LATEST_VERSION = "latestversion"; // TODO-0.63
+    public static final String LINK_CURRENT_VERSION = "current-version";
 
-    public static final String LINK_WORKING_COPY = "pwc"; // TODO-0.63
+    public static final String LINK_WORKING_COPY = "working-copy";
 
 }

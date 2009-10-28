@@ -41,11 +41,7 @@ public class PropertyType {
 
     public static final int ID_ORD = 7;
 
-    public static final int XML_ORD = 8;
-
-    public static final int HTML_ORD = 9;
-
-    public static final int XHTML_ORD = 10;
+    public static final int HTML_ORD = 8;
 
     private static final Map<String, PropertyType> all = new HashMap<String, PropertyType>();
 
@@ -92,22 +88,10 @@ public class PropertyType {
             ID_ORD, String.class));
 
     /**
-     * An XML property, represented as a String.
-     */
-    public static final PropertyType XML = register(new PropertyType("xml",
-            XML_ORD, String.class));
-
-    /**
      * An HTML property, represented as a String.
      */
     public static final PropertyType HTML = register(new PropertyType("html",
             HTML_ORD, String.class));
-
-    /**
-     * An XHTML property, represented as a String.
-     */
-    public static final PropertyType XHTML = register(new PropertyType("xhtml",
-            XHTML_ORD, String.class));
 
     private final String name;
 

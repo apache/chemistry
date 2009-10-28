@@ -151,12 +151,15 @@ public class CMISProvider extends AbstractProvider {
             base += '/';
         }
         List<URITemplate> list = new ArrayList<URITemplate>(3);
-        list.add(new URITemplate(AtomPubCMIS.URITMPL_ENTRY_BY_ID, //
+        list.add(new URITemplate(AtomPubCMIS.URITMPL_OBJECT_BY_ID, //
                 AtomPub.MEDIA_TYPE_ATOM_ENTRY, //
                 base + "object/{id}"));
-        list.add(new URITemplate(AtomPubCMIS.URITMPL_FOLDER_BY_PATH, //
+        list.add(new URITemplate(AtomPubCMIS.URITMPL_OBJECT_BY_PATH, //
                 AtomPub.MEDIA_TYPE_ATOM_ENTRY, //
                 base + "path{path}"));
+        list.add(new URITemplate(AtomPubCMIS.URITMPL_TYPE_BY_ID, //
+                AtomPub.MEDIA_TYPE_ATOM_FEED, //
+                base + "type/{id}"));
         if (false) { // TODO
             list.add(new URITemplate(AtomPubCMIS.URITMPL_QUERY, //
                     AtomPub.MEDIA_TYPE_ATOM_FEED, //

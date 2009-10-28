@@ -167,11 +167,11 @@ public class PropertiesElement extends ExtensibleElementWrapper {
         el.setAttributeValue(CMIS.PDID, propertyDefinition.getId());
         String localName = propertyDefinition.getLocalName();
         if (localName != null) {
-            el.setAttributeValue(CMIS.LOCALNAME, localName);
+            el.setAttributeValue(CMIS.LOCAL_NAME_NONS, localName);
         }
         String displayName = propertyDefinition.getDisplayName();
         if (displayName != null) {
-            el.setAttributeValue(CMIS.DISPLAYNAME, displayName);
+            el.setAttributeValue(CMIS.DISPLAY_NAME_NONS, displayName);
         }
         for (String s : values) {
             Element val = el.addExtension(CMIS.VALUE);
@@ -181,7 +181,8 @@ public class PropertiesElement extends ExtensibleElementWrapper {
     }
 
     // sets a property without all the type information, used for result sets
-    public void setProperty(String key, Serializable value, PropertyType propertyType) {
+    public void setProperty(String key, Serializable value,
+            PropertyType propertyType) {
         if (value == null) {
             // TODO assumes this isn't called several times
             return;
@@ -206,7 +207,7 @@ public class PropertiesElement extends ExtensibleElementWrapper {
      * @return the list of serialized strings
      */
     // TODO move this to a helper somewhere else
-    @SuppressWarnings( { "null", "unchecked" })
+    @SuppressWarnings( { "unchecked" })
     public static List<String> getStringsForValue(Serializable value,
             PropertyType propertyType, boolean multi) {
         List<String> values = null;
@@ -269,11 +270,7 @@ public class PropertiesElement extends ExtensibleElementWrapper {
             break;
         case PropertyType.URI_ORD:
             throw new UnsupportedOperationException(propertyType.toString());
-        case PropertyType.XML_ORD:
-            throw new UnsupportedOperationException(propertyType.toString());
         case PropertyType.HTML_ORD:
-            throw new UnsupportedOperationException(propertyType.toString());
-        case PropertyType.XHTML_ORD:
             throw new UnsupportedOperationException(propertyType.toString());
         default:
             throw new UnsupportedOperationException(propertyType.toString());
@@ -297,12 +294,8 @@ public class PropertiesElement extends ExtensibleElementWrapper {
             return CMIS.PROPERTY_ID;
         case PropertyType.URI_ORD:
             return CMIS.PROPERTY_URI;
-        case PropertyType.XML_ORD:
-            return CMIS.PROPERTY_XML;
         case PropertyType.HTML_ORD:
             return CMIS.PROPERTY_HTML;
-        case PropertyType.XHTML_ORD:
-            return CMIS.PROPERTY_XHTML;
         default:
             throw new UnsupportedOperationException(propertyType.toString());
         }

@@ -18,16 +18,24 @@
 package org.apache.chemistry.test;
 
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.CapabilityACL;
+import org.apache.chemistry.CapabilityChange;
+import org.apache.chemistry.CapabilityJoin;
+import org.apache.chemistry.CapabilityQuery;
+import org.apache.chemistry.CapabilityRendition;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
@@ -36,6 +44,8 @@ import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.Repository;
+import org.apache.chemistry.RepositoryCapabilities;
+import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
@@ -100,6 +110,41 @@ public abstract class BasicTestCase extends TestCase {
             }
         }
         return null;
+    }
+
+    public void testRepository() {
+        assertNotNull(repository);
+        assertEquals("test", repository.getId());
+        assertEquals("test", repository.getName());
+        RepositoryInfo info = repository.getInfo();
+        assertEquals("Repository test", info.getDescription());
+        assertEquals("Apache", info.getVendorName());
+        assertEquals("Chemistry Simple Repository", info.getProductName());
+        assertEquals("1.0-SNAPSHOT", info.getProductVersion());
+        // assertEquals(new SimpleObjectId("XYZ"), info.getRootFolderId());
+        // assertEquals("", info.getLatestChangeLogToken());
+        assertEquals("1.0", info.getVersionSupported());
+        assertFalse(info.isChangeLogIncomplete());
+        Set<BaseType> clbt = info.getChangeLogBaseTypes();
+        Set<BaseType> clbtExpected = new HashSet<BaseType>(Arrays.asList(
+                BaseType.FOLDER, BaseType.DOCUMENT, BaseType.RELATIONSHIP,
+                BaseType.POLICY));
+        assertEquals(clbtExpected, clbt);
+        RepositoryCapabilities cap = info.getCapabilities();
+        assertEquals(CapabilityACL.NONE, cap.getACLCapability());
+        assertFalse(cap.isAllVersionsSearchable());
+        assertEquals(CapabilityChange.NONE, cap.getChangeCapability());
+        assertTrue(cap.isContentStreamUpdatableAnytime());
+        assertTrue(cap.hasGetDescendants());
+        assertFalse(cap.hasGetFolderTree());
+        assertFalse(cap.hasMultifiling());
+        assertFalse(cap.isPWCSearchable());
+        assertFalse(cap.isPWCUpdatable());
+        assertEquals(CapabilityQuery.BOTH_COMBINED, cap.getQueryCapability());
+        assertEquals(CapabilityRendition.NONE, cap.getRenditionCapability());
+        assertFalse(cap.hasUnfiling());
+        assertFalse(cap.hasVersionSpecificFiling());
+        assertEquals(CapabilityJoin.NONE, cap.getJoinCapability());
     }
 
     public void testBasic() {
@@ -230,7 +275,6 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals(1, parents.size());
     }
 
-    @SuppressWarnings("null")
     public void testGetStream() throws Exception {
         Folder f1 = (Folder) conn.getRootFolder().getChildren().get(0);
         Folder f2 = getFolderChild(f1);
@@ -309,7 +353,6 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals(blobBytes.length, cs.getLength());
     }
 
-    @SuppressWarnings("null")
     public void testNewFolder() {
         Folder root = conn.getRootFolder();
         assertNull(getDocumentChild(root));

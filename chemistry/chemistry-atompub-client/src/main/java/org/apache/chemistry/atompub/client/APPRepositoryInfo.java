@@ -73,10 +73,6 @@ public class APPRepositoryInfo implements RepositoryInfo {
         return getString(CMIS.REPOSITORY_NAME.getLocalPart());
     }
 
-    public String getRelationshipName() {
-        return getString(CMIS.REPOSITORY_RELATIONSHIP.getLocalPart());
-    }
-
     public URI getThinClientURI() {
         String uri = getString(CMIS.THIN_CLIENT_URI.getLocalPart());
         try {

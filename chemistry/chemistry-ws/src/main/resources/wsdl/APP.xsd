@@ -3,18 +3,18 @@
 		-*- rnc -*- RELAX NG Compact Syntax Grammar for the Atom Format
 		Specification Version 11
 	-->
+	<!--
+		$Revision: 34 $
+		$Date: 2009-08-07 15:20:47 -0700 (Fri, 07 Aug 2009) $
+		$Author: albertcbrown $
+		$HeadURL: http://tools.oasis-open.org/version-control/svn/cmis/trunk/SchemaProject/schema/APP.xsd $
+	-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	elementFormDefault="qualified" targetNamespace="http://www.w3.org/2007/app"
 	xmlns:atom="http://www.w3.org/2005/Atom" xmlns:app="http://www.w3.org/2007/app"
-	xmlns:cmisc="http://docs.oasis-open.org/ns/cmis/core/200901"
-	xmlns:cmisra="http://docs.oasis-open.org/ns/cmis/restatom/200901"
-	version="0.62d">
+	version="0.63">
 	<xs:import namespace="http://www.w3.org/2005/Atom"
 		schemaLocation="ATOM.xsd" />
-	<xs:import namespace="http://docs.oasis-open.org/ns/cmis/core/200901"
-		schemaLocation="CMIS-Core.xsd" />
-	<xs:import namespace="http://docs.oasis-open.org/ns/cmis/restatom/200901"
-		schemaLocation="CMIS-RestAtom.xsd" />
 
 	<xs:element name="service" type="app:appServiceType"></xs:element>
 	<xs:complexType name="appServiceType">

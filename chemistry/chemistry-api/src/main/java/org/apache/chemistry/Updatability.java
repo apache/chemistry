@@ -56,7 +56,14 @@ public enum Updatability {
      * either made on a Private Working Copy object or made using a "check in"
      * service
      */
-    WHEN_CHECKED_OUT("whencheckedout");
+    WHEN_CHECKED_OUT("whencheckedout"),
+
+    /**
+     * Property is updatable during create.
+     * <p>
+     * A "on create" property is only updateable during the create operation.
+     */
+    ON_CREATE("oncreate");
 
     private final String value;
 

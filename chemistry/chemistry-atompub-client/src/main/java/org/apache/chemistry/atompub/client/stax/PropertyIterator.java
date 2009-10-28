@@ -57,7 +57,7 @@ public class PropertyIterator extends ChildrenIterator<XmlProperty> {
             throw new XMLStreamException(
                     "Parse error. Invalid CMIS property at line: "
                             + reader.getLocation().getLineNumber()
-                            + ". No id specified");
+                            + ". No propertyDefinitionId specified");
         }
         ValueIterator vi = new ValueIterator(reader);
         if (!vi.hasNext()) {

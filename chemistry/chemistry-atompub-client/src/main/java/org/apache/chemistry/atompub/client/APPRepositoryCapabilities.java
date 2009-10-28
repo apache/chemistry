@@ -48,6 +48,8 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
 
     protected boolean hasGetDescendants;
 
+    protected boolean hasGetFolderTree;
+
     protected boolean isContentStreamUpdatableAnytime;
 
     protected boolean isPWCSearchable;
@@ -94,6 +96,10 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
         return hasGetDescendants;
     }
 
+    public boolean hasGetFolderTree() {
+        return hasGetFolderTree;
+    }
+
     public boolean isContentStreamUpdatableAnytime() {
         return isContentStreamUpdatableAnytime;
     }
@@ -112,6 +118,10 @@ public class APPRepositoryCapabilities implements RepositoryCapabilities {
 
     public void setHasGetDescendants(boolean hasGetDescendants) {
         this.hasGetDescendants = hasGetDescendants;
+    }
+
+    public void setHasGetFolderTree(boolean hasGetFolderTree) {
+        this.hasGetFolderTree = hasGetFolderTree;
     }
 
     public void setContentStreamUpdatableAnytime(

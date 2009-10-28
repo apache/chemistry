@@ -128,10 +128,6 @@ public class APPRepository implements Repository {
         return typeManager.getTypes(typeId, depth, returnPropertyDefinitions);
     }
 
-    public String getRelationshipName() {
-        return info.getRelationshipName();
-    }
-
     public String getCollectionHref(String type) {
         return collections.get(type);
     }

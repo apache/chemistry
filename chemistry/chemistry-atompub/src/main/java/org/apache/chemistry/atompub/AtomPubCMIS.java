@@ -34,7 +34,7 @@ public class AtomPubCMIS {
      */
 
     public static final String CMISRA_NS = CMIS.CMIS_NS_BASE
-            + "restatom/200901";
+            + "restatom/200908/";
 
     public static final String CMISRA_PREFIX = "cmisra";
 
@@ -55,6 +55,8 @@ public class AtomPubCMIS {
     public static final QName TEMPLATE = CMISRAName("template");
 
     public static final QName TYPE = CMISRAName("type");
+
+    public static final QName ID = CMISRAName("id");
 
     public static final QName MEDIA_TYPE = CMISRAName("mediatype");
 
@@ -85,7 +87,7 @@ public class AtomPubCMIS {
      */
 
     public static final String CMIS_LINK_NS_BASE = CMIS.CMIS_NS_BASE
-            + "link/200901/";
+            + "link/200908/";
 
     public static final String LINK_SOURCE = CMIS_LINK_NS_BASE + "source";
 
@@ -116,11 +118,13 @@ public class AtomPubCMIS {
      * ----- URI Template Types -----
      */
 
-    public static final String URITMPL_ENTRY_BY_ID = "entrybyid";
+    public static final String URITMPL_OBJECT_BY_ID = "objectbyid";
 
-    public static final String URITMPL_FOLDER_BY_PATH = "folderbypath"; // TODO-0.63
+    public static final String URITMPL_OBJECT_BY_PATH = "objectbypath";
 
     public static final String URITMPL_QUERY = "query";
+
+    public static final String URITMPL_TYPE_BY_ID = "typebyid";
 
     /*
      * ----- Media Types -----

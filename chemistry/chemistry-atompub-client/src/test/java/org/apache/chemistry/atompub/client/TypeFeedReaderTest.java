@@ -28,7 +28,7 @@ import org.apache.chemistry.atompub.client.stax.ReadContext;
 public class TypeFeedReaderTest extends TestCase {
 
     public void testReadTypesFeed() throws Exception {
-        InputStream is = getClass().getResourceAsStream("/feed-types.xml");
+        InputStream is = getClass().getResourceAsStream("/types-feed.xml");
         TypeManager typeManager = TypeFeedReader.INSTANCE.read(new ReadContext(
                 (Repository) null), is);
         assertEquals(5, typeManager.getTypes(null).size());

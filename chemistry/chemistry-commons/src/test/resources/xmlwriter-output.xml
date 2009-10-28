@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<service xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200901" version="1.0">
+<service xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200908/" version="1.0">
   <ws1 k="v">test</ws1>
   <ws2 key="val">
     <cmis:object/>

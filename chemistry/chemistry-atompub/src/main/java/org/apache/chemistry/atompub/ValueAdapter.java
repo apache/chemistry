@@ -242,33 +242,6 @@ public abstract class ValueAdapter {
         }
     }
 
-    protected static final class XmlValueAdapter extends ValueAdapter {
-        @Override
-        public Serializable readValue(String xml) {
-            return xml;
-        }
-
-        @Override
-        public String writeValue(Serializable val) {
-            return val.toString();
-        }
-
-        @Override
-        public Serializable[] createArray(int size) {
-            return new String[size];
-        }
-
-        @Override
-        public QName getPropertyQName() {
-            return CMIS.PROPERTY_XML;
-        }
-
-        @Override
-        public PropertyType getPropertyType() {
-            return PropertyType.XML;
-        }
-    }
-
     protected static final class HtmlValueAdapter extends ValueAdapter {
         @Override
         public Serializable readValue(String xml) {
@@ -296,33 +269,6 @@ public abstract class ValueAdapter {
         }
     }
 
-    protected static final class XhtmlValueAdapter extends ValueAdapter {
-        @Override
-        public Serializable readValue(String xml) {
-            return xml;
-        }
-
-        @Override
-        public String writeValue(Serializable val) {
-            return val.toString();
-        }
-
-        @Override
-        public Serializable[] createArray(int size) {
-            return new String[size];
-        }
-
-        @Override
-        public QName getPropertyQName() {
-            return CMIS.PROPERTY_XHTML;
-        }
-
-        @Override
-        public PropertyType getPropertyType() {
-            return PropertyType.XHTML;
-        }
-    }
-
     public static final ValueAdapter STRING = new StringValueAdapter();
 
     public static final ValueAdapter DECIMAL = new DecimalValueAdapter();
@@ -337,11 +283,7 @@ public abstract class ValueAdapter {
 
     public static final ValueAdapter ID = new IdValueAdapter();
 
-    public static final ValueAdapter XML = new XmlValueAdapter();
-
     public static final ValueAdapter HTML = new HtmlValueAdapter();
-
-    public static final ValueAdapter XHTML = new XhtmlValueAdapter();
 
     protected static final Map<PropertyType, ValueAdapter> byPropertyType = new HashMap<PropertyType, ValueAdapter>();
 
@@ -356,9 +298,7 @@ public abstract class ValueAdapter {
                 DATETIME, //
                 URI, //
                 ID, //
-                XML, //
-                HTML, //
-                XHTML //
+                HTML //
         )) {
             byPropertyType.put(va.getPropertyType(), va);
             byQName.put(va.getPropertyQName(), va);

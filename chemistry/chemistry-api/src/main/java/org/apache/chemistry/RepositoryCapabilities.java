@@ -58,9 +58,14 @@ public interface RepositoryCapabilities {
 
     /**
      * Ability to enumerate the descendants of a folder via
-     * {@link SPI#getDescendants} and {@link SPI#getFolderTree}.
+     * {@link SPI#getDescendants}.
      */
     boolean hasGetDescendants();
+
+    /**
+     * Ability to retrieve the folder tree via {@link SPI#getFolderTree}.
+     */
+    boolean hasGetFolderTree();
 
     /**
      * Ability to update the content stream anytime, or only on the PWC.

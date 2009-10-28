@@ -609,7 +609,7 @@ public interface SPI {
      * <p>
      * The return value hasMoreItems is filled if {@code maxItems > 0}.
      * <p>
-     * The return value lastChangeLogToken contains the change token of the last
+     * The return value latestChangeLogToken contains the change token of the last
      * change event returned by the iterator.
      *
      * @param changeLogToken the change log token, or {@code null}
@@ -624,7 +624,7 @@ public interface SPI {
      */
     Iterator<ObjectEntry> getChangeLog(String changeLogToken,
             boolean includeProperties, int maxItems, boolean[] hasMoreItems,
-            String[] lastChangeLogToken);
+            String[] latestChangeLogToken);
 
     /*
      * ----- Versioning Services -----

@@ -168,10 +168,6 @@ public class JcrRepository implements Repository, RepositoryInfo,
         return repository.getDescriptor(javax.jcr.Repository.REP_NAME_DESC);
     }
 
-    public String getRelationshipName() {
-        return null;
-    }
-
     public URI getThinClientURI() {
         return null;
     }
@@ -234,7 +230,7 @@ public class JcrRepository implements Repository, RepositoryInfo,
     }
 
     public String getVersionSupported() {
-        return "0.62";
+        return "1.0";
     }
 
     // -------------------------------------------------- RepositoryCapabilities
@@ -272,6 +268,10 @@ public class JcrRepository implements Repository, RepositoryInfo,
     }
 
     public boolean hasGetDescendants() {
+        return false;
+    }
+
+    public boolean hasGetFolderTree() {
         return false;
     }
 

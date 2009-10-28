@@ -27,6 +27,8 @@ import java.io.Writer;
 
 import javax.xml.namespace.QName;
 
+import org.apache.chemistry.CMIS;
+
 import junit.framework.TestCase;
 
 /**
@@ -34,11 +36,8 @@ import junit.framework.TestCase;
  */
 public class TestXMLWriter extends TestCase {
 
-    public static final String CMIS_NS = "http://docs.oasis-open.org/ns/cmis/core/200901";
-
-    public static final String CMIS_PREFIX = "cmis";
-
-    public static final QName OBJECT = new QName(CMIS_NS, "object", CMIS_PREFIX);
+    public static final QName OBJECT = new QName(CMIS.CMIS_NS, "object",
+            CMIS.CMIS_PREFIX);
 
     public static String toString(Reader r) throws IOException {
         char[] chars = new char[1000]; // big enough for this test
@@ -60,7 +59,7 @@ public class TestXMLWriter extends TestCase {
         x.start();
         {
             x.element("service");
-            x.xmlns("cmis", CMIS_NS).attr("version", "1.0");
+            x.xmlns("cmis", CMIS.CMIS_NS).attr("version", "1.0");
             x.start();
             {
                 x.element("ws1").attr("k", "v").content("test");

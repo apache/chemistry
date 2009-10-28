@@ -27,79 +27,79 @@ public interface Property {
      * ----- Object -----
      */
 
-    String ID = "cmis:ObjectId";
+    String ID = "cmis:objectId";
 
-    String TYPE_ID = "cmis:ObjectTypeId";
+    String TYPE_ID = "cmis:objectTypeId";
 
-    String BASE_TYPE_ID = "cmis:BaseTypeId";
+    String BASE_TYPE_ID = "cmis:baseTypeId";
 
-    String NAME = "cmis:Name";
+    String NAME = "cmis:name";
 
-    String CREATED_BY = "cmis:CreatedBy";
+    String CREATED_BY = "cmis:createdBy";
 
-    String CREATION_DATE = "cmis:CreationDate";
+    String CREATION_DATE = "cmis:creationDate";
 
-    String LAST_MODIFIED_BY = "cmis:LastModifiedBy";
+    String LAST_MODIFIED_BY = "cmis:lastModifiedBy";
 
-    String LAST_MODIFICATION_DATE = "cmis:LastModificationDate";
+    String LAST_MODIFICATION_DATE = "cmis:lastModificationDate";
 
-    String CHANGE_TOKEN = "cmis:ChangeToken";
+    String CHANGE_TOKEN = "cmis:changeToken";
 
     /*
      * ----- Document -----
      */
 
-    String IS_IMMUTABLE = "cmis:IsImmutable";
+    String IS_IMMUTABLE = "cmis:isImmutable";
 
-    String IS_LATEST_VERSION = "cmis:IsLatestVersion";
+    String IS_LATEST_VERSION = "cmis:isLatestVersion";
 
-    String IS_MAJOR_VERSION = "cmis:IsMajorVersion";
+    String IS_MAJOR_VERSION = "cmis:isMajorVersion";
 
-    String IS_LATEST_MAJOR_VERSION = "cmis:IsLatestMajorVersion";
+    String IS_LATEST_MAJOR_VERSION = "cmis:isLatestMajorVersion";
 
-    String VERSION_LABEL = "cmis:VersionLabel";
+    String VERSION_LABEL = "cmis:versionLabel";
 
-    String VERSION_SERIES_ID = "cmis:VersionSeriesId";
+    String VERSION_SERIES_ID = "cmis:versionSeriesId";
 
-    String IS_VERSION_SERIES_CHECKED_OUT = "cmis:IsVersionSeriesCheckedOut";
+    String IS_VERSION_SERIES_CHECKED_OUT = "cmis:isVersionSeriesCheckedOut";
 
-    String VERSION_SERIES_CHECKED_OUT_BY = "cmis:VersionSeriesCheckedOutBy";
+    String VERSION_SERIES_CHECKED_OUT_BY = "cmis:versionSeriesCheckedOutBy";
 
-    String VERSION_SERIES_CHECKED_OUT_ID = "cmis:VersionSeriesCheckedOutId";
+    String VERSION_SERIES_CHECKED_OUT_ID = "cmis:versionSeriesCheckedOutId";
 
-    String CHECK_IN_COMMENT = "cmis:CheckinComment"; // TODO-0.63
+    String CHECK_IN_COMMENT = "cmis:checkinComment";
 
-    String CONTENT_STREAM_LENGTH = "cmis:ContentStreamLength";
+    String CONTENT_STREAM_LENGTH = "cmis:contentStreamLength";
 
-    String CONTENT_STREAM_MIME_TYPE = "cmis:ContentStreamMimeType";
+    String CONTENT_STREAM_MIME_TYPE = "cmis:contentStreamMimeType";
 
-    String CONTENT_STREAM_FILE_NAME = "cmis:ContentStreamFileName";
+    String CONTENT_STREAM_FILE_NAME = "cmis:contentStreamFileName";
 
-    String CONTENT_STREAM_ID = "cmis:ContentStreamId";
+    String CONTENT_STREAM_ID = "cmis:contentStreamId";
 
     /*
      * ----- Folder -----
      */
 
-    String PARENT_ID = "cmis:ParentId";
+    String PARENT_ID = "cmis:parentId";
 
-    String PATH = "cmis:PathName"; // TODO-0.63
+    String PATH = "cmis:path";
 
-    String ALLOWED_CHILD_OBJECT_TYPE_IDS = "cmis:AllowedChildObjectTypeIds";
+    String ALLOWED_CHILD_OBJECT_TYPE_IDS = "cmis:allowedChildObjectTypeIds";
 
     /*
      * ----- Relationship -----
      */
 
-    String SOURCE_ID = "cmis:SourceId";
+    String SOURCE_ID = "cmis:sourceId";
 
-    String TARGET_ID = "cmis:TargetId";
+    String TARGET_ID = "cmis:targetId";
 
     /*
      * ----- Policy -----
      */
 
-    String POLICY_TEXT = "cmis:PolicyText";
+    String POLICY_TEXT = "cmis:policyText";
 
     /**
      * The property definition.

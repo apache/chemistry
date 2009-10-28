@@ -39,13 +39,15 @@ public class AllowableAction {
 
     public static final QName CAN_GET_PROPERTIES = CMISName("canGetProperties");
 
-    public static final QName CAN_GET_RELATIONSHIPS = CMISName("canGetRelationships");
+    public static final QName CAN_GET_OBJECT_RELATIONSHIPS = CMISName("canGetRelationships");
 
     public static final QName CAN_GET_OBJECT_PARENTS = CMISName("canGetObjectParents");
 
     public static final QName CAN_GET_FOLDER_PARENT = CMISName("canGetFolderParent");
 
     public static final QName CAN_GET_DESCENDANTS = CMISName("canGetDescendants");
+
+    public static final QName CAN_GET_FOLDER_TREE = CMISName("canGetFolderTree");
 
     public static final QName CAN_MOVE_OBJECT = CMISName("canMoveObject");
 
@@ -95,10 +97,11 @@ public class AllowableAction {
             CAN_DELETE_OBJECT, //
             CAN_UPDATE_PROPERTIES, //
             CAN_GET_PROPERTIES, //
-            CAN_GET_RELATIONSHIPS, //
+            CAN_GET_OBJECT_RELATIONSHIPS, //
             CAN_GET_OBJECT_PARENTS, //
             CAN_GET_FOLDER_PARENT, //
             CAN_GET_DESCENDANTS, //
+            CAN_GET_FOLDER_TREE, //
             CAN_MOVE_OBJECT, //
             CAN_DELETE_CONTENT_STREAM, //
             CAN_CHECK_OUT, //
@@ -177,11 +180,11 @@ public class AllowableAction {
 
     public static final String REMOVE_FROM_FOLDER_FOLDER = "canRemoveFromFolder.Folder";
 
-    public static final String CHECK_OUT_DOCUMENT = "canCheckout.Document"; // TODO-0.63
+    public static final String CHECK_OUT_DOCUMENT = "canCheckOut.Document";
 
-    public static final String CANCEL_CHECK_OUT_DOCUMENT = "canCancelCheckout.Document"; // TODO-0.63
+    public static final String CANCEL_CHECK_OUT_DOCUMENT = "canCancelCheckOut.Document";
 
-    public static final String CHECK_IN_DOCUMENT = "canCheckin.Document"; // TODO-0.63
+    public static final String CHECK_IN_DOCUMENT = "canCheckIn.Document";
 
     public static final String GET_ALL_VERSIONS_VERSIONSERIES = "canGetAllVersions.VersionSeries";
 

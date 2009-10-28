@@ -401,7 +401,11 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
 
     @Override
     public String getContentType(ObjectEntry object) {
-        return (String) object.getValue(Property.CONTENT_STREAM_MIME_TYPE);
+        try {
+            return (String) object.getValue(Property.CONTENT_STREAM_MIME_TYPE);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override

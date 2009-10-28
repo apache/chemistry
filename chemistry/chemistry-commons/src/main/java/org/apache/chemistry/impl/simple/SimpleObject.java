@@ -30,7 +30,6 @@ import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
-import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.impl.base.BaseObject;
 

@@ -81,7 +81,7 @@ public class APPType extends APPObjectEntry implements Type {
     @Override
     public BaseType getBaseType() {
         if (baseType == null) {
-            baseType = BaseType.get(map.get(CMIS.BASE_TYPE_ID.getLocalPart()));
+            baseType = BaseType.get(map.get(CMIS.BASE_ID.getLocalPart()));
         }
         return baseType;
     }

@@ -33,7 +33,7 @@ import org.apache.chemistry.xml.stax.StaxReader;
 public class TestPropertyIterator extends TestCase {
 
     public void testPropertyIterator() throws Exception {
-        URL url = this.getClass().getClassLoader().getResource("feedentry.xml");
+        URL url = this.getClass().getClassLoader().getResource("entry.xml");
         StaxReader sr = StaxReader.newReader(url.openStream());
         sr.getFirstTag(CMIS.PROPERTIES);
         PropertyIterator pi = new PropertyIterator(sr);

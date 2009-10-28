@@ -75,7 +75,14 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                     QName name = reader.getName();
                     if (name.equals(AtomPub.APP_COLLECTION)) {
                         String href = reader.getAttributeValue("href");
-                        String type = reader.getAttributeValue(AtomPubCMIS.COLLECTION_TYPE.getLocalPart());
+                        String type = "";
+                        ChildrenNavigator nav = reader.getChildren();
+                        while (nav.next()) {
+                            QName n = reader.getName();
+                            if (n.equals(AtomPubCMIS.COLLECTION_TYPE)) {
+                                type = reader.getElementText();
+                            }
+                        }
                         addCollection(repo, href, type);
                     } else if (name.equals(AtomPubCMIS.REPOSITORY_INFO)) {
                         RepositoryInfo info = readRepositoryInfo(context,
@@ -114,13 +121,15 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                         caps.setAllVersionsSearchable(Boolean.parseBoolean(reader.getElementText()));
                     } else if (localName.equals(CMIS.CAPABILITY_CAN_GET_DESCENDANTS.getLocalPart())) {
                         caps.setHasGetDescendants(Boolean.parseBoolean(reader.getElementText()));
+                    } else if (localName.equals(CMIS.CAPABILITY_CAN_GET_FOLDER_TREE.getLocalPart())) {
+                        caps.setHasGetFolderTree(Boolean.parseBoolean(reader.getElementText()));
                     } else if (localName.equals(CMIS.CAPABILITY_CONTENT_STREAM_UPDATABILITY.getLocalPart())) {
                         caps.setContentStreamUpdatableAnytime("anytime".equals(reader.getElementText()));
                     } else if (localName.equals(CMIS.CAPABILITY_MULTIFILING.getLocalPart())) {
                         caps.setHasMultifiling(Boolean.parseBoolean(reader.getElementText()));
                     } else if (localName.equals(CMIS.CAPABILITY_PWC_SEARCHABLE.getLocalPart())) {
                         caps.setPWCSearchable(Boolean.parseBoolean(reader.getElementText()));
-                    } else if (localName.equals(CMIS.CAPABILITY_PWC_UPDATEABLE.getLocalPart())) {
+                    } else if (localName.equals(CMIS.CAPABILITY_PWC_UPDATABLE.getLocalPart())) {
                         caps.setPWCUpdatable(Boolean.parseBoolean(reader.getElementText()));
                     } else if (localName.equals(CMIS.CAPABILITY_UNFILING.getLocalPart())) {
                         caps.setHasUnfiling(Boolean.parseBoolean(reader.getElementText()));
@@ -139,8 +148,6 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                     } else if (localName.equals(CMIS.CAPABILITY_CHANGES.getLocalPart())) {
                         caps.setChangeCapability(CapabilityChange.get(
                                 reader.getElementText(), CapabilityChange.NONE));
-                    } else if (localName.equals(CMIS.CAPABILITY_CHANGES_ON_TYPE.getLocalPart())) {
-                        changeLogBaseTypes.add(BaseType.get(reader.getElementText()));
                     } else if (localName.equals(CMIS.CAPABILITY_ACL.getLocalPart())) {
                         caps.setACLCapability(CapabilityACL.get(
                                 reader.getElementText(), CapabilityACL.NONE));
@@ -148,6 +155,8 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                 }
             } else if (localName.equals(CMIS.REPOSITORY_SPECIFIC_INFORMATION.getLocalPart())) {
                 readRepositorySpecificInformation(context, reader);
+            } else if (localName.equals(CMIS.CHANGES_ON_TYPE.getLocalPart())) {
+                changeLogBaseTypes.add(BaseType.get(reader.getElementText()));
             } else {
                 map.put(localName, reader.getElementText());
             }

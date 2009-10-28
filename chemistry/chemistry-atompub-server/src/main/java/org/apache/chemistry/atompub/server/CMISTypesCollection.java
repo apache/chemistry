@@ -113,6 +113,7 @@ public class CMISTypesCollection extends CMISCollection<Type> {
 
         // CMIS-specific
         Element te = factory.newElement(AtomPubCMIS.TYPE, entry);
+        te.setAttributeValue(AtomPubCMIS.ID, type.getId());
         Element el;
         // note: setText is called in a separate statement as JDK 5 has problems
         // compiling when it's on one line (compiler generics bug)
@@ -129,7 +130,7 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         el.setText(type.getQueryName());
         el = factory.newElement(CMIS.DISPLAY_NAME, te);
         el.setText(type.getDisplayName());
-        el = factory.newElement(CMIS.BASE_TYPE_ID, te);
+        el = factory.newElement(CMIS.BASE_ID, te);
         el.setText(type.getBaseType().getId());
         el = factory.newElement(CMIS.PARENT_ID, te);
         el.setText(type.getParentId());
@@ -179,14 +180,8 @@ public class CMISTypesCollection extends CMISCollection<Type> {
                 case PropertyType.ID_ORD:
                     qname = CMIS.PROPERTY_ID_DEFINITION;
                     break;
-                case PropertyType.XML_ORD:
-                    qname = CMIS.PROPERTY_XML_DEFINITION;
-                    break;
                 case PropertyType.HTML_ORD:
                     qname = CMIS.PROPERTY_HTML_DEFINITION;
-                    break;
-                case PropertyType.XHTML_ORD:
-                    qname = CMIS.PROPERTY_XHTML_DEFINITION;
                     break;
                 default:
                     throw new AssertionError(pd.getType().name());
@@ -251,9 +246,6 @@ public class CMISTypesCollection extends CMISCollection<Type> {
                 case PropertyType.URI_ORD:
                     break;
                 case PropertyType.ID_ORD:
-                    break;
-                case PropertyType.XML_ORD:
-                    // TODO schemaURI
                     break;
                 case PropertyType.HTML_ORD:
                     break;

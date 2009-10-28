@@ -43,7 +43,7 @@ import org.w3c.dom.Document;
  */
 public class CMISServiceResponse extends StreamWriterResponseContext {
 
-    public static final String ATOMPUB_VERSION_SUPPORTED = "0.62";
+    public static final String ATOMPUB_VERSION_SUPPORTED = "1.0";
 
     protected final CMISProvider provider;
 
@@ -59,8 +59,7 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
     protected void writeTo(StreamWriter sw) throws IOException {
         sw.startDocument();
         sw.startService();
-        ((StaxStreamWriter) sw).writeNamespace(CMIS.CMIS_PREFIX,
-                CMIS.CMIS_NS);
+        ((StaxStreamWriter) sw).writeNamespace(CMIS.CMIS_PREFIX, CMIS.CMIS_NS);
         ((StaxStreamWriter) sw).writeNamespace(AtomPubCMIS.CMISRA_PREFIX,
                 AtomPubCMIS.CMISRA_NS);
         for (WorkspaceInfo wi : provider.getWorkspaceManager(request).getWorkspaces(
@@ -72,10 +71,11 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
             // collections
             for (CollectionInfo ci : wi.getCollections(request)) {
                 sw.startCollection(ci.getHref(request));
-                sw.writeAttribute(AtomPubCMIS.COLLECTION_TYPE,
-                        ((CMISCollection<?>) ci).getType());
                 sw.writeTitle(ci.getTitle(request));
                 sw.writeAccepts(ci.getAccepts(request));
+                sw.startElement(AtomPubCMIS.COLLECTION_TYPE);
+                sw.writeElementText(((CMISCollection<?>) ci).getType());
+                sw.endElement();
                 // no AtomPub categories
                 sw.endCollection();
             }
@@ -132,32 +132,26 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
             sw.startElement(AtomPubCMIS.REPOSITORY_INFO);
             write(CMIS.REPOSITORY_ID, repository.getId());
             write(CMIS.REPOSITORY_NAME, repository.getName());
-            write(CMIS.REPOSITORY_RELATIONSHIP, "self");
             write(CMIS.REPOSITORY_DESCRIPTION, info.getDescription());
             write(CMIS.VENDOR_NAME, info.getVendorName());
             write(CMIS.PRODUCT_NAME, info.getProductName());
             write(CMIS.PRODUCT_VERSION, info.getProductVersion());
             write(CMIS.ROOT_FOLDER_ID, info.getRootFolderId().getId());
-            write(CMIS.LATEST_CHANGE_LOG_TOKEN,
-                    info.getLatestChangeLogToken());
+            write(CMIS.LATEST_CHANGE_LOG_TOKEN, info.getLatestChangeLogToken());
 
             sw.startElement(CMIS.CAPABILITIES);
             write(CMIS.CAPABILITY_ACL, cap.getACLCapability().toString());
             write(CMIS.CAPABILITY_ALL_VERSIONS_SEARCHABLE,
                     cap.isAllVersionsSearchable());
-            write(CMIS.CAPABILITY_CHANGES,
-                    cap.getJoinCapability().toString());
-            for (BaseType t : info.getChangeLogBaseTypes()) {
-                write(CMIS.CAPABILITY_CHANGES_ON_TYPE, t.toString());
-            }
+            write(CMIS.CAPABILITY_CHANGES, cap.getJoinCapability().toString());
             write(CMIS.CAPABILITY_CONTENT_STREAM_UPDATABILITY,
                     cap.isContentStreamUpdatableAnytime() ? "anytime"
                             : "pwconly");
-            write(CMIS.CAPABILITY_CAN_GET_DESCENDANTS,
-                    cap.hasGetDescendants());
+            write(CMIS.CAPABILITY_CAN_GET_DESCENDANTS, cap.hasGetDescendants());
+            write(CMIS.CAPABILITY_CAN_GET_FOLDER_TREE, cap.hasGetFolderTree());
             write(CMIS.CAPABILITY_MULTIFILING, cap.hasMultifiling());
             write(CMIS.CAPABILITY_PWC_SEARCHABLE, cap.isPWCSearchable());
-            write(CMIS.CAPABILITY_PWC_UPDATEABLE, cap.isPWCUpdatable());
+            write(CMIS.CAPABILITY_PWC_UPDATABLE, cap.isPWCUpdatable());
             write(CMIS.CAPABILITY_QUERY, cap.getQueryCapability().toString());
             write(CMIS.CAPABILITY_RENDITIONS,
                     cap.getRenditionCapability().toString());
@@ -170,6 +164,9 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
             write(CMIS.VERSION_SUPPORTED, ATOMPUB_VERSION_SUPPORTED);
             // write(CMISXML.THIN_CLIENT_URI, "TODO");
             write(CMIS.CHANGES_INCOMPLETE, info.isChangeLogIncomplete());
+            for (BaseType t : info.getChangeLogBaseTypes()) {
+                write(CMIS.CHANGES_ON_TYPE, t.toString());
+            }
             write(CMIS.REPOSITORY_SPECIFIC_INFORMATION,
                     info.getRepositorySpecificInformation());
             sw.endElement();

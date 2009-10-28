@@ -341,7 +341,7 @@ public class APPConnection implements Connection, SPI {
             return ((APPObjectEntry) objectId);
         }
         String href;
-        URITemplate uriTemplate = repository.getURITemplate(AtomPubCMIS.URITMPL_ENTRY_BY_ID);
+        URITemplate uriTemplate = repository.getURITemplate(AtomPubCMIS.URITMPL_OBJECT_BY_ID);
         if (uriTemplate != null) {
             // use entry-by-id URI template
             href = uriTemplate.template;
@@ -436,7 +436,7 @@ public class APPConnection implements Connection, SPI {
             throw new IllegalArgumentException("Path must not end with / : "
                     + path);
         }
-        URITemplate uriTemplate = repository.getURITemplate(AtomPubCMIS.URITMPL_FOLDER_BY_PATH);
+        URITemplate uriTemplate = repository.getURITemplate(AtomPubCMIS.URITMPL_OBJECT_BY_PATH);
         if (uriTemplate == null) {
             throw new UnsupportedOperationException("Cannot get object by path");
         }
@@ -556,9 +556,9 @@ public class APPConnection implements Connection, SPI {
 
     public Iterator<ObjectEntry> getChangeLog(String changeLogToken,
             boolean includeProperties, int maxItems, boolean[] hasMoreItems,
-            String[] lastChangeLogToken) {
+            String[] latestChangeLogToken) {
         hasMoreItems[0] = false;
-        lastChangeLogToken[0] = null;
+        latestChangeLogToken[0] = null;
         return Collections.<ObjectEntry> emptyList().iterator();
     }
 

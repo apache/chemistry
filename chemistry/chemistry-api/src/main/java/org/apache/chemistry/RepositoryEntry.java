@@ -36,16 +36,6 @@ public interface RepositoryEntry {
     String getName();
 
     /**
-     * The relationship name to another repository.
-     * <p>
-     * This returns a value only when this basic info was returned by
-     * {@link RepositoryInfo#getRelatedRepositories}.
-     *
-     * @return a relationship name, or {@code null}
-     */
-    String getRelationshipName();
-
-    /**
      * An optional repository-specific URI pointing to the repository's web
      * interface.
      *

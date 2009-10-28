@@ -101,7 +101,7 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
                     CMIS.LOCAL_NAME, //
                     CMIS.QUERY_NAME, //
                     CMIS.DISPLAY_NAME, //
-                    CMIS.BASE_TYPE_ID, //
+                    CMIS.BASE_ID, //
                     CMIS.PARENT_ID, //
                     CMIS.DESCRIPTION, //
                     CMIS.CREATABLE, //
