@@ -405,7 +405,10 @@ public class SimpleConnection implements Connection, SPI {
         // TODO contentStream, versioningState
         String typeId = (String) properties.get(Property.TYPE_ID);
         if (typeId == null) {
-            throw new IllegalArgumentException("Missing obejct type id");
+            // use a default type, useful for pure AtomPub POST
+            typeId = BaseType.DOCUMENT.getId();
+            properties.put(Property.TYPE_ID, typeId);
+            // throw new IllegalArgumentException("Missing obejct type id");
         }
         Type type = repository.getType(typeId);
         if (type == null || type.getBaseType() != BaseType.DOCUMENT) {

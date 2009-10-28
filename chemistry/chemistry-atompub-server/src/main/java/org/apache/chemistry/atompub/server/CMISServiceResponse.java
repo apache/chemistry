@@ -80,13 +80,14 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
                 sw.endCollection();
             }
             // CMIS links
-            sw.startElement(AtomPub.ATOM_LINK);
-            sw.writeAttribute("type", "application/cmistree+xml");
-            sw.writeAttribute("rel", AtomPubCMIS.LINK_TYPES_DESCENDANTS);
-            String tdurl = request.absoluteUrlFor(TargetType.TYPE_SERVICE, null);
-            tdurl = tdurl.replaceFirst("/repository$", "/typesdescendants"); // XXX
-            sw.writeAttribute("href", tdurl);
-            sw.endElement();
+            // sw.startElement(AtomPub.ATOM_LINK);
+            // sw.writeAttribute("type", "application/cmistree+xml");
+            // sw.writeAttribute("rel", AtomPubCMIS.LINK_TYPES_DESCENDANTS);
+            // String tdurl = request.absoluteUrlFor(TargetType.TYPE_SERVICE,
+            // null);
+            // tdurl = tdurl.replaceFirst("/repository$", "/typesdescendants");
+            // sw.writeAttribute("href", tdurl);
+            // sw.endElement();
             // URI templates
             for (URITemplate info : provider.getURITemplates(request)) {
                 sw.startElement(AtomPubCMIS.URI_TEMPLATE);

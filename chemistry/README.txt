@@ -18,4 +18,4 @@ Testing
 
 A small in-memory demo AtomPub server can then be launched with:
 
-  java -jar chemistry-tests/target/chemistry-tests-0.1-SNAPSHOT-jar-with-dependencies.jar
+  java -jar chemistry-tests/target/chemistry-tests-1.0-SNAPSHOT-jar-with-dependencies.jar

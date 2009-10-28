@@ -105,10 +105,6 @@ public class CMISProvider extends AbstractProvider {
                 TargetType.TYPE_COLLECTION, "objectid");
         targetResolver.setPattern("/types/([^/?]+)",
                 TargetType.TYPE_COLLECTION, "typeid");
-        targetResolver.setPattern("/typesdescendants(\\?.*)?",
-                TargetType.TYPE_COLLECTION);
-        targetResolver.setPattern("/typesdescendants/([^/?]*)(\\?.*)?",
-                TargetType.TYPE_COLLECTION, "typeid");
 
         // CMIS workspaces available
 
@@ -116,11 +112,7 @@ public class CMISProvider extends AbstractProvider {
         workspaceInfo.setTitle(repository.getInfo().getName());
 
         workspaceInfo.addCollection(new CMISChildrenCollection(
-                AtomPubCMIS.COL_ROOT_CHILDREN,
-                repository.getInfo().getRootFolderId().getId(), repository));
-
-        workspaceInfo.addCollection(new CMISCollectionForOther(
-                AtomPubCMIS.COL_ROOT_DESCENDANTS, "descendants",
+                AtomPubCMIS.COL_ROOT,
                 repository.getInfo().getRootFolderId().getId(), repository));
 
         workspaceInfo.addCollection(new CMISCollectionForOther(
@@ -130,10 +122,7 @@ public class CMISProvider extends AbstractProvider {
                 AtomPubCMIS.COL_CHECKED_OUT, "checkedout", null, repository));
 
         workspaceInfo.addCollection(new CMISTypesCollection(
-                AtomPubCMIS.COL_TYPES_CHILDREN, null, repository));
-
-        workspaceInfo.addCollection(new CMISTypesCollection(
-                AtomPubCMIS.COL_TYPES_DESCENDANTS, null, repository));
+                AtomPubCMIS.COL_TYPES, null, repository));
 
         workspaceInfo.addCollection(new CMISQueryFeed(repository));
 
@@ -156,7 +145,7 @@ public class CMISProvider extends AbstractProvider {
                 base + "object/{id}"));
         list.add(new URITemplate(AtomPubCMIS.URITMPL_OBJECT_BY_PATH, //
                 AtomPub.MEDIA_TYPE_ATOM_ENTRY, //
-                base + "path{path}"));
+                base + "path/{path}"));
         list.add(new URITemplate(AtomPubCMIS.URITMPL_TYPE_BY_ID, //
                 AtomPub.MEDIA_TYPE_ATOM_FEED, //
                 base + "type/{id}"));

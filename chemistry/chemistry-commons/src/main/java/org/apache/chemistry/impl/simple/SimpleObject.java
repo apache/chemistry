@@ -131,7 +131,7 @@ public class SimpleObject extends BaseObject {
         if (pd == null) {
             throw new IllegalArgumentException(id);
         }
-        Serializable value = entry.data.get(id);
+        Serializable value = entry.getValue(id);
         if (value == null) {
             value = pd.getDefaultValue();
         }

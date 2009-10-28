@@ -64,23 +64,23 @@ public class AtomPubCMIS {
 
     public static final QName CHILDREN = CMISRAName("children");
 
+    public static final QName CONTENT = CMISRAName("content");
+
+    public static final QName BASE64 = CMISRAName("base64");
+
     /*
      * ----- AtomPub Collection Types -----
      */
 
-    public static final String COL_ROOT_CHILDREN = "root";
+    public static final String COL_ROOT = "root";
 
-    public static final String COL_ROOT_DESCENDANTS = "rootdescendants"; // TODO
-
-    public static final String COL_UNFILED = "unfiled";
+    public static final String COL_TYPES = "types";
 
     public static final String COL_CHECKED_OUT = "checkedout";
 
-    public static final String COL_TYPES_CHILDREN = "types";
-
-    public static final String COL_TYPES_DESCENDANTS = "typesdescendants"; // TODO
-
     public static final String COL_QUERY = "query";
+
+    public static final String COL_UNFILED = "unfiled";
 
     /*
      * ----- AtomPub Link Types -----
@@ -107,9 +107,6 @@ public class AtomPubCMIS {
 
     public static final String LINK_FOLDER_TREE = CMIS_LINK_NS_BASE
             + "foldertree";
-
-    public static final String LINK_TYPES_DESCENDANTS = CMIS_LINK_NS_BASE
-            + "typesdescendants";
 
     public static final String LINK_ROOT_DESCENDANTS = CMIS_LINK_NS_BASE
             + "rootdescendants";

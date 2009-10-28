@@ -69,11 +69,53 @@ public class SimpleObjectEntry implements ObjectEntry {
     }
 
     public Map<String, Serializable> getValues() {
-        return new HashMap<String, Serializable>(data);
+        HashMap<String, Serializable> map = new HashMap<String, Serializable>(
+                data);
+        if (map.containsKey(Property.PATH)) {
+            map.put(Property.PATH, getValue(Property.PATH));
+        }
+        return map;
     }
 
     public Serializable getValue(String id) {
+        if (id.equals(Property.PATH)) {
+            // non-local value
+            return getPath();
+        }
         return data.get(id);
+    }
+
+    // TODO add a getPath method to the SPI
+    protected String getPath() {
+        ObjectEntry parent;
+        if (getBaseType() == BaseType.FOLDER) {
+            parent = connection.getSPI().getFolderParent(this, null);
+        } else {
+            Collection<ObjectEntry> parents = connection.getSPI().getObjectParents(
+                    this, null);
+            if (parents.size() == 0) {
+                parent = null;
+            } else if (parents.size() > 1) {
+                // several parents -> no path TODO error?
+                return null;
+            } else {
+                parent = parents.iterator().next();
+            }
+        }
+        String parentPath;
+        if (parent == null) {
+            parentPath = "";
+        } else {
+            parentPath = (String) parent.getValue(Property.PATH);
+            if (parentPath == null) {
+                return null;
+            }
+            if (parentPath.equals("/")) {
+                parentPath = "";
+            }
+        }
+        String name = (String) getValue(Property.NAME);
+        return parentPath + "/" + name;
     }
 
     public void setValue(String id, Serializable value) {

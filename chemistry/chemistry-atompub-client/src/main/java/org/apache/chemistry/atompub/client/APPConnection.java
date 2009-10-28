@@ -351,7 +351,7 @@ public class APPConnection implements Connection, SPI {
             // TODO do a search (maybe 4 searches as base type unknown)
 
             // XXX hardcoded Chemistry URL pattern
-            href = repository.getCollectionHref(AtomPubCMIS.COL_ROOT_CHILDREN);
+            href = repository.getCollectionHref(AtomPubCMIS.COL_ROOT);
             if (href.matches(".*/children/[0-9a-f-]{36}")) {
                 href = href.substring(0, href.length() - "/children/".length()
                         - 36);

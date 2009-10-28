@@ -147,7 +147,7 @@ public class APPRepository implements Repository {
             return;
         }
         try {
-            String href = getCollectionHref(AtomPubCMIS.COL_TYPES_CHILDREN);
+            String href = getCollectionHref(AtomPubCMIS.COL_TYPES);
             if (href == null) {
                 throw new IllegalArgumentException(
                         "Invalid CMIS repository. No types children collection defined");

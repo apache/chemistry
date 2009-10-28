@@ -321,8 +321,8 @@ public abstract class BasicTestCase extends TestCase {
         // content stream
         String blobText = "Another file...\n";
         byte[] blobBytes = blobText.getBytes("UTF-8");
-        ContentStream cs = new SimpleContentStream(blobBytes, "text/plain",
-                "mydoc.txt");
+        ContentStream cs = new SimpleContentStream(blobBytes,
+                "text/plain;charset=UTF-8", "mydoc.txt");
         doc.setContentStream(cs);
         assertNull(doc.getId()); // not yet saved
         doc.save();
@@ -344,7 +344,7 @@ public abstract class BasicTestCase extends TestCase {
         assertNotNull(cs);
         assertTrue(cs.getLength() != 0);
         assertEquals("mydoc.txt", cs.getFileName());
-        assertEquals("text/plain", cs.getMimeType());
+        assertEquals("text/plain;charset=UTF-8", cs.getMimeType());
         assertNotNull(cs.getStream());
         InputStream in = doc.getContentStream().getStream();
         assertNotNull(in);

@@ -46,19 +46,15 @@ public class CMISWorkspaceManager extends AbstractWorkspaceManager {
         if (paths.startsWith("/types/")) {
             return new CMISTypesCollection(null, null, repository);
         }
-        if (paths.startsWith("/typesdescendants/")) {
-            String id = request.getTarget().getParameter("typeid");
-            if ("".equals(id)) {
-                id = null;
-            }
-            return new CMISTypesCollection(AtomPubCMIS.COL_TYPES_DESCENDANTS,
-                    id, repository);
-        }
         if (paths.startsWith("/type/")) {
-            return new CMISTypesCollection(AtomPubCMIS.COL_TYPES_CHILDREN,
+            return new CMISTypesCollection(AtomPubCMIS.COL_TYPES,
                     null, repository);
         }
         if (paths.startsWith("/children/")) {
+            String id = request.getTarget().getParameter("objectid");
+            return new CMISChildrenCollection(null, id, repository);
+        }
+        if (paths.startsWith("/descendants/")) {
             String id = request.getTarget().getParameter("objectid");
             return new CMISChildrenCollection(null, id, repository);
         }

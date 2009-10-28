@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +62,7 @@ import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.abdera.ObjectElement;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.util.GregorianCalendar;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * CMIS Collection for object entries.
@@ -173,7 +175,8 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             // TODO don't add links if no children/decendants
             entry.addLink(getChildrenLink(oid, request), AtomPub.LINK_DOWN,
                     AtomPub.MEDIA_TYPE_ATOM_FEED, null, null, -1);
-            // TODO children descendants and folder tree
+            entry.addLink(getDescendantsLink(oid, request), AtomPub.LINK_DOWN,
+                    AtomPubCMIS.MEDIA_TYPE_CMIS_TREE, null, null, -1);
         } else if (baseType == BaseType.DOCUMENT) {
             // TODO don't add link if no parents
             entry.addLink(getParentsLink(oid, request), AtomPub.LINK_UP,
@@ -207,54 +210,84 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         if (entry == null /* || !ProviderHelper.isValidEntry(entry) TODO XXX TCK */) {
             return new EmptyResponseContext(400);
         }
+
         InputStream stream;
         String mimeType;
-        try {
-            org.apache.abdera.model.Content.Type ct = entry.getContentType();
-            switch (ct) {
-            case TEXT:
-                mimeType = "text/plain";
-                break;
-            case HTML:
-                mimeType = "text/html";
-                break;
-            case XHTML:
-                mimeType = "application/xhtml+xml";
-                break;
-            case XML:
-                mimeType = "application/xml";
-                break;
-            case MEDIA:
-                mimeType = entry.getContentMimeType().toString();
-                break;
-            default:
-                throw new AssertionError(ct.toString());
+
+        Element cmisContent = entry.getFirstChild(AtomPubCMIS.CONTENT);
+        if (cmisContent != null) {
+            Element el = cmisContent.getFirstChild(AtomPubCMIS.MEDIA_TYPE);
+            if (el == null) {
+                return createErrorResponse(new ResponseContextException(
+                        "missing cmisra:mediatype", 500));
             }
-            if (ct == org.apache.abdera.model.Content.Type.MEDIA) {
-                stream = entry.getContentStream();
+            mimeType = el.getText();
+            el = cmisContent.getFirstChild(AtomPubCMIS.BASE64);
+            if (el == null) {
+                return createErrorResponse(new ResponseContextException(
+                        "missing cmisra:base64", 500));
+            }
+            byte[] b64 = el.getText().getBytes(); // no charset, pure ASCII
+            stream = new ByteArrayInputStream(Base64.decodeBase64(b64));
+        } else {
+            Content content = entry.getContentElement();
+            if (content != null) {
+                org.apache.abdera.model.Content.Type ct = content.getContentType();
+                switch (ct) {
+                case TEXT:
+                    mimeType = "text/plain;charset=UTF-8";
+                    break;
+                case HTML:
+                    mimeType = "text/html;charset=UTF-8";
+                    break;
+                case XHTML:
+                    mimeType = "application/xhtml+xml";
+                    break;
+                case XML:
+                    mimeType = "application/xml";
+                    break;
+                case MEDIA:
+                    mimeType = content.getMimeType().toString();
+                    break;
+                default:
+                    throw new AssertionError(ct.toString());
+                }
+                try {
+                    if (ct == org.apache.abdera.model.Content.Type.MEDIA) {
+                        stream = content.getDataHandler().getInputStream();
+                    } else {
+                        stream = new ByteArrayInputStream(
+                                content.getValue().getBytes("UTF-8"));
+                    }
+                } catch (IOException e1) {
+                    return createErrorResponse(new ResponseContextException(
+                            "cannot get stream", 500));
+                }
             } else {
-                stream = new ByteArrayInputStream(entry.getContent().getBytes(
-                        "UTF-8"));
+                stream = null;
+                mimeType = null;
             }
-        } catch (IOException e1) {
-            return createErrorResponse(new ResponseContextException(
-                    "cannot get stream", 500));
         }
 
-        Element obb = entry.getFirstChild(AtomPubCMIS.OBJECT);
-        ObjectElement objectElement = new ObjectElement(obb, repository);
         Map<String, Serializable> properties;
-        try {
-            properties = objectElement.getProperties();
-        } catch (Exception e) { // TODO proper exception
-            return createErrorResponse(new ResponseContextException(500, e));
-        }
-
-        String typeId = (String) properties.get(Property.TYPE_ID);
-        Type type = repository.getType(typeId);
-        if (type == null) {
-            return createErrorResponse(new ResponseContextException(
-                    "Unknown type: " + typeId, 500));
+        Type type;
+        Element obb = entry.getFirstChild(AtomPubCMIS.OBJECT);
+        if (obb != null) {
+            ObjectElement objectElement = new ObjectElement(obb, repository);
+            try {
+                properties = objectElement.getProperties();
+            } catch (Exception e) { // TODO proper exception
+                return createErrorResponse(new ResponseContextException(500, e));
+            }
+            String typeId = (String) properties.get(Property.TYPE_ID);
+            type = repository.getType(typeId);
+            if (type == null) {
+                return createErrorResponse(new ResponseContextException(
+                        "Unknown type: " + typeId, 500));
+            }
+        } else {
+            properties = new HashMap<String, Serializable>();
+            type = repository.getType(BaseType.DOCUMENT.getId());
         }
 
         // set Atom-defined properties into entry
@@ -286,11 +319,16 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         case DOCUMENT:
             String filename = (String) properties.get(Property.CONTENT_STREAM_FILE_NAME);
             ContentStream contentStream;
-            try {
-                contentStream = new SimpleContentStream(stream, mimeType,
-                        filename);
-            } catch (IOException e) {
-                return createErrorResponse(new ResponseContextException(500, e));
+            if (stream == null) {
+                contentStream = null;
+            } else {
+                try {
+                    contentStream = new SimpleContentStream(stream, mimeType,
+                            filename);
+                } catch (IOException e) {
+                    return createErrorResponse(new ResponseContextException(
+                            500, e));
+                }
             }
             VersioningState versioningState = null; // TODO
             objectId = spi.createDocument(properties, folderId, contentStream,
@@ -413,7 +451,10 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             throws ResponseContextException {
         SPI spi = repository.getSPI(); // TODO XXX connection leak
         if ("path".equals(getType())) {
-            String path = "/" + resourceName;
+            String path = resourceName;
+            if (!path.startsWith("/")) {
+                path = "/" + path;
+            }
             return spi.getObjectByPath(path, null, false, false);
         } else { // object
             String id = resourceName;
@@ -434,6 +475,8 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         resourceName = resourceName.replace("%3a", ":");
         resourceName = resourceName.replace("%3A", ":");
         resourceName = resourceName.replace("%20", " ");
+        resourceName = resourceName.replace("%2f", "/");
+        resourceName = resourceName.replace("%2F", "/");
         return resourceName;
     }
 
