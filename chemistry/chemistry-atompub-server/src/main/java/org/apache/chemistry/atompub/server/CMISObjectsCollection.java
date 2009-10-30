@@ -52,7 +52,6 @@ import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Property;
-import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
@@ -172,9 +171,10 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
                 entry.addLink(getObjectLink(pid, request), AtomPub.LINK_UP,
                         AtomPub.MEDIA_TYPE_ATOM_ENTRY, null, null, -1);
             }
-            // TODO don't add links if no children/decendants
+            // down link always present to be able to add children
             entry.addLink(getChildrenLink(oid, request), AtomPub.LINK_DOWN,
                     AtomPub.MEDIA_TYPE_ATOM_FEED, null, null, -1);
+            // TODO don't add descendants links if no children
             entry.addLink(getDescendantsLink(oid, request), AtomPub.LINK_DOWN,
                     AtomPubCMIS.MEDIA_TYPE_CMIS_TREE, null, null, -1);
         } else if (baseType == BaseType.DOCUMENT) {
@@ -191,41 +191,76 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         return link;
     }
 
-    protected static String bool(boolean bool) {
-        return bool ? "true" : "false";
-    }
-
     // getEntries is abstract, must be implemented
 
-    @Override
-    public ResponseContext postEntry(RequestContext request) {
-        // TODO parameter sourceFolderId
-        // TODO parameter versioningState
-        Entry entry;
-        try {
-            entry = getEntryFromRequest(request);
-        } catch (ResponseContextException e) {
-            return createErrorResponse(e);
-        }
-        if (entry == null /* || !ProviderHelper.isValidEntry(entry) TODO XXX TCK */) {
-            return new EmptyResponseContext(400);
+    protected static class PropertiesAndStream {
+        public Map<String, Serializable> properties;
+
+        public InputStream stream;
+
+        public String mimeType;
+    }
+
+    /**
+     * Finds properties and stream from entry.
+     *
+     * @param typeId is null for a POST, existing type for a PUT
+     */
+    protected PropertiesAndStream extractCMISProperties(RequestContext request,
+            String typeId) throws ResponseContextException {
+        boolean isNew = typeId == null;
+        Entry entry = getEntryFromRequest(request);
+        if (entry == null || !ProviderHelper.isValidEntry(entry)) {
+            throw new ResponseContextException(400);
         }
 
+        // get properties and type from entry
+        Map<String, Serializable> properties;
+        Element obb = entry.getFirstChild(AtomPubCMIS.OBJECT);
+        if (obb == null) {
+            // no CMIS object, basic AtomPub post/put
+            properties = new HashMap<String, Serializable>();
+            if (isNew) {
+                typeId = BaseType.DOCUMENT.getId();
+                properties.put(Property.TYPE_ID, typeId);
+            }
+        } else {
+            ObjectElement objectElement = new ObjectElement(obb, repository);
+            try {
+                properties = objectElement.getProperties();
+            } catch (Exception e) { // TODO proper exception
+                throw new ResponseContextException(500, e);
+            }
+            // type
+            String tid = (String) properties.get(Property.TYPE_ID);
+            if (isNew) {
+                // post
+                typeId = tid;
+            } else if (!typeId.equals(tid)) {
+                // mismatched types during put
+                throw new ResponseContextException("Invalid type: " + tid, 500);
+            }
+        }
+        Type type = repository.getType(typeId);
+        if (type == null) {
+            throw new ResponseContextException("Unknown type: " + typeId, 500);
+        }
+
+        // get stream and its mime type from entry
         InputStream stream;
         String mimeType;
-
         Element cmisContent = entry.getFirstChild(AtomPubCMIS.CONTENT);
         if (cmisContent != null) {
+            // cmisra:content has precedence over atom:content
             Element el = cmisContent.getFirstChild(AtomPubCMIS.MEDIA_TYPE);
             if (el == null) {
-                return createErrorResponse(new ResponseContextException(
-                        "missing cmisra:mediatype", 500));
+                throw new ResponseContextException("missing cmisra:mediatype",
+                        500);
             }
             mimeType = el.getText();
             el = cmisContent.getFirstChild(AtomPubCMIS.BASE64);
             if (el == null) {
-                return createErrorResponse(new ResponseContextException(
-                        "missing cmisra:base64", 500));
+                throw new ResponseContextException("missing cmisra:base64", 500);
             }
             byte[] b64 = el.getText().getBytes(); // no charset, pure ASCII
             stream = new ByteArrayInputStream(Base64.decodeBase64(b64));
@@ -260,8 +295,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
                                 content.getValue().getBytes("UTF-8"));
                     }
                 } catch (IOException e1) {
-                    return createErrorResponse(new ResponseContextException(
-                            "cannot get stream", 500));
+                    throw new ResponseContextException("cannot get stream", 500);
                 }
             } else {
                 stream = null;
@@ -269,99 +303,78 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             }
         }
 
-        Map<String, Serializable> properties;
-        Type type;
-        Element obb = entry.getFirstChild(AtomPubCMIS.OBJECT);
-        if (obb != null) {
-            ObjectElement objectElement = new ObjectElement(obb, repository);
-            try {
-                properties = objectElement.getProperties();
-            } catch (Exception e) { // TODO proper exception
-                return createErrorResponse(new ResponseContextException(500, e));
-            }
-            String typeId = (String) properties.get(Property.TYPE_ID);
-            type = repository.getType(typeId);
-            if (type == null) {
-                return createErrorResponse(new ResponseContextException(
-                        "Unknown type: " + typeId, 500));
-            }
-        } else {
-            properties = new HashMap<String, Serializable>();
-            type = repository.getType(BaseType.DOCUMENT.getId());
-        }
-
-        // set Atom-defined properties into entry
-        // TODO hardcoded title properties...
-        PropertyDefinition pdt = type.getPropertyDefinition("title");
-        if (pdt == null) {
-            pdt = type.getPropertyDefinition("dc:title");
-        }
-        if (pdt == null) {
-            pdt = type.getPropertyDefinition(Property.NAME); // mandatory
-        }
+        // set Atom-defined properties into properties
+        // title
         String title = entry.getTitle(); // Atom MUST
-        properties.put(pdt.getId(), title);
+        properties.put(Property.NAME, title);
         // TODO summary
-        // parse the date ourselves, as Abdera's AtomDate loses the timezone
-        Calendar updated;
-        DateTime updatedElement = entry.getUpdatedElement(); // Atom MUST
-        if (updatedElement == null) { // TODO XXX TCK
-            updated = null;
-        } else {
-            updated = GregorianCalendar.fromAtomPub(updatedElement.getText());
-            properties.put(Property.LAST_MODIFICATION_DATE, updated);
-        }
-
-        SPI spi = repository.getSPI(); // TODO XXX connection leak
-        ObjectId folderId = spi.newObjectId(id);
-        ObjectId objectId;
-        switch (type.getBaseType()) {
-        case DOCUMENT:
-            String filename = (String) properties.get(Property.CONTENT_STREAM_FILE_NAME);
-            ContentStream contentStream;
-            if (stream == null) {
-                contentStream = null;
-            } else {
-                try {
-                    contentStream = new SimpleContentStream(stream, mimeType,
-                            filename);
-                } catch (IOException e) {
-                    return createErrorResponse(new ResponseContextException(
-                            500, e));
-                }
+        if (isNew) {
+            // updated
+            // parse the date ourselves, as Abdera's AtomDate loses the timezone
+            DateTime updatedElement = entry.getUpdatedElement(); // Atom MUST
+            if (updatedElement != null) { // TODO XXX TCK
+                Calendar updated = GregorianCalendar.fromAtomPub(updatedElement.getText());
+                properties.put(Property.LAST_MODIFICATION_DATE, updated);
             }
-            VersioningState versioningState = null; // TODO
-            objectId = spi.createDocument(properties, folderId, contentStream,
-                    versioningState);
-            break;
-        case FOLDER:
-            objectId = spi.createFolder(properties, folderId);
-            break;
-        default:
-            throw new UnsupportedOperationException("not implemented: "
-                    + type.getBaseType());
         }
 
-        ObjectEntry object = spi.getProperties(objectId, null, false, false);
+        PropertiesAndStream res = new PropertiesAndStream();
+        res.properties = properties;
+        res.stream = stream;
+        res.mimeType = mimeType;
+        return res;
+    }
 
-        // prepare the updated entry to return in the response
-        // AbstractEntityCollectionAdapter#getEntryFromCollectionProvider is
-        // package-private...
-        entry = request.getAbdera().getFactory().newEntry();
+    @Override
+    public ResponseContext postEntry(RequestContext request) {
+        // TODO parameter sourceFolderId
+        // TODO parameter versioningState
         try {
-            // AbstractEntityCollectionAdapter#buildEntry is private...
+            PropertiesAndStream posted = extractCMISProperties(request, null);
+
+            SPI spi = repository.getSPI(); // TODO XXX connection leak
+            ObjectId folderId = spi.newObjectId(id);
+            ObjectId objectId;
+            String typeId = (String) posted.properties.get(Property.TYPE_ID);
+            BaseType baseType = repository.getType(typeId).getBaseType();
+            switch (baseType) {
+            case DOCUMENT:
+                String filename = (String) posted.properties.get(Property.CONTENT_STREAM_FILE_NAME);
+                ContentStream contentStream;
+                try {
+                    contentStream = new SimpleContentStream(posted.stream,
+                            posted.mimeType, filename);
+                } catch (IOException e) {
+                    throw new ResponseContextException(500, e);
+                }
+                VersioningState versioningState = null; // TODO
+                objectId = spi.createDocument(posted.properties, folderId,
+                        contentStream, versioningState);
+                break;
+            case FOLDER:
+                objectId = spi.createFolder(posted.properties, folderId);
+                break;
+            default:
+                throw new UnsupportedOperationException("not implemented: "
+                        + baseType);
+            }
+
+            // prepare the updated entry to return in the response
+            // AbstractEntityCollectionAdapter#getEntryFromCollectionProvider is
+            // package-private...
+            Entry entry = request.getAbdera().getFactory().newEntry();
+            ObjectEntry object = spi.getProperties(objectId, null, false, false);
             addEntryDetails(request, entry, null, object);
             if (isMediaEntry(object)) {
-                IRI feedIri = null;
-                addMediaContent(feedIri, entry, object, request);
+                addMediaContent(null, entry, object, request);
             } else {
                 addContent(entry, object, request);
             }
+            String link = getObjectLink(object.getId(), request);
+            return buildCreateEntryResponse(link, entry);
         } catch (ResponseContextException e) {
             return createErrorResponse(e);
         }
-        String link = getObjectLink(object.getId(), request);
-        return buildCreateEntryResponse(link, entry);
     }
 
     // unused but abstract in parent...
@@ -372,6 +385,57 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public ResponseContext putEntry(RequestContext request) {
+        try {
+            // existing object
+            String id = getResourceName(request);
+            SPI spi = repository.getSPI(); // TODO XXX connection leak
+            ObjectEntry object = spi.getProperties(spi.newObjectId(id), null,
+                    false, false);
+            if (object == null) {
+                return new EmptyResponseContext(404);
+            }
+
+            PropertiesAndStream put = extractCMISProperties(request,
+                    object.getTypeId());
+
+            // update entry
+            String changeToken = null; // TODO
+            spi.updateProperties(object, changeToken, put.properties);
+            if (put.stream != null) {
+                String filename = (String) put.properties.get(Property.CONTENT_STREAM_FILE_NAME);
+                if (filename == null) {
+                    filename = (String) object.getValue(Property.CONTENT_STREAM_FILE_NAME);
+                }
+                ContentStream contentStream;
+                try {
+                    contentStream = new SimpleContentStream(put.stream,
+                            put.mimeType, filename);
+                } catch (IOException e) {
+                    throw new ResponseContextException(500, e);
+                }
+                spi.setContentStream(object, true, contentStream);
+            }
+
+            // build response
+            Entry entry = request.getAbdera().getFactory().newEntry();
+            // refetch full object
+            object = spi.getProperties(object, null, false, false);
+            addEntryDetails(request, entry, null, object);
+            if (isMediaEntry(object)) {
+                addMediaContent(null, entry, object, request);
+            } else {
+                addContent(entry, object, request);
+            }
+            return buildGetEntryResponse(request, entry);
+
+        } catch (ResponseContextException e) {
+            return createErrorResponse(e);
+        }
+    }
+
+    // unused but abstract in parent...
     @Override
     public void putEntry(ObjectEntry object, String title, Date updated,
             List<Person> authors, String summary, Content content,
@@ -524,16 +588,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
 
     @Override
     public String getTitle(ObjectEntry object) {
-        String title = null;
-        try {
-            title = (String) object.getValue("title"); // TODO improve
-        } catch (Exception e) {
-            // no such property or bad type
-        }
-        if (title == null) {
-            title = (String) object.getValue(Property.NAME);
-        }
-        return title;
+        return (String) object.getValue(Property.NAME);
     }
 
     @Override
@@ -562,8 +617,9 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             // no such property or bad type
         }
         if (summary == null) {
-            return null;
+            summary = (String) object.getValue(Property.NAME);
         }
+        // TODO summary not needed if there's a non-base64 inline content
         Text text = request.getAbdera().getFactory().newSummary();
         text.setValue(summary);
         return text;

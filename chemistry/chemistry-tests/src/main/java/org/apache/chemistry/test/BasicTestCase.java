@@ -18,9 +18,11 @@
 package org.apache.chemistry.test;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -379,6 +381,21 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals(id, fold.getId());
         assertEquals("myfold", fold.getName());
         assertEquals("mytitle", fold.getString("title"));
+    }
+
+    public void testUpdateSPI() {
+        ObjectEntry ob = spi.getObjectByPath("/folder 1/doc 1", null, false,
+                false);
+        assertEquals("doc 1 title", ob.getValue("title"));
+        assertEquals("The doc 1 descr", ob.getValue("description"));
+        // update
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put("description", "new descr");
+        spi.updateProperties(ob, null, properties);
+        // refetch
+        ob = spi.getProperties(ob, null, false, false);
+        assertEquals("doc 1 title", ob.getValue("title"));
+        assertEquals("new descr", ob.getValue("description"));
     }
 
 }

@@ -151,8 +151,7 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public ObjectId newObjectId(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return new SimpleObjectId(id);
     }
 
     // ----------------------------------------------------------------------

@@ -60,6 +60,7 @@ import org.apache.chemistry.atompub.client.connector.Request;
 import org.apache.chemistry.atompub.client.connector.Response;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.XmlProperty;
+import org.apache.chemistry.impl.simple.SimpleObjectId;
 
 /**
  *
@@ -167,8 +168,7 @@ public class APPConnection implements Connection, SPI {
     }
 
     public ObjectId newObjectId(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return new SimpleObjectId(id);
     }
 
     /*
@@ -422,8 +422,20 @@ public class APPConnection implements Connection, SPI {
 
     public ObjectEntry getProperties(ObjectId object, String filter,
             boolean includeAllowableActions, boolean includeRelationships) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        APPObjectEntry current = getObjectEntry(object);
+        String href = current.getLink(AtomPub.LINK_SELF);
+        Response resp = connector.get(new Request(href));
+        if (!resp.isOk()) {
+            if (resp.getStatusCode() == 404) {
+                // object not found, signature says return null
+                return null;
+            }
+            throw new ContentManagerException(
+                    "Remote server returned error code: "
+                            + resp.getStatusCode());
+        }
+        // TODO fill current
+        return (APPObjectEntry) resp.getObject(new ReadContext(this));
     }
 
     public ObjectEntry getObjectByPath(String path, String filter,
@@ -480,6 +492,7 @@ public class APPConnection implements Connection, SPI {
 
     public ObjectId setContentStream(ObjectId document, boolean overwrite,
             ContentStream contentStream) {
+        // LINK_EDIT_MEDIA
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -491,8 +504,26 @@ public class APPConnection implements Connection, SPI {
 
     public ObjectId updateProperties(ObjectId object, String changeToken,
             Map<String, Serializable> properties) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // make properties into an entry for putObject
+        APPObjectEntry current = getObjectEntry(object);
+        APPObjectEntry update = newObjectEntry(current.getTypeId());
+        for (String key : properties.keySet()) {
+            update._setValue(key, properties.get(key));
+        }
+        update._setValue(Property.ID, object.getId());
+        // TODO proper title
+        update._setValue(Property.NAME, current.getValue(Property.NAME));
+
+        String href = current.getLink(AtomPub.LINK_EDIT);
+        Request req = new Request(href);
+        req.setHeader("Content-Type", AtomPub.MEDIA_TYPE_ATOM_ENTRY);
+        Response resp = connector.putObject(req, update);
+        if (!resp.isOk()) {
+            throw new ContentManagerException(
+                    "Remote server returned error code: "
+                            + resp.getStatusCode());
+        }
+        return (APPObjectEntry) resp.getObject(new ReadContext(this));
     }
 
     public ObjectId moveObject(ObjectId object, ObjectId targetFolder,

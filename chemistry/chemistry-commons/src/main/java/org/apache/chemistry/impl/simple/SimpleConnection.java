@@ -59,6 +59,7 @@ import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
+import org.apache.chemistry.Updatability;
 import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.cmissql.CmisSqlLexer;
 import org.apache.chemistry.cmissql.CmisSqlParser;
@@ -577,8 +578,36 @@ public class SimpleConnection implements Connection, SPI {
 
     public ObjectId setContentStream(ObjectId document, boolean overwrite,
             ContentStream contentStream) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        SimpleData data = repository.datas.get(document.getId());
+        if (contentStream == null) {
+            data.remove(SimpleProperty.CONTENT_BYTES_KEY);
+            data.remove(Property.CONTENT_STREAM_MIME_TYPE);
+            data.remove(Property.CONTENT_STREAM_FILE_NAME);
+            data.remove(Property.CONTENT_STREAM_LENGTH);
+        } else {
+            byte[] bytes;
+            try {
+                bytes = SimpleContentStream.getBytes(contentStream.getStream());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            data.put(SimpleProperty.CONTENT_BYTES_KEY, bytes);
+            data.put(Property.CONTENT_STREAM_LENGTH,
+                    Integer.valueOf(bytes.length)); // TODO-Long
+            String mt = contentStream.getMimeType();
+            if (mt == null) {
+                data.remove(Property.CONTENT_STREAM_MIME_TYPE);
+            } else {
+                data.put(Property.CONTENT_STREAM_MIME_TYPE, mt);
+            }
+            String fn = contentStream.getFileName();
+            if (fn == null) {
+                data.remove(Property.CONTENT_STREAM_FILE_NAME);
+            } else {
+                data.put(Property.CONTENT_STREAM_FILE_NAME, fn);
+            }
+        }
+        return document;
     }
 
     public ObjectId deleteContentStream(ObjectId document) {
@@ -588,8 +617,35 @@ public class SimpleConnection implements Connection, SPI {
 
     public ObjectId updateProperties(ObjectId object, String changeToken,
             Map<String, Serializable> properties) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // TODO changeToken
+        SimpleData data = repository.datas.get(object.getId());
+        String typeId = (String) data.get(Property.TYPE_ID);
+        Type type = repository.getType(typeId);
+        for (String key : properties.keySet()) {
+            if (key.equals(Property.ID) || key.equals(Property.TYPE_ID)) {
+                continue;
+            }
+            PropertyDefinition pd = type.getPropertyDefinition(key);
+            Updatability updatability = pd.getUpdatability();
+            if (updatability == Updatability.ON_CREATE
+                    || updatability == Updatability.READ_ONLY) {
+                // ignore attempts to write a read-only prop, as clients
+                // may want to take an existing entry, change a few values,
+                // and write the new one
+                continue;
+                // throw new RuntimeException("Read-only property: " + key);
+            }
+            Serializable value = properties.get(key);
+            if (value == null) {
+                if (pd.isRequired()) {
+                    throw new RuntimeException("Required property: " + key); // TODO
+                }
+                data.remove(key);
+            } else {
+                data.put(key, value);
+            }
+        }
+        return object;
     }
 
     public ObjectId moveObject(ObjectId object, ObjectId targetFolder,
