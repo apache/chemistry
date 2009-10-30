@@ -35,7 +35,7 @@ import org.junit.Assert;
  * CMIS Update Tests
  */
 public class UpdateTest extends TCKTest {
-    
+
     public void testUpdatePutCMISContent() throws Exception {
         // retrieve test folder for update
         Entry document = fixture.createTestDocument("testUpdatePutCMISContent");
@@ -50,6 +50,7 @@ public class UpdateTest extends TCKTest {
 
         // update
         String updateFile = templates.load("updatedocument.cmisatomentry.xml");
+        updateFile = updateFile.replace("${ID}", document.getId().toString());
         // FIXME: Add a decent UID generation policy
         // String guid = GUID.generate();
         String guid = System.currentTimeMillis() + "";
@@ -84,6 +85,7 @@ public class UpdateTest extends TCKTest {
 
         // update
         String updateFile = templates.load("updatedocument.atomentry.xml");
+        updateFile = updateFile.replace("${ID}", document.getId().toString());
         // FIXME: Add a decent UID generation policy
         // String guid = GUID.generate();
         String guid = System.currentTimeMillis() + "";
@@ -97,8 +99,9 @@ public class UpdateTest extends TCKTest {
         Assert.assertEquals(document.getId(), updated.getId());
         Assert.assertEquals(document.getPublished(), updated.getPublished());
         Assert.assertEquals("Updated Title " + guid, updated.getTitle());
-        // TODO: why is this testing for text/plain? it should be test/html
-        Assert.assertEquals("text/plain", updated.getContentMimeType().toString());
+        // entry provides <content> without type -> plain text (Atom 3.1.1)
+        // repository may add a charset after that thus the startsWith
+        Assert.assertTrue(updated.getContentMimeType().toString().startsWith("text/plain"));
         Response contentRes = client.executeRequest(new GetRequest(updated.getContentSrc().toString()), 200);
         Assert.assertEquals("updated content " + guid, contentRes.getContentAsString());
     }

@@ -1,6 +1,8 @@
 <?xml version="1.0" ?>
 <entry xmlns="http://www.w3.org/2005/Atom">
+  <id>urn:uuid:00000000-0000-0000-0000-000000000000</id>
   <title>${NAME}</title>
+  <updated>2009-01-01T00:00:00Z</updated>
   <author>
     <name>CMIS Test</name>
   </author>

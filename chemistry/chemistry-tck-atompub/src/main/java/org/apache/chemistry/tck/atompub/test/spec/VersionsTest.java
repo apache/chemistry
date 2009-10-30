@@ -42,7 +42,7 @@ import org.junit.Assert;
  * CMIS Versions Tests
  */
 public class VersionsTest extends TCKTest {
-    
+
     @Override
     public void tearDown() throws Exception {
         // cancel any outstanding checkouts
@@ -61,7 +61,7 @@ public class VersionsTest extends TCKTest {
 
         super.tearDown();
     }
-    
+
     public void testGetCheckedOut() throws Exception {
         // retrieve test folder for checkouts
         Entry testFolder = fixture.getTestCaseFolder();
@@ -206,6 +206,7 @@ public class VersionsTest extends TCKTest {
 
         // test update of private working copy
         String updateFile = templates.load("updatedocument.atomentry.xml");
+        updateFile = updateFile.replace("${ID}", document.getId().toString());
         // FIXME: Add a decent UID generation policy
         // String guid = GUID.generate();
         String guid = System.currentTimeMillis() + "";
