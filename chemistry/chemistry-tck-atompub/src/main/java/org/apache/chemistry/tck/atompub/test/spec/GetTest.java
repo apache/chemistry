@@ -24,6 +24,7 @@ import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.Entry;
 import org.apache.chemistry.abdera.ext.CMISConstants;
 import org.apache.chemistry.abdera.ext.CMISObject;
+import org.apache.chemistry.abdera.ext.CMISRepositoryInfo;
 import org.apache.chemistry.abdera.ext.CMISUriTemplate;
 import org.apache.chemistry.tck.atompub.TCKTest;
 import org.apache.chemistry.tck.atompub.http.GetRequest;
@@ -85,6 +86,26 @@ public class GetTest extends TCKTest {
         Assert.assertEquals(objectId, documentByIdObject.getObjectId().getStringValue());
     }
 
+    public void testObjectByRootFolderId() throws Exception
+    {
+        CMISRepositoryInfo info = client.getRepositoryInfo();
+        String rootFolderId = info.getRootFolderId();
+        Assert.assertNotNull(rootFolderId);
+
+        // formulate get request via id
+        CMISUriTemplate objectByIdTemplate = client.getObjectByIdUriTemplate(client.getWorkspace());
+        Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put("id", rootFolderId);
+        IRI rootFolderByIdRequest = objectByIdTemplate.generateUri(variables);
+        
+        // get folder
+        Entry rootFolderById = client.getEntry(rootFolderByIdRequest);
+        Assert.assertNotNull(rootFolderById);
+        CMISObject rootFolderObject = rootFolderById.getExtension(CMISConstants.OBJECT);
+        Assert.assertNotNull(rootFolderObject);
+        Assert.assertEquals(rootFolderId, rootFolderObject.getObjectId().getStringValue());
+    }
+    
     public void testObjectByPath() throws Exception
     {
         // construct folder

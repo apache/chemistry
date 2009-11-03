@@ -77,7 +77,7 @@ public class CMISClient {
     private ResourceLoader templates = new ResourceLoader("/org/apache/chemistry/tck/atompub/templates/");
 
     private Service cmisService = null;
-    private CMISCapabilities cmisCapabilities = null;
+    private CMISRepositoryInfo cmisRepositoryInfo = null;
 
 
     public CMISClient(Connection connection, String serviceUrl, TCKMessageWriter messageWriter) {
@@ -111,15 +111,19 @@ public class CMISClient {
         return cmisService;
     }
 
-    public CMISCapabilities getCapabilities() throws Exception {
-        if (cmisCapabilities == null) {
+    public CMISRepositoryInfo getRepositoryInfo() throws Exception {
+        if (cmisRepositoryInfo == null) {
+            // TODO: latestChangeLogToken can't be cached
             Service repo = getRepository();
             Workspace workspace = getWorkspace(repo);
-            CMISRepositoryInfo repoInfo = workspace.getExtension(CMISConstants.REPOSITORY_INFO);
-            Assert.assertNotNull(repoInfo);
-            cmisCapabilities = repoInfo.getCapabilities();
+            cmisRepositoryInfo = workspace.getExtension(CMISConstants.REPOSITORY_INFO);
+            Assert.assertNotNull(cmisRepositoryInfo);
         }
-        return cmisCapabilities;
+        return cmisRepositoryInfo;
+    }
+    
+    public CMISCapabilities getCapabilities() throws Exception {
+        return getRepositoryInfo().getCapabilities();
     }
 
     public Workspace getWorkspace() throws Exception {
