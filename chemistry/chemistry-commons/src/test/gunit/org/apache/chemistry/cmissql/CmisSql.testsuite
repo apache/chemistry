@@ -91,7 +91,7 @@ in_predicate:
 "foo NOT IN ( 1, 2, 3)" -> (BIN_OP NOT_IN (COL foo) (LIST 1 2 3))
 
 quantified_in_predicate:
-"ANY foo IN ('a', 1)" -> (BIN_OP_ANY IN (COL foo) (LIST 'a' 1))
+"ANY foo IN ('a', 1)" -> (BIN_OP_ANY IN (LIST 'a' 1) (COL foo))
 
 comparison_predicate:
 "foo = 1" -> (BIN_OP = (COL foo) 1)

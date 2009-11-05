@@ -205,9 +205,9 @@ quantified_comparison_predicate:
 quantified_in_predicate:
     ANY multi_valued_column_reference
       ( NOT IN LPAR in_value_list RPAR
-          -> ^(BIN_OP_ANY NOT_IN multi_valued_column_reference in_value_list)
+          -> ^(BIN_OP_ANY NOT_IN in_value_list multi_valued_column_reference)
       | IN     LPAR in_value_list RPAR
-          -> ^(BIN_OP_ANY IN     multi_valued_column_reference in_value_list)
+          -> ^(BIN_OP_ANY IN     in_value_list multi_valued_column_reference)
       )
     ;
 
