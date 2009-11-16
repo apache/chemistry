@@ -152,7 +152,7 @@ public class JcrRepository implements Repository, RepositoryInfo,
                     continue;
                 }
                 BaseType baseType = BaseType.FOLDER;
-                if (nodeType.getName().equals(JcrConstants.NT_FILE)) {
+                if (JcrCmisMap.isBaseTypeDocument(nodeType.getName())) {
                     baseType = BaseType.DOCUMENT;
                 }
                 // If typeId is provided, only the specific type and its
