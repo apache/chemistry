@@ -13,6 +13,7 @@
  *
  * Authors:
  *     Florent Guillaume, Nuxeo
+ *     Amélie Avramo
  */
 package org.apache.chemistry.atompub.server;
 
@@ -34,6 +35,26 @@ import org.apache.chemistry.atompub.AtomPub;
  */
 public abstract class CMISCollection<T> extends
         AbstractEntityCollectionAdapter<T> {
+
+    protected static final String PARAM_FILTER = "filter";
+
+    protected static final String PARAM_MAX_ITEMS = "maxItems";
+
+    protected static final String PARAM_SKIP_COUNT = "skipCount";
+
+    protected static final String PARAM_ALLOWABLE_ACTIONS = "includeAllowableActions";
+
+    protected static final String PARAM_RELATIONSHIPS = "includeRelationships";
+
+    protected static final String PARAM_RENDITION_FILTER = "renditionFilter";
+
+    protected static final String PARAM_ORDER_BY = "orderBy";
+
+    protected static final String PARAM_DEPTH = "depth";
+
+    protected static final String PARAM_INCLUDE_PATH_SEGMENT = "includePathSegment";
+
+    protected final static String PARAM_FOLDER_ID = "folderId";
 
     protected final String type;
 
@@ -120,9 +141,9 @@ public abstract class CMISCollection<T> extends
 
     public String getChildrenLink(String fid, RequestContext request) {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("entrytype", "children");
+        params.put("collection", "children");
         params.put("id", fid);
-        return request.absoluteUrlFor(TargetType.TYPE_ENTRY, params);
+        return request.absoluteUrlFor(TargetType.TYPE_COLLECTION, params);
     }
 
     public String getDescendantsLink(String fid, RequestContext request) {
@@ -134,9 +155,15 @@ public abstract class CMISCollection<T> extends
 
     public String getParentsLink(String fid, RequestContext request) {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("entrytype", "parents");
+        params.put("collection", "parents");
         params.put("id", fid);
-        return request.absoluteUrlFor(TargetType.TYPE_ENTRY, params);
+        return request.absoluteUrlFor(TargetType.TYPE_COLLECTION, params);
+    }
+
+    public String getCheckedOutLink(RequestContext request) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("collection", "checkedout");
+        return request.absoluteUrlFor(TargetType.TYPE_COLLECTION, params);
     }
 
     public String getObjectLink(String id, RequestContext request) {

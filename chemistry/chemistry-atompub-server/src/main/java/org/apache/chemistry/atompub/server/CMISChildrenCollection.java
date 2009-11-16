@@ -13,6 +13,7 @@
  *
  * Authors:
  *     Florent Guillaume, Nuxeo
+ *     Amélie Avramo
  */
 package org.apache.chemistry.atompub.server;
 
@@ -20,6 +21,7 @@ import java.util.List;
 
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.protocol.server.RequestContext;
+import org.apache.abdera.protocol.server.Target;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
@@ -75,11 +77,36 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
     public Iterable<ObjectEntry> getEntries(RequestContext request)
             throws ResponseContextException {
         SPI spi = repository.getSPI(); // TODO XXX connection leak
-        boolean[] hasMoreItems = new boolean[1];
         ObjectId objectId = spi.newObjectId(id);
-        List<ObjectEntry> children = spi.getChildren(objectId, null, false,
-                false, false, 0, 0, null, hasMoreItems);
-        return children;
+        Target target = request.getTarget();
+        String filter = target.getParameter(PARAM_FILTER);
+        boolean includeAllowableActions = target.getParameter(PARAM_ALLOWABLE_ACTIONS) == null ? false
+                : Boolean.parseBoolean(target.getParameter(PARAM_ALLOWABLE_ACTIONS));
+        boolean includeRelationships = target.getParameter(PARAM_RELATIONSHIPS) == null ? false
+                : Boolean.parseBoolean(target.getParameter(PARAM_RELATIONSHIPS));
+        // TODO proper renditionFilter use
+        boolean includeRenditions = target.getParameter(PARAM_RENDITION_FILTER) == null ? false
+                : true;
+        String orderBy = target.getParameter(PARAM_ORDER_BY);
+        if ("descendants".equals(getType())) {
+            int depth = target.getParameter(PARAM_DEPTH) == null ? 1
+                    : Integer.parseInt(target.getParameter(PARAM_DEPTH));
+            List<ObjectEntry> descendants = spi.getDescendants(objectId, depth,
+                    filter, includeAllowableActions, includeRelationships,
+                    includeRenditions, orderBy);
+            return descendants;
+        } else {
+            int maxItems = target.getParameter(PARAM_MAX_ITEMS) == null ? 0
+                    : Integer.parseInt(target.getParameter(PARAM_MAX_ITEMS));
+            int skipCount = target.getParameter(PARAM_SKIP_COUNT) == null ? 0
+                    : Integer.parseInt(target.getParameter(PARAM_SKIP_COUNT));
+            boolean[] hasMoreItems = new boolean[1];
+            List<ObjectEntry> children = spi.getChildren(objectId, filter,
+                    includeAllowableActions, includeRelationships,
+                    includeRenditions, maxItems, skipCount, orderBy,
+                    hasMoreItems);
+            return children;
+        }
     }
 
 }

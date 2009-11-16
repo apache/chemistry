@@ -13,6 +13,7 @@
  *
  * Authors:
  *     Florent Guillaume, Nuxeo
+ *     Amélie Avramo
  */
 package org.apache.chemistry.atompub.server;
 
@@ -43,12 +44,13 @@ public class CMISWorkspaceManager extends AbstractWorkspaceManager {
         String spath = request.getTargetBasePath();
         String path = spath == null ? uri : uri.substring(spath.length());
         String paths = path + '/';
+
         if (paths.startsWith("/types/")) {
             return new CMISTypesCollection(null, null, repository);
         }
         if (paths.startsWith("/type/")) {
-            return new CMISTypesCollection(AtomPubCMIS.COL_TYPES,
-                    null, repository);
+            return new CMISTypesCollection(AtomPubCMIS.COL_TYPES, null,
+                    repository);
         }
         if (paths.startsWith("/children/")) {
             String id = request.getTarget().getParameter("objectid");
@@ -56,7 +58,7 @@ public class CMISWorkspaceManager extends AbstractWorkspaceManager {
         }
         if (paths.startsWith("/descendants/")) {
             String id = request.getTarget().getParameter("objectid");
-            return new CMISChildrenCollection(null, id, repository);
+            return new CMISChildrenCollection("descendants", id, repository);
         }
         if (paths.startsWith("/parents/")) {
             String id = request.getTarget().getParameter("objectid");
@@ -74,6 +76,9 @@ public class CMISWorkspaceManager extends AbstractWorkspaceManager {
         }
         if (paths.startsWith("/unfiled/")) {
             return new CMISCollectionForOther(null, "unfiled", null, repository);
+        }
+        if (paths.startsWith("/checkedout/")) {
+            return new CMISCheckedOutCollection(repository);
         }
         if (paths.startsWith("/query/") || paths.startsWith("/query?")) {
             return new CMISQueryFeed(repository);
