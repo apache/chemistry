@@ -30,6 +30,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.nodetype.NodeTypeIterator;
 import javax.jcr.nodetype.NodeTypeManager;
 
 import org.apache.chemistry.CapabilityACL;
@@ -132,7 +133,6 @@ public class JcrRepository implements Repository, RepositoryInfo,
     public List<Type> getTypes(String typeId, int depth,
             boolean returnPropertyDefinitions) {
 
-        // TODO dynamically discover and return types.
         // TODO depth, returnPropertyDefinitions
 
         try {
@@ -144,14 +144,24 @@ public class JcrRepository implements Repository, RepositoryInfo,
 
             Session session = repository.login(creds, workspace);
 
-            // TODO fetch the types only once, include other types
-            NodeTypeManager ntmgr = session.getWorkspace().getNodeTypeManager();
-            result.add(new JcrType(ntmgr.getNodeType("rep:root"),
-                    BaseType.FOLDER));
-            result.add(new JcrType(ntmgr.getNodeType(JcrConstants.NT_FOLDER),
-                    BaseType.FOLDER));
-            result.add(new JcrType(ntmgr.getNodeType(JcrConstants.NT_FILE),
-                    BaseType.DOCUMENT));
+            NodeTypeIterator nodeTypes = session.getWorkspace().getNodeTypeManager().getAllNodeTypes();
+            while (nodeTypes.hasNext()) {
+                NodeType nodeType = nodeTypes.nextNodeType();
+                if (nodeType.isMixin()) {
+                    // Mixing Types will be ignored
+                    continue;
+                }
+                BaseType baseType = BaseType.FOLDER;
+                if (nodeType.getName().equals(JcrConstants.NT_FILE)) {
+                    baseType = BaseType.DOCUMENT;
+                }
+                // If typeId is provided, only the specific type and its
+                // descendants are returned, otherwise all types are returned.
+                if (typeId == null || typeId.equals(baseType.getId())) {
+                    result.add(new JcrType(nodeType, baseType));
+                }
+            }
+
             return result;
         } catch (RepositoryException e) {
             String msg = "Unable to retrieve node types.";
