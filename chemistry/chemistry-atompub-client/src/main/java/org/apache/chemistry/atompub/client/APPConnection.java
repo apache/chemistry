@@ -129,7 +129,8 @@ public class APPConnection implements Connection, SPI {
         APPObjectEntry entry = newObjectEntry(typeId);
         if (folder != null) {
             entry.addLink(AtomPub.LINK_UP,
-                    ((APPFolder) folder).entry.getEditLink());
+                    ((APPFolder) folder).entry.getEditLink(),
+                    AtomPub.MEDIA_TYPE_ATOM_ENTRY);
         }
         return new APPDocument(entry, type);
     }
@@ -143,7 +144,8 @@ public class APPConnection implements Connection, SPI {
         if (folder != null) {
             entry._setValue(Property.PARENT_ID, folder.getId());
             entry.addLink(AtomPub.LINK_UP,
-                    ((APPFolder) folder).entry.getEditLink());
+                    ((APPFolder) folder).entry.getEditLink(),
+                    AtomPub.MEDIA_TYPE_ATOM_ENTRY);
         }
         return new APPFolder(entry, type);
     }
@@ -203,40 +205,23 @@ public class APPConnection implements Connection, SPI {
         return list;
     }
 
-    /**
-     * Accumulates the descendants into a list recursively.
-     *
-     * @param includeRenditions TODO
-     */
-    protected void accumulateDescendants(ObjectId folder, int depth,
-            String filter, boolean includeAllowableActions,
-            boolean includeRelationships, boolean includeRenditions,
-            String orderBy, List<ObjectEntry> list) {
-        // TODO deal with paging properly
-        List<ObjectEntry> children = getChildren(folder, filter,
-                includeAllowableActions, includeRelationships,
-                includeRenditions, Integer.MAX_VALUE, 0, orderBy,
-                new boolean[1]);
-        for (ObjectEntry child : children) {
-            list.add(child);
-            if (depth > 1 && child.getBaseType() == BaseType.FOLDER) {
-                accumulateDescendants(child, depth - 1, filter,
-                        includeAllowableActions, includeRelationships,
-                        includeRenditions, orderBy, list);
-            }
-        }
-    }
-
-    // TODO use descendants feed
     public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, boolean includeRenditions,
             String orderBy) {
         // TODO includeRelationship, includeAllowableActions, orderBy
-        List<ObjectEntry> list = new ArrayList<ObjectEntry>();
-        accumulateDescendants(folder, depth, filter, includeAllowableActions,
-                includeRelationships, includeRenditions, orderBy, list);
-        return list;
+        // TODO filter, includeRenditions
+        String href = getObjectEntry(folder).getLink(AtomPub.LINK_DOWN,
+                AtomPubCMIS.MEDIA_TYPE_CMIS_TREE);
+        Request req = new Request(href);
+        req.setParameter(AtomPubCMIS.PARAM_DEPTH, Integer.toString(depth));
+        Response resp = connector.get(req);
+        if (!resp.isOk()) {
+            throw new ContentManagerException(
+                    "Remote server returned error code: "
+                            + resp.getStatusCode());
+        }
+        return resp.getObjectFeed(new ReadContext(this));
     }
 
     public List<ObjectEntry> getChildren(ObjectId folder, String filter,
@@ -251,7 +236,8 @@ public class APPConnection implements Connection, SPI {
             skipCount = 0;
         }
 
-        String href = getObjectEntry(folder).getLink(AtomPub.LINK_DOWN);
+        String href = getObjectEntry(folder).getLink(AtomPub.LINK_DOWN,
+                AtomPub.MEDIA_TYPE_ATOM_FEED);
         Response resp = connector.get(new Request(href));
         if (!resp.isOk()) {
             throw new ContentManagerException(
@@ -294,7 +280,8 @@ public class APPConnection implements Connection, SPI {
         if (current.getId().equals(rootId)) {
             return null;
         }
-        String href = current.getLink(AtomPub.LINK_UP);
+        String href = current.getLink(AtomPub.LINK_UP,
+                AtomPub.MEDIA_TYPE_ATOM_ENTRY);
         if (href == null) {
             return null;
         }

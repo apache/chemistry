@@ -29,6 +29,7 @@ import org.apache.chemistry.Property;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.atompub.AtomPub;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 
 /**
  * CMIS Collection for the children of an object.
@@ -79,27 +80,27 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
         SPI spi = repository.getSPI(); // TODO XXX connection leak
         ObjectId objectId = spi.newObjectId(id);
         Target target = request.getTarget();
-        String filter = target.getParameter(PARAM_FILTER);
-        boolean includeAllowableActions = target.getParameter(PARAM_ALLOWABLE_ACTIONS) == null ? false
-                : Boolean.parseBoolean(target.getParameter(PARAM_ALLOWABLE_ACTIONS));
-        boolean includeRelationships = target.getParameter(PARAM_RELATIONSHIPS) == null ? false
-                : Boolean.parseBoolean(target.getParameter(PARAM_RELATIONSHIPS));
+        String filter = target.getParameter(AtomPubCMIS.PARAM_FILTER);
+        boolean includeAllowableActions = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS) == null ? false
+                : Boolean.parseBoolean(target.getParameter(AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS));
+        boolean includeRelationships = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS) == null ? false
+                : Boolean.parseBoolean(target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS));
         // TODO proper renditionFilter use
-        boolean includeRenditions = target.getParameter(PARAM_RENDITION_FILTER) == null ? false
+        boolean includeRenditions = target.getParameter(AtomPubCMIS.PARAM_RENDITION_FILTER) == null ? false
                 : true;
-        String orderBy = target.getParameter(PARAM_ORDER_BY);
+        String orderBy = target.getParameter(AtomPubCMIS.PARAM_ORDER_BY);
         if ("descendants".equals(getType())) {
-            int depth = target.getParameter(PARAM_DEPTH) == null ? 1
-                    : Integer.parseInt(target.getParameter(PARAM_DEPTH));
+            int depth = target.getParameter(AtomPubCMIS.PARAM_DEPTH) == null ? 1
+                    : Integer.parseInt(target.getParameter(AtomPubCMIS.PARAM_DEPTH));
             List<ObjectEntry> descendants = spi.getDescendants(objectId, depth,
                     filter, includeAllowableActions, includeRelationships,
                     includeRenditions, orderBy);
             return descendants;
         } else {
-            int maxItems = target.getParameter(PARAM_MAX_ITEMS) == null ? 0
-                    : Integer.parseInt(target.getParameter(PARAM_MAX_ITEMS));
-            int skipCount = target.getParameter(PARAM_SKIP_COUNT) == null ? 0
-                    : Integer.parseInt(target.getParameter(PARAM_SKIP_COUNT));
+            int maxItems = target.getParameter(AtomPubCMIS.PARAM_MAX_ITEMS) == null ? 0
+                    : Integer.parseInt(target.getParameter(AtomPubCMIS.PARAM_MAX_ITEMS));
+            int skipCount = target.getParameter(AtomPubCMIS.PARAM_SKIP_COUNT) == null ? 0
+                    : Integer.parseInt(target.getParameter(AtomPubCMIS.PARAM_SKIP_COUNT));
             boolean[] hasMoreItems = new boolean[1];
             List<ObjectEntry> children = spi.getChildren(objectId, filter,
                     includeAllowableActions, includeRelationships,

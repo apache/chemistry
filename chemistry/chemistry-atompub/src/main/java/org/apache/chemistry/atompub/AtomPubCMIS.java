@@ -13,6 +13,7 @@
  *
  * Authors:
  *     Florent Guillaume, Nuxeo
+ *     Amélie Avramo
  */
 package org.apache.chemistry.atompub;
 
@@ -110,6 +111,30 @@ public class AtomPubCMIS {
 
     public static final String LINK_ROOT_DESCENDANTS = CMIS_LINK_NS_BASE
             + "rootdescendants";
+
+    /*
+     * ----- AtomPub Link Parameters -----
+     */
+
+    public static final String PARAM_FILTER = "filter";
+
+    public static final String PARAM_MAX_ITEMS = "maxItems";
+
+    public static final String PARAM_SKIP_COUNT = "skipCount";
+
+    public static final String PARAM_ORDER_BY = "orderBy";
+
+    public static final String PARAM_DEPTH = "depth";
+
+    public final static String PARAM_FOLDER_ID = "folderId";
+
+    public static final String PARAM_RENDITION_FILTER = "renditionFilter";
+
+    public static final String PARAM_INCLUDE_ALLOWABLE_ACTIONS = "includeAllowableActions";
+
+    public static final String PARAM_INCLUDE_RELATIONSHIPS = "includeRelationships";
+
+    public static final String PARAM_INCLUDE_PATH_SEGMENT = "includePathSegment";
 
     /*
      * ----- URI Template Types -----

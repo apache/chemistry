@@ -73,7 +73,8 @@ public class APPObjectEntryReader extends AbstractObjectReader<APPObjectEntry> {
         if ("link".equals(name)) {
             String rel = reader.getAttributeValue(AtomPub.ATOM_NS, "rel");
             String href = reader.getAttributeValue(AtomPub.ATOM_NS, "href");
-            object.addLink(rel, href);
+            String type = reader.getAttributeValue(AtomPub.ATOM_NS, "type");
+            object.addLink(rel, href, type);
             // } else if ("id".equals(name)) {
             // object.id = new URI(id);
         }

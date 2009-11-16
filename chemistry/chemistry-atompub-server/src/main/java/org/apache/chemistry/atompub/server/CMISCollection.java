@@ -13,7 +13,6 @@
  *
  * Authors:
  *     Florent Guillaume, Nuxeo
- *     Amélie Avramo
  */
 package org.apache.chemistry.atompub.server;
 
@@ -35,26 +34,6 @@ import org.apache.chemistry.atompub.AtomPub;
  */
 public abstract class CMISCollection<T> extends
         AbstractEntityCollectionAdapter<T> {
-
-    protected static final String PARAM_FILTER = "filter";
-
-    protected static final String PARAM_MAX_ITEMS = "maxItems";
-
-    protected static final String PARAM_SKIP_COUNT = "skipCount";
-
-    protected static final String PARAM_ALLOWABLE_ACTIONS = "includeAllowableActions";
-
-    protected static final String PARAM_RELATIONSHIPS = "includeRelationships";
-
-    protected static final String PARAM_RENDITION_FILTER = "renditionFilter";
-
-    protected static final String PARAM_ORDER_BY = "orderBy";
-
-    protected static final String PARAM_DEPTH = "depth";
-
-    protected static final String PARAM_INCLUDE_PATH_SEGMENT = "includePathSegment";
-
-    protected final static String PARAM_FOLDER_ID = "folderId";
 
     protected final String type;
 

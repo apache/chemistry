@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
@@ -60,7 +61,42 @@ public class APPObjectEntry implements ObjectEntry {
 
     protected Map<QName, Boolean> allowableActions;
 
-    protected final List<String> links;
+    protected final List<Link> links;
+
+    public static class Link {
+        public final String rel;
+
+        public final String href;
+
+        public final String type;
+
+        public Link(String rel, String href, String type) {
+            this.rel = rel == null ? "" : rel;
+            this.href = href;
+            this.type = canonicalType(type);
+        }
+
+        public static final Pattern TYPE_EQ = Pattern.compile("type=",
+                Pattern.CASE_INSENSITIVE);
+
+        /**
+         * Simplified version of RFC 2045 media type syntax.
+         */
+        public static String canonicalType(String type) {
+            if (type == null) {
+                return null;
+            }
+            type = type.replace("\"", "");
+            type = type.replace(" ", "");
+            type = TYPE_EQ.matcher(type).replaceAll("type=");
+            return type;
+        }
+
+        @Override
+        public String toString() {
+            return "Link(" + rel + ',' + href + ',' + type + ')';
+        }
+    }
 
     public APPObjectEntry(APPConnection connection,
             Map<String, XmlProperty> properties,
@@ -73,12 +109,11 @@ public class APPObjectEntry implements ObjectEntry {
             allowableActions = Collections.unmodifiableMap(allowableActions);
         }
         this.allowableActions = allowableActions;
-        links = new ArrayList<String>();
+        links = new ArrayList<Link>();
     }
 
-    public void addLink(String rel, String href) {
-        links.add(rel == null ? "" : rel);
-        links.add(href);
+    public void addLink(String rel, String href, String type) {
+        links.add(new Link(rel, href, type));
     }
 
     public String[] getLinks() {
@@ -86,9 +121,19 @@ public class APPObjectEntry implements ObjectEntry {
     }
 
     public String getLink(String rel) {
-        for (int i = 0, len = links.size(); i < len; i += 2) {
-            if (rel.equals(links.get(i))) {
-                return links.get(i + 1);
+        for (Link link : links) {
+            if (rel.equals(link.rel)) {
+                return link.href;
+            }
+        }
+        return null;
+    }
+
+    public String getLink(String rel, String type) {
+        String ctype = Link.canonicalType(type);
+        for (Link link : links) {
+            if (rel.equals(link.rel) && ctype.equals(link.type)) {
+                return link.href;
             }
         }
         return null;
