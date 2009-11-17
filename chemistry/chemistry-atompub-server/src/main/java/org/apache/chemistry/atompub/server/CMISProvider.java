@@ -84,7 +84,8 @@ public class CMISProvider extends AbstractProvider {
         // global workpace collections
         targetBuilder.setTemplate(TargetType.TYPE_COLLECTION,
                 "{target_base}/{collection}{-prefix|/|id}");
-        targetResolver.setPattern("/checkedout", TargetType.TYPE_COLLECTION);
+        targetResolver.setPattern("/checkedout(\\?.*)?",
+                TargetType.TYPE_COLLECTION);
         targetResolver.setPattern("/unfiled", TargetType.TYPE_COLLECTION);
         targetResolver.setPattern("/query",
                 CMISQueryFeed.TARGET_TYPE_CMIS_QUERY);
@@ -93,7 +94,7 @@ public class CMISProvider extends AbstractProvider {
         // per-object collections
         targetResolver.setPattern("/parents/([^/?]+)",
                 TargetType.TYPE_COLLECTION, "objectid");
-        targetResolver.setPattern("/children/([^/?]+)",
+        targetResolver.setPattern("/children/([^/?]+)(\\?.*)?",
                 TargetType.TYPE_COLLECTION, "objectid");
         targetResolver.setPattern("/descendants/([^/?]+)(\\?.*)?",
                 TargetType.TYPE_COLLECTION, "objectid");

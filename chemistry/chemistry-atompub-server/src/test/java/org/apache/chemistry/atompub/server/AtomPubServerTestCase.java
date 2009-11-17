@@ -177,6 +177,13 @@ public abstract class AtomPubServerTestCase extends TestCase {
         Element ch = resp.getDocument().getRoot();
         assertNotNull(ch);
 
+        resp = client.get(base + "/children/"
+                + repository.getInfo().getRootFolderId().getId() + "?"
+                + AtomPubCMIS.PARAM_MAX_ITEMS + "=4");
+        assertEquals(200, resp.getStatus());
+        ch = resp.getDocument().getRoot();
+        assertNotNull(ch);
+
         resp = client.get(base + "/object/" + doc3id);
         assertEquals(200, resp.getStatus());
         Element ob = resp.getDocument().getRoot();
