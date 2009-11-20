@@ -42,8 +42,10 @@ import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
@@ -219,31 +221,47 @@ public abstract class BasicTestCase extends TestCase {
     }
 
     public void testGetChildren() {
-        boolean[] hasMoreItems = new boolean[1];
         Folder root = conn.getRootFolder();
-        assertEquals(1, spi.getChildren(root, null, true, false, false, 20, 0,
-                null, hasMoreItems).size());
-        assertFalse(hasMoreItems[0]);
+        ListPage<ObjectEntry> page = spi.getChildren(root, null, true, false,
+                false, null, new Paging(20, 0));
+        assertEquals(1, page.size());
+        assertFalse(page.getHasMoreItems());
+        assertEquals(1, page.getNumItems());
+
         ObjectId folder1 = root.getChildren().get(0);
-        assertEquals(2, spi.getChildren(folder1, null, false, false, false, 20,
-                0, null, hasMoreItems).size());
-        assertFalse(hasMoreItems[0]);
-        assertEquals(1, spi.getChildren(folder1, null, false, false, false, 1,
-                0, null, hasMoreItems).size());
-        assertTrue(hasMoreItems[0]);
-        assertEquals(1, spi.getChildren(folder1, null, false, false, false, 1,
-                1, null, hasMoreItems).size());
-        assertFalse(hasMoreItems[0]);
-        List<ObjectEntry> temp = spi.getChildren(folder1, null, false, false,
-                false, 2, 0, null, hasMoreItems);
-        ObjectId folder2 = temp.get(0).getTypeId().equals("fold") ? temp.get(0)
-                : temp.get(1);
-        assertEquals(1, spi.getChildren(folder2, null, false, false, false, 1,
-                1, null, hasMoreItems).size());
-        assertTrue(hasMoreItems[0]);
-        assertEquals(2, spi.getChildren(folder2, null, false, false, false, 2,
-                0, null, hasMoreItems).size());
-        assertTrue(hasMoreItems[0]);
+        page = spi.getChildren(folder1, null, false, false, false, null,
+                new Paging(20, 0));
+        assertEquals(2, page.size());
+        assertFalse(page.getHasMoreItems());
+        assertEquals(2, page.getNumItems());
+
+        page = spi.getChildren(folder1, null, false, false, false, null,
+                new Paging(1, 0));
+        assertEquals(1, page.size());
+        assertTrue(page.getHasMoreItems());
+        assertEquals(2, page.getNumItems());
+
+        page = spi.getChildren(folder1, null, false, false, false, null,
+                new Paging(1, 1));
+        assertEquals(1, page.size());
+        assertFalse(page.getHasMoreItems());
+        assertEquals(2, page.getNumItems());
+
+        page = spi.getChildren(folder1, null, false, false, false, null,
+                new Paging(2, 0));
+        ObjectId folder2 = page.get(0).getTypeId().equals("fold") ? page.get(0)
+                : page.get(1);
+        page = spi.getChildren(folder2, null, false, false, false, null,
+                new Paging(1, 1));
+        assertEquals(1, page.size());
+        assertTrue(page.getHasMoreItems());
+        assertEquals(3, page.getNumItems());
+
+        page = spi.getChildren(folder2, null, false, false, false, null,
+                new Paging(2, 0));
+        assertEquals(2, page.size());
+        assertTrue(page.getHasMoreItems());
+        assertEquals(3, page.getNumItems());
     }
 
     public void testGetFolderTree() {

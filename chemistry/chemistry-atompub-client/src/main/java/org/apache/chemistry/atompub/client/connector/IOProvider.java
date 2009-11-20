@@ -17,11 +17,11 @@
  */
 package org.apache.chemistry.atompub.client.connector;
 
-import java.util.List;
-
-import org.apache.chemistry.TypeManager;
+import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.atompub.client.stax.EntryReader;
 import org.apache.chemistry.atompub.client.stax.FeedReader;
 import org.apache.chemistry.atompub.client.stax.ServiceDocumentReader;
@@ -39,13 +39,13 @@ public interface IOProvider {
 
     ServiceDocumentReader<?> getServiceDocumentReader();
 
-    FeedReader<List<ObjectEntry>> getObjectFeedReader();
+    FeedReader<ListPage<ObjectEntry>> getObjectFeedReader();
 
     FeedReader<TypeManager> getTypeFeedReader();
 
     XmlObjectWriter<ObjectEntry> getObjectEntryWriter();
 
     XmlObjectWriter<String> getQueryWriter(boolean searchAllVersions,
-            long maxItems, long skipCount, boolean includeAllowableActions);
+            boolean includeAllowableActions, Paging paging);
 
 }

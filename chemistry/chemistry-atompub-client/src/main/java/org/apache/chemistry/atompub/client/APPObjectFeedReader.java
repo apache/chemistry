@@ -16,19 +16,18 @@
  */
 package org.apache.chemistry.atompub.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.atompub.client.stax.AbstractFeedReader;
 import org.apache.chemistry.atompub.client.stax.EntryReader;
+import org.apache.chemistry.impl.simple.SimpleListPage;
 import org.apache.chemistry.xml.stax.StaxReader;
 
 /**
  *
  */
 public class APPObjectFeedReader extends
-        AbstractFeedReader<List<ObjectEntry>, APPObjectEntry> {
+        AbstractFeedReader<ListPage<ObjectEntry>, APPObjectEntry> {
 
     private static APPObjectFeedReader builder = new APPObjectFeedReader();
 
@@ -46,13 +45,24 @@ public class APPObjectFeedReader extends
     }
 
     @Override
-    protected List<ObjectEntry> createFeed(StaxReader reader) {
-        return new ArrayList<ObjectEntry>();
+    protected ListPage<ObjectEntry> createFeed(StaxReader reader) {
+        return new SimpleListPage<ObjectEntry>();
     }
 
     @Override
-    protected void addEntry(List<ObjectEntry> feed, APPObjectEntry entry) {
+    protected void addEntry(ListPage<ObjectEntry> feed, APPObjectEntry entry) {
         feed.add(entry);
+    }
+
+    @Override
+    protected void setHasMoreItems(ListPage<ObjectEntry> feed,
+            boolean hasMoreItems) {
+        ((SimpleListPage<ObjectEntry>) feed).setHasMoreItems(hasMoreItems);
+    }
+
+    @Override
+    protected void setNumItems(ListPage<ObjectEntry> feed, int numItems) {
+        ((SimpleListPage<ObjectEntry>) feed).setNumItems(numItems);
     }
 
 }

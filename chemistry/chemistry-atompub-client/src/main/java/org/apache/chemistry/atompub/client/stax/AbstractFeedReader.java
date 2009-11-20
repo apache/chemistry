@@ -26,6 +26,7 @@ import java.net.URL;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.chemistry.atompub.AtomPub;
+import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.xml.stax.ChildrenNavigator;
 import org.apache.chemistry.xml.stax.StaxReader;
 
@@ -39,6 +40,10 @@ public abstract class AbstractFeedReader<T, E> implements FeedReader<T> {
     protected abstract T createFeed(StaxReader reader);
 
     protected abstract void addEntry(T feed, E entry);
+
+    protected abstract void setHasMoreItems(T feed, boolean hasMoreItems);
+
+    protected abstract void setNumItems(T feed, int numItems);
 
     protected AbstractFeedReader(EntryReader<E> entryBuilder) {
         this.entryBuilder = entryBuilder;
@@ -100,10 +105,17 @@ public abstract class AbstractFeedReader<T, E> implements FeedReader<T> {
         while (nav.next() && !isDone(ctx, reader)) {
             String nsUri = reader.getNamespaceURI();
             if (AtomPub.ATOM_NS.equals(nsUri)) {
-                if ("entry".equals(reader.getLocalName())) {
+                if (AtomPub.ATOM_ENTRY.equals(reader.getName())) {
                     addEntry(feed, entryBuilder.read(ctx, reader));
                 } else {
                     readAtomElement(ctx, reader, nsUri, feed);
+                }
+            } else if (AtomPubCMIS.NUM_ITEMS.equals(reader.getName())) {
+                String text = reader.getElementText();
+                try {
+                    setNumItems(feed, Integer.parseInt(text));
+                } catch (NumberFormatException e) {
+                    throw new XMLStreamException("Bad cmisra:numItems: " + e, e);
                 }
             } else {
                 readExtensionElement(ctx, reader, nsUri, feed);
@@ -119,6 +131,12 @@ public abstract class AbstractFeedReader<T, E> implements FeedReader<T> {
 
     protected void readAtomElement(ReadContext ctx, StaxReader reader,
             String nsUri, T feed) throws XMLStreamException {
+        if (AtomPub.ATOM_LINK.equals(reader.getName())) {
+            String rel = reader.getAttributeValue(AtomPub.ATOM_NS, "rel");
+            if (AtomPub.LINK_NEXT.equals(rel)) {
+                setHasMoreItems(feed, true);
+            }
+        }
     }
 
     protected void readExtensionElement(ReadContext ctx, StaxReader reader,

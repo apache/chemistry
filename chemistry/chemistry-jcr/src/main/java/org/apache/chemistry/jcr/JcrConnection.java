@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -41,8 +40,10 @@ import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
@@ -51,6 +52,7 @@ import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
+import org.apache.chemistry.impl.simple.SimpleListPage;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -134,9 +136,8 @@ public class JcrConnection implements Connection, SPI {
 
     public Collection<CMISObject> query(String statement,
             boolean searchAllVersions) {
-        boolean[] hasMoreItems = new boolean[1];
-        Collection<ObjectEntry> entries = query(statement, searchAllVersions,
-                false, false, false, Integer.MAX_VALUE, 0, hasMoreItems);
+        ListPage<ObjectEntry> entries = query(statement, searchAllVersions,
+                false, false, false, new Paging(Integer.MAX_VALUE, 0));
         List<CMISObject> objects = new ArrayList<CMISObject>(entries.size());
         for (ObjectEntry entry : entries) {
             // cast entries, they are all JcrFolder or JcrDocument
@@ -257,24 +258,18 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> getCheckedOutDocuments(ObjectId folderId,
+    public ListPage<ObjectEntry> getCheckedOutDocuments(ObjectId folderId,
             String filter, boolean includeAllowableActions,
-            boolean includeRelationships, int maxItems, int skipCount,
-            boolean[] hasMoreItems) {
+            boolean includeRelationships, Paging paging) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public List<ObjectEntry> getChildren(ObjectId folderId, String filter,
+    public ListPage<ObjectEntry> getChildren(ObjectId folderId, String filter,
             boolean includeAllowableActions, boolean includeRelationships,
-            boolean includeRenditions, int maxItems, int skipCount,
-            String orderBy, boolean[] hasMoreItems) {
+            boolean includeRenditions, String orderBy, Paging paging) {
 
         try {
-            if (maxItems == 0) {
-                maxItems = Integer.MAX_VALUE;
-            }
-
             Node node = session.getRootNode();
             String relPath = JcrObjectEntry.getPath(folderId.getId()).substring(
                     1);
@@ -287,12 +282,13 @@ public class JcrConnection implements Connection, SPI {
             } else {
                 iter = node.getNodes(filter);
             }
-            /* Problem with skipCount == 0, when there are no more elements */
-            if (iter.hasNext()) {
-                iter.skip(skipCount);
+            if (iter.hasNext() && paging != null) {
+                iter.skip(paging.skipCount);
             }
 
-            List<ObjectEntry> result = new ArrayList<ObjectEntry>();
+            int maxItems = paging != null && paging.maxItems != 0 ? paging.maxItems
+                    : Integer.MAX_VALUE;
+            SimpleListPage<ObjectEntry> result = new SimpleListPage<ObjectEntry>();
             while (result.size() < maxItems && iter.hasNext()) {
                 Node child = iter.nextNode();
                 if (child.isNodeType(JcrConstants.NT_FOLDER)) {
@@ -301,7 +297,8 @@ public class JcrConnection implements Connection, SPI {
                     result.add(new JcrDocument(child));
                 }
             }
-            hasMoreItems[0] = iter.hasNext();
+            result.setHasMoreItems(iter.hasNext());
+            result.setNumItems((int) iter.getSize());
             return result;
 
         } catch (RepositoryException e) {
@@ -413,18 +410,16 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public List<ObjectEntry> getRelationships(ObjectId objectId,
+    public ListPage<ObjectEntry> getRelationships(ObjectId objectId,
             RelationshipDirection direction, String typeId,
             boolean includeSubRelationshipTypes, String filter,
-            String includeAllowableActions, int maxItems, int skipCount,
-            boolean[] hasMoreItems) {
-
-        return Collections.emptyList();
+            String includeAllowableActions, Paging paging) {
+        return SimpleListPage.emptyList();
     }
 
-    public List<Rendition> getRenditions(ObjectId object, String filter,
-            int maxItems, int skipCount) {
-        return Collections.emptyList();
+    public ListPage<Rendition> getRenditions(ObjectId object, String filter,
+            Paging paging) {
+        return SimpleListPage.emptyList();
     }
 
     public boolean hasContentStream(ObjectId document) {
@@ -438,19 +433,22 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> query(String statement,
+    public ListPage<ObjectEntry> query(String statement,
             boolean searchAllVersions, boolean includeAllowableActions,
             boolean includeRelationships, boolean includeRenditions,
-            int maxItems, int skipCount, boolean[] hasMoreItems) {
+            Paging paging) {
 
         try {
             QueryManager qm = session.getWorkspace().getQueryManager();
             QueryResult qr = qm.createQuery(statement, Query.SQL).execute();
             NodeIterator iter = qr.getNodes();
-            iter.skip(skipCount);
+            if (iter.hasNext() && paging != null) {
+                iter.skip(paging.skipCount);
+            }
 
-            List<ObjectEntry> result = new ArrayList<ObjectEntry>();
-
+            int maxItems = paging != null && paging.maxItems != 0 ? paging.maxItems
+                    : Integer.MAX_VALUE;
+            SimpleListPage<ObjectEntry> result = new SimpleListPage<ObjectEntry>();
             while (result.size() < maxItems && iter.hasNext()) {
                 Node child = iter.nextNode();
                 if (child.isNodeType(JcrConstants.NT_FOLDER)) {
@@ -459,7 +457,8 @@ public class JcrConnection implements Connection, SPI {
                     result.add(new JcrDocument(child));
                 }
             }
-            hasMoreItems[0] = iter.hasNext();
+            result.setHasMoreItems(iter.hasNext());
+            result.setNumItems((int) iter.getSize());
             return result;
 
         } catch (RepositoryException e) {
@@ -491,12 +490,11 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Iterator<ObjectEntry> getChangeLog(String changeLogToken,
-            boolean includeProperties, int maxItems, boolean[] hasMoreItems,
+    public ListPage<ObjectEntry> getChangeLog(String changeLogToken,
+            boolean includeProperties, Paging paging,
             String[] latestChangeLogToken) {
-        hasMoreItems[0] = false;
         latestChangeLogToken[0] = null;
-        return Collections.<ObjectEntry> emptyList().iterator();
+        return SimpleListPage.emptyList();
     }
 
     public List<ACE> getACL(ObjectId object, boolean onlyBasicPermissions,

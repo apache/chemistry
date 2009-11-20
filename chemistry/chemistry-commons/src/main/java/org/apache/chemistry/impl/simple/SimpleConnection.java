@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,8 +46,10 @@ import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
@@ -162,9 +163,8 @@ public class SimpleConnection implements Connection, SPI {
      */
     protected void accumulateFolders(ObjectId folder, int depth, String filter,
             boolean includeAllowableActions, List<ObjectEntry> list) {
-        List<ObjectEntry> children = getChildren(folder, filter,
-                includeAllowableActions, false, false, Integer.MAX_VALUE, 0,
-                null, new boolean[1]);
+        ListPage<ObjectEntry> children = getChildren(folder, filter,
+                includeAllowableActions, false, false, null, null);
         for (ObjectEntry child : children) {
             if (child.getBaseType() != BaseType.FOLDER) {
                 continue;
@@ -196,8 +196,7 @@ public class SimpleConnection implements Connection, SPI {
         // TODO deal with paging properly
         List<ObjectEntry> children = getChildren(folder, filter,
                 includeAllowableActions, includeRelationships,
-                includeRenditions, Integer.MAX_VALUE, 0, orderBy,
-                new boolean[1]);
+                includeRenditions, orderBy, null);
         for (ObjectEntry child : children) {
             list.add(child);
             if (depth > 1 && child.getBaseType() == BaseType.FOLDER) {
@@ -218,10 +217,9 @@ public class SimpleConnection implements Connection, SPI {
         return list;
     }
 
-    public List<ObjectEntry> getChildren(ObjectId folder, String filter,
+    public ListPage<ObjectEntry> getChildren(ObjectId folder, String filter,
             boolean includeAllowableActions, boolean includeRelationships,
-            boolean includeRenditions, int maxItems, int skipCount,
-            String orderBy, boolean[] hasMoreItems) {
+            boolean includeRenditions, String orderBy, Paging paging) {
         // TODO orderBy
         Set<String> ids = repository.children.get(folder.getId());
         List<ObjectEntry> all = new ArrayList<ObjectEntry>(ids.size());
@@ -229,33 +227,42 @@ public class SimpleConnection implements Connection, SPI {
             SimpleData data = repository.datas.get(id);
             all.add(new SimpleObjectEntry(data, this));
         }
-        return subList(all, maxItems, skipCount, hasMoreItems);
+        return getListPage(all, paging);
     }
 
     /**
-     * Extracts part of a list according to given parameters.
+     * Extracts part of a list according to given paging parameters.
+     *
+     * @param all the complete list
+     * @param paging the paging info, which may be {@code null}
+     * @return the page
      */
-    protected static List<ObjectEntry> subList(List<ObjectEntry> all,
-            int maxItems, int skipCount, boolean[] hasMoreItems) {
+    public static ListPage<ObjectEntry> getListPage(List<ObjectEntry> all,
+            Paging paging) {
         int total = all.size();
-        int fromIndex = skipCount;
+        int fromIndex = paging == null ? 0 : paging.skipCount;
         if (fromIndex < 0 || fromIndex > total) {
-            hasMoreItems[0] = false;
-            return Collections.emptyList();
+            return SimpleListPage.emptyList();
         }
+        int maxItems = paging == null ? -1 : paging.maxItems;
         if (maxItems <= 0) {
             maxItems = total;
         }
-        int toIndex = skipCount + maxItems;
+        int toIndex = fromIndex + maxItems;
         if (toIndex > total) {
             toIndex = total;
         }
-        hasMoreItems[0] = toIndex < total;
+        List<ObjectEntry> slice;
         if (fromIndex == 0 && toIndex == total) {
-            return all;
+            slice = all;
         } else {
-            return all.subList(fromIndex, toIndex);
+            slice = all.subList(fromIndex, toIndex);
         }
+        SimpleListPage<ObjectEntry> page;
+        page = new SimpleListPage<ObjectEntry>(slice);
+        page.setHasMoreItems(toIndex < total);
+        page.setNumItems(total);
+        return page;
     }
 
     public ObjectEntry getFolderParent(ObjectId folder, String filter) {
@@ -294,10 +301,9 @@ public class SimpleConnection implements Connection, SPI {
         return parents;
     }
 
-    public Collection<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
+    public ListPage<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
             String filter, boolean includeAllowableActions,
-            boolean includeRelationships, int maxItems, int skipCount,
-            boolean[] hasMoreItems) {
+            boolean includeRelationships, Paging paging) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -551,9 +557,9 @@ public class SimpleConnection implements Connection, SPI {
         }
     }
 
-    public List<Rendition> getRenditions(ObjectId object, String filter,
-            int maxItems, int skipCount) {
-        return Collections.emptyList();
+    public ListPage<Rendition> getRenditions(ObjectId object, String filter,
+            Paging paging) {
+        return SimpleListPage.emptyList();
     }
 
     public boolean hasContentStream(ObjectId document) {
@@ -731,10 +737,10 @@ public class SimpleConnection implements Connection, SPI {
      * ----- Discovery Services -----
      */
 
-    public Collection<ObjectEntry> query(String statement,
+    public ListPage<ObjectEntry> query(String statement,
             boolean searchAllVersions, boolean includeAllowableActions,
             boolean includeRelationships, boolean includeRenditions,
-            int maxItems, int skipCount, boolean[] hasMoreItems) {
+            Paging paging) {
         // this implementation doesn't try to be very efficient...
         List<ObjectEntry> all = new ArrayList<ObjectEntry>();
         String tableName = null;
@@ -757,7 +763,7 @@ public class SimpleConnection implements Connection, SPI {
                 all.add(new SimpleObjectEntry(data, this));
             }
         }
-        return subList(all, maxItems, skipCount, hasMoreItems);
+        return getListPage(all, paging);
     }
 
     protected boolean typeMatches(String tableName, String typeId) {
@@ -792,9 +798,8 @@ public class SimpleConnection implements Connection, SPI {
 
     public Collection<CMISObject> query(String statement,
             boolean searchAllVersions) {
-        boolean[] hasMoreItems = new boolean[1];
-        Collection<ObjectEntry> res = query(statement, searchAllVersions,
-                false, false, false, 0, 0, hasMoreItems);
+        ListPage<ObjectEntry> res = query(statement, searchAllVersions, false,
+                false, false, null);
         List<CMISObject> objects = new ArrayList<CMISObject>(res.size());
         for (ObjectEntry e : res) {
             objects.add(SimpleObject.construct((SimpleObjectEntry) e));
@@ -802,12 +807,11 @@ public class SimpleConnection implements Connection, SPI {
         return objects;
     }
 
-    public Iterator<ObjectEntry> getChangeLog(String changeLogToken,
-            boolean includeProperties, int maxItems, boolean[] hasMoreItems,
+    public ListPage<ObjectEntry> getChangeLog(String changeLogToken,
+            boolean includeProperties, Paging paging,
             String[] latestChangeLogToken) {
-        hasMoreItems[0] = false;
         latestChangeLogToken[0] = null;
-        return Collections.<ObjectEntry> emptyList().iterator();
+        return SimpleListPage.emptyList();
     }
 
     /*
@@ -847,11 +851,10 @@ public class SimpleConnection implements Connection, SPI {
      * ----- Relationship Services -----
      */
 
-    public List<ObjectEntry> getRelationships(ObjectId object,
+    public ListPage<ObjectEntry> getRelationships(ObjectId object,
             RelationshipDirection direction, String typeId,
             boolean includeSubRelationshipTypes, String filter,
-            String includeAllowableActions, int maxItems, int skipCount,
-            boolean[] hasMoreItems) {
+            String includeAllowableActions, Paging paging) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

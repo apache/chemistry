@@ -16,8 +16,6 @@
  */
 package org.apache.chemistry.atompub.server;
 
-import java.util.Collection;
-
 import org.apache.abdera.model.Element;
 import org.apache.abdera.protocol.server.ProviderHelper;
 import org.apache.abdera.protocol.server.RequestContext;
@@ -25,7 +23,9 @@ import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.TargetType;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.axiom.om.OMDocument;
+import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.atompub.AtomPubCMIS;
@@ -99,11 +99,9 @@ public class CMISQueryFeed extends CMISObjectsCollection {
         boolean includeRenditions = false;
         int maxItems = -1;
         int skipCount = 0;
-        boolean[] hasMoreItems = new boolean[1];
-        Collection<ObjectEntry> results = spi.query(statement,
-                searchAllVersions, includeAllowableActions,
-                includeRelationships, includeRenditions, maxItems, skipCount,
-                hasMoreItems);
+        ListPage<ObjectEntry> results = spi.query(statement, searchAllVersions,
+                includeAllowableActions, includeRelationships,
+                includeRenditions, new Paging(maxItems, skipCount));
         return results;
     }
 

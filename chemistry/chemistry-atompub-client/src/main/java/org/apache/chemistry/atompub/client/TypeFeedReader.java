@@ -38,13 +38,23 @@ public class TypeFeedReader extends AbstractFeedReader<TypeManager, APPType> {
     }
 
     @Override
+    protected TypeManager createFeed(StaxReader reader) {
+        return new SimpleTypeManager();
+    }
+
+    @Override
     protected void addEntry(TypeManager typeManager, APPType type) {
         typeManager.addType(type);
     }
 
     @Override
-    protected TypeManager createFeed(StaxReader reader) {
-        return new SimpleTypeManager();
+    protected void setHasMoreItems(TypeManager typeManager, boolean hasMoreItems) {
+        // nothing
+    }
+
+    @Override
+    protected void setNumItems(TypeManager typeManager, int numItems) {
+        // nothing
     }
 
 }

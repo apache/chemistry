@@ -19,14 +19,14 @@ package org.apache.chemistry.atompub.client.connector;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.chemistry.TypeManager;
+import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.atompub.client.ContentManagerException;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.commons.httpclient.Header;
@@ -145,7 +145,7 @@ public class HttpClientResponse implements Response {
         }
     }
 
-    public List<ObjectEntry> getObjectFeed(ReadContext ctx)
+    public ListPage<ObjectEntry> getObjectFeed(ReadContext ctx)
             throws ContentManagerException {
         try {
             return io.getObjectFeedReader().read(ctx, getStream());

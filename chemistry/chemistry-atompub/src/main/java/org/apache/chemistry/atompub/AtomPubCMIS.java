@@ -65,6 +65,8 @@ public class AtomPubCMIS {
 
     public static final QName CHILDREN = CMISRAName("children");
 
+    public static final QName NUM_ITEMS = CMISRAName("numItems");
+
     public static final QName CONTENT = CMISRAName("content");
 
     public static final QName BASE64 = CMISRAName("base64");

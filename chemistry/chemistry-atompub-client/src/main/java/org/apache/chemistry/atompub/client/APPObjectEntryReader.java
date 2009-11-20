@@ -69,8 +69,7 @@ public class APPObjectEntryReader extends AbstractObjectReader<APPObjectEntry> {
     @Override
     protected void readAtomElement(ReadContext ctx, StaxReader reader,
             APPObjectEntry object) throws XMLStreamException {
-        String name = reader.getLocalName();
-        if ("link".equals(name)) {
+        if (AtomPub.ATOM_LINK.equals(reader.getName())) {
             String rel = reader.getAttributeValue(AtomPub.ATOM_NS, "rel");
             String href = reader.getAttributeValue(AtomPub.ATOM_NS, "href");
             String type = reader.getAttributeValue(AtomPub.ATOM_NS, "type");

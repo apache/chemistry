@@ -25,8 +25,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,8 +38,10 @@ import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.Relationship;
@@ -60,6 +60,7 @@ import org.apache.chemistry.atompub.client.connector.Request;
 import org.apache.chemistry.atompub.client.connector.Response;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.XmlProperty;
+import org.apache.chemistry.impl.simple.SimpleListPage;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
 
 /**
@@ -183,8 +184,8 @@ public class APPConnection implements Connection, SPI {
     protected void accumulateFolders(ObjectId folder, int depth, String filter,
             boolean includeAllowableActions, List<ObjectEntry> list) {
         List<ObjectEntry> children = getChildren(folder, filter,
-                includeAllowableActions, false, false, Integer.MAX_VALUE, 0,
-                null, new boolean[1]);
+                includeAllowableActions, false, false, null, new Paging(
+                        Integer.MAX_VALUE, 0));
         for (ObjectEntry child : children) {
             if (child.getBaseType() != BaseType.FOLDER) {
                 continue;
@@ -224,50 +225,26 @@ public class APPConnection implements Connection, SPI {
         return resp.getObjectFeed(new ReadContext(this));
     }
 
-    public List<ObjectEntry> getChildren(ObjectId folder, String filter,
+    public ListPage<ObjectEntry> getChildren(ObjectId folder, String filter,
             boolean includeAllowableActions, boolean includeRelationships,
-            boolean includeRenditions, int maxItems, int skipCount,
-            String orderBy, boolean[] hasMoreItems) {
+            boolean includeRenditions, String orderBy, Paging paging) {
         // TODO filter, includeRelationship, includeAllowableActions, orderBy
-        if (maxItems <= 0) {
-            maxItems = DEFAULT_MAX_CHILDREN;
-        }
-        if (skipCount < 0) {
-            skipCount = 0;
-        }
-
         String href = getObjectEntry(folder).getLink(AtomPub.LINK_DOWN,
                 AtomPub.MEDIA_TYPE_ATOM_FEED);
-        Response resp = connector.get(new Request(href));
+        Request req = new Request(href);
+        if (paging != null) {
+            req.setParameter(AtomPubCMIS.PARAM_MAX_ITEMS,
+                    Integer.toString(paging.maxItems));
+            req.setParameter(AtomPubCMIS.PARAM_SKIP_COUNT,
+                    Integer.toString(paging.skipCount));
+        }
+        Response resp = connector.get(req);
         if (!resp.isOk()) {
             throw new ContentManagerException(
                     "Remote server returned error code: "
                             + resp.getStatusCode());
         }
-        List<ObjectEntry> feed = resp.getObjectFeed(new ReadContext(this));
-
-        List<ObjectEntry> result = new LinkedList<ObjectEntry>();
-        hasMoreItems[0] = false;
-        boolean done = false;
-        for (ObjectEntry entry : feed) {
-            // skip
-            if (skipCount > 0) {
-                skipCount--;
-                continue;
-            }
-            // entry is ok
-            if (done) {
-                hasMoreItems[0] = true;
-                break;
-            }
-            result.add(entry);
-            if (result.size() >= maxItems) {
-                done = true;
-                // don't break now, we still have to find out if there are more
-                // non-filtered entries to fill in hasMoreItems
-            }
-        }
-        return result;
+        return resp.getObjectFeed(new ReadContext(this));
     }
 
     public ObjectEntry getFolderParent(ObjectId folder, String filter) {
@@ -308,10 +285,9 @@ public class APPConnection implements Connection, SPI {
         return resp.getObjectFeed(new ReadContext(this));
     }
 
-    public Collection<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
+    public ListPage<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
             String filter, boolean includeAllowableActions,
-            boolean includeRelationships, int maxItems, int skipCount,
-            boolean[] hasMoreItems) {
+            boolean includeRelationships, Paging paging) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -462,7 +438,7 @@ public class APPConnection implements Connection, SPI {
     }
 
     public List<Rendition> getRenditions(ObjectId object, String filter,
-            int maxItems, int skipCount) {
+            Paging paging) {
         return Collections.emptyList();
     }
 
@@ -544,27 +520,26 @@ public class APPConnection implements Connection, SPI {
      * ----- Discovery Services -----
      */
 
-    public Collection<ObjectEntry> query(String statement,
+    public ListPage<ObjectEntry> query(String statement,
             boolean searchAllVersions, boolean includeAllowableActions,
             boolean includeRelationships, boolean includeRenditions,
-            int maxItems, int skipCount, boolean[] hasMoreItems) {
+            Paging paging) {
         String href = repository.getCollectionHref(AtomPubCMIS.COL_QUERY);
         Response resp = connector.postQuery(new Request(href), statement,
-                searchAllVersions, maxItems, skipCount, includeAllowableActions);
+                searchAllVersions, includeAllowableActions, paging);
         if (!resp.isOk()) {
             throw new ContentManagerException(
                     "Remote server returned error code: "
                             + resp.getStatusCode());
         }
-        List<ObjectEntry> objects = resp.getObjectFeed(new ReadContext(this));
+        ListPage<ObjectEntry> objects = resp.getObjectFeed(new ReadContext(this));
         return objects;
     }
 
     public Collection<CMISObject> query(String statement,
             boolean searchAllVersions) {
-        boolean[] hasMoreItems = new boolean[1];
-        Collection<ObjectEntry> res = query(statement, searchAllVersions,
-                false, false, false, -1, 0, hasMoreItems);
+        ListPage<ObjectEntry> res = query(statement, searchAllVersions, false,
+                false, false, new Paging(-1, 0));
         List<CMISObject> objects = new ArrayList<CMISObject>(res.size());
         for (ObjectEntry e : res) {
             objects.add(APPObject.construct((APPObjectEntry) e));
@@ -572,12 +547,11 @@ public class APPConnection implements Connection, SPI {
         return objects;
     }
 
-    public Iterator<ObjectEntry> getChangeLog(String changeLogToken,
-            boolean includeProperties, int maxItems, boolean[] hasMoreItems,
+    public ListPage<ObjectEntry> getChangeLog(String changeLogToken,
+            boolean includeProperties, Paging paging,
             String[] latestChangeLogToken) {
-        hasMoreItems[0] = false;
         latestChangeLogToken[0] = null;
-        return Collections.<ObjectEntry> emptyList().iterator();
+        return SimpleListPage.emptyList();
     }
 
     /*
@@ -617,11 +591,10 @@ public class APPConnection implements Connection, SPI {
      * ----- Relationship Services -----
      */
 
-    public List<ObjectEntry> getRelationships(ObjectId object,
+    public ListPage<ObjectEntry> getRelationships(ObjectId object,
             RelationshipDirection direction, String typeId,
             boolean includeSubRelationshipTypes, String filter,
-            String includeAllowableActions, int maxItems, int skipCount,
-            boolean[] hasMoreItems) {
+            String includeAllowableActions, Paging paging) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

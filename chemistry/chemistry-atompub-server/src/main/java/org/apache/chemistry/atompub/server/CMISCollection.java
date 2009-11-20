@@ -56,6 +56,21 @@ public abstract class CMISCollection<T> extends
     }
 
     /*
+     * ----- Helpers -----
+     */
+
+    public static int getParameter(RequestContext request, String name, int def) {
+        String value = request.getTarget().getParameter(name);
+        return value == null ? def : Integer.parseInt(value);
+    }
+
+    public static boolean getParameter(RequestContext request, String name,
+            boolean def) {
+        String value = request.getTarget().getParameter(name);
+        return value == null ? def : Boolean.parseBoolean(value);
+    }
+
+    /*
      * ----- Transactional -----
      */
 

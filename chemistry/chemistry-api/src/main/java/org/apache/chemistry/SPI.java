@@ -19,7 +19,6 @@ package org.apache.chemistry;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -141,8 +140,6 @@ public interface SPI {
      * If includeAllowableActions is {@code true}, the repository will return
      * the allowable actions for the current user for object as part of the
      * results.
-     * <p>
-     * The return value hasMoreItems is filled if {@code maxItems > 0}.
      *
      * @param folder the folder
      * @param filter the properties filter, or {@code null} for all properties
@@ -151,17 +148,13 @@ public interface SPI {
      *            included as well
      * @param includeRenditions {@code true} if renditions should be included as
      *            well
-     * @param maxItems the maximum number of objects to return, or {@code 0} for
-     *            a repository-specific default
-     * @param skipCount the skip count
      * @param orderBy an {@code ORDER BY} clause, or {@code null}
-     * @param hasMoreItems a 1-value boolean array to return a flag stating if
-     *            there are more items
+     * @param paging paging information, or {@code null} for a
+     *            repository-specific default
      */
-    List<ObjectEntry> getChildren(ObjectId folder, String filter,
+    ListPage<ObjectEntry> getChildren(ObjectId folder, String filter,
             boolean includeAllowableActions, boolean includeRelationships,
-            boolean includeRenditions, int maxItems, int skipCount,
-            String orderBy, boolean[] hasMoreItems);
+            boolean includeRenditions, String orderBy, Paging paging);
 
     /**
      * Gets the parent of a folder.
@@ -199,23 +192,18 @@ public interface SPI {
      * <p>
      * If folder is not {@code null}, then the results include only direct
      * children of that folder.
-     * <p>
-     * The return value hasMoreItems is filled if {@code maxItems > 0}.
      *
      * @param folder the folder, or {@code null}
      * @param filter
      * @param includeAllowableActions
      * @param includeRelationships {@code true} if relationships should be
      *            included as well
-     * @param maxItems
-     * @param hasMoreItems a 1-value boolean array to return a flag stating if
-     *            there are more items
-     * @param skipCount
+     * @param paging paging information, or {@code null} for a
+     *            repository-specific default
      */
-    Collection<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
+    ListPage<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
             String filter, boolean includeAllowableActions,
-            boolean includeRelationships, int maxItems, int skipCount,
-            boolean[] hasMoreItems);
+            boolean includeRelationships, Paging paging);
 
     /*
      * ----- Object Services -----
@@ -337,9 +325,8 @@ public interface SPI {
      *
      * @param object the object
      * @param filter a rendition filter, or {@code null} for none
-     * @param maxItems the maximum number of renditions to return, or {@code 0}
-     *            for a repository-specific default
-     * @param skipCount the skip count
+     * @param paging paging information, or {@code null} for a
+     *            repository-specific default
      * @return the list of renditions
      *
      * @throws UnsupportedOperationException if renditions are not supported
@@ -347,8 +334,7 @@ public interface SPI {
      * @see Rendition#FILTER_ALL
      * @see Rendition#FILTER_NONE
      */
-    List<Rendition> getRenditions(ObjectId object, String filter, int maxItems,
-            int skipCount);
+    List<Rendition> getRenditions(ObjectId object, String filter, Paging paging);
 
     /**
      * Checks if the document has an associated content stream.
@@ -570,8 +556,6 @@ public interface SPI {
      * ). If each row in the output table does not correspond to a specific
      * object and includeAllowableActions is {@code true}, then an exception
      * will be thrown.
-     * <p>
-     * The return value hasMoreItems is filled if {@code maxItems > 0}.
      *
      * @param statement the SQL statement
      * @param searchAllVersions {@code true} if all versions (not only that
@@ -581,17 +565,14 @@ public interface SPI {
      *            included as well
      * @param includeRenditions {@code true} if renditions should be included as
      *            well
-     * @param maxItems the maximum number of objects to return, or {@code 0} for
-     *            a repository-specific default
-     * @param skipCount the skip count
-     * @param hasMoreItems
+     * @param paging paging information, or {@code null} for a
+     *            repository-specific default
      * @return the matching objects
      */
     // TODO returns a result set actually, there may be computed values
-    Collection<ObjectEntry> query(String statement, boolean searchAllVersions,
+    ListPage<ObjectEntry> query(String statement, boolean searchAllVersions,
             boolean includeAllowableActions, boolean includeRelationships,
-            boolean includeRenditions, int maxItems, int skipCount,
-            boolean[] hasMoreItems);
+            boolean includeRenditions, Paging paging);
 
     /**
      * Gets a list of content changes.
@@ -607,23 +588,21 @@ public interface SPI {
      * The latest change log token for a repository can be acquired via
      * {@link RepositoryInfo#getLatestChangeToken}.
      * <p>
-     * The return value hasMoreItems is filled if {@code maxItems > 0}.
-     * <p>
-     * The return value latestChangeLogToken contains the change token of the last
-     * change event returned by the iterator.
+     * The return value latestChangeLogToken contains the change token of the
+     * last change event returned by the iterator.
      *
      * @param changeLogToken the change log token, or {@code null}
      * @param includeProperties {@code true} if values are returned in the
      *            change events for updated objects
-     * @param maxItems the maximum number of change events to return, or {@code
-     *            0} for a repository-specific default
-     * @return an iterator over the change events
+     * @param paging paging information, or {@code null} for a
+     *            repository-specific default
+     * @return a paged list of change events
      *
      * @see Repository#getInfo
      * @see RepositoryInfo#getLatestChangeLogToken
      */
-    Iterator<ObjectEntry> getChangeLog(String changeLogToken,
-            boolean includeProperties, int maxItems, boolean[] hasMoreItems,
+    ListPage<ObjectEntry> getChangeLog(String changeLogToken,
+            boolean includeProperties, Paging paging,
             String[] latestChangeLogToken);
 
     /*
@@ -736,18 +715,14 @@ public interface SPI {
      *            sub-type of typeId are to be returned as well
      * @param filter the properties filter, or {@code null} for all properties
      * @param includeAllowableActions {@code true} to include allowable actions
-     * @param maxItems the maximum number of objects to return, or {@code 0} for
-     *            a repository-specific default
-     * @param skipCount the skip count
-     * @param hasMoreItems a 1-value boolean array to return a flag stating if
-     *            there are more items
+     * @param paging paging information, or {@code null} for a
+     *            repository-specific default
      * @return the list of relationships
      */
-    List<ObjectEntry> getRelationships(ObjectId object,
+    ListPage<ObjectEntry> getRelationships(ObjectId object,
             RelationshipDirection direction, String typeId,
             boolean includeSubRelationshipTypes, String filter,
-            String includeAllowableActions, int maxItems, int skipCount,
-            boolean[] hasMoreItems);
+            String includeAllowableActions, Paging paging);
 
     /*
      * ----- Policy Services -----

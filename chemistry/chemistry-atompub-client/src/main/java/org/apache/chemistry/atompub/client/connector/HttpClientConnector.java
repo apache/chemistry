@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.client.ContentManagerException;
@@ -212,10 +213,10 @@ public class HttpClientConnector implements Connector {
     }
 
     public Response putQuery(Request req, String query,
-            boolean searchAllVersions, long maxItems, long skipCount,
-            boolean includeAllowableActions) throws ContentManagerException {
-        return put(req, io.getQueryWriter(searchAllVersions, maxItems,
-                skipCount, includeAllowableActions), query);
+            boolean searchAllVersions, boolean includeAllowableActions,
+            Paging paging) throws ContentManagerException {
+        return put(req, io.getQueryWriter(searchAllVersions,
+                includeAllowableActions, paging), query);
     }
 
     public Response postObject(Request req, ObjectEntry entry)
@@ -224,10 +225,10 @@ public class HttpClientConnector implements Connector {
     }
 
     public Response postQuery(Request req, String query,
-            boolean searchAllVersions, long maxItems, long skipCount,
-            boolean includeAllowableActions) throws ContentManagerException {
-        return post(req, io.getQueryWriter(searchAllVersions, maxItems,
-                skipCount, includeAllowableActions), query);
+            boolean searchAllVersions, boolean includeAllowableActions,
+            Paging paging) throws ContentManagerException {
+        return post(req, io.getQueryWriter(searchAllVersions,
+                includeAllowableActions, paging), query);
     }
 
     public static class XmlObjectWriterRequestEntity<T> implements

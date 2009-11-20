@@ -18,11 +18,11 @@
  */
 package org.apache.chemistry.atompub.client.connector;
 
-import java.util.List;
-
-import org.apache.chemistry.TypeManager;
+import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.atompub.client.APPObjectEntryReader;
 import org.apache.chemistry.atompub.client.APPObjectEntryWriter;
 import org.apache.chemistry.atompub.client.APPObjectFeedReader;
@@ -57,7 +57,7 @@ public class DefaultIOProvider implements IOProvider {
         return objectReader;
     }
 
-    public FeedReader<List<ObjectEntry>> getObjectFeedReader() {
+    public FeedReader<ListPage<ObjectEntry>> getObjectFeedReader() {
         return objectFeedReader;
     }
 
@@ -78,11 +78,13 @@ public class DefaultIOProvider implements IOProvider {
     }
 
     public XmlObjectWriter<String> getQueryWriter(boolean searchAllVersions,
-            long maxItems, long skipCount, boolean includeAllowableActions) {
+            boolean includeAllowableActions, Paging paging) {
         QueryWriter queryWriter = new QueryWriter();
         queryWriter.setSearchAllVersions(searchAllVersions);
-        queryWriter.setMaxItems(maxItems);
-        queryWriter.setSkipCount(skipCount);
+        if (paging != null) {
+            queryWriter.setMaxItems(paging.maxItems);
+            queryWriter.setSkipCount(paging.skipCount);
+        }
         queryWriter.setIncludeAllowableActions(includeAllowableActions);
         return queryWriter;
     }

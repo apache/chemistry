@@ -17,12 +17,12 @@
 package org.apache.chemistry.atompub.client.connector;
 
 import java.io.InputStream;
-import java.util.List;
 
-import org.apache.chemistry.TypeManager;
+import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.atompub.client.ContentManagerException;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 
@@ -48,7 +48,7 @@ public interface Response {
 
     String getString() throws ContentManagerException;
 
-    List<ObjectEntry> getObjectFeed(ReadContext ctx)
+    ListPage<ObjectEntry> getObjectFeed(ReadContext ctx)
             throws ContentManagerException;
 
     TypeManager getTypeFeed(ReadContext ctx) throws ContentManagerException;

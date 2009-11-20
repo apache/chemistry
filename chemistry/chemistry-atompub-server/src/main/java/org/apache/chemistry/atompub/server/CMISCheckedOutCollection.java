@@ -17,14 +17,14 @@
  */
 package org.apache.chemistry.atompub.server;
 
-import java.util.Collection;
-
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.Target;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
+import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.atompub.AtomPub;
@@ -62,21 +62,19 @@ public class CMISCheckedOutCollection extends CMISObjectsCollection {
             throws ResponseContextException {
         SPI spi = repository.getSPI(); // TODO XXX connection leak
         Target target = request.getTarget();
-        ObjectId folderId = target.getParameter(AtomPubCMIS.PARAM_FOLDER_ID) == null ? null
-                : spi.newObjectId(target.getParameter(AtomPubCMIS.PARAM_FOLDER_ID));
+        String folderIdString = target.getParameter(AtomPubCMIS.PARAM_FOLDER_ID);
+        ObjectId folderId = folderIdString == null ? null
+                : spi.newObjectId(folderIdString);
         String filter = target.getParameter(AtomPubCMIS.PARAM_FILTER);
-        int maxItems = target.getParameter(AtomPubCMIS.PARAM_MAX_ITEMS) == null ? 0
-                : Integer.parseInt(target.getParameter(AtomPubCMIS.PARAM_MAX_ITEMS));
-        int skipCount = target.getParameter(AtomPubCMIS.PARAM_SKIP_COUNT) == null ? 0
-                : Integer.parseInt(target.getParameter(AtomPubCMIS.PARAM_SKIP_COUNT));
-        boolean includeAllowableActions = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS) == null ? false
-                : Boolean.parseBoolean(target.getParameter(AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS));
-        boolean includeRelationships = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS) == null ? false
-                : Boolean.parseBoolean(target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS));
-        boolean[] hasMoreItems = new boolean[1];
-        Collection<ObjectEntry> objectEntries = spi.getCheckedOutDocuments(
+        int maxItems = getParameter(request, AtomPubCMIS.PARAM_MAX_ITEMS, 0);
+        int skipCount = getParameter(request, AtomPubCMIS.PARAM_SKIP_COUNT, 0);
+        boolean includeAllowableActions = getParameter(request,
+                AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
+        boolean includeRelationships = getParameter(request,
+                AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS, false);
+        ListPage<ObjectEntry> objectEntries = spi.getCheckedOutDocuments(
                 folderId, filter, includeAllowableActions,
-                includeRelationships, maxItems, skipCount, hasMoreItems);
+                includeRelationships, new Paging(maxItems, skipCount));
         return objectEntries;
     }
 
