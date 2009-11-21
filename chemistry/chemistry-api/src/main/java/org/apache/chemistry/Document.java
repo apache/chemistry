@@ -49,8 +49,13 @@ public interface Document extends CMISObject {
      * check-out or not is repository-specific.
      *
      * @return the private working copy
+     *
+     * @throws ConstraintViolationException if the document is not versionable
+     * @throws UpdateConflictException if the document is no longer current
+     * @throws VersioningException if the checkout cannot be applied to a
+     *             non-latest version
      */
-    Document checkOut();
+    Document checkOut() throws UpdateConflictException;
 
     /**
      * Cancels a check-out of a private working copy.
@@ -58,8 +63,13 @@ public interface Document extends CMISObject {
      * Reverses the effect of a check-out. Removes the private working copy of
      * the checked-out document, allowing other documents in the version series
      * of this document to be checked out again.
+     *
+     * @throws ConstraintViolationException if the document is not versionable
+     * @throws UpdateConflictException if the document is no longer current
+     * @throws VersioningException if the checkout cannot be applied to a
+     *             non-latest version
      */
-    void cancelCheckOut();
+    void cancelCheckOut() throws UpdateConflictException;
 
     /**
      * Checks in a private working copy.
@@ -69,8 +79,14 @@ public interface Document extends CMISObject {
      * @param major {@code true} if the version is a major version
      * @param comment a check-in comment, or {@code null}
      * @return the the new version of the document
+     *
+     * @throws ConstraintViolationException if the document is not versionable
+     * @throws StreamNotSupportedException if a content stream is being set but
+     *             is not supported on the document
+     * @throws UpdateConflictException if the document is no longer current
      */
-    Document checkIn(boolean major, String comment);
+    Document checkIn(boolean major, String comment)
+            throws UpdateConflictException;
 
     /**
      * Gets the latest version of this document.
@@ -81,6 +97,9 @@ public interface Document extends CMISObject {
      * @param major {@code true} if the latest major version is requested
      * @return the latest version or latest major version, or {@code null} if
      *         not found
+     *
+     * @throws ObjectNotFoundException if <em>major</em> is {@code true} and the
+     *             version series contains no major version
      */
     Document getLatestVersion(boolean major);
 
@@ -99,9 +118,12 @@ public interface Document extends CMISObject {
     /**
      * Deletes all the versions of this document.
      * <p>
-     * Deletes all document versions in the version series of this document.
+     * Deletes all document versions in the version series of this document,
+     * including the private working copy if it exists.
+     *
+     * @throws UpdateConflictException if the object is no longer current
      */
-    void deleteAllVersions();
+    void deleteAllVersions() throws UpdateConflictException;
 
     /*
      * ----- data access -----
@@ -110,7 +132,10 @@ public interface Document extends CMISObject {
     /**
      * Gets the primary content stream for this document.
      *
-     * @return the content stream
+     * @return the content stream, or {@code null} if the document does not have
+     *         a content stream
+     *
+     * @throws IOException if the stream could not be read
      */
     ContentStream getContentStream() throws IOException;
 
@@ -118,8 +143,15 @@ public interface Document extends CMISObject {
      * Sets the primary content stream for this document.
      *
      * @param contentStream
-     * @throws IOException if the stream could not be read
+     *
+     * @throws IOException if the stream could not be written
+     * @throws StreamNotSupportedException if a content stream is not allowed on
+     *             the document
+     * @throws UpdateConflictException if the document is no longer current
+     * @throws VersioningException if the update cannot be applied to a
+     *             non-latest version
      */
-    void setContentStream(ContentStream contentStream) throws IOException;
+    void setContentStream(ContentStream contentStream) throws IOException,
+            UpdateConflictException;
 
 }

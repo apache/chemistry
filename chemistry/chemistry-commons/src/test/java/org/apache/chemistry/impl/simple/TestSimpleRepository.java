@@ -24,16 +24,16 @@ import junit.framework.TestCase;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.CapabilityJoin;
+import org.apache.chemistry.CapabilityQuery;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
-import org.apache.chemistry.CapabilityJoin;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
-import org.apache.chemistry.CapabilityQuery;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.Type;
@@ -203,7 +203,7 @@ public class TestSimpleRepository extends TestCase {
         assertEquals(string, new String(bytes, "UTF-8"));
     }
 
-    public void testRemoveDocument() {
+    public void testRemoveDocument() throws Exception {
         Connection conn = repo.getConnection(null);
         Folder root = conn.getRootFolder();
         Document d1 = root.newDocument("doc");
@@ -212,7 +212,7 @@ public class TestSimpleRepository extends TestCase {
         assertNull(conn.getObject(d1));
     }
 
-    public void testRemoveFolder() {
+    public void testRemoveFolder() throws Exception {
         Connection conn = repo.getConnection(null);
         Folder root = conn.getRootFolder();
         try {
@@ -236,7 +236,7 @@ public class TestSimpleRepository extends TestCase {
         assertNull(conn.getObject(d1));
     }
 
-    public void testBasicQuery() {
+    public void testBasicQuery() throws Exception {
         Connection conn = repo.getConnection(null);
         Folder root = conn.getRootFolder();
         Document d1 = root.newDocument("doc");
@@ -249,8 +249,7 @@ public class TestSimpleRepository extends TestCase {
         assertEquals(0, res.size());
         res = conn.query("SELECT * FROM doc", false);
         assertEquals(1, res.size());
-        res = conn.query(
-                "SELECT * FROM cmis:folder WHERE cmis:name = ''",
+        res = conn.query("SELECT * FROM cmis:folder WHERE cmis:name = ''",
                 false);
         assertEquals(1, res.size());
         res = conn.query("SELECT * FROM doc WHERE cmis:objectId = 'nosuchid'",

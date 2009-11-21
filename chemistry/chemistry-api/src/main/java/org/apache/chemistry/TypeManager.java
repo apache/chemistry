@@ -74,6 +74,8 @@ public interface TypeManager {
      * @param returnPropertyDefinitions {@code false} to skip property
      *            definitions
      * @return the types, or a subset of them
+     *
+     * @throws IllegalArgumentException if the depth is invalid
      */
     Collection<Type> getTypes(String typeId, int depth,
             boolean returnPropertyDefinitions);

@@ -16,7 +16,6 @@
  */
 package org.apache.chemistry.atompub.server;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import junit.framework.TestCase;
@@ -92,7 +91,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         server.stop();
     }
 
-    public static Repository makeRepository(String rootId) throws IOException {
+    public static Repository makeRepository(String rootId) throws Exception {
         PropertyDefinition p1 = new SimplePropertyDefinition("title",
                 "def:title", null, "title", "Title", "", false,
                 PropertyType.STRING, false, null, false, false, "",
@@ -229,8 +228,8 @@ public abstract class AtomPubServerTestCase extends TestCase {
             sw.startElement("query", CMIS.CMIS_NS, CMIS.CMIS_PREFIX);
             sw.startElement("statement", CMIS.CMIS_NS, CMIS.CMIS_PREFIX).writeElementText(
                     statement).endElement();
-            sw.startElement("searchAllVersions", CMIS.CMIS_NS,
-                    CMIS.CMIS_PREFIX).writeElementText("false").endElement();
+            sw.startElement("searchAllVersions", CMIS.CMIS_NS, CMIS.CMIS_PREFIX).writeElementText(
+                    "false").endElement();
             sw.startElement("pageSize", CMIS.CMIS_NS, CMIS.CMIS_PREFIX).writeElementText(
                     0).endElement();
             sw.startElement("skipCount", CMIS.CMIS_NS, CMIS.CMIS_PREFIX).writeElementText(

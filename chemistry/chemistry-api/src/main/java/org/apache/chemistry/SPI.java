@@ -74,6 +74,10 @@ public interface SPI {
      * @param depth the depth, or {@code -1} for all levels
      * @param filter the properties filter, or {@code null} for all properties
      * @param includeAllowableActions {@code true} to include allowable actions
+     *
+     * @throws FilterNotValidException if the filter is not valid
+     * @throws IllegalArgumentException if the object is not a folder or the
+     *             depth is invalid
      */
     List<ObjectEntry> getFolderTree(ObjectId folder, int depth, String filter,
             boolean includeAllowableActions);
@@ -114,6 +118,10 @@ public interface SPI {
      * @param includeRenditions {@code true} if renditions should be included as
      *            well
      * @param orderBy an {@code ORDER BY} clause, or {@code null}
+     *
+     * @throws FilterNotValidException if the filter is not valid
+     * @throws IllegalArgumentException if the object is not a folder or the
+     *             depth is invalid
      */
     // TODO return type for a tree
     List<ObjectEntry> getDescendants(ObjectId folder, int depth, String filter,
@@ -151,6 +159,9 @@ public interface SPI {
      * @param orderBy an {@code ORDER BY} clause, or {@code null}
      * @param paging paging information, or {@code null} for a
      *            repository-specific default
+     *
+     * @throws FilterNotValidException if the filter is not valid
+     * @throws IllegalArgumentException if the object is not a folder
      */
     ListPage<ObjectEntry> getChildren(ObjectId folder, String filter,
             boolean includeAllowableActions, boolean includeRelationships,
@@ -166,6 +177,10 @@ public interface SPI {
      * @param folder the folder
      * @param filter the properties filter, or {@code null} for all properties
      * @return the parents and optionally relationships
+     *
+     * @throws FilterNotValidException if the filter is not valid
+     * @throws IllegalArgumentException if the folder is not a folder or is the
+     *             root
      */
     ObjectEntry getFolderParent(ObjectId folder, String filter);
 
@@ -179,6 +194,10 @@ public interface SPI {
      * @param object the object
      * @param filter the properties filter, or {@code null} for all properties
      * @return the collection of parent folders
+     *
+     * @throws ConstraintViolationException if the object is not fileable
+     * @throws FilterNotValidException if the filter is not valid
+     * @throws IllegalArgumentException if the object is a folder
      */
     Collection<ObjectEntry> getObjectParents(ObjectId object, String filter);
 
@@ -200,6 +219,9 @@ public interface SPI {
      *            included as well
      * @param paging paging information, or {@code null} for a
      *            repository-specific default
+     *
+     * @throws FilterNotValidException if the filter is not valid
+     * @throws IllegalArgumentException if the object is not a folder
      */
     ListPage<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
             String filter, boolean includeAllowableActions,
@@ -225,29 +247,41 @@ public interface SPI {
      * @param folder the containing folder, or {@code null}
      * @param contentStream the content stream, or {@code null}
      * @param versioningState the versioning state
-     *
      * @return the ID of the created document
+     *
+     * @throws ConstraintViolationException if the properties are not legal
+     * @throws StreamNotSupportedException if <em>contentStream</em> is not
+     *             {@code null} and a content stream is not supported on the
+     *             document
+     * @throws NameConstraintViolationException if the name is not legal
      */
     ObjectId createDocument(Map<String, Serializable> properties,
             ObjectId folder, ContentStream contentStream,
-            VersioningState versioningState);
+            VersioningState versioningState)
+            throws NameConstraintViolationException;
+
+    // TODO 1.0 createDocumentFromSource
 
     /**
      * Creates a folder.
      *
      * @param properties the properties
      * @param folder the containing folder
-     *
      * @return the ID of the created folder
+     *
+     * @throws ConstraintViolationException if the properties are not legal
+     * @throws NameConstraintViolationException if the name is not legal
      */
-    ObjectId createFolder(Map<String, Serializable> properties, ObjectId folder);
+    ObjectId createFolder(Map<String, Serializable> properties, ObjectId folder)
+            throws NameConstraintViolationException;
 
     /**
      * Creates a relationship.
      *
      * @param properties the properties
-     *
      * @return the ID of the created relationship
+     *
+     * @throws ConstraintViolationException if the properties are not legal
      */
     ObjectId createRelationship(Map<String, Serializable> properties);
 
@@ -259,8 +293,9 @@ public interface SPI {
      *
      * @param properties the properties
      * @param folder the containing folder, or {@code null}
-     *
      * @return the ID of the created policy
+     *
+     * @throws ConstraintViolationException if the properties are not legal
      */
     ObjectId createPolicy(Map<String, Serializable> properties, ObjectId folder);
 
@@ -275,6 +310,8 @@ public interface SPI {
      * @return the allowable actions
      */
     Collection<QName> getAllowableActions(ObjectId object);
+
+    // TODO 1.0 getObject
 
     /**
      * Gets the properties of an object.
@@ -296,6 +333,8 @@ public interface SPI {
      *            included as well
      * @return the properties of the object, or {@code null} if the object is
      *         not found
+     *
+     * @throws FilterNotValidException if the filter is not valid
      */
     ObjectEntry getProperties(ObjectId object, String filter,
             boolean includeAllowableActions, boolean includeRelationships);
@@ -310,6 +349,8 @@ public interface SPI {
      *            included as well
      * @return the properties of the object, or {@code null} if the object is
      *         not found
+     *
+     * @throws FilterNotValidException if the filter is not valid
      */
     ObjectEntry getObjectByPath(String path, String filter,
             boolean includeAllowableActions, boolean includeRelationships);
@@ -355,10 +396,14 @@ public interface SPI {
      * @param contentStreamId the content stream ID, or {@code null}
      * @return the content stream
      *
+     * @throws ConstraintViolationException if the object does not have a
+     *             content stream or rendition stream
      * @throws IOException
      */
     ContentStream getContentStream(ObjectId object, String contentStreamId)
             throws IOException;
+
+    // TODO 1.0 getRenditions
 
     /**
      * Sets the content stream for a document.
@@ -379,10 +424,20 @@ public interface SPI {
      * @param contentStream the content stream to set
      * @return the resulting document, which may differ from the one passed as
      *         input
+     *
+     * @throws StreamNotSupportedException if a content stream is not allowed on
+     *             the document
+     * @throws ContentAlreadyExistsException if the document already has a
+     *             content stream and {@code overwrite} is {@code false}
+     * @throws UpdateConflictException if the document is no longer current
+     * @throws VersioningException if the update cannot be applied to a
+     *             non-latest version
+     * @throws IOException
      */
     // TODO return ObjectId or ObjectEntry?
     ObjectId setContentStream(ObjectId document, boolean overwrite,
-            ContentStream contentStream);
+            ContentStream contentStream) throws IOException,
+            ContentAlreadyExistsException, UpdateConflictException;
 
     /**
      * Deletes the content stream for a document.
@@ -399,8 +454,15 @@ public interface SPI {
      * @param document the document
      * @return the resulting document, which may differ from the one passed as
      *         input
+     *
+     * @throws ConstraintViolationException if a content stream is required on
+     *             the document
+     * @throws UpdateConflictException if the document is no longer current
+     * @throws VersioningException if the update cannot be applied to a
+     *             non-latest version
      */
-    ObjectId deleteContentStream(ObjectId document);
+    ObjectId deleteContentStream(ObjectId document)
+            throws UpdateConflictException;
 
     /**
      * Updates the properties of an object.
@@ -424,10 +486,20 @@ public interface SPI {
      * @param properties the properties to change
      * @return the resulting object, which may differ from the one passed as
      *         input
+     *
+     * @throws ConstraintViolationException if the properties are not legal, for
+     *             instance if any of the property violates the
+     *             min/max/required/length constraints specified in the relevant
+     *             property definition
+     * @throws NameConstraintViolationException if the name is not legal
+     * @throws UpdateConflictException if the object is no longer current
+     * @throws VersioningException if the update cannot be applied to a
+     *             non-latest version
      */
     // TODO return ObjectId or ObjectEntry?
     ObjectId updateProperties(ObjectId object, String changeToken,
-            Map<String, Serializable> properties);
+            Map<String, Serializable> properties)
+            throws NameConstraintViolationException, UpdateConflictException;
 
     /**
      * Moves the specified filed object from one folder to another.
@@ -441,9 +513,20 @@ public interface SPI {
      * @param sourceFolder the source folder, or {@code null}
      * @return the resulting object, which may differ from the one passed as
      *         input
+     *
+     * @throws IllegalArgumentException if sourceFolder is not a parent of the
+     *             object
+     * @throws ConstraintViolationException if the object's type isn't allowed
+     *             as a child object type in the targetFolder
+     * @throws NameConstraintViolationException if the object name is not legal
+     *             in its new parent folder
+     * @throws UpdateConflictException if the object is no longer current
+     * @throws VersioningException if the move cannot be done to a non-latest
+     *             version
      */
     ObjectId moveObject(ObjectId object, ObjectId targetFolder,
-            ObjectId sourceFolder);
+            ObjectId sourceFolder) throws NameConstraintViolationException,
+            UpdateConflictException;
 
     /**
      * Deletes the specified object.
@@ -456,12 +539,16 @@ public interface SPI {
      * series is deleted.
      * <p>
      * Deletion of a private working copy (checked out version) is the same as
-     * the cancelling of a checkout.
+     * the canceling of a checkout.
      *
      * @param object the object to delete
      * @param allVersions if {@code true}, then delete all versions as well
+     *
+     * @throws ConstraintViolationException if the object is a non-empty folder
+     * @throws UpdateConflictException if the object is no longer current
      */
-    void deleteObject(ObjectId object, boolean allVersions);
+    void deleteObject(ObjectId object, boolean allVersions)
+            throws UpdateConflictException;
 
     /**
      * Deletes a tree of objects.
@@ -500,15 +587,25 @@ public interface SPI {
      * @param continueOnFailure {@code true} if failure to delete one object
      *            should not stop deletion of other objects
      * @return the collection of IDs of objects that could not be deleted
+     *
+     * @throws UpdateConflictException if the object is no longer current
      */
     Collection<ObjectId> deleteTree(ObjectId folder, Unfiling unfiling,
-            boolean continueOnFailure);
+            boolean continueOnFailure) throws UpdateConflictException;
+
+    /*
+     * ----- Multi-Filing Services -----
+     */
 
     /**
      * Adds an existing non-folder, fileable object to a folder.
      *
      * @param object the object
      * @param folder the folder
+     * @param allVersions TODO
+     *
+     * @throws ConstraintViolationException if the object's type isn't allowed
+     *             as a child object type in the folder
      */
     void addObjectToFolder(ObjectId object, ObjectId folder);
 
@@ -524,6 +621,9 @@ public interface SPI {
      *
      * @param object the object
      * @param folder the folder, or {@code null} for all folders
+     *
+     * @throws ConstraintViolationException if removing the object would delete
+     *             it
      */
     void removeObjectFromFolder(ObjectId object, ObjectId folder);
 
@@ -568,6 +668,8 @@ public interface SPI {
      * @param paging paging information, or {@code null} for a
      *            repository-specific default
      * @return the matching objects
+     *
+     * @throws IllegalArgumentException if the statement is invalid
      */
     // TODO returns a result set actually, there may be computed values
     ListPage<ObjectEntry> query(String statement, boolean searchAllVersions,
@@ -598,9 +700,14 @@ public interface SPI {
      *            repository-specific default
      * @return a paged list of change events
      *
+     * @throws ConstraintViolationException if the event corresponding to
+     *             {@code changeLogToken} is no longer available in the change
+     *             log
+     *
      * @see Repository#getInfo
      * @see RepositoryInfo#getLatestChangeLogToken
      */
+    // TODO 1.0 rename to getContentChanges
     ListPage<ObjectEntry> getChangeLog(String changeLogToken,
             boolean includeProperties, Paging paging,
             String[] latestChangeLogToken);
@@ -632,8 +739,14 @@ public interface SPI {
      * @param document the document
      * @param contentCopied a return array of size 1
      * @return a reference to the private working copy
+     *
+     * @throws ConstraintViolationException if the document is not versionable
+     * @throws UpdateConflictException if the object is no longer current
+     * @throws VersioningException if the checkout cannot be applied to a
+     *             non-latest version
      */
-    ObjectId checkOut(ObjectId document, boolean[] contentCopied);
+    ObjectId checkOut(ObjectId document, boolean[] contentCopied)
+            throws UpdateConflictException;
 
     /**
      * Cancels a check-out.
@@ -643,8 +756,13 @@ public interface SPI {
      * to be checked out again.
      *
      * @param document the private working copy
+     *
+     * @throws ConstraintViolationException if the document is not versionable
+     * @throws UpdateConflictException if the object is no longer current
+     * @throws VersioningException if the checkout cannot be applied to a
+     *             non-latest version
      */
-    void cancelCheckOut(ObjectId document);
+    void cancelCheckOut(ObjectId document) throws UpdateConflictException;
 
     /**
      * Checks in a private working copy.
@@ -658,10 +776,18 @@ public interface SPI {
      *            {@code null}
      * @param comment a check-in comment, or {@code null}
      * @return a reference to the new version of the document
+     *
+     * @throws ConstraintViolationException if the document is not versionable
+     * @throws StreamNotSupportedException if <em>contentStream</em> is not
+     *             {@code null} and a content stream is not supported on the
+     *             document
+     * @throws UpdateConflictException if the object is no longer current
      */
     ObjectId checkIn(ObjectId document, boolean major,
             Map<String, Serializable> properties, ContentStream contentStream,
-            String comment);
+            String comment) throws UpdateConflictException;
+
+    // TODO 1.0 getObjectOfLatestVersion
 
     /**
      * Gets the properties of the latest version.
@@ -676,6 +802,10 @@ public interface SPI {
      * @param major {@code true} if the last major version is requested
      * @param filter the properties filter, or {@code null} for all properties
      * @return a collection of properties
+     *
+     * @throws FilterNotValidException if the filter is not valid
+     * @throws ObjectNotFoundException if <em>major</em> is {@code true} and the
+     *             version series contains no major version
      */
     Map<String, Serializable> getPropertiesOfLatestVersion(
             String versionSeriesId, boolean major, String filter);
@@ -690,6 +820,8 @@ public interface SPI {
      *
      * @param versionSeriesId the version series ID
      * @param filter the properties filter, or {@code null} for all properties
+     *
+     * @throws FilterNotValidException if the filter is not valid
      */
     Collection<ObjectEntry> getAllVersions(String versionSeriesId, String filter);
 
@@ -698,7 +830,7 @@ public interface SPI {
      */
 
     /**
-     * Gets the relationships having as source or target a given document.
+     * Gets the relationships having as source or target a given object.
      * <p>
      * Returns a list of relationships associated with the given object,
      * optionally of a specified relationship type, and optionally in a
@@ -718,7 +850,10 @@ public interface SPI {
      * @param paging paging information, or {@code null} for a
      *            repository-specific default
      * @return the list of relationships
+     *
+     * @throws FilterNotValidException if the filter is not valid
      */
+    // TODO rename to getObjectRelationships
     ListPage<ObjectEntry> getRelationships(ObjectId object,
             RelationshipDirection direction, String typeId,
             boolean includeSubRelationshipTypes, String filter,
@@ -735,6 +870,8 @@ public interface SPI {
      *
      * @param object the target object
      * @param policy the policy
+     *
+     * @throws ConstraintViolationException if the object is not controllable
      */
     void applyPolicy(ObjectId object, ObjectId policy);
 
@@ -748,6 +885,8 @@ public interface SPI {
      *
      * @param object the target object
      * @param policy the policy
+     *
+     * @throws ConstraintViolationException if the object is not controllable
      */
     void removePolicy(ObjectId object, ObjectId policy);
 
@@ -762,6 +901,8 @@ public interface SPI {
      *
      * @param object the target object
      * @param filter the properties filter, or {@code null} for all properties
+     *
+     * @throws FilterNotValidException if the filter is not valid
      */
     Collection<ObjectEntry> getAppliedPolicies(ObjectId object, String filter);
 
@@ -799,6 +940,10 @@ public interface SPI {
      * @param removeACEs the ACEs to remove
      * @param propagation the ACL propagation to use
      * @return the new ACL
+     *
+     * @throws ConstraintViolationException if the object is not controllable,
+     *             the propagation value is not legal, or an ACE's permission is
+     *             not legal
      */
     List<ACE> applyACL(ObjectId object, List<ACE> addACEs,
             List<ACE> removeACEs, ACLPropagation propagation, boolean[] exact,

@@ -41,6 +41,7 @@ import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ListPage;
+import org.apache.chemistry.NameConstraintViolationException;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Paging;
@@ -188,7 +189,8 @@ public class JcrConnection implements Connection, SPI {
     // TODO add IOException to throws clause
     public ObjectId createDocument(Map<String, Serializable> properties,
             ObjectId folderId, ContentStream contentStream,
-            VersioningState versioningState) {
+            VersioningState versioningState)
+            throws NameConstraintViolationException {
 
         try {
             JcrFolder folder = (JcrFolder) getObject(folderId);
@@ -201,7 +203,7 @@ public class JcrConnection implements Connection, SPI {
             }
             doc.save();
             return new SimpleObjectId(doc.getId());
-        } catch (IOException e) {
+        } catch (Exception e) {
             String msg = "Unable to create document.";
             log.error(msg, e);
         }

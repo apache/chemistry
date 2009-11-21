@@ -48,6 +48,7 @@ import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.util.EntityTag;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMIS;
+import org.apache.chemistry.CMISRuntimeException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
@@ -340,13 +341,8 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             switch (baseType) {
             case DOCUMENT:
                 String filename = (String) posted.properties.get(Property.CONTENT_STREAM_FILE_NAME);
-                ContentStream contentStream;
-                try {
-                    contentStream = new SimpleContentStream(posted.stream,
-                            posted.mimeType, filename);
-                } catch (IOException e) {
-                    throw new ResponseContextException(500, e);
-                }
+                ContentStream contentStream = new SimpleContentStream(
+                        posted.stream, posted.mimeType, filename);
                 VersioningState versioningState = null; // TODO
                 objectId = spi.createDocument(posted.properties, folderId,
                         contentStream, versioningState);
@@ -374,6 +370,10 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             return buildCreateEntryResponse(link, entry);
         } catch (ResponseContextException e) {
             return createErrorResponse(e);
+        } catch (CMISRuntimeException e) {
+            return createErrorResponse(new ResponseContextException(500, e));
+        } catch (Exception e) {
+            return createErrorResponse(new ResponseContextException(500, e));
         }
     }
 
@@ -408,13 +408,8 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
                 if (filename == null) {
                     filename = (String) object.getValue(Property.CONTENT_STREAM_FILE_NAME);
                 }
-                ContentStream contentStream;
-                try {
-                    contentStream = new SimpleContentStream(put.stream,
-                            put.mimeType, filename);
-                } catch (IOException e) {
-                    throw new ResponseContextException(500, e);
-                }
+                ContentStream contentStream = new SimpleContentStream(
+                        put.stream, put.mimeType, filename);
                 spi.setContentStream(object, true, contentStream);
             }
 
@@ -432,6 +427,10 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
 
         } catch (ResponseContextException e) {
             return createErrorResponse(e);
+        } catch (CMISRuntimeException e) {
+            return createErrorResponse(new ResponseContextException(500, e));
+        } catch (Exception e) {
+            return createErrorResponse(new ResponseContextException(500, e));
         }
     }
 

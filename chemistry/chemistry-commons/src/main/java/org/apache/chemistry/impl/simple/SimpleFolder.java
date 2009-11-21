@@ -26,6 +26,7 @@ import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Unfiling;
+import org.apache.chemistry.UpdateConflictException;
 
 public class SimpleFolder extends SimpleObject implements Folder {
 
@@ -43,7 +44,8 @@ public class SimpleFolder extends SimpleObject implements Folder {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectId> deleteTree(Unfiling unfiling) {
+    public Collection<ObjectId> deleteTree(Unfiling unfiling)
+            throws UpdateConflictException {
         return entry.connection.getSPI().deleteTree(this, unfiling, true);
     }
 

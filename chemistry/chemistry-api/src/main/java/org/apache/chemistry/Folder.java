@@ -32,6 +32,9 @@ public interface Folder extends CMISObject {
      * Adds an existing non-folder, fileable object to this folder.
      *
      * @param object the object
+     *
+     * @throws ConstraintViolationException if the object's type isn't allowed
+     *             as a child object type in the folder
      */
     void add(CMISObject object);
 
@@ -46,6 +49,9 @@ public interface Folder extends CMISObject {
      *
      * @see CMISObject#delete
      * @see CMISObject#unfile
+     *
+     * @throws ConstraintViolationException if removing the object would delete
+     *             it
      */
     void remove(CMISObject object);
 
@@ -80,8 +86,11 @@ public interface Folder extends CMISObject {
      * @param unfiling how to unfile non-folder objects, if {@code null} then
      *            same as {@link Unfiling#DELETE}
      * @return the collection of IDs of objects that could not be deleted
+     *
+     * @throws UpdateConflictException if the folder is no longer current
      */
-    Collection<ObjectId> deleteTree(Unfiling unfiling);
+    Collection<ObjectId> deleteTree(Unfiling unfiling)
+            throws UpdateConflictException;
 
     /*
      * ----- Navigation Services -----
@@ -90,7 +99,7 @@ public interface Folder extends CMISObject {
     /**
      * Gets the direct children of this folder.
      * <p>
-     * The order of returned children is implementation-dependant.
+     * The order of returned children is implementation-dependent.
      *
      * @return the list of children
      */
@@ -104,11 +113,17 @@ public interface Folder extends CMISObject {
 
     /**
      * Creates a new, unsaved document as a child of this folder.
+     *
+     * @throws ConstraintViolationException if the type isn't allowed as a child
+     *             object type in the folder
      */
     Document newDocument(String typeId);
 
     /**
      * Creates a new, unsaved folder as a child of this folder.
+     *
+     * @throws ConstraintViolationException if the type isn't allowed as a child
+     *             object type in the folder
      */
     Folder newFolder(String typeId);
 

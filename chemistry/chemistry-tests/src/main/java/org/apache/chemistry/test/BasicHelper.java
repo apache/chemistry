@@ -16,7 +16,6 @@
  */
 package org.apache.chemistry.test;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
@@ -46,7 +45,7 @@ public class BasicHelper {
 
     public static final String TEST_FILE_CONTENT = "This is a test file.\nTesting, testing...\n";
 
-    public static Repository makeRepository(String rootId) throws IOException {
+    public static Repository makeRepository(String rootId) throws Exception {
         PropertyDefinition p1 = new SimplePropertyDefinition("title",
                 "def:title", null, "title", "Title", "", false,
                 PropertyType.STRING, false, null, false, false, "(no title)",

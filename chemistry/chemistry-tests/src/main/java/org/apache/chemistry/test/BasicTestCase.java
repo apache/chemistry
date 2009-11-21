@@ -373,7 +373,7 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals(blobBytes.length, cs.getLength());
     }
 
-    public void testNewFolder() {
+    public void testNewFolder() throws Exception {
         Folder root = conn.getRootFolder();
         assertNull(getDocumentChild(root));
         Folder fold = root.newFolder("fold");
@@ -401,7 +401,7 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals("mytitle", fold.getString("title"));
     }
 
-    public void testUpdateSPI() {
+    public void testUpdateSPI() throws Exception {
         ObjectEntry ob = spi.getObjectByPath("/folder 1/doc 1", null, false,
                 false);
         assertEquals("doc 1 title", ob.getValue("title"));

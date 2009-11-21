@@ -56,8 +56,19 @@ public interface CMISObject extends ObjectId {
      *
      * @param targetFolder the target folder
      * @param sourceFolder the source folder, or {@code null}
+     *
+     * @throws IllegalArgumentException if sourceFolder is not a parent of the
+     *             object
+     * @throws ConstraintViolationException if the object's type isn't allowed
+     *             as a child object type in targetFolder
+     * @throws NameConstraintViolationException if the object name is not legal
+     *             in its new parent folder
+     * @throws UpdateConflictException if the object is no longer current
+     * @throws VersioningException if the move cannot be done to a non-latest
+     *             version
      */
-    void move(Folder targetFolder, Folder sourceFolder);
+    void move(Folder targetFolder, Folder sourceFolder)
+            throws NameConstraintViolationException, UpdateConflictException;
 
     /**
      * Deletes this object.
@@ -70,8 +81,11 @@ public interface CMISObject extends ObjectId {
      * <p>
      * Deletion of a private working copy (checked out version) is the same as
      * to cancel checkout.
+     *
+     * @throws ConstraintViolationException if the object is a non-empty folder
+     * @throws UpdateConflictException if the object is no longer current
      */
-    void delete();
+    void delete() throws UpdateConflictException;
 
     /**
      * Unfiles this non-folder object.
@@ -99,11 +113,13 @@ public interface CMISObject extends ObjectId {
      * parent (for the root folder).
      * <p>
      * For a non-folder, if the object is single-filed then the folder in which
-     * it is filed is returned, otherwise if the folder is unfiled then {@code
-     * null} is returned. An exception is raised if the object is multi-filed,
-     * so in doubt use {@link #getParents}.
+     * it is filed is returned, otherwise if the object is unfiled or not
+     * fileable then {@code null} is returned. An exception is raised if the
+     * object is multi-filed, so in doubt use {@link #getParents}.
      *
      * @return the parent folder, or {@code null}.
+     *
+     * @throws ConstraintViolationException if the object is multi-filed
      *
      * @see #getParents
      */
@@ -111,8 +127,6 @@ public interface CMISObject extends ObjectId {
 
     /**
      * Gets the direct parents of this object.
-     * <p>
-     * The object must be a non-folder, fileable object.
      *
      * @return the collection of parent folders
      *
@@ -154,6 +168,8 @@ public interface CMISObject extends ObjectId {
      * The object must be controllable.
      *
      * @param policy the policy
+     *
+     * @throws ConstraintViolationException if the object is not controllable
      */
     void applyPolicy(Policy policy);
 
@@ -166,6 +182,8 @@ public interface CMISObject extends ObjectId {
      * The object must be controllable.
      *
      * @param policy the policy
+     *
+     * @throws ConstraintViolationException if the object is not controllable
      */
     void removePolicy(Policy policy);
 
@@ -227,8 +245,17 @@ public interface CMISObject extends ObjectId {
      *
      * @param id the property ID
      * @param value the property value, or {@code null}
+     *
+     * @throws ConstraintViolationException if the value is not legal, for
+     *             instance if a min/max/required/length constraint is violated
+     * @throws NameConstraintViolationException if the name is set and is not
+     *             legal
+     * @throws UpdateConflictException if the object is no longer current
+     * @throws VersioningException if the update cannot be applied to a
+     *             non-latest version
      */
-    void setValue(String id, Serializable value);
+    void setValue(String id, Serializable value)
+            throws NameConstraintViolationException, UpdateConflictException;
 
     /**
      * Sets several property values.
@@ -239,15 +266,27 @@ public interface CMISObject extends ObjectId {
      * see {@link #save()}.
      *
      * @param values the property values
+     *
+     * @throws ConstraintViolationException if the values are not legal, for
+     *             instance if any of the value violates the
+     *             min/max/required/length constraints specified in the relevant
+     *             property definition
+     * @throws NameConstraintViolationException if the name is set and is not
+     *             legal
+     * @throws UpdateConflictException if the object is no longer current
+     * @throws VersioningException if the update cannot be applied to a
+     *             non-latest version
      */
-    void setValues(Map<String, Serializable> values);
+    void setValues(Map<String, Serializable> values)
+            throws NameConstraintViolationException, UpdateConflictException;
 
     /**
      * Gets a content stream for this document.
      *
      * @param contentStreamId the content stream ID, or {@code null} for the
      *            primary content stream
-     * @return the content stream
+     * @return the content stream, or {@code null} if the object does not have a
+     *         content stream or rendition stream
      *
      * @throws IOException
      */
@@ -263,8 +302,19 @@ public interface CMISObject extends ObjectId {
      * <p>
      * Calling {#link #save} is needed for objects newly created through
      * {@link Connection#newDocument} and similar methods.
+     *
+     * @throws ConstraintViolationException if the saved values are not legal,
+     *             for instance if any of the value violates the
+     *             min/max/required/length constraints specified in the relevant
+     *             property definition
+     * @throws NameConstraintViolationException if the name is set and is not
+     *             legal
+     * @throws UpdateConflictException if the object is no longer current
+     * @throws VersioningException if the update cannot be applied to a
+     *             non-latest version
      */
-    void save();
+    void save() throws NameConstraintViolationException,
+            UpdateConflictException;
 
     /*
      * ----- convenience methods -----
@@ -350,6 +400,11 @@ public interface CMISObject extends ObjectId {
      * ----- convenience methods for specific properties (setter) -----
      */
 
-    void setName(String value);
+    /**
+     * Sets the name.
+     *
+     * @throws NameConstraintViolationException if the name is not legal
+     */
+    void setName(String value) throws NameConstraintViolationException;
 
 }

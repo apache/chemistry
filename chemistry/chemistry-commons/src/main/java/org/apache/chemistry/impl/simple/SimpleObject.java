@@ -31,6 +31,7 @@ import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.UpdateConflictException;
 import org.apache.chemistry.impl.base.BaseObject;
 
 /**
@@ -69,7 +70,7 @@ public class SimpleObject extends BaseObject {
         throw new UnsupportedOperationException();
     }
 
-    public void delete() {
+    public void delete() throws UpdateConflictException {
         entry.connection.getSPI().deleteObject(this, false);
     }
 
