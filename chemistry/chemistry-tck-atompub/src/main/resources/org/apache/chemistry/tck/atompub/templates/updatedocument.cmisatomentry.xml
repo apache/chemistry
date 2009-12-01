@@ -4,8 +4,5 @@
   <title>Updated Title ${NAME}</title>
   <updated>2009-01-01T00:00:00Z</updated>
   <content>this content must be ignored ${NAME}</content>   <!--  must be overridden by cmisra:content -->
-  <cmisra:content>
-    <cmisra:mediatype>text/plain</cmisra:mediatype>
-    <cmisra:base64>${CMISCONTENT}</cmisra:base64>
-  </cmisra:content>
+  <cmisra:content>${CMISCONTENT}</cmisra:content>
 </entry>
