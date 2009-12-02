@@ -6,10 +6,10 @@
   <author>admin</author>
   <summary>${NAME} (summary)</summary>
   <content type="text">Must be ignored - overridden by cmisra:content</content>
-  <cmisra:content>
-    <cmisra:mediatype>text/plain</cmisra:mediatype>
-    <cmisra:base64>${CMISCONTENT}</cmisra:base64>
-  </cmisra:content>
+  <cmisra:content>
+    <cmisra:mediatype>text/plain</cmisra:mediatype>
+    <cmisra:base64>${CMISCONTENT}</cmisra:base64>
+  </cmisra:content>
   <cmisra:object>
     <cmis:properties>
       <cmis:propertyId propertyDefinitionId="cmis:objectTypeId">
