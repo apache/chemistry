@@ -92,17 +92,22 @@ public class CMISQueryFeed extends CMISObjectsCollection {
     @Override
     public Iterable<ObjectEntry> getEntries(RequestContext request)
             throws ResponseContextException {
-        SPI spi = repository.getSPI(); // TODO XXX connection leak
-        boolean searchAllVersions = false;
-        boolean includeAllowableActions = false;
-        boolean includeRelationships = false;
-        boolean includeRenditions = false;
-        int maxItems = -1;
-        int skipCount = 0;
-        ListPage<ObjectEntry> results = spi.query(statement, searchAllVersions,
-                includeAllowableActions, includeRelationships,
-                includeRenditions, new Paging(maxItems, skipCount));
-        return results;
+        SPI spi = repository.getSPI();
+        try {
+            boolean searchAllVersions = false;
+            boolean includeAllowableActions = false;
+            boolean includeRelationships = false;
+            boolean includeRenditions = false;
+            int maxItems = -1;
+            int skipCount = 0;
+            ListPage<ObjectEntry> results = spi.query(statement,
+                    searchAllVersions, includeAllowableActions,
+                    includeRelationships, includeRenditions, new Paging(
+                            maxItems, skipCount));
+            return results;
+        } finally {
+            spi.close();
+        }
     }
 
 }

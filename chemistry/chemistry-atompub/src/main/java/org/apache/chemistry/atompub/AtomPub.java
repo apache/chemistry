@@ -43,9 +43,17 @@ public class AtomPub {
 
     public static final QName ATOM_ENTRY = new QName(ATOM_NS, "entry");
 
+    public static final QName ATOM_CONTENT = new QName(ATOM_NS, "content");
+
     public static final QName ATOM_LINK = new QName(ATOM_NS, "link");
 
     public static final QName APP_COLLECTION = new QName(APP_NS, "collection");
+
+    /*
+     * ----- Headers -----
+     */
+
+    public static final String HEADER_SLUG = "Slug";
 
     /*
      * ----- Media Types -----

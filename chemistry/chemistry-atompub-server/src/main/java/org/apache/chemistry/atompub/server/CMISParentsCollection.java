@@ -54,10 +54,15 @@ public class CMISParentsCollection extends CMISObjectsCollection {
     @Override
     public Iterable<ObjectEntry> getEntries(RequestContext request)
             throws ResponseContextException {
-        SPI spi = repository.getSPI(); // TODO XXX connection leak
-        ObjectId objectId = spi.newObjectId(id);
-        Collection<ObjectEntry> parents = spi.getObjectParents(objectId, null);
-        return parents;
+        SPI spi = repository.getSPI();
+        try {
+            ObjectId objectId = spi.newObjectId(id);
+            Collection<ObjectEntry> parents = spi.getObjectParents(objectId,
+                    null);
+            return parents;
+        } finally {
+            spi.close();
+        }
     }
 
 }

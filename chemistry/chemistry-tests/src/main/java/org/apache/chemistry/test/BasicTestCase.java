@@ -53,6 +53,7 @@ import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
+import org.apache.chemistry.impl.simple.SimpleObjectId;
 import org.apache.chemistry.util.GregorianCalendar;
 import org.apache.commons.io.IOUtils;
 
@@ -322,6 +323,37 @@ public abstract class BasicTestCase extends TestCase {
         byte[] array = IOUtils.toByteArray(in);
         assertTrue(array.length != 0);
         assertEquals(array.length, cs.getLength());
+    }
+
+    public void testContentStreamSPI() throws Exception {
+        // set
+        ObjectEntry ob = spi.getObjectByPath("/folder 1/doc 1", null, false,
+                false);
+        SimpleObjectId id = new SimpleObjectId(ob.getId());
+        assertFalse(spi.hasContentStream(id)); // unfetched
+        assertFalse(spi.hasContentStream(ob)); // fetched
+        byte[] blobBytes = "A file...\n".getBytes("UTF-8");
+        String filename = "doc.txt";
+        ContentStream cs = new SimpleContentStream(blobBytes,
+                "text/plain;charset=UTF-8", filename);
+        spi.setContentStream(ob, true, cs);
+
+        // refetch
+        assertTrue(spi.hasContentStream(id));
+        cs = spi.getContentStream(id, null);
+        assertNotNull(cs);
+        assertEquals(filename, cs.getFileName());
+        assertEquals("text/plain;charset=UTF-8", cs.getMimeType().replace(" ",
+                ""));
+        InputStream in = cs.getStream();
+        assertNotNull(in);
+        byte[] array = IOUtils.toByteArray(in);
+        assertEquals(blobBytes.length, array.length);
+        assertEquals(blobBytes.length, cs.getLength());
+
+        // delete
+        spi.deleteContentStream(id);
+        assertFalse(spi.hasContentStream(id));
     }
 
     public void testNewDocument() throws Exception {

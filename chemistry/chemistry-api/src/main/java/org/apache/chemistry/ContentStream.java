@@ -41,6 +41,9 @@ public interface ContentStream {
 
     /**
      * The actual byte stream for this content stream.
+     * <p>
+     * Note that some implementations may allow the stream to be fetched and
+     * read only once.
      *
      * @throws IOException
      */

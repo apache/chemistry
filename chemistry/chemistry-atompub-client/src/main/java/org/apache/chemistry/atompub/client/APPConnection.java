@@ -19,6 +19,7 @@
 package org.apache.chemistry.atompub.client;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,6 +61,7 @@ import org.apache.chemistry.atompub.client.connector.Request;
 import org.apache.chemistry.atompub.client.connector.Response;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.XmlProperty;
+import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.impl.simple.SimpleListPage;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
 
@@ -296,38 +298,16 @@ public class APPConnection implements Connection, SPI {
      * ----- Object Services -----
      */
 
-    /*
-     * TODO hardcoded Chemistry URL pattern here...
-     */
+    // TODO add hints about what we'd like to fetch from the entry (stream,
+    // props, etc.)
     protected APPObjectEntry getObjectEntry(ObjectId objectId) {
         if (objectId instanceof APPObjectEntry) {
-            return ((APPObjectEntry) objectId);
+            return (APPObjectEntry) objectId;
         }
-        String href;
         URITemplate uriTemplate = repository.getURITemplate(AtomPubCMIS.URITMPL_OBJECT_BY_ID);
-        if (uriTemplate != null) {
-            // use entry-by-id URI template
-            href = uriTemplate.template;
-            // TODO proper URI template syntax
-            href = href.replace("{id}", objectId.getId());
-        } else {
-            // TODO do a search (maybe 4 searches as base type unknown)
-
-            // XXX hardcoded Chemistry URL pattern
-            href = repository.getCollectionHref(AtomPubCMIS.COL_ROOT);
-            if (href.matches(".*/children/[0-9a-f-]{36}")) {
-                href = href.substring(0, href.length() - "/children/".length()
-                        - 36);
-            } else {
-                if (href.matches(".*/children$")) {
-                    href = href.substring(0, href.length()
-                            - "/children".length());
-                } else {
-                    throw new AssertionError(href);
-                }
-            }
-            href += "/object/" + objectId.getId();
-        }
+        String href = uriTemplate.template;
+        // TODO proper URI template syntax
+        href = href.replace("{id}", objectId.getId());
         Response resp = connector.get(new Request(href));
         if (!resp.isOk()) {
             throw new ContentManagerException(
@@ -443,26 +423,92 @@ public class APPConnection implements Connection, SPI {
     }
 
     public boolean hasContentStream(ObjectId document) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        APPObjectEntry current = getObjectEntry(document);
+        ContentStream cs = current.getContentStream();
+        if (cs == null) {
+            return false;
+        }
+        if (cs != APPObjectEntry.REMOTE_CONTENT_STREAM) {
+            return true;
+        }
+        String href = current.getContentHref();
+        return href != null;
     }
 
     public ContentStream getContentStream(ObjectId object,
             String contentStreamId) throws IOException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        APPObjectEntry current = getObjectEntry(object);
+        ContentStream cs = current.getContentStream();
+        if (cs != APPObjectEntry.REMOTE_CONTENT_STREAM) {
+            return cs;
+        }
+
+        // must fetch the content stream
+        String href = current.getContentHref();
+        if (href == null) {
+            throw new RuntimeException("Object is missing content src");
+        }
+        Request req = new Request(href);
+        Response resp = connector.get(req);
+        if (!resp.isOk()) {
+            // TODO exceptions
+            throw new ContentManagerException(
+                    "Remote server returned error code: "
+                            + resp.getStatusCode());
+        }
+        // get MIME type and filename from entry
+        InputStream stream = resp.getStream();
+        // String mimeType = resp.getHeader("Content-Type");
+        String mimeType = (String) current.getValue(Property.CONTENT_STREAM_MIME_TYPE);
+        String filename = (String) current.getValue(Property.CONTENT_STREAM_FILE_NAME);
+        cs = new SimpleContentStream(stream, mimeType, filename);
+        // current.localContentStream = cs; // problem reusing the stream
+        return cs;
     }
 
     public ObjectId setContentStream(ObjectId document, boolean overwrite,
-            ContentStream contentStream) {
-        // LINK_EDIT_MEDIA
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+            ContentStream cs) throws IOException {
+        APPObjectEntry current = getObjectEntry(document);
+        String href = current.getLink(AtomPub.LINK_EDIT_MEDIA);
+        if (href == null) {
+            throw new RuntimeException("Document is missing link "
+                    + AtomPub.LINK_EDIT_MEDIA);
+        }
+        Request req = new Request(href);
+        String filename = cs.getFileName();
+        if (filename != null) {
+            // Use Slug: header for filename
+            req.setHeader(AtomPub.HEADER_SLUG, filename);
+        }
+        Response resp = connector.put(req, cs.getStream(), cs.getLength(),
+                cs.getMimeType());
+        if (!resp.isOk()) {
+            // TODO exceptions
+            throw new ContentManagerException(
+                    "Remote server returned error code: "
+                            + resp.getStatusCode());
+        }
+        // TODO AtomPub cannot return a new id... (autoversioning)
+        return new SimpleObjectId(document.getId());
     }
 
     public ObjectId deleteContentStream(ObjectId document) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        APPObjectEntry current = getObjectEntry(document);
+        String href = current.getLink(AtomPub.LINK_EDIT_MEDIA);
+        if (href == null) {
+            throw new RuntimeException("Document is missing link "
+                    + AtomPub.LINK_EDIT_MEDIA);
+        }
+        Response resp = connector.delete(new Request(href));
+        if (!resp.isOk()) {
+            // TODO exceptions
+            throw new ContentManagerException(
+                    "Remote server returned error code: "
+                            + resp.getStatusCode());
+        }
+
+        // TODO AtomPub cannot return a new id... (autoversioning)
+        return new SimpleObjectId(document.getId());
     }
 
     public ObjectId updateProperties(ObjectId object, String changeToken,
@@ -478,6 +524,10 @@ public class APPConnection implements Connection, SPI {
         update._setValue(Property.NAME, current.getValue(Property.NAME));
 
         String href = current.getLink(AtomPub.LINK_EDIT);
+        if (href == null) {
+            throw new RuntimeException("Object is missing link "
+                    + AtomPub.LINK_EDIT);
+        }
         Request req = new Request(href);
         req.setHeader("Content-Type", AtomPub.MEDIA_TYPE_ATOM_ENTRY);
         Response resp = connector.putObject(req, update);

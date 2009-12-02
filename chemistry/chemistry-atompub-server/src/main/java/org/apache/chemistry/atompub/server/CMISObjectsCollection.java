@@ -116,6 +116,15 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         return rc;
     }
 
+    protected ResponseContext buildCreateMediaResponse(String mediaLink,
+            Entry entry) {
+        BaseResponseContext<Entry> rc = new BaseResponseContext<Entry>(entry);
+        rc.setLocation(mediaLink);
+        rc.setContentLocation(mediaLink);
+        rc.setStatus(201);
+        return rc;
+    }
+
     /*
      * ----- CollectionInfo -----
      */
@@ -179,6 +188,8 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             entry.addLink(getDescendantsLink(oid, request), AtomPub.LINK_DOWN,
                     AtomPubCMIS.MEDIA_TYPE_CMIS_TREE, null, null, -1);
         } else if (baseType == BaseType.DOCUMENT) {
+            // edit-media link always needed for setContentStream
+            entry.addLink(getMediaLink(oid, request), AtomPub.LINK_EDIT_MEDIA);
             // TODO don't add link if no parents
             entry.addLink(getParentsLink(oid, request), AtomPub.LINK_UP,
                     AtomPub.MEDIA_TYPE_ATOM_FEED, null, null, -1);
@@ -330,10 +341,10 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     public ResponseContext postEntry(RequestContext request) {
         // TODO parameter sourceFolderId
         // TODO parameter versioningState
+        SPI spi = repository.getSPI();
         try {
             PropertiesAndStream posted = extractCMISProperties(request, null);
 
-            SPI spi = repository.getSPI(); // TODO XXX connection leak
             ObjectId folderId = spi.newObjectId(id);
             ObjectId objectId;
             String typeId = (String) posted.properties.get(Property.TYPE_ID);
@@ -374,6 +385,8 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             return createErrorResponse(new ResponseContextException(500, e));
         } catch (Exception e) {
             return createErrorResponse(new ResponseContextException(500, e));
+        } finally {
+            spi.close();
         }
     }
 
@@ -387,10 +400,10 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
 
     @Override
     public ResponseContext putEntry(RequestContext request) {
+        SPI spi = repository.getSPI();
         try {
             // existing object
             String id = getResourceName(request);
-            SPI spi = repository.getSPI(); // TODO XXX connection leak
             ObjectEntry object = spi.getProperties(spi.newObjectId(id), null,
                     false, false);
             if (object == null) {
@@ -423,7 +436,8 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             } else {
                 addContent(entry, object, request);
             }
-            return buildGetEntryResponse(request, entry);
+            String mediaLink = getMediaLink(object.getId(), request);
+            return buildCreateMediaResponse(mediaLink, entry);
 
         } catch (ResponseContextException e) {
             return createErrorResponse(e);
@@ -431,6 +445,8 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             return createErrorResponse(new ResponseContextException(500, e));
         } catch (Exception e) {
             return createErrorResponse(new ResponseContextException(500, e));
+        } finally {
+            spi.close();
         }
     }
 
@@ -467,9 +483,14 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     @Override
     public boolean isMediaEntry(ObjectEntry object)
             throws ResponseContextException {
-        SPI spi = repository.getSPI(); // TODO XXX connection leak
-        return getContentType(object) != null && getContentSize(object) != -1
-                && spi.hasContentStream(object);
+        SPI spi = repository.getSPI();
+        try {
+            return getContentType(object) != null
+                    && getContentSize(object) != -1
+                    && spi.hasContentStream(object);
+        } finally {
+            spi.close();
+        }
     }
 
     @Override
@@ -478,8 +499,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             throws ResponseContextException {
         String mediaLink = getMediaLink(object.getId(), request);
         entry.setContent(new IRI(mediaLink), getContentType(object));
-        entry.addLink(mediaLink, AtomPub.LINK_EDIT_MEDIA,
-                getContentType(object), null, null, getContentSize(object));
+        // LINK_EDIT_MEDIA already added (always) by addEntryDetails
         return mediaLink;
     }
 
@@ -487,12 +507,9 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     @Override
     public Object getContent(ObjectEntry object, RequestContext request)
             throws ResponseContextException {
-        Factory factory = request.getAbdera().getFactory();
-        Content content = factory.newContent();
-        content.setContentType(null);
-        String mediaLink = getMediaLink(object.getId(), request);
-        content.setSrc(mediaLink);
-        return content;
+        // no content (content stream is exposed as media entry)
+        // mandatory LINK_ALTERNATE already added by addEntryDetails
+        return null;
     }
 
     public long getContentSize(ObjectEntry object) {
@@ -512,16 +529,21 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     @Override
     public ObjectEntry getEntry(String resourceName, RequestContext request)
             throws ResponseContextException {
-        SPI spi = repository.getSPI(); // TODO XXX connection leak
-        if ("path".equals(getType())) {
-            String path = resourceName;
-            if (!path.startsWith("/")) {
-                path = "/" + path;
+        SPI spi = repository.getSPI();
+        try {
+            if ("path".equals(getType())) {
+                String path = resourceName;
+                if (!path.startsWith("/")) {
+                    path = "/" + path;
+                }
+                return spi.getObjectByPath(path, null, false, false);
+            } else { // object
+                String id = resourceName;
+                return spi.getProperties(spi.newObjectId(id), null, false,
+                        false);
             }
-            return spi.getObjectByPath(path, null, false, false);
-        } else { // object
-            String id = resourceName;
-            return spi.getProperties(spi.newObjectId(id), null, false, false);
+        } finally {
+            spi.close();
         }
     }
 
@@ -553,12 +575,14 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     public InputStream getMediaStream(ObjectEntry object)
             throws ResponseContextException {
         // TODO entry was fetched for mostly nothing...
-        SPI spi = repository.getSPI(); // TODO XXX connection leak
+        SPI spi = repository.getSPI();
         try {
             ContentStream contentStream = spi.getContentStream(object, null);
             return contentStream == null ? null : contentStream.getStream();
         } catch (IOException e) {
             throw new ResponseContextException(500, e);
+        } finally {
+            spi.close();
         }
     }
 

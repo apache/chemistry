@@ -16,6 +16,7 @@
  */
 package org.apache.chemistry.atompub.client.connector;
 
+import java.io.InputStream;
 import java.util.List;
 
 import org.apache.chemistry.ObjectEntry;
@@ -38,6 +39,9 @@ public interface Connector {
             throws ContentManagerException;
 
     <T> Response put(Request operation, XmlObjectWriter<T> writer, T object)
+            throws ContentManagerException;
+
+    Response put(Request operation, InputStream in, long length, String type)
             throws ContentManagerException;
 
     Response get(Request operation) throws ContentManagerException;

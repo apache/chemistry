@@ -617,8 +617,7 @@ public class SimpleConnection implements Connection, SPI {
     }
 
     public ObjectId deleteContentStream(ObjectId document) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return setContentStream(document, true, null);
     }
 
     public ObjectId updateProperties(ObjectId object, String changeToken,

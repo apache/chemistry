@@ -18,6 +18,7 @@
 package org.apache.chemistry.atompub.client.connector;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -35,6 +36,7 @@ import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
@@ -142,6 +144,20 @@ public class HttpClientConnector implements Connector {
             setMethodHeaders(method, request);
             method.setRequestEntity(new XmlObjectWriterRequestEntity<T>(writer,
                     object));
+            client.executeMethod(method);
+            return new HttpClientResponse(method, io);
+        } catch (Exception e) {
+            throw new ContentManagerException("PUT request failed", e);
+        }
+    }
+
+    public Response put(Request request, InputStream in, long length,
+            String type) throws ContentManagerException {
+        try {
+            PutMethod method = new PutMethod(request.getUrl());
+            setMethodParams(method, request);
+            setMethodHeaders(method, request);
+            method.setRequestEntity(new InputStreamRequestEntity(in, length, type));
             client.executeMethod(method);
             return new HttpClientResponse(method, io);
         } catch (Exception e) {

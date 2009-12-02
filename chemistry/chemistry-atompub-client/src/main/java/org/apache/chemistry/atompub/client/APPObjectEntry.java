@@ -61,6 +61,10 @@ public class APPObjectEntry implements ObjectEntry {
 
     protected Map<QName, Boolean> allowableActions;
 
+    protected String remoteContentHref;
+
+    protected String remoteContentType;
+
     protected final List<Link> links;
 
     public static class Link {
@@ -110,6 +114,15 @@ public class APPObjectEntry implements ObjectEntry {
         }
         this.allowableActions = allowableActions;
         links = new ArrayList<Link>();
+    }
+
+    public void addContentHref(String href, String type) {
+        remoteContentHref = href;
+        remoteContentType = type;
+    }
+
+    public String getContentHref() {
+        return remoteContentHref;
     }
 
     public void addLink(String rel, String href, String type) {
