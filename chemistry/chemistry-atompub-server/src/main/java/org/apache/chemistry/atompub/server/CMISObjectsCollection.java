@@ -41,6 +41,7 @@ import org.apache.abdera.model.Text;
 import org.apache.abdera.protocol.server.ProviderHelper;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.ResponseContext;
+import org.apache.abdera.protocol.server.Target;
 import org.apache.abdera.protocol.server.context.AbstractResponseContext;
 import org.apache.abdera.protocol.server.context.BaseResponseContext;
 import org.apache.abdera.protocol.server.context.EmptyResponseContext;
@@ -531,16 +532,23 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             throws ResponseContextException {
         SPI spi = repository.getSPI();
         try {
+            Target target = request.getTarget();
+            String filter = target.getParameter(AtomPubCMIS.PARAM_FILTER);
+            boolean includeAllowableActions = getParameter(request,
+                    AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
+            boolean includeRelationships = getParameter(request,
+                    AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS, false);
             if ("path".equals(getType())) {
                 String path = resourceName;
                 if (!path.startsWith("/")) {
                     path = "/" + path;
                 }
-                return spi.getObjectByPath(path, null, false, false);
+                return spi.getObjectByPath(path, filter,
+                        includeAllowableActions, includeRelationships);
             } else { // object
                 String id = resourceName;
-                return spi.getProperties(spi.newObjectId(id), null, false,
-                        false);
+                return spi.getProperties(spi.newObjectId(id), filter,
+                        includeAllowableActions, includeRelationships);
             }
         } finally {
             spi.close();

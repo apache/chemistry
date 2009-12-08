@@ -188,6 +188,12 @@ public abstract class AtomPubServerTestCase extends TestCase {
         Element ob = resp.getDocument().getRoot();
         assertNotNull(ob);
 
+        resp = client.get(base + "/object/" + doc3id + '?'
+                + AtomPubCMIS.PARAM_FILTER + "=cmis:name");
+        assertEquals(200, resp.getStatus());
+        ob = resp.getDocument().getRoot();
+        assertNotNull(ob);
+
         HttpMethod method = new GetMethod(base + "/file/" + doc3id);
         int status = new HttpClient().executeMethod(method);
         assertEquals(HttpStatus.SC_OK, status);
