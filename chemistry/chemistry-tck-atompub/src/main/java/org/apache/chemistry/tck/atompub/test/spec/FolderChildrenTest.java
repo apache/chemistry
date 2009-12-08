@@ -41,7 +41,7 @@ import org.junit.Assert;
  * CMIS Folder Children Tests
  */
 public class FolderChildrenTest extends TCKTest {
-    
+
     public void testGetChildren() throws Exception {
         EntryTree folder = fixture.createTestTree("children", 1, 3, null, null);
 
@@ -72,7 +72,9 @@ public class FolderChildrenTest extends TCKTest {
         int pageCount = 0;
         while (nextLink != null) {
             pageCount++;
-            Feed children = client.getFeed(nextLink.getHref(), args);
+            IRI nextLinkHref = nextLink.getHref();
+            assertNotNull(nextLinkHref.getHost());
+            Feed children = client.getFeed(nextLinkHref, args);
             Assert.assertNotNull(children);
             Assert.assertEquals(pageCount < 4 ? 4 : 3, children.getEntries().size());
 
@@ -130,7 +132,7 @@ public class FolderChildrenTest extends TCKTest {
         Assert.assertNotNull(objectTypePropDef);
         String objectTypeIdQueryName = objectTypePropDef.getQueryName();
         Assert.assertNotNull(objectTypeIdQueryName);
-        
+
         // get children with object_id only
         Link childrenLink = client.getChildrenLink(folder.entry);
         Map<String, String> args = new HashMap<String, String>();

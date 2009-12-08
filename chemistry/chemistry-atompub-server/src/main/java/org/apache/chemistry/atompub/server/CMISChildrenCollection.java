@@ -108,7 +108,7 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
                     0);
             skipCount += entries.size();
             // compute new URI
-            String uri = request.getUri().toString();
+            String uri = request.getResolvedUri().toString();
             Pattern pat = Pattern.compile("(.*[?&]"
                     + AtomPubCMIS.PARAM_SKIP_COUNT + "=)(-?[0-9]+)(.*)");
             Matcher m = pat.matcher(uri);
