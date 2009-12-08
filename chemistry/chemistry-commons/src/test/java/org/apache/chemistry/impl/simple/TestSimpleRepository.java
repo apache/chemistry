@@ -16,6 +16,7 @@
  */
 package org.apache.chemistry.impl.simple;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -201,6 +202,10 @@ public class TestSimpleRepository extends TestCase {
 
         byte[] bytes = SimpleContentStream.getBytes(cs.getStream());
         assertEquals(string, new String(bytes, "UTF-8"));
+
+        InputStream stream = null;
+        cs = new SimpleContentStream(stream, null, "empty.txt");
+        assertNull(cs.getStream());
     }
 
     public void testRemoveDocument() throws Exception {

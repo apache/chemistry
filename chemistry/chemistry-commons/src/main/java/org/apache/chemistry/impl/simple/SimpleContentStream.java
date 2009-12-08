@@ -47,8 +47,8 @@ public class SimpleContentStream implements ContentStream {
             String filename) throws IOException {
         this.mimeType = mimeType;
         this.filename = filename;
-        bytes = getBytes(stream);
-        length = bytes.length;
+        bytes = stream == null ? null : getBytes(stream);
+        length = bytes == null ? 0 : bytes.length;
     }
 
     protected static byte[] getBytes(InputStream stream) throws IOException {
@@ -74,7 +74,7 @@ public class SimpleContentStream implements ContentStream {
     }
 
     public InputStream getStream() {
-        return new ByteArrayInputStream(bytes);
+        return bytes == null ? null : new ByteArrayInputStream(bytes);
     }
 
 }

@@ -353,8 +353,9 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             switch (baseType) {
             case DOCUMENT:
                 String filename = (String) posted.properties.get(Property.CONTENT_STREAM_FILE_NAME);
-                ContentStream contentStream = new SimpleContentStream(
-                        posted.stream, posted.mimeType, filename);
+                ContentStream contentStream = posted.stream == null ? null
+                        : new SimpleContentStream(posted.stream,
+                                posted.mimeType, filename);
                 VersioningState versioningState = null; // TODO
                 objectId = spi.createDocument(posted.properties, folderId,
                         contentStream, versioningState);
@@ -422,8 +423,9 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
                 if (filename == null) {
                     filename = (String) object.getValue(Property.CONTENT_STREAM_FILE_NAME);
                 }
-                ContentStream contentStream = new SimpleContentStream(
-                        put.stream, put.mimeType, filename);
+                ContentStream contentStream = put.stream == null ? null
+                        : new SimpleContentStream(put.stream, put.mimeType,
+                                filename);
                 spi.setContentStream(object, true, contentStream);
             }
 
