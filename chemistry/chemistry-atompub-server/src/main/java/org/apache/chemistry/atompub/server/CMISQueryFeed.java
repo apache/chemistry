@@ -13,6 +13,7 @@
  *
  * Authors:
  *     Florent Guillaume, Nuxeo
+ *     Amelie Avramo, EntropySoft
  */
 package org.apache.chemistry.atompub.server;
 
@@ -30,6 +31,7 @@ import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.abdera.QueryElement;
+import org.apache.commons.httpclient.HttpStatus;
 
 /**
  * CMIS Feed for a query.
@@ -86,7 +88,11 @@ public class CMISQueryFeed extends CMISObjectsCollection {
         Element element = (Element) document.getOMDocumentElement();
         QueryElement q = new QueryElement(element);
         statement = q.getStatement();
-        return getFeed(request); // calls getEntries
+        ResponseContext res = getFeed(request); // calls getEntries
+        if (res.getStatus() == HttpStatus.SC_OK) {
+            res.setStatus(HttpStatus.SC_CREATED);
+        }
+        return res;
     }
 
     @Override

@@ -56,8 +56,6 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.cxf.helpers.FileUtils;
-import org.apache.cxf.helpers.IOUtils;
 import org.mortbay.jetty.Server;
 
 public abstract class AtomPubServerTestCase extends TestCase {
@@ -228,7 +226,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
 
         EntityProvider provider = new QueryEntityProvider("SELECT * FROM doc");
         resp = client.post(base + "/query", provider);
-        assertEquals(HttpStatus.SC_OK, resp.getStatus());
+        assertEquals(HttpStatus.SC_CREATED, resp.getStatus());
         Element res = resp.getDocument().getRoot();
         assertNotNull(res);
 
