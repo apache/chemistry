@@ -36,6 +36,12 @@ public class CMISServlet extends AbderaServlet {
 
     private Repository repository;
 
+    /**
+     * Empty constructor required by servlet spec.
+     */
+    public CMISServlet() {
+    }
+
     public CMISServlet(Repository repository) {
         this.repository = repository;
     }
