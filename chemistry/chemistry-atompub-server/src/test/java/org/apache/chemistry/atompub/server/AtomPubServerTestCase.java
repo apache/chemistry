@@ -14,10 +14,14 @@
  * Authors:
  *     Florent Guillaume, Nuxeo
  *     Amelie Avramo, EntropySoft
+ *     Florian Roth, In-integrierte Informationssysteme
  */
 package org.apache.chemistry.atompub.server;
 
+import java.io.InputStream;
 import java.util.Arrays;
+
+import javax.ws.rs.core.HttpHeaders;
 
 import junit.framework.TestCase;
 
@@ -40,6 +44,7 @@ import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Updatability;
+import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.impl.simple.SimplePropertyDefinition;
@@ -49,6 +54,10 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.cxf.helpers.FileUtils;
+import org.apache.cxf.helpers.IOUtils;
 import org.mortbay.jetty.Server;
 
 public abstract class AtomPubServerTestCase extends TestCase {
@@ -56,6 +65,8 @@ public abstract class AtomPubServerTestCase extends TestCase {
     public static final String TEST_FILE_CONTENT = "This is a test file.\nTesting, testing...\n";
 
     protected static final AbderaClient client = new AbderaClient();
+
+    protected static String rootFolderId;
 
     protected static String doc2id;
 
@@ -121,6 +132,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
                 ft), rootId);
         Connection conn = repo.getConnection(null);
         Folder root = conn.getRootFolder();
+        rootFolderId = root.getId();
 
         Folder folder1 = root.newFolder("fold");
         folder1.setValue("title", "The folder 1 description");
@@ -174,8 +186,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         Element el = resp.getDocument().getRoot();
         assertNotNull(el);
 
-        resp = client.get(base + "/children/"
-                + repository.getInfo().getRootFolderId().getId());
+        resp = client.get(base + "/children/" + rootFolderId);
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Element ch = resp.getDocument().getRoot();
         assertNotNull(ch);
@@ -220,6 +231,21 @@ public abstract class AtomPubServerTestCase extends TestCase {
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Element res = resp.getDocument().getRoot();
         assertNotNull(res);
+
+        // post of new document
+        PostMethod postMethod = new PostMethod(base + "/children/"
+                + rootFolderId);
+        postMethod.setRequestEntity(new InputStreamRequestEntity(
+                load("templates/createdocument.atomentry.xml"),
+                AtomPub.MEDIA_TYPE_ATOM_ENTRY));
+        status = new HttpClient().executeMethod(postMethod);
+        assertEquals(HttpStatus.SC_CREATED, status);
+        assertNotNull(postMethod.getResponseHeader(HttpHeaders.LOCATION));
+        assertNotNull(postMethod.getResponseHeader(HttpHeaders.CONTENT_LOCATION));
+    }
+
+    protected InputStream load(String resource) throws Exception {
+        return getClass().getClassLoader().getResource(resource).openStream();
     }
 
     public static class QueryEntityProvider extends AbstractEntityProvider {

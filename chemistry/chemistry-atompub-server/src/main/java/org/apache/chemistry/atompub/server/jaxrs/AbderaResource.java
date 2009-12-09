@@ -13,6 +13,7 @@
  *
  * Authors:
  *     Florent Guillaume, Nuxeo
+ *     Florian Roth, In-integrierte Informationssysteme
  */
 package org.apache.chemistry.atompub.server.jaxrs;
 
@@ -28,7 +29,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.protocol.server.CollectionAdapter;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.ResponseContext;
@@ -164,15 +167,37 @@ public class AbderaResource {
                 requestContext);
     }
 
+    protected Response getResponse(ResponseContext responseContext) {
+        ResponseBuilder b = Response.status(responseContext.getStatus());
+        b.entity(responseContext);
+        String contentType = responseContext.getHeader("Content-Type");
+        b.type(contentType);
+        IRI location = responseContext.getLocation();
+        if (location != null) {
+            try {
+                b.location(location.toURI());
+            } catch (Exception e) {
+                log.error("Bad Location: " + location, e);
+            }
+        }
+        IRI contentLocation = responseContext.getContentLocation();
+        if (contentLocation != null) {
+            try {
+                b.contentLocation(contentLocation.toURI());
+            } catch (Exception e) {
+                log.error("Bad Content-Location: " + contentLocation, e);
+            }
+        }
+        return b.build();
+    }
+
     protected Response getAbderaFeed(int skipSegments) {
         RequestContext requestContext = getRequestContext(skipSegments);
         CollectionAdapter adapter = getAbderaCollectionAdapter(requestContext);
         if (adapter == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        ResponseContext responseContext = adapter.getFeed(requestContext);
-        return Response.status(responseContext.getStatus()).entity(
-                responseContext).build();
+        return getResponse(adapter.getFeed(requestContext));
     }
 
     protected Response getAbderaEntry(int skipSegments) {
@@ -181,20 +206,16 @@ public class AbderaResource {
         if (adapter == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        ResponseContext responseContext = adapter.getEntry(requestContext);
-        return Response.status(responseContext.getStatus()).entity(
-                responseContext).build();
+        return getResponse(adapter.getEntry(requestContext));
     }
 
-    protected Response getAbderaPostFeed(int skipSegments) {
+    protected Response getAbderaPostEntry(int skipSegments) {
         RequestContext requestContext = getRequestContext(skipSegments);
         CollectionAdapter adapter = getAbderaCollectionAdapter(requestContext);
         if (adapter == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        ResponseContext responseContext = adapter.postEntry(requestContext);
-        return Response.status(responseContext.getStatus()).entity(
-                responseContext).build();
+        return getResponse(adapter.postEntry(requestContext));
     }
 
     @GET
@@ -202,9 +223,7 @@ public class AbderaResource {
     @Path("repository")
     public Response doGetRepository(@Context HttpServletRequest httpRequest) {
         RequestContext requestContext = getRequestContext(1);
-        ResponseContext responseContext = provider.getServiceDocument(requestContext);
-        return Response.status(responseContext.getStatus()).entity(
-                responseContext).build();
+        return getResponse(provider.getServiceDocument(requestContext));
     }
 
     @GET
@@ -244,6 +263,14 @@ public class AbderaResource {
         return getAbderaFeed(2);
     }
 
+    @POST
+    @Consumes(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
+    @Path("children/{objectid}")
+    public Response doPostChildren() {
+        // objectid decoded by Abdera getCollectionAdapter
+        return getAbderaPostEntry(2);
+    }
+
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
     @Path("object/{objectid}")
@@ -258,10 +285,7 @@ public class AbderaResource {
         // objectid decoded by Abdera getCollectionAdapter
         RequestContext requestContext = getRequestContext(2);
         AbstractCollectionAdapter adapter = (AbstractCollectionAdapter) getAbderaCollectionAdapter(requestContext);
-        ResponseContext responseContext = adapter.getMedia(requestContext);
-        String contentType = responseContext.getHeader("Content-Type");
-        return Response.status(responseContext.getStatus()).entity(
-                responseContext).type(contentType).build();
+        return getResponse(adapter.getMedia(requestContext));
     }
 
     @POST
@@ -269,7 +293,7 @@ public class AbderaResource {
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
     @Path("query")
     public Response doPostQuery() {
-        return getAbderaPostFeed(1);
+        return getAbderaPostEntry(1);
     }
 
 }
