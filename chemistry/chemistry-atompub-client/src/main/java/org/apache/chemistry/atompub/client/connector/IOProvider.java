@@ -20,6 +20,7 @@ package org.apache.chemistry.atompub.client.connector;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Paging;
+import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.atompub.client.stax.EntryReader;
@@ -46,6 +47,8 @@ public interface IOProvider {
     XmlObjectWriter<ObjectEntry> getObjectEntryWriter();
 
     XmlObjectWriter<String> getQueryWriter(boolean searchAllVersions,
-            boolean includeAllowableActions, Paging paging);
+            boolean includeAllowableActions,
+            RelationshipDirection includeRelationships, String renditionFilter,
+            Paging paging);
 
 }

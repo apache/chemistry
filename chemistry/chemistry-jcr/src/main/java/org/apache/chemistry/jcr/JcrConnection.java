@@ -138,7 +138,7 @@ public class JcrConnection implements Connection, SPI {
     public Collection<CMISObject> query(String statement,
             boolean searchAllVersions) {
         ListPage<ObjectEntry> entries = query(statement, searchAllVersions,
-                false, false, false, new Paging(Integer.MAX_VALUE, 0));
+                false, null, null, new Paging(Integer.MAX_VALUE, 0));
         List<CMISObject> objects = new ArrayList<CMISObject>(entries.size());
         for (ObjectEntry entry : entries) {
             // cast entries, they are all JcrFolder or JcrDocument
@@ -262,13 +262,14 @@ public class JcrConnection implements Connection, SPI {
 
     public ListPage<ObjectEntry> getCheckedOutDocuments(ObjectId folderId,
             String filter, boolean includeAllowableActions,
-            boolean includeRelationships, Paging paging) {
+            RelationshipDirection includeRelationships, Paging paging) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public ListPage<ObjectEntry> getChildren(ObjectId folderId, String filter,
-            boolean includeAllowableActions, boolean includeRelationships,
+            boolean includeAllowableActions,
+            RelationshipDirection includeRelationships,
             boolean includeRenditions, String orderBy, Paging paging) {
 
         try {
@@ -338,8 +339,8 @@ public class JcrConnection implements Connection, SPI {
 
     public List<ObjectEntry> getDescendants(ObjectId folderId, int depth,
             String filter, boolean includeAllowableActions,
-            boolean includeRelationships, boolean includeRenditions,
-            String orderBy) {
+            RelationshipDirection includeRelationships,
+            boolean includeRenditions, String orderBy) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -356,7 +357,8 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public ObjectEntry getProperties(ObjectId objectId, String filter,
-            boolean includeAllowableActions, boolean includeRelationships) {
+            boolean includeAllowableActions,
+            RelationshipDirection includeRelationships) {
 
         try {
             String relPath = JcrObjectEntry.getPath(objectId.getId()).substring(
@@ -379,7 +381,8 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public ObjectEntry getObjectByPath(String path, String filter,
-            boolean includeAllowableActions, boolean includeRelationships) {
+            boolean includeAllowableActions,
+            RelationshipDirection includeRelationships) {
         try {
             if (path == null || path.equals("") || path.equals("/")) {
                 return (ObjectEntry) getRootFolder();
@@ -437,7 +440,7 @@ public class JcrConnection implements Connection, SPI {
 
     public ListPage<ObjectEntry> query(String statement,
             boolean searchAllVersions, boolean includeAllowableActions,
-            boolean includeRelationships, boolean includeRenditions,
+            RelationshipDirection includeRelationships, String renditionFilter,
             Paging paging) {
 
         try {

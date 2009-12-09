@@ -27,6 +27,7 @@ import org.apache.axiom.om.OMDocument;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Paging;
+import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.atompub.AtomPubCMIS;
@@ -42,6 +43,18 @@ public class CMISQueryFeed extends CMISObjectsCollection {
             "CMISQUERY", true);
 
     protected String statement;
+
+    protected boolean searchAllVersions;
+
+    protected boolean includeAllowableActions;
+
+    protected RelationshipDirection includeRelationships;
+
+    protected String renditionFilter;
+
+    protected int maxItems;
+
+    protected int skipCount;
 
     public CMISQueryFeed(Repository repository) {
         super(AtomPubCMIS.COL_QUERY, "query", null, repository);
@@ -88,6 +101,12 @@ public class CMISQueryFeed extends CMISObjectsCollection {
         Element element = (Element) document.getOMDocumentElement();
         QueryElement q = new QueryElement(element);
         statement = q.getStatement();
+        searchAllVersions = q.getSearchAllVersions();
+        includeAllowableActions = q.getIncludeAllowableActions();
+        includeRelationships = q.getIncludeRelationships();
+        renditionFilter = q.getRenditionFilter();
+        maxItems = q.getMaxItems();
+        skipCount = q.getSkipCount();
         ResponseContext res = getFeed(request); // calls getEntries
         if (res.getStatus() == HttpStatus.SC_OK) {
             res.setStatus(HttpStatus.SC_CREATED);
@@ -100,16 +119,10 @@ public class CMISQueryFeed extends CMISObjectsCollection {
             throws ResponseContextException {
         SPI spi = repository.getSPI();
         try {
-            boolean searchAllVersions = false;
-            boolean includeAllowableActions = false;
-            boolean includeRelationships = false;
-            boolean includeRenditions = false;
-            int maxItems = -1;
-            int skipCount = 0;
             ListPage<ObjectEntry> results = spi.query(statement,
                     searchAllVersions, includeAllowableActions,
-                    includeRelationships, includeRenditions, new Paging(
-                            maxItems, skipCount));
+                    includeRelationships, renditionFilter, new Paging(maxItems,
+                            skipCount));
             return results;
         } finally {
             spi.close();

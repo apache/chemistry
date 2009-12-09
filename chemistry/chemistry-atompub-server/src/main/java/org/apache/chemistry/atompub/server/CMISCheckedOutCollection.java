@@ -25,6 +25,7 @@ import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Paging;
+import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.atompub.AtomPub;
@@ -72,8 +73,8 @@ public class CMISCheckedOutCollection extends CMISObjectsCollection {
                     0);
             boolean includeAllowableActions = getParameter(request,
                     AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
-            boolean includeRelationships = getParameter(request,
-                    AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS, false);
+            String incl = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS);
+            RelationshipDirection includeRelationships = RelationshipDirection.fromInclusion(incl);
             ListPage<ObjectEntry> objectEntries = spi.getCheckedOutDocuments(
                     folderId, filter, includeAllowableActions,
                     includeRelationships, new Paging(maxItems, skipCount));

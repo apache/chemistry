@@ -164,7 +164,7 @@ public class SimpleConnection implements Connection, SPI {
     protected void accumulateFolders(ObjectId folder, int depth, String filter,
             boolean includeAllowableActions, List<ObjectEntry> list) {
         ListPage<ObjectEntry> children = getChildren(folder, filter,
-                includeAllowableActions, false, false, null, null);
+                includeAllowableActions, null, false, null, null);
         for (ObjectEntry child : children) {
             if (child.getBaseType() != BaseType.FOLDER) {
                 continue;
@@ -191,8 +191,8 @@ public class SimpleConnection implements Connection, SPI {
      */
     protected void accumulateDescendants(ObjectId folder, int depth,
             String filter, boolean includeAllowableActions,
-            boolean includeRelationships, boolean includeRenditions,
-            String orderBy, List<ObjectEntry> list) {
+            RelationshipDirection includeRelationships,
+            boolean includeRenditions, String orderBy, List<ObjectEntry> list) {
         // TODO deal with paging properly
         List<ObjectEntry> children = getChildren(folder, filter,
                 includeAllowableActions, includeRelationships,
@@ -209,8 +209,8 @@ public class SimpleConnection implements Connection, SPI {
 
     public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
             String filter, boolean includeAllowableActions,
-            boolean includeRelationships, boolean includeRenditions,
-            String orderBy) {
+            RelationshipDirection includeRelationships,
+            boolean includeRenditions, String orderBy) {
         List<ObjectEntry> list = new ArrayList<ObjectEntry>();
         accumulateDescendants(folder, depth, filter, includeAllowableActions,
                 includeRelationships, includeRenditions, orderBy, list);
@@ -218,7 +218,8 @@ public class SimpleConnection implements Connection, SPI {
     }
 
     public ListPage<ObjectEntry> getChildren(ObjectId folder, String filter,
-            boolean includeAllowableActions, boolean includeRelationships,
+            boolean includeAllowableActions,
+            RelationshipDirection includeRelationships,
             boolean includeRenditions, String orderBy, Paging paging) {
         // TODO orderBy
         Set<String> ids = repository.children.get(folder.getId());
@@ -303,7 +304,7 @@ public class SimpleConnection implements Connection, SPI {
 
     public ListPage<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
             String filter, boolean includeAllowableActions,
-            boolean includeRelationships, Paging paging) {
+            RelationshipDirection includeRelationships, Paging paging) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -485,7 +486,8 @@ public class SimpleConnection implements Connection, SPI {
     }
 
     public ObjectEntry getProperties(ObjectId object, String filter,
-            boolean includeAllowableActions, boolean includeRelationships) {
+            boolean includeAllowableActions,
+            RelationshipDirection includeRelationships) {
         // TODO filter, includeAllowableActions, includeRelationships
         SimpleData data = repository.datas.get(object.getId());
         if (data == null) {
@@ -495,7 +497,8 @@ public class SimpleConnection implements Connection, SPI {
     }
 
     public ObjectEntry getObjectByPath(String path, String filter,
-            boolean includeAllowableActions, boolean includeRelationships) {
+            boolean includeAllowableActions,
+            RelationshipDirection includeRelationships) {
         // TODO filter, includeAllowableActions, includeRelationships
         if (!path.startsWith("/")) {
             throw new IllegalArgumentException("Path must start with / : "
@@ -738,7 +741,7 @@ public class SimpleConnection implements Connection, SPI {
 
     public ListPage<ObjectEntry> query(String statement,
             boolean searchAllVersions, boolean includeAllowableActions,
-            boolean includeRelationships, boolean includeRenditions,
+            RelationshipDirection includeRelationships, String renditionFilter,
             Paging paging) {
         // this implementation doesn't try to be very efficient...
         List<ObjectEntry> all = new ArrayList<ObjectEntry>();
@@ -798,7 +801,7 @@ public class SimpleConnection implements Connection, SPI {
     public Collection<CMISObject> query(String statement,
             boolean searchAllVersions) {
         ListPage<ObjectEntry> res = query(statement, searchAllVersions, false,
-                false, false, null);
+                null, null, null);
         List<CMISObject> objects = new ArrayList<CMISObject>(res.size());
         for (ObjectEntry e : res) {
             objects.add(SimpleObject.construct((SimpleObjectEntry) e));

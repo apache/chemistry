@@ -13,6 +13,7 @@
  *
  * Authors:
  *     Florent Guillaume, Nuxeo
+ *     Amelie Avramo, EntropySoft
  */
 package org.apache.chemistry.atompub.abdera;
 
@@ -25,6 +26,7 @@ import org.apache.abdera.model.ExtensibleElementWrapper;
 import org.apache.abdera.parser.stax.FOMElement;
 import org.apache.axiom.om.OMElement;
 import org.apache.chemistry.CMIS;
+import org.apache.chemistry.RelationshipDirection;
 
 /**
  * Element wrapping for a CMIS query.
@@ -56,6 +58,32 @@ public class QueryElement extends ExtensibleElementWrapper {
 
     public void setStatement(String statement) {
         addExtension(new StatementElement(getFactory(), statement));
+    }
+
+    public boolean getSearchAllVersions() {
+        return Boolean.parseBoolean(getChildElementText(CMIS.SEARCH_ALL_VERSIONS));
+    }
+
+    public boolean getIncludeAllowableActions() {
+        return Boolean.parseBoolean(getChildElementText(CMIS.INCLUDE_ALLOWABLE_ACTIONS));
+    }
+
+    public RelationshipDirection getIncludeRelationships() {
+        return RelationshipDirection.fromInclusion(getChildElementText(CMIS.INCLUDE_RELATIONSHIPS));
+    }
+
+    public String getRenditionFilter() {
+        return getChildElementText(CMIS.RENDITION_FILTER);
+    }
+
+    public int getMaxItems() {
+        String maxItems = getChildElementText(CMIS.MAX_ITEMS);
+        return maxItems == null ? -1 : Integer.parseInt(maxItems);
+    }
+
+    public int getSkipCount() {
+        String skipCount = getChildElementText(CMIS.SKIP_COUNT);
+        return skipCount == null ? 0 : Integer.parseInt(skipCount);
     }
 
     protected static class StatementElement extends ElementWrapper {

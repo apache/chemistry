@@ -56,6 +56,7 @@ import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Property;
+import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
@@ -374,7 +375,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             // AbstractEntityCollectionAdapter#getEntryFromCollectionProvider is
             // package-private...
             Entry entry = request.getAbdera().getFactory().newEntry();
-            ObjectEntry object = spi.getProperties(objectId, null, false, false);
+            ObjectEntry object = spi.getProperties(objectId, null, false, null);
             addEntryDetails(request, entry, null, object);
             if (isMediaEntry(object)) {
                 addMediaContent(null, entry, object, request);
@@ -409,7 +410,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             // existing object
             String id = getResourceName(request);
             ObjectEntry object = spi.getProperties(spi.newObjectId(id), null,
-                    false, false);
+                    false, null);
             if (object == null) {
                 return new EmptyResponseContext(404);
             }
@@ -434,7 +435,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             // build response
             Entry entry = request.getAbdera().getFactory().newEntry();
             // refetch full object
-            object = spi.getProperties(object, null, false, false);
+            object = spi.getProperties(object, null, false, null);
             addEntryDetails(request, entry, null, object);
             if (isMediaEntry(object)) {
                 addMediaContent(null, entry, object, request);
@@ -540,8 +541,8 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             String filter = target.getParameter(AtomPubCMIS.PARAM_FILTER);
             boolean includeAllowableActions = getParameter(request,
                     AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
-            boolean includeRelationships = getParameter(request,
-                    AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS, false);
+            String incl = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS);
+            RelationshipDirection includeRelationships = RelationshipDirection.fromInclusion(incl);
             if ("path".equals(getType())) {
                 String path = resourceName;
                 if (!path.startsWith("/")) {

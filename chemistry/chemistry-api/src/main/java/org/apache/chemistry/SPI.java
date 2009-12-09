@@ -113,8 +113,8 @@ public interface SPI {
      * @param depth the depth, or {@code -1} for all levels
      * @param filter the properties filter, or {@code null} for all properties
      * @param includeAllowableActions {@code true} to include allowable actions
-     * @param includeRelationships {@code true} if relationships should be
-     *            included as well
+     * @param includeRelationships if not {@code null}, which relationships
+     *            should be included as well
      * @param includeRenditions {@code true} if renditions should be included as
      *            well
      * @param orderBy an {@code ORDER BY} clause, or {@code null}
@@ -125,7 +125,8 @@ public interface SPI {
      */
     // TODO return type for a tree
     List<ObjectEntry> getDescendants(ObjectId folder, int depth, String filter,
-            boolean includeAllowableActions, boolean includeRelationships,
+            boolean includeAllowableActions,
+            RelationshipDirection includeRelationships,
             boolean includeRenditions, String orderBy);
 
     /**
@@ -152,8 +153,8 @@ public interface SPI {
      * @param folder the folder
      * @param filter the properties filter, or {@code null} for all properties
      * @param includeAllowableActions {@code true} to include allowable actions
-     * @param includeRelationships {@code true} if relationships should be
-     *            included as well
+     * @param includeRelationships if not {@code null}, which relationships
+     *            should be included as well
      * @param includeRenditions {@code true} if renditions should be included as
      *            well
      * @param orderBy an {@code ORDER BY} clause, or {@code null}
@@ -164,7 +165,8 @@ public interface SPI {
      * @throws IllegalArgumentException if the object is not a folder
      */
     ListPage<ObjectEntry> getChildren(ObjectId folder, String filter,
-            boolean includeAllowableActions, boolean includeRelationships,
+            boolean includeAllowableActions,
+            RelationshipDirection includeRelationships,
             boolean includeRenditions, String orderBy, Paging paging);
 
     /**
@@ -215,8 +217,8 @@ public interface SPI {
      * @param folder the folder, or {@code null}
      * @param filter
      * @param includeAllowableActions
-     * @param includeRelationships {@code true} if relationships should be
-     *            included as well
+     * @param includeRelationships if not {@code null}, which relationships
+     *            should be included as well
      * @param paging paging information, or {@code null} for a
      *            repository-specific default
      *
@@ -225,7 +227,7 @@ public interface SPI {
      */
     ListPage<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
             String filter, boolean includeAllowableActions,
-            boolean includeRelationships, Paging paging);
+            RelationshipDirection includeRelationships, Paging paging);
 
     /*
      * ----- Object Services -----
@@ -329,15 +331,16 @@ public interface SPI {
      * @param object the object
      * @param filter the properties filter, or {@code null} for all properties
      * @param includeAllowableActions {@code true} to include allowable actions
-     * @param includeRelationships {@code true} if relationships should be
-     *            included as well
+     * @param includeRelationships if not {@code null}, which relationships
+     *            should be included as well
      * @return the properties of the object, or {@code null} if the object is
      *         not found
      *
      * @throws FilterNotValidException if the filter is not valid
      */
     ObjectEntry getProperties(ObjectId object, String filter,
-            boolean includeAllowableActions, boolean includeRelationships);
+            boolean includeAllowableActions,
+            RelationshipDirection includeRelationships);
 
     /**
      * Gets the properties of an object, given its path.
@@ -345,15 +348,16 @@ public interface SPI {
      * @param path the object path
      * @param filter the properties filter, or {@code null} for all properties
      * @param includeAllowableActions {@code true} to include allowable actions
-     * @param includeRelationships {@code true} if relationships should be
-     *            included as well
+     * @param includeRelationships if not {@code null}, which relationships
+     *            should be included as well
      * @return the properties of the object, or {@code null} if the object is
      *         not found
      *
      * @throws FilterNotValidException if the filter is not valid
      */
     ObjectEntry getObjectByPath(String path, String filter,
-            boolean includeAllowableActions, boolean includeRelationships);
+            boolean includeAllowableActions,
+            RelationshipDirection includeRelationships);
 
     /**
      * Gets the list of associated renditions for an object.
@@ -664,10 +668,9 @@ public interface SPI {
      * @param searchAllVersions {@code true} if all versions (not only that
      *            latest) must be searched
      * @param includeAllowableActions {@code true} to include allowable actions
-     * @param includeRelationships {@code true} if relationships should be
-     *            included as well
-     * @param includeRenditions {@code true} if renditions should be included as
-     *            well
+     * @param includeRelationships if not {@code null}, which relationships
+     *            should be included as well
+     * @param renditionFilter a rendition filter, or {@code null}
      * @param paging paging information, or {@code null} for a
      *            repository-specific default
      * @return the matching objects
@@ -676,8 +679,9 @@ public interface SPI {
      */
     // TODO returns a result set actually, there may be computed values
     ListPage<ObjectEntry> query(String statement, boolean searchAllVersions,
-            boolean includeAllowableActions, boolean includeRelationships,
-            boolean includeRenditions, Paging paging);
+            boolean includeAllowableActions,
+            RelationshipDirection includeRelationships, String renditionFilter,
+            Paging paging);
 
     /**
      * Gets a list of content changes.

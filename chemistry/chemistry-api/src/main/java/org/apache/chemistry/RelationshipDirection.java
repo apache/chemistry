@@ -62,8 +62,51 @@ public enum RelationshipDirection {
         return o;
     }
 
+    public static RelationshipDirection get(String value,
+            RelationshipDirection def) {
+        RelationshipDirection o = all.get(value);
+        if (o == null) {
+            o = def;
+        }
+        return o;
+    }
+
+    protected static final String INCLUSION_NONE = "none";
+
+    protected static final String INCLUSION_SOURCE = "source";
+
+    protected static final String INCLUSION_TARGET = "target";
+
+    protected static final String INCLUSION_BOTH = "both";
+
+    public static RelationshipDirection fromInclusion(String value) {
+        if (INCLUSION_SOURCE.equals(value)) {
+            return SOURCE;
+        } else if (INCLUSION_TARGET.equals(value)) {
+            return TARGET;
+        } else if (INCLUSION_BOTH.equals(value)) {
+            return EITHER;
+        } else {
+            return null;
+        }
+    }
+
+    public static String toInclusion(RelationshipDirection o) {
+        if (o == SOURCE) {
+            return INCLUSION_SOURCE;
+        } else if (o == TARGET) {
+            return INCLUSION_TARGET;
+        } else if (o == EITHER) {
+            return INCLUSION_BOTH;
+        } else {
+            return INCLUSION_NONE;
+        }
+
+    }
+
     @Override
     public String toString() {
         return value;
     }
+
 }

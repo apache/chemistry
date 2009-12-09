@@ -42,6 +42,7 @@ import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
+import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Updatability;
 import org.apache.chemistry.atompub.AtomPub;
@@ -224,7 +225,8 @@ public abstract class AtomPubServerTestCase extends TestCase {
         assertEquals(HttpStatus.SC_CONFLICT, status);
         method.releaseConnection();
 
-        EntityProvider provider = new QueryEntityProvider("SELECT * FROM doc");
+        EntityProvider provider = new QueryEntityProvider("SELECT * FROM doc",
+                true, false, null, null, 5, 0);
         resp = client.post(base + "/query", provider);
         assertEquals(HttpStatus.SC_CREATED, resp.getStatus());
         Element res = resp.getDocument().getRoot();
@@ -250,8 +252,29 @@ public abstract class AtomPubServerTestCase extends TestCase {
 
         public String statement;
 
-        public QueryEntityProvider(String statement) {
+        public boolean searchAllVersions;
+
+        public boolean includeAllowableActions;
+
+        public RelationshipDirection includeRelationships;
+
+        public String renditionFilter;
+
+        public int maxItems;
+
+        public int skipCount;
+
+        public QueryEntityProvider(String statement, boolean searchAllVersions,
+                boolean includeAllowableActions,
+                RelationshipDirection includeRelationships,
+                String renditionFilter, int maxItems, int skipCount) {
             this.statement = statement;
+            this.searchAllVersions = searchAllVersions;
+            this.includeAllowableActions = includeAllowableActions;
+            this.includeRelationships = includeRelationships;
+            this.renditionFilter = renditionFilter;
+            this.maxItems = maxItems;
+            this.skipCount = skipCount;
         }
 
         @Override
@@ -265,15 +288,22 @@ public abstract class AtomPubServerTestCase extends TestCase {
 
         public void writeTo(StreamWriter sw) {
             sw.startDocument();
-            sw.startElement("query", CMIS.CMIS_NS, CMIS.CMIS_PREFIX);
-            sw.startElement("statement", CMIS.CMIS_NS, CMIS.CMIS_PREFIX).writeElementText(
-                    statement).endElement();
-            sw.startElement("searchAllVersions", CMIS.CMIS_NS, CMIS.CMIS_PREFIX).writeElementText(
-                    "false").endElement();
-            sw.startElement("pageSize", CMIS.CMIS_NS, CMIS.CMIS_PREFIX).writeElementText(
-                    0).endElement();
-            sw.startElement("skipCount", CMIS.CMIS_NS, CMIS.CMIS_PREFIX).writeElementText(
-                    0).endElement();
+            sw.startElement(CMIS.QUERY);
+            sw.startElement(CMIS.STATEMENT).writeElementText(statement).endElement();
+            sw.startElement(CMIS.SEARCH_ALL_VERSIONS).writeElementText(
+                    Boolean.toString(searchAllVersions)).endElement();
+            sw.startElement(CMIS.INCLUDE_ALLOWABLE_ACTIONS).writeElementText(
+                    Boolean.toString(includeAllowableActions)).endElement();
+            sw.startElement(CMIS.INCLUDE_RELATIONSHIPS).writeElementText(
+                    RelationshipDirection.toInclusion(includeRelationships)).endElement();
+            if (renditionFilter != null) {
+                sw.startElement(CMIS.RENDITION_FILTER).writeElementText(
+                        renditionFilter).endElement();
+            }
+            sw.startElement(CMIS.MAX_ITEMS).writeElementText(
+                    Integer.toString(maxItems)).endElement();
+            sw.startElement(CMIS.SKIP_COUNT).writeElementText(
+                    Integer.toString(skipCount)).endElement();
             sw.endElement(); // query
             sw.endDocument();
         }

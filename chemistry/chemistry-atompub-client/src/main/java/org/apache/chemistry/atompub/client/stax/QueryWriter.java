@@ -20,6 +20,7 @@ package org.apache.chemistry.atompub.client.stax;
 import java.io.IOException;
 
 import org.apache.chemistry.CMIS;
+import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.xml.stax.XMLWriter;
 
@@ -30,11 +31,15 @@ public class QueryWriter extends AbstractXmlObjectWriter<String> {
 
     protected boolean searchAllVersions;
 
+    protected boolean includeAllowableActions;
+
+    protected RelationshipDirection includeRelationships;
+
+    protected String renditionFilter;
+
     protected long maxItems = -1;
 
     protected long skipCount;
-
-    protected boolean includeAllowableActions;
 
     public void setSearchAllVersions(boolean searchAllVersions) {
         this.searchAllVersions = searchAllVersions;
@@ -66,6 +71,15 @@ public class QueryWriter extends AbstractXmlObjectWriter<String> {
         this.includeAllowableActions = includeAllowableActions;
     }
 
+    public void setIncludeRelationships(
+            RelationshipDirection includeRelationships) {
+        this.includeRelationships = includeRelationships;
+    }
+
+    public void setRenditionFilter(String renditionFilter) {
+        this.renditionFilter = renditionFilter;
+    }
+
     @Override
     public String getContentType() {
         return AtomPubCMIS.MEDIA_TYPE_CMIS_QUERY;
@@ -78,6 +92,13 @@ public class QueryWriter extends AbstractXmlObjectWriter<String> {
         xw.start();
         xw.element(CMIS.STATEMENT).econtent(statement);
         xw.element(CMIS.SEARCH_ALL_VERSIONS).content(searchAllVersions);
+        xw.element(CMIS.INCLUDE_ALLOWABLE_ACTIONS).content(
+                includeAllowableActions);
+        xw.element(CMIS.INCLUDE_RELATIONSHIPS).content(
+                RelationshipDirection.toInclusion(includeRelationships));
+        if (renditionFilter != null) {
+            xw.element(CMIS.RENDITION_FILTER).econtent(renditionFilter);
+        }
         if (maxItems > -1) {
             xw.element(CMIS.MAX_ITEMS).content(maxItems);
         }

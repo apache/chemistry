@@ -21,6 +21,7 @@ package org.apache.chemistry.atompub.client.connector;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Paging;
+import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.atompub.client.APPObjectEntryReader;
@@ -78,14 +79,18 @@ public class DefaultIOProvider implements IOProvider {
     }
 
     public XmlObjectWriter<String> getQueryWriter(boolean searchAllVersions,
-            boolean includeAllowableActions, Paging paging) {
+            boolean includeAllowableActions,
+            RelationshipDirection includeRelationships, String renditionFilter,
+            Paging paging) {
         QueryWriter queryWriter = new QueryWriter();
         queryWriter.setSearchAllVersions(searchAllVersions);
+        queryWriter.setIncludeAllowableActions(includeAllowableActions);
+        queryWriter.setIncludeRelationships(includeRelationships);
+        queryWriter.setRenditionFilter(renditionFilter);
         if (paging != null) {
             queryWriter.setMaxItems(paging.maxItems);
             queryWriter.setSkipCount(paging.skipCount);
         }
-        queryWriter.setIncludeAllowableActions(includeAllowableActions);
         return queryWriter;
     }
 

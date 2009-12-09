@@ -42,6 +42,7 @@ import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Paging;
 import org.apache.chemistry.Property;
+import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.UpdateConflictException;
@@ -87,7 +88,7 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
         ObjectEntry entry;
         SPI spi = repository.getSPI();
         try {
-            entry = spi.getProperties(spi.newObjectId(id), null, false, false);
+            entry = spi.getProperties(spi.newObjectId(id), null, false, null);
         } finally {
             spi.close();
         }
@@ -163,8 +164,8 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
             String filter = target.getParameter(AtomPubCMIS.PARAM_FILTER);
             boolean includeAllowableActions = getParameter(request,
                     AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
-            boolean includeRelationships = getParameter(request,
-                    AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS, false);
+            String incl = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS);
+            RelationshipDirection includeRelationships = RelationshipDirection.fromInclusion(incl);
             // TODO proper renditionFilter use
             boolean includeRenditions = target.getParameter(AtomPubCMIS.PARAM_RENDITION_FILTER) == null ? false
                     : true;
