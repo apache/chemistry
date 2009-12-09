@@ -57,6 +57,8 @@ public abstract class AtomPubServerTestCase extends TestCase {
 
     protected static final AbderaClient client = new AbderaClient();
 
+    protected static String doc2id;
+
     protected static String doc3id;
 
     public Server server;
@@ -139,6 +141,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         doc2.setValue("title", "doc 2 title");
         doc2.setValue("description", "The doc 2 descr");
         doc2.save();
+        doc2id = doc2.getId();
 
         Document doc3 = folder2.newDocument("doc");
         doc3.setValue("title", "doc 3 title");
@@ -159,7 +162,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         ClientResponse resp;
 
         resp = client.get(base + "/repository");
-        assertEquals(200, resp.getStatus());
+        assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Service root = (Service) resp.getDocument().getRoot();
         Workspace workspace = root.getWorkspaces().get(0);
         assertNotNull(root);
@@ -167,31 +170,31 @@ public abstract class AtomPubServerTestCase extends TestCase {
         assertNotNull(info);
 
         resp = client.get(base + "/types");
-        assertEquals(200, resp.getStatus());
+        assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Element el = resp.getDocument().getRoot();
         assertNotNull(el);
 
         resp = client.get(base + "/children/"
                 + repository.getInfo().getRootFolderId().getId());
-        assertEquals(200, resp.getStatus());
+        assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Element ch = resp.getDocument().getRoot();
         assertNotNull(ch);
 
         resp = client.get(base + "/children/"
                 + repository.getInfo().getRootFolderId().getId() + "?"
                 + AtomPubCMIS.PARAM_MAX_ITEMS + "=4");
-        assertEquals(200, resp.getStatus());
+        assertEquals(HttpStatus.SC_OK, resp.getStatus());
         ch = resp.getDocument().getRoot();
         assertNotNull(ch);
 
         resp = client.get(base + "/object/" + doc3id);
-        assertEquals(200, resp.getStatus());
+        assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Element ob = resp.getDocument().getRoot();
         assertNotNull(ob);
 
         resp = client.get(base + "/object/" + doc3id + '?'
                 + AtomPubCMIS.PARAM_FILTER + "=cmis:name");
-        assertEquals(200, resp.getStatus());
+        assertEquals(HttpStatus.SC_OK, resp.getStatus());
         ob = resp.getDocument().getRoot();
         assertNotNull(ob);
 
@@ -206,9 +209,15 @@ public abstract class AtomPubServerTestCase extends TestCase {
         assertEquals(TEST_FILE_CONTENT, new String(body, "UTF-8"));
         method.releaseConnection();
 
+        // get of missing content stream
+        method = new GetMethod(base + "/file/" + doc2id);
+        status = new HttpClient().executeMethod(method);
+        assertEquals(HttpStatus.SC_CONFLICT, status);
+        method.releaseConnection();
+
         EntityProvider provider = new QueryEntityProvider("SELECT * FROM doc");
         resp = client.post(base + "/query", provider);
-        assertEquals(200, resp.getStatus());
+        assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Element res = resp.getDocument().getRoot();
         assertNotNull(res);
     }

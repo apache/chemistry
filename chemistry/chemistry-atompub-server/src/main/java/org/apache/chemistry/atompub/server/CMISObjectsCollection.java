@@ -51,6 +51,7 @@ import org.apache.abdera.util.EntityTag;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMIS;
 import org.apache.chemistry.CMISRuntimeException;
+import org.apache.chemistry.ConstraintViolationException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
@@ -582,30 +583,39 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         return getObjectLink(object.getId(), request);
     }
 
+    // override to use a custom SizedMediaResponseContext
+    // and return 409 on no content
     @Override
-    public InputStream getMediaStream(ObjectEntry object)
-            throws ResponseContextException {
-        // TODO entry was fetched for mostly nothing...
+    protected ResponseContext buildGetMediaResponse(String id,
+            ObjectEntry object) throws ResponseContextException {
+        Date updated = getUpdated(object);
         SPI spi = repository.getSPI();
+        ContentStream contentStream;
         try {
-            ContentStream contentStream = spi.getContentStream(object, null);
-            return contentStream == null ? null : contentStream.getStream();
+            contentStream = spi.getContentStream(object, null);
+        } catch (ConstraintViolationException e) {
+            contentStream = null;
         } catch (IOException e) {
-            throw new ResponseContextException(500, e);
+            return new EmptyResponseContext(500, e.toString());
         } finally {
             spi.close();
         }
-    }
-
-    // override to use a custom SizedMediaResponseContext
-    @Override
-    protected ResponseContext buildGetMediaResponse(String id,
-            ObjectEntry entryObj) throws ResponseContextException {
-        Date updated = getUpdated(entryObj);
-        SizedMediaResponseContext ctx = new SizedMediaResponseContext(
-                getMediaStream(entryObj), updated, 200);
-        ctx.setSize(getContentSize(entryObj));
-        ctx.setContentType(getContentType(entryObj));
+        if (contentStream == null) {
+            return new EmptyResponseContext(409, "No content");
+        }
+        InputStream stream;
+        try {
+            stream = contentStream.getStream();
+        } catch (IOException e) {
+            return new EmptyResponseContext(500, e.toString());
+        }
+        if (stream == null) {
+            return new EmptyResponseContext(409, "No content");
+        }
+        SizedMediaResponseContext ctx = new SizedMediaResponseContext(stream,
+                updated, 200);
+        ctx.setSize(getContentSize(object));
+        ctx.setContentType(getContentType(object));
         ctx.setEntityTag(EntityTag.generate(id, AtomDate.format(updated)));
         return ctx;
     }

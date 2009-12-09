@@ -170,7 +170,9 @@ public class AbderaResource {
         if (adapter == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(adapter.getFeed(requestContext)).build();
+        ResponseContext responseContext = adapter.getFeed(requestContext);
+        return Response.status(responseContext.getStatus()).entity(
+                responseContext).build();
     }
 
     protected Response getAbderaEntry(int skipSegments) {
@@ -179,7 +181,9 @@ public class AbderaResource {
         if (adapter == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(adapter.getEntry(requestContext)).build();
+        ResponseContext responseContext = adapter.getEntry(requestContext);
+        return Response.status(responseContext.getStatus()).entity(
+                responseContext).build();
     }
 
     protected Response getAbderaPostFeed(int skipSegments) {
@@ -188,7 +192,9 @@ public class AbderaResource {
         if (adapter == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(adapter.postEntry(requestContext)).build();
+        ResponseContext responseContext = adapter.postEntry(requestContext);
+        return Response.status(responseContext.getStatus()).entity(
+                responseContext).build();
     }
 
     @GET
@@ -197,7 +203,8 @@ public class AbderaResource {
     public Response doGetRepository(@Context HttpServletRequest httpRequest) {
         RequestContext requestContext = getRequestContext(1);
         ResponseContext responseContext = provider.getServiceDocument(requestContext);
-        return Response.ok(responseContext).build();
+        return Response.status(responseContext.getStatus()).entity(
+                responseContext).build();
     }
 
     @GET
@@ -253,7 +260,8 @@ public class AbderaResource {
         AbstractCollectionAdapter adapter = (AbstractCollectionAdapter) getAbderaCollectionAdapter(requestContext);
         ResponseContext responseContext = adapter.getMedia(requestContext);
         String contentType = responseContext.getHeader("Content-Type");
-        return Response.ok(responseContext).type(contentType).build();
+        return Response.status(responseContext.getStatus()).entity(
+                responseContext).type(contentType).build();
     }
 
     @POST

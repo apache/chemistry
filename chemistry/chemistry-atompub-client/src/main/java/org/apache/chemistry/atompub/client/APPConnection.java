@@ -36,6 +36,7 @@ import org.apache.chemistry.ACLPropagation;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
+import org.apache.chemistry.ConstraintViolationException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
@@ -450,6 +451,10 @@ public class APPConnection implements Connection, SPI {
         }
         Request req = new Request(href);
         Response resp = connector.get(req);
+        int status = resp.getStatusCode();
+        if (status == 404 || status == 409) {
+            throw new ConstraintViolationException("No content stream");
+        }
         if (!resp.isOk()) {
             // TODO exceptions
             throw new ContentManagerException(

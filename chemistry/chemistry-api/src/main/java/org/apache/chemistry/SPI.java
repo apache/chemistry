@@ -391,6 +391,9 @@ public interface SPI {
      * <p>
      * A content stream ID can be provided, to access alternate content streams
      * (renditions for instance).
+     * <p>
+     * If no content stream is available, {@code null} may be returned or
+     * {@link ConstraintViolationException} may be thrown.
      *
      * @param object the document or folder
      * @param contentStreamId the content stream ID, or {@code null}
