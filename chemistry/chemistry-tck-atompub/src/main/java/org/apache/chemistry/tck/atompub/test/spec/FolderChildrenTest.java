@@ -14,6 +14,7 @@
  * Authors:
  *     David Caruana, Alfresco
  *     Gabriele Columbro, Alfresco
+ *     Amelie Avramo, EntropySoft
  */
 package org.apache.chemistry.tck.atompub.test.spec;
 

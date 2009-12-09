@@ -13,7 +13,7 @@
  *
  * Authors:
  *     Florent Guillaume, Nuxeo
- *     Amélie Avramo
+ *     Amelie Avramo, EntropySoft
  */
 package org.apache.chemistry.atompub.server;
 
