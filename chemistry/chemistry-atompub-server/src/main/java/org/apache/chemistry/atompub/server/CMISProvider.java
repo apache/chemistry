@@ -138,23 +138,26 @@ public class CMISProvider extends AbstractProvider {
 
     public List<URITemplate> getURITemplates(RequestContext request) {
         String base = request.getBaseUri().toString();
-        if (!base.endsWith("/")) {
-            base += '/';
+        if (base.endsWith("/")) {
+            base = base.substring(0, base.length() - 1);
         }
+        // add servlet path
+        base += request.getTargetBasePath().substring(
+                request.getContextPath().length());
         List<URITemplate> list = new ArrayList<URITemplate>(3);
         list.add(new URITemplate(AtomPubCMIS.URITMPL_OBJECT_BY_ID, //
                 AtomPub.MEDIA_TYPE_ATOM_ENTRY, //
-                base + "object/{id}"));
+                base + "/object/{id}"));
         list.add(new URITemplate(AtomPubCMIS.URITMPL_OBJECT_BY_PATH, //
                 AtomPub.MEDIA_TYPE_ATOM_ENTRY, //
-                base + "path/{path}"));
+                base + "/path/{path}"));
         list.add(new URITemplate(AtomPubCMIS.URITMPL_TYPE_BY_ID, //
                 AtomPub.MEDIA_TYPE_ATOM_FEED, //
-                base + "type/{id}"));
+                base + "/type/{id}"));
         if (false) { // TODO
             list.add(new URITemplate(AtomPubCMIS.URITMPL_QUERY, //
                     AtomPub.MEDIA_TYPE_ATOM_FEED, //
-                    base + "query?q={q}"));
+                    base + "/query?q={q}"));
         }
         return list;
     }

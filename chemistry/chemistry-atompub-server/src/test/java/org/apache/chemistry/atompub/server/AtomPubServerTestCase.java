@@ -77,6 +77,8 @@ public abstract class AtomPubServerTestCase extends TestCase {
 
     public Repository repository;
 
+    public String base;
+
     protected static final int PORT = (int) (8500 + System.currentTimeMillis() % 100);
 
     protected static final String CONTEXT_PATH = "/ctx";
@@ -93,6 +95,8 @@ public abstract class AtomPubServerTestCase extends TestCase {
     public void setUp() throws Exception {
         repository = makeRepository(null);
         startServer();
+        base = "http://localhost:" + PORT + CONTEXT_PATH + SERVLET_PATH
+                + getResourcePath();
     }
 
     @Override
@@ -169,25 +173,30 @@ public abstract class AtomPubServerTestCase extends TestCase {
         return repo;
     }
 
-    public void testConnect() throws Exception {
-        String base = "http://localhost:" + PORT + CONTEXT_PATH + SERVLET_PATH
-                + getResourcePath();
-        ClientResponse resp;
-
-        resp = client.get(base + "/repository");
+    public void testRepository() throws Exception {
+        ClientResponse resp = client.get(base + "/repository");
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Service root = (Service) resp.getDocument().getRoot();
         Workspace workspace = root.getWorkspaces().get(0);
         assertNotNull(root);
         Element info = workspace.getFirstChild(AtomPubCMIS.REPOSITORY_INFO);
         assertNotNull(info);
+        Element uritmpl = workspace.getFirstChild(AtomPubCMIS.URI_TEMPLATE);
+        assertNotNull(uritmpl);
+        Element tmpl = uritmpl.getFirstChild(AtomPubCMIS.TEMPLATE);
+        assertNotNull(tmpl);
+        assertEquals(base + "/object/{id}", tmpl.getText());
+    }
 
-        resp = client.get(base + "/types");
+    public void testTypes() throws Exception {
+        ClientResponse resp = client.get(base + "/types");
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Element el = resp.getDocument().getRoot();
         assertNotNull(el);
+    }
 
-        resp = client.get(base + "/children/" + rootFolderId);
+    public void testChildren() throws Exception {
+        ClientResponse resp = client.get(base + "/children/" + rootFolderId);
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Element ch = resp.getDocument().getRoot();
         assertNotNull(ch);
@@ -199,7 +208,21 @@ public abstract class AtomPubServerTestCase extends TestCase {
         ch = resp.getDocument().getRoot();
         assertNotNull(ch);
 
-        resp = client.get(base + "/object/" + doc3id);
+        // post of new document
+        PostMethod postMethod = new PostMethod(base + "/children/"
+                + rootFolderId);
+        postMethod.setRequestEntity(new InputStreamRequestEntity(
+                load("templates/createdocument.atomentry.xml"),
+                AtomPub.MEDIA_TYPE_ATOM_ENTRY));
+        int status = new HttpClient().executeMethod(postMethod);
+        assertEquals(HttpStatus.SC_CREATED, status);
+        assertNotNull(postMethod.getResponseHeader(HttpHeaders.LOCATION));
+        assertNotNull(postMethod.getResponseHeader(HttpHeaders.CONTENT_LOCATION));
+
+    }
+
+    public void testObject() throws Exception {
+        ClientResponse resp = client.get(base + "/object/" + doc3id);
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Element ob = resp.getDocument().getRoot();
         assertNotNull(ob);
@@ -209,7 +232,9 @@ public abstract class AtomPubServerTestCase extends TestCase {
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         ob = resp.getDocument().getRoot();
         assertNotNull(ob);
+    }
 
+    public void testFile() throws Exception {
         HttpMethod method = new GetMethod(base + "/file/" + doc3id);
         int status = new HttpClient().executeMethod(method);
         assertEquals(HttpStatus.SC_OK, status);
@@ -226,24 +251,15 @@ public abstract class AtomPubServerTestCase extends TestCase {
         status = new HttpClient().executeMethod(method);
         assertEquals(HttpStatus.SC_CONFLICT, status);
         method.releaseConnection();
+    }
 
+    public void testQuery() throws Exception {
         EntityProvider provider = new QueryEntityProvider("SELECT * FROM doc",
                 true, null, null);
-        resp = client.post(base + "/query", provider);
+        ClientResponse resp = client.post(base + "/query", provider);
         assertEquals(HttpStatus.SC_CREATED, resp.getStatus());
         Element res = resp.getDocument().getRoot();
         assertNotNull(res);
-
-        // post of new document
-        PostMethod postMethod = new PostMethod(base + "/children/"
-                + rootFolderId);
-        postMethod.setRequestEntity(new InputStreamRequestEntity(
-                load("templates/createdocument.atomentry.xml"),
-                AtomPub.MEDIA_TYPE_ATOM_ENTRY));
-        status = new HttpClient().executeMethod(postMethod);
-        assertEquals(HttpStatus.SC_CREATED, status);
-        assertNotNull(postMethod.getResponseHeader(HttpHeaders.LOCATION));
-        assertNotNull(postMethod.getResponseHeader(HttpHeaders.CONTENT_LOCATION));
     }
 
     protected InputStream load(String resource) throws Exception {
