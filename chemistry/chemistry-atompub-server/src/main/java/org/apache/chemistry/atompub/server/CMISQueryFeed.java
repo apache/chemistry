@@ -24,10 +24,10 @@ import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.TargetType;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.axiom.om.OMDocument;
+import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Paging;
-import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.atompub.AtomPubCMIS;
@@ -46,15 +46,9 @@ public class CMISQueryFeed extends CMISObjectsCollection {
 
     protected boolean searchAllVersions;
 
-    protected boolean includeAllowableActions;
+    protected Paging paging;
 
-    protected RelationshipDirection includeRelationships;
-
-    protected String renditionFilter;
-
-    protected int maxItems;
-
-    protected int skipCount;
+    protected Inclusion inclusion;
 
     public CMISQueryFeed(Repository repository) {
         super(AtomPubCMIS.COL_QUERY, "query", null, repository);
@@ -102,11 +96,10 @@ public class CMISQueryFeed extends CMISObjectsCollection {
         QueryElement q = new QueryElement(element);
         statement = q.getStatement();
         searchAllVersions = q.getSearchAllVersions();
-        includeAllowableActions = q.getIncludeAllowableActions();
-        includeRelationships = q.getIncludeRelationships();
-        renditionFilter = q.getRenditionFilter();
-        maxItems = q.getMaxItems();
-        skipCount = q.getSkipCount();
+        paging = new Paging(q.getMaxItems(), q.getSkipCount());
+        inclusion = new Inclusion(null, q.getRenditionFilter(),
+                q.getIncludeRelationships(), q.getIncludeAllowableActions(),
+                false, false);
         ResponseContext res = getFeed(request); // calls getEntries
         if (res.getStatus() == HttpStatus.SC_OK) {
             res.setStatus(HttpStatus.SC_CREATED);
@@ -120,9 +113,7 @@ public class CMISQueryFeed extends CMISObjectsCollection {
         SPI spi = repository.getSPI();
         try {
             ListPage<ObjectEntry> results = spi.query(statement,
-                    searchAllVersions, includeAllowableActions,
-                    includeRelationships, renditionFilter, new Paging(maxItems,
-                            skipCount));
+                    searchAllVersions, inclusion, paging);
             return results;
         } finally {
             spi.close();

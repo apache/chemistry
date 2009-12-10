@@ -209,57 +209,48 @@ public abstract class BasicTestCase extends TestCase {
     public void testGetObjectByPath() {
         Folder root = conn.getRootFolder();
         assertEquals(ROOT_FOLDER_NAME, root.getName());
-        assertNotNull(spi.getObjectByPath("/", null, false, null));
-        assertNotNull(spi.getObjectByPath("/folder 1", null, false, null));
-        assertNotNull(spi.getObjectByPath("/folder 1/doc 1", null, false, null));
-        assertNotNull(spi.getObjectByPath("/folder 1/folder 2", null, false,
-                null));
-        assertNotNull(spi.getObjectByPath("/folder 1/folder 2/doc 2", null,
-                false, null));
-        assertNotNull(spi.getObjectByPath("/folder 1/folder 2/doc 3", null,
-                false, null));
-        assertNull(spi.getObjectByPath("/notsuchname", null, false, null));
+        assertNotNull(spi.getObjectByPath("/", null));
+        assertNotNull(spi.getObjectByPath("/folder 1", null));
+        assertNotNull(spi.getObjectByPath("/folder 1/doc 1", null));
+        assertNotNull(spi.getObjectByPath("/folder 1/folder 2", null));
+        assertNotNull(spi.getObjectByPath("/folder 1/folder 2/doc 2", null));
+        assertNotNull(spi.getObjectByPath("/folder 1/folder 2/doc 3", null));
+        assertNull(spi.getObjectByPath("/notsuchname", null));
     }
 
     public void testGetChildren() {
         Folder root = conn.getRootFolder();
-        ListPage<ObjectEntry> page = spi.getChildren(root, null, true, null,
-                false, null, new Paging(20, 0));
+        ListPage<ObjectEntry> page = spi.getChildren(root, null, null, new Paging(20,
+                        0));
         assertEquals(1, page.size());
         assertFalse(page.getHasMoreItems());
         assertEquals(1, page.getNumItems());
 
         ObjectId folder1 = root.getChildren().get(0);
-        page = spi.getChildren(folder1, null, false, null, false, null,
-                new Paging(20, 0));
+        page = spi.getChildren(folder1, null, null, new Paging(20, 0));
         assertEquals(2, page.size());
         assertFalse(page.getHasMoreItems());
         assertEquals(2, page.getNumItems());
 
-        page = spi.getChildren(folder1, null, false, null, false, null,
-                new Paging(1, 0));
+        page = spi.getChildren(folder1, null, null, new Paging(1, 0));
         assertEquals(1, page.size());
         assertTrue(page.getHasMoreItems());
         assertEquals(2, page.getNumItems());
 
-        page = spi.getChildren(folder1, null, false, null, false, null,
-                new Paging(1, 1));
+        page = spi.getChildren(folder1, null, null, new Paging(1, 1));
         assertEquals(1, page.size());
         assertFalse(page.getHasMoreItems());
         assertEquals(2, page.getNumItems());
 
-        page = spi.getChildren(folder1, null, false, null, false, null,
-                new Paging(2, 0));
+        page = spi.getChildren(folder1, null, null, new Paging(2, 0));
         ObjectId folder2 = page.get(0).getTypeId().equals("fold") ? page.get(0)
                 : page.get(1);
-        page = spi.getChildren(folder2, null, false, null, false, null,
-                new Paging(1, 1));
+        page = spi.getChildren(folder2, null, null, new Paging(1, 1));
         assertEquals(1, page.size());
         assertTrue(page.getHasMoreItems());
         assertEquals(3, page.getNumItems());
 
-        page = spi.getChildren(folder2, null, false, null, false, null,
-                new Paging(2, 0));
+        page = spi.getChildren(folder2, null, null, new Paging(2, 0));
         assertEquals(2, page.size());
         assertTrue(page.getHasMoreItems());
         assertEquals(3, page.getNumItems());
@@ -267,14 +258,13 @@ public abstract class BasicTestCase extends TestCase {
 
     public void testGetFolderTree() {
         Folder root = conn.getRootFolder();
-        List<ObjectEntry> desc = spi.getFolderTree(root, 4, null, false);
+        List<ObjectEntry> desc = spi.getFolderTree(root, 4, null);
         assertEquals(2, desc.size());
     }
 
     public void testGetDescendants() {
         Folder root = conn.getRootFolder();
-        List<ObjectEntry> desc = spi.getDescendants(root, 4, null, false, null,
-                false, null);
+        List<ObjectEntry> desc = spi.getDescendants(root, 4, null, null);
         assertEquals(6, desc.size());
     }
 
@@ -327,8 +317,7 @@ public abstract class BasicTestCase extends TestCase {
 
     public void testContentStreamSPI() throws Exception {
         // set
-        ObjectEntry ob = spi.getObjectByPath("/folder 1/doc 1", null, false,
-                null);
+        ObjectEntry ob = spi.getObjectByPath("/folder 1/doc 1", null);
         SimpleObjectId id = new SimpleObjectId(ob.getId());
         assertFalse(spi.hasContentStream(id)); // unfetched
         assertFalse(spi.hasContentStream(ob)); // fetched
@@ -434,8 +423,7 @@ public abstract class BasicTestCase extends TestCase {
     }
 
     public void testUpdateSPI() throws Exception {
-        ObjectEntry ob = spi.getObjectByPath("/folder 1/doc 1", null, false,
-                null);
+        ObjectEntry ob = spi.getObjectByPath("/folder 1/doc 1", null);
         assertEquals("doc 1 title", ob.getValue("title"));
         assertEquals("The doc 1 descr", ob.getValue("description"));
         // update
@@ -443,7 +431,7 @@ public abstract class BasicTestCase extends TestCase {
         properties.put("description", "new descr");
         spi.updateProperties(ob, null, properties);
         // refetch
-        ob = spi.getProperties(ob, null, false, null);
+        ob = spi.getProperties(ob, null);
         assertEquals("doc 1 title", ob.getValue("title"));
         assertEquals("new descr", ob.getValue("description"));
     }

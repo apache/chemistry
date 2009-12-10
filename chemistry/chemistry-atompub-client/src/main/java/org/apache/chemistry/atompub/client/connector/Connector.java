@@ -19,9 +19,9 @@ package org.apache.chemistry.atompub.client.connector;
 import java.io.InputStream;
 import java.util.List;
 
+import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Paging;
-import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.client.ContentManagerException;
@@ -69,16 +69,12 @@ public interface Connector {
             throws ContentManagerException;
 
     Response putQuery(Request req, String query, boolean searchAllVersions,
-            boolean includeAllowableActions,
-            RelationshipDirection includeRelationships, String renditionFilter,
-            Paging paging) throws ContentManagerException;
+            Inclusion inclusion, Paging paging) throws ContentManagerException;
 
     Response postObject(Request req, ObjectEntry entry)
             throws ContentManagerException;
 
     Response postQuery(Request req, String query, boolean searchAllVersions,
-            boolean includeAllowableActions,
-            RelationshipDirection includeRelationships, String renditionFilter,
-            Paging paging) throws ContentManagerException;
+            Inclusion inclusion, Paging paging) throws ContentManagerException;
 
 }

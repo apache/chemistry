@@ -40,6 +40,8 @@ import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.Inclusion;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.RelationshipDirection;
@@ -226,7 +228,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         method.releaseConnection();
 
         EntityProvider provider = new QueryEntityProvider("SELECT * FROM doc",
-                true, false, null, null, 5, 0);
+                true, null, null);
         resp = client.post(base + "/query", provider);
         assertEquals(HttpStatus.SC_CREATED, resp.getStatus());
         Element res = resp.getDocument().getRoot();
@@ -254,27 +256,16 @@ public abstract class AtomPubServerTestCase extends TestCase {
 
         public boolean searchAllVersions;
 
-        public boolean includeAllowableActions;
+        public Inclusion inclusion;
 
-        public RelationshipDirection includeRelationships;
-
-        public String renditionFilter;
-
-        public int maxItems;
-
-        public int skipCount;
+        public Paging paging;
 
         public QueryEntityProvider(String statement, boolean searchAllVersions,
-                boolean includeAllowableActions,
-                RelationshipDirection includeRelationships,
-                String renditionFilter, int maxItems, int skipCount) {
+                Inclusion inclusion, Paging paging) {
             this.statement = statement;
             this.searchAllVersions = searchAllVersions;
-            this.includeAllowableActions = includeAllowableActions;
-            this.includeRelationships = includeRelationships;
-            this.renditionFilter = renditionFilter;
-            this.maxItems = maxItems;
-            this.skipCount = skipCount;
+            this.inclusion = inclusion;
+            this.paging = paging;
         }
 
         @Override
@@ -292,18 +283,24 @@ public abstract class AtomPubServerTestCase extends TestCase {
             sw.startElement(CMIS.STATEMENT).writeElementText(statement).endElement();
             sw.startElement(CMIS.SEARCH_ALL_VERSIONS).writeElementText(
                     Boolean.toString(searchAllVersions)).endElement();
-            sw.startElement(CMIS.INCLUDE_ALLOWABLE_ACTIONS).writeElementText(
-                    Boolean.toString(includeAllowableActions)).endElement();
-            sw.startElement(CMIS.INCLUDE_RELATIONSHIPS).writeElementText(
-                    RelationshipDirection.toInclusion(includeRelationships)).endElement();
-            if (renditionFilter != null) {
-                sw.startElement(CMIS.RENDITION_FILTER).writeElementText(
-                        renditionFilter).endElement();
+            if (inclusion != null) {
+                sw.startElement(CMIS.INCLUDE_ALLOWABLE_ACTIONS).writeElementText(
+                        Boolean.toString(inclusion.allowableActions)).endElement();
+                sw.startElement(CMIS.INCLUDE_RELATIONSHIPS).writeElementText(
+                        RelationshipDirection.toInclusion(inclusion.relationships)).endElement();
+                if (inclusion.renditions != null) {
+                    sw.startElement(CMIS.RENDITION_FILTER).writeElementText(
+                            inclusion.renditions).endElement();
+                }
             }
-            sw.startElement(CMIS.MAX_ITEMS).writeElementText(
-                    Integer.toString(maxItems)).endElement();
-            sw.startElement(CMIS.SKIP_COUNT).writeElementText(
-                    Integer.toString(skipCount)).endElement();
+            if (paging != null) {
+                if (paging.maxItems > -1) {
+                    sw.startElement(CMIS.MAX_ITEMS).writeElementText(
+                            Integer.toString(paging.maxItems)).endElement();
+                }
+                sw.startElement(CMIS.SKIP_COUNT).writeElementText(
+                        Integer.toString(paging.skipCount)).endElement();
+            }
             sw.endElement(); // query
             sw.endDocument();
         }

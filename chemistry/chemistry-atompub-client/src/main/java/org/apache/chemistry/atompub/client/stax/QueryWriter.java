@@ -20,6 +20,8 @@ package org.apache.chemistry.atompub.client.stax;
 import java.io.IOException;
 
 import org.apache.chemistry.CMIS;
+import org.apache.chemistry.Inclusion;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.xml.stax.XMLWriter;
@@ -31,53 +33,20 @@ public class QueryWriter extends AbstractXmlObjectWriter<String> {
 
     protected boolean searchAllVersions;
 
-    protected boolean includeAllowableActions;
+    protected Inclusion inclusion;
 
-    protected RelationshipDirection includeRelationships;
-
-    protected String renditionFilter;
-
-    protected long maxItems = -1;
-
-    protected long skipCount;
+    protected Paging paging;
 
     public void setSearchAllVersions(boolean searchAllVersions) {
         this.searchAllVersions = searchAllVersions;
     }
 
-    /**
-     * Sets the max number of items to return.
-     * <p>
-     * The default, {@code -1}, means that no max number will be sent
-     *
-     * @param maxItems the max number of items
-     */
-    public void setMaxItems(long maxItems) {
-        this.maxItems = maxItems;
+    public void setInclusion(Inclusion inclusion) {
+        this.inclusion = inclusion;
     }
 
-    /**
-     * Sets the skip count.
-     * <p>
-     * The default is {@code 0}.
-     *
-     * @param skipCount the skip count
-     */
-    public void setSkipCount(long skipCount) {
-        this.skipCount = skipCount;
-    }
-
-    public void setIncludeAllowableActions(boolean includeAllowableActions) {
-        this.includeAllowableActions = includeAllowableActions;
-    }
-
-    public void setIncludeRelationships(
-            RelationshipDirection includeRelationships) {
-        this.includeRelationships = includeRelationships;
-    }
-
-    public void setRenditionFilter(String renditionFilter) {
-        this.renditionFilter = renditionFilter;
+    public void setPaging(Paging paging) {
+        this.paging = paging;
     }
 
     @Override
@@ -92,19 +61,21 @@ public class QueryWriter extends AbstractXmlObjectWriter<String> {
         xw.start();
         xw.element(CMIS.STATEMENT).econtent(statement);
         xw.element(CMIS.SEARCH_ALL_VERSIONS).content(searchAllVersions);
-        xw.element(CMIS.INCLUDE_ALLOWABLE_ACTIONS).content(
-                includeAllowableActions);
-        xw.element(CMIS.INCLUDE_RELATIONSHIPS).content(
-                RelationshipDirection.toInclusion(includeRelationships));
-        if (renditionFilter != null) {
-            xw.element(CMIS.RENDITION_FILTER).econtent(renditionFilter);
+        if (inclusion != null) {
+            xw.element(CMIS.INCLUDE_ALLOWABLE_ACTIONS).content(
+                    inclusion.allowableActions);
+            xw.element(CMIS.INCLUDE_RELATIONSHIPS).content(
+                    RelationshipDirection.toInclusion(inclusion.relationships));
+            if (inclusion.renditions != null) {
+                xw.element(CMIS.RENDITION_FILTER).econtent(inclusion.renditions);
+            }
         }
-        if (maxItems > -1) {
-            xw.element(CMIS.MAX_ITEMS).content(maxItems);
+        if (paging != null) {
+            if (paging.maxItems > -1) {
+                xw.element(CMIS.MAX_ITEMS).content(paging.maxItems);
+            }
+            xw.element(CMIS.SKIP_COUNT).content(paging.skipCount);
         }
-        xw.element(CMIS.SKIP_COUNT).content(skipCount);
-        xw.element(CMIS.INCLUDE_ALLOWABLE_ACTIONS).content(
-                includeAllowableActions);
         xw.end();
         xw.end();
     }

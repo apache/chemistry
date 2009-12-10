@@ -46,6 +46,7 @@ import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
@@ -54,7 +55,6 @@ import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
-import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Rendition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
@@ -161,26 +161,25 @@ public class SimpleConnection implements Connection, SPI {
     /**
      * Accumulates the descendant folders into a list recursively.
      */
-    protected void accumulateFolders(ObjectId folder, int depth, String filter,
-            boolean includeAllowableActions, List<ObjectEntry> list) {
-        ListPage<ObjectEntry> children = getChildren(folder, filter,
-                includeAllowableActions, null, false, null, null);
+    protected void accumulateFolders(ObjectId folder, int depth,
+            Inclusion inclusion, List<ObjectEntry> list) {
+        ListPage<ObjectEntry> children = getChildren(folder, inclusion, null,
+                null);
         for (ObjectEntry child : children) {
             if (child.getBaseType() != BaseType.FOLDER) {
                 continue;
             }
             list.add(child);
             if (depth > 1) {
-                accumulateFolders(child, depth - 1, filter,
-                        includeAllowableActions, list);
+                accumulateFolders(child, depth - 1, inclusion, list);
             }
         }
     }
 
     public List<ObjectEntry> getFolderTree(ObjectId folder, int depth,
-            String filter, boolean includeAllowableActions) {
+            Inclusion inclusion) {
         List<ObjectEntry> list = new ArrayList<ObjectEntry>();
-        accumulateFolders(folder, depth, filter, includeAllowableActions, list);
+        accumulateFolders(folder, depth, inclusion, list);
         return list;
     }
 
@@ -190,37 +189,28 @@ public class SimpleConnection implements Connection, SPI {
      * @param includeRenditions TODO
      */
     protected void accumulateDescendants(ObjectId folder, int depth,
-            String filter, boolean includeAllowableActions,
-            RelationshipDirection includeRelationships,
-            boolean includeRenditions, String orderBy, List<ObjectEntry> list) {
+            Inclusion inclusion, String orderBy, List<ObjectEntry> list) {
         // TODO deal with paging properly
-        List<ObjectEntry> children = getChildren(folder, filter,
-                includeAllowableActions, includeRelationships,
-                includeRenditions, orderBy, null);
+        List<ObjectEntry> children = getChildren(folder, inclusion, orderBy,
+                null);
         for (ObjectEntry child : children) {
             list.add(child);
             if (depth > 1 && child.getBaseType() == BaseType.FOLDER) {
-                accumulateDescendants(child, depth - 1, filter,
-                        includeAllowableActions, includeRelationships,
-                        includeRenditions, orderBy, list);
+                accumulateDescendants(child, depth - 1, inclusion, orderBy,
+                        list);
             }
         }
     }
 
     public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
-            String filter, boolean includeAllowableActions,
-            RelationshipDirection includeRelationships,
-            boolean includeRenditions, String orderBy) {
+            String orderBy, Inclusion inclusion) {
         List<ObjectEntry> list = new ArrayList<ObjectEntry>();
-        accumulateDescendants(folder, depth, filter, includeAllowableActions,
-                includeRelationships, includeRenditions, orderBy, list);
+        accumulateDescendants(folder, depth, inclusion, orderBy, list);
         return list;
     }
 
-    public ListPage<ObjectEntry> getChildren(ObjectId folder, String filter,
-            boolean includeAllowableActions,
-            RelationshipDirection includeRelationships,
-            boolean includeRenditions, String orderBy, Paging paging) {
+    public ListPage<ObjectEntry> getChildren(ObjectId folder,
+            Inclusion inclusion, String orderBy, Paging paging) {
         // TODO orderBy
         Set<String> ids = repository.children.get(folder.getId());
         List<ObjectEntry> all = new ArrayList<ObjectEntry>(ids.size());
@@ -303,8 +293,7 @@ public class SimpleConnection implements Connection, SPI {
     }
 
     public ListPage<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
-            String filter, boolean includeAllowableActions,
-            RelationshipDirection includeRelationships, Paging paging) {
+            Inclusion inclusion, Paging paging) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -485,9 +474,7 @@ public class SimpleConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectEntry getProperties(ObjectId object, String filter,
-            boolean includeAllowableActions,
-            RelationshipDirection includeRelationships) {
+    public ObjectEntry getProperties(ObjectId object, Inclusion inclusion) {
         // TODO filter, includeAllowableActions, includeRelationships
         SimpleData data = repository.datas.get(object.getId());
         if (data == null) {
@@ -496,9 +483,7 @@ public class SimpleConnection implements Connection, SPI {
         return new SimpleObjectEntry(data, this);
     }
 
-    public ObjectEntry getObjectByPath(String path, String filter,
-            boolean includeAllowableActions,
-            RelationshipDirection includeRelationships) {
+    public ObjectEntry getObjectByPath(String path, Inclusion inclusion) {
         // TODO filter, includeAllowableActions, includeRelationships
         if (!path.startsWith("/")) {
             throw new IllegalArgumentException("Path must start with / : "
@@ -560,8 +545,8 @@ public class SimpleConnection implements Connection, SPI {
         }
     }
 
-    public ListPage<Rendition> getRenditions(ObjectId object, String filter,
-            Paging paging) {
+    public ListPage<Rendition> getRenditions(ObjectId object,
+            Inclusion inclusion, Paging paging) {
         return SimpleListPage.emptyList();
     }
 
@@ -740,9 +725,7 @@ public class SimpleConnection implements Connection, SPI {
      */
 
     public ListPage<ObjectEntry> query(String statement,
-            boolean searchAllVersions, boolean includeAllowableActions,
-            RelationshipDirection includeRelationships, String renditionFilter,
-            Paging paging) {
+            boolean searchAllVersions, Inclusion inclusion, Paging paging) {
         // this implementation doesn't try to be very efficient...
         List<ObjectEntry> all = new ArrayList<ObjectEntry>();
         String tableName = null;
@@ -800,8 +783,8 @@ public class SimpleConnection implements Connection, SPI {
 
     public Collection<CMISObject> query(String statement,
             boolean searchAllVersions) {
-        ListPage<ObjectEntry> res = query(statement, searchAllVersions, false,
-                null, null, null);
+        ListPage<ObjectEntry> res = query(statement, searchAllVersions, null,
+                null);
         List<CMISObject> objects = new ArrayList<CMISObject>(res.size());
         for (ObjectEntry e : res) {
             objects.add(SimpleObject.construct((SimpleObjectEntry) e));
@@ -854,9 +837,8 @@ public class SimpleConnection implements Connection, SPI {
      */
 
     public ListPage<ObjectEntry> getRelationships(ObjectId object,
-            RelationshipDirection direction, String typeId,
-            boolean includeSubRelationshipTypes, String filter,
-            String includeAllowableActions, Paging paging) {
+            String typeId, boolean includeSubRelationshipTypes,
+            Inclusion inclusion, Paging paging) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

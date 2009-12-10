@@ -40,6 +40,7 @@ import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.NameConstraintViolationException;
 import org.apache.chemistry.ObjectEntry;
@@ -47,7 +48,6 @@ import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Paging;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Relationship;
-import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Rendition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
@@ -138,7 +138,7 @@ public class JcrConnection implements Connection, SPI {
     public Collection<CMISObject> query(String statement,
             boolean searchAllVersions) {
         ListPage<ObjectEntry> entries = query(statement, searchAllVersions,
-                false, null, null, new Paging(Integer.MAX_VALUE, 0));
+                null, new Paging(Integer.MAX_VALUE, 0));
         List<CMISObject> objects = new ArrayList<CMISObject>(entries.size());
         for (ObjectEntry entry : entries) {
             // cast entries, they are all JcrFolder or JcrDocument
@@ -261,16 +261,13 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public ListPage<ObjectEntry> getCheckedOutDocuments(ObjectId folderId,
-            String filter, boolean includeAllowableActions,
-            RelationshipDirection includeRelationships, Paging paging) {
+            Inclusion inclusion, Paging paging) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public ListPage<ObjectEntry> getChildren(ObjectId folderId, String filter,
-            boolean includeAllowableActions,
-            RelationshipDirection includeRelationships,
-            boolean includeRenditions, String orderBy, Paging paging) {
+    public ListPage<ObjectEntry> getChildren(ObjectId folderId,
+            Inclusion inclusion, String orderBy, Paging paging) {
 
         try {
             Node node = session.getRootNode();
@@ -280,10 +277,10 @@ public class JcrConnection implements Connection, SPI {
                 node = node.getNode(relPath);
             }
             NodeIterator iter;
-            if (filter == null) {
+            if (inclusion == null || inclusion.properties == null) {
                 iter = node.getNodes();
             } else {
-                iter = node.getNodes(filter);
+                iter = node.getNodes(inclusion.properties);
             }
             if (iter.hasNext() && paging != null) {
                 iter.skip(paging.skipCount);
@@ -332,15 +329,13 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public List<ObjectEntry> getFolderTree(ObjectId folderId, int depth,
-            String filter, boolean includeAllowableActions) {
+            Inclusion inclusion) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public List<ObjectEntry> getDescendants(ObjectId folderId, int depth,
-            String filter, boolean includeAllowableActions,
-            RelationshipDirection includeRelationships,
-            boolean includeRenditions, String orderBy) {
+            String orderBy, Inclusion inclusion) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -356,9 +351,7 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectEntry getProperties(ObjectId objectId, String filter,
-            boolean includeAllowableActions,
-            RelationshipDirection includeRelationships) {
+    public ObjectEntry getProperties(ObjectId objectId, Inclusion inclusion) {
 
         try {
             String relPath = JcrObjectEntry.getPath(objectId.getId()).substring(
@@ -380,9 +373,7 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
-    public ObjectEntry getObjectByPath(String path, String filter,
-            boolean includeAllowableActions,
-            RelationshipDirection includeRelationships) {
+    public ObjectEntry getObjectByPath(String path, Inclusion inclusion) {
         try {
             if (path == null || path.equals("") || path.equals("/")) {
                 return (ObjectEntry) getRootFolder();
@@ -416,14 +407,13 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public ListPage<ObjectEntry> getRelationships(ObjectId objectId,
-            RelationshipDirection direction, String typeId,
-            boolean includeSubRelationshipTypes, String filter,
-            String includeAllowableActions, Paging paging) {
+            String typeId, boolean includeSubRelationshipTypes,
+            Inclusion inclusion, Paging paging) {
         return SimpleListPage.emptyList();
     }
 
-    public ListPage<Rendition> getRenditions(ObjectId object, String filter,
-            Paging paging) {
+    public ListPage<Rendition> getRenditions(ObjectId object,
+            Inclusion inclusion, Paging paging) {
         return SimpleListPage.emptyList();
     }
 
@@ -439,9 +429,7 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public ListPage<ObjectEntry> query(String statement,
-            boolean searchAllVersions, boolean includeAllowableActions,
-            RelationshipDirection includeRelationships, String renditionFilter,
-            Paging paging) {
+            boolean searchAllVersions, Inclusion inclusion, Paging paging) {
 
         try {
             QueryManager qm = session.getWorkspace().getQueryManager();

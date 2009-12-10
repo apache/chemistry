@@ -21,6 +21,7 @@ import org.apache.abdera.model.Feed;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.Target;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
+import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
@@ -67,17 +68,18 @@ public class CMISCheckedOutCollection extends CMISObjectsCollection {
             String folderIdString = target.getParameter(AtomPubCMIS.PARAM_FOLDER_ID);
             ObjectId folderId = folderIdString == null ? null
                     : spi.newObjectId(folderIdString);
-            String filter = target.getParameter(AtomPubCMIS.PARAM_FILTER);
+            String properties = target.getParameter(AtomPubCMIS.PARAM_FILTER);
+            boolean allowableActions = getParameter(request,
+                    AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
+            String incl = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS);
+            RelationshipDirection relationships = RelationshipDirection.fromInclusion(incl);
+            Inclusion inclusion = new Inclusion(properties, null,
+                    relationships, allowableActions, false, false);
             int maxItems = getParameter(request, AtomPubCMIS.PARAM_MAX_ITEMS, 0);
             int skipCount = getParameter(request, AtomPubCMIS.PARAM_SKIP_COUNT,
                     0);
-            boolean includeAllowableActions = getParameter(request,
-                    AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
-            String incl = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS);
-            RelationshipDirection includeRelationships = RelationshipDirection.fromInclusion(incl);
             ListPage<ObjectEntry> objectEntries = spi.getCheckedOutDocuments(
-                    folderId, filter, includeAllowableActions,
-                    includeRelationships, new Paging(maxItems, skipCount));
+                    folderId, inclusion, new Paging(maxItems, skipCount));
             return objectEntries;
         } finally {
             spi.close();

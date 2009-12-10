@@ -37,6 +37,7 @@ import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.axiom.om.OMElement;
 import org.apache.chemistry.ContentAlreadyExistsException;
 import org.apache.chemistry.ContentStream;
+import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
@@ -88,7 +89,7 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
         ObjectEntry entry;
         SPI spi = repository.getSPI();
         try {
-            entry = spi.getProperties(spi.newObjectId(id), null, false, null);
+            entry = spi.getProperties(spi.newObjectId(id), null);
         } finally {
             spi.close();
         }
@@ -161,20 +162,19 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
         try {
             ObjectId objectId = spi.newObjectId(id);
             Target target = request.getTarget();
-            String filter = target.getParameter(AtomPubCMIS.PARAM_FILTER);
-            boolean includeAllowableActions = getParameter(request,
-                    AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
-            String incl = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS);
-            RelationshipDirection includeRelationships = RelationshipDirection.fromInclusion(incl);
-            // TODO proper renditionFilter use
-            boolean includeRenditions = target.getParameter(AtomPubCMIS.PARAM_RENDITION_FILTER) == null ? false
-                    : true;
             String orderBy = target.getParameter(AtomPubCMIS.PARAM_ORDER_BY);
+            String properties = target.getParameter(AtomPubCMIS.PARAM_FILTER);
+            String renditions = target.getParameter(AtomPubCMIS.PARAM_RENDITION_FILTER);
+            String rel = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS);
+            RelationshipDirection relationships = RelationshipDirection.fromInclusion(rel);
+            boolean allowableActions = getParameter(request,
+                    AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
+            Inclusion inclusion = new Inclusion(properties, renditions,
+                    relationships, allowableActions, false, false);
             if ("descendants".equals(getType())) {
                 int depth = getParameter(request, AtomPubCMIS.PARAM_DEPTH, 1);
                 List<ObjectEntry> descendants = spi.getDescendants(objectId,
-                        depth, filter, includeAllowableActions,
-                        includeRelationships, includeRenditions, orderBy);
+                        depth, orderBy, inclusion);
                 SimpleListPage<ObjectEntry> page = new SimpleListPage<ObjectEntry>(
                         descendants);
                 page.setHasMoreItems(false);
@@ -186,9 +186,7 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
                 int skipCount = getParameter(request,
                         AtomPubCMIS.PARAM_SKIP_COUNT, 0);
                 ListPage<ObjectEntry> children = spi.getChildren(objectId,
-                        filter, includeAllowableActions, includeRelationships,
-                        includeRenditions, orderBy, new Paging(maxItems,
-                                skipCount));
+                        inclusion, orderBy, new Paging(maxItems, skipCount));
                 return children;
             }
         } finally {

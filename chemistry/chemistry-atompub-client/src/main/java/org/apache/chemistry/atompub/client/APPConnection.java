@@ -40,6 +40,7 @@ import org.apache.chemistry.ConstraintViolationException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
@@ -47,7 +48,6 @@ import org.apache.chemistry.Paging;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.Relationship;
-import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Rendition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
@@ -184,35 +184,31 @@ public class APPConnection implements Connection, SPI {
     /**
      * Accumulates the descendant folders into a list recursively.
      */
-    protected void accumulateFolders(ObjectId folder, int depth, String filter,
-            boolean includeAllowableActions, List<ObjectEntry> list) {
-        List<ObjectEntry> children = getChildren(folder, filter,
-                includeAllowableActions, null, false, null, new Paging(
-                        Integer.MAX_VALUE, 0));
+    protected void accumulateFolders(ObjectId folder, int depth,
+            Inclusion inclusion, List<ObjectEntry> list) {
+        List<ObjectEntry> children = getChildren(folder, inclusion, null,
+                new Paging(Integer.MAX_VALUE, 0));
         for (ObjectEntry child : children) {
             if (child.getBaseType() != BaseType.FOLDER) {
                 continue;
             }
             list.add(child);
             if (depth > 1) {
-                accumulateFolders(child, depth - 1, filter,
-                        includeAllowableActions, list);
+                accumulateFolders(child, depth - 1, inclusion, list);
             }
         }
     }
 
     // TODO use foldertree feed
     public List<ObjectEntry> getFolderTree(ObjectId folder, int depth,
-            String filter, boolean includeAllowableActions) {
+            Inclusion inclusion) {
         List<ObjectEntry> list = new ArrayList<ObjectEntry>();
-        accumulateFolders(folder, depth, filter, includeAllowableActions, list);
+        accumulateFolders(folder, depth, inclusion, list);
         return list;
     }
 
     public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
-            String filter, boolean includeAllowableActions,
-            RelationshipDirection includeRelationships,
-            boolean includeRenditions, String orderBy) {
+            String orderBy, Inclusion inclusion) {
         // TODO includeRelationship, includeAllowableActions, orderBy
         // TODO filter, includeRenditions
         String href = getObjectEntry(folder).getLink(AtomPub.LINK_DOWN,
@@ -228,10 +224,8 @@ public class APPConnection implements Connection, SPI {
         return resp.getObjectFeed(new ReadContext(this));
     }
 
-    public ListPage<ObjectEntry> getChildren(ObjectId folder, String filter,
-            boolean includeAllowableActions,
-            RelationshipDirection includeRelationships,
-            boolean includeRenditions, String orderBy, Paging paging) {
+    public ListPage<ObjectEntry> getChildren(ObjectId folder,
+            Inclusion inclusion, String orderBy, Paging paging) {
         // TODO filter, includeRelationship, includeAllowableActions, orderBy
         String href = getObjectEntry(folder).getLink(AtomPub.LINK_DOWN,
                 AtomPub.MEDIA_TYPE_ATOM_FEED);
@@ -290,8 +284,7 @@ public class APPConnection implements Connection, SPI {
     }
 
     public ListPage<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
-            String filter, boolean includeAllowableActions,
-            RelationshipDirection includeRelationships, Paging paging) {
+            Inclusion inclusion, Paging paging) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -365,9 +358,8 @@ public class APPConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectEntry getProperties(ObjectId object, String filter,
-            boolean includeAllowableActions,
-            RelationshipDirection includeRelationships) {
+    public ObjectEntry getProperties(ObjectId object, Inclusion inclusion) {
+        // TODO inclusion
         APPObjectEntry current = getObjectEntry(object);
         String href = current.getLink(AtomPub.LINK_SELF);
         Response resp = connector.get(new Request(href));
@@ -384,9 +376,8 @@ public class APPConnection implements Connection, SPI {
         return (APPObjectEntry) resp.getObject(new ReadContext(this));
     }
 
-    public ObjectEntry getObjectByPath(String path, String filter,
-            boolean includeAllowableActions,
-            RelationshipDirection includeRelationships) {
+    public ObjectEntry getObjectByPath(String path, Inclusion inclusion) {
+        // TODO inclusion
         if (!path.startsWith("/")) {
             throw new IllegalArgumentException("Path must start with / : "
                     + path);
@@ -421,7 +412,7 @@ public class APPConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public List<Rendition> getRenditions(ObjectId object, String filter,
+    public List<Rendition> getRenditions(ObjectId object, Inclusion inclusion,
             Paging paging) {
         return Collections.emptyList();
     }
@@ -579,13 +570,10 @@ public class APPConnection implements Connection, SPI {
      */
 
     public ListPage<ObjectEntry> query(String statement,
-            boolean searchAllVersions, boolean includeAllowableActions,
-            RelationshipDirection includeRelationships, String renditionFilter,
-            Paging paging) {
+            boolean searchAllVersions, Inclusion inclusion, Paging paging) {
         String href = repository.getCollectionHref(AtomPubCMIS.COL_QUERY);
         Response resp = connector.postQuery(new Request(href), statement,
-                searchAllVersions, includeAllowableActions,
-                includeRelationships, renditionFilter, paging);
+                searchAllVersions, inclusion, paging);
         if (!resp.isOk()) {
             throw new ContentManagerException(
                     "Remote server returned error code: "
@@ -597,8 +585,8 @@ public class APPConnection implements Connection, SPI {
 
     public Collection<CMISObject> query(String statement,
             boolean searchAllVersions) {
-        ListPage<ObjectEntry> res = query(statement, searchAllVersions, false,
-                null, null, new Paging(-1, 0));
+        ListPage<ObjectEntry> res = query(statement, searchAllVersions, null,
+                null);
         List<CMISObject> objects = new ArrayList<CMISObject>(res.size());
         for (ObjectEntry e : res) {
             objects.add(APPObject.construct((APPObjectEntry) e));
@@ -651,9 +639,8 @@ public class APPConnection implements Connection, SPI {
      */
 
     public ListPage<ObjectEntry> getRelationships(ObjectId object,
-            RelationshipDirection direction, String typeId,
-            boolean includeSubRelationshipTypes, String filter,
-            String includeAllowableActions, Paging paging) {
+            String typeId, boolean includeSubRelationshipTypes,
+            Inclusion inclusion, Paging paging) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

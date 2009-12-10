@@ -53,6 +53,7 @@ import org.apache.chemistry.CMIS;
 import org.apache.chemistry.CMISRuntimeException;
 import org.apache.chemistry.ConstraintViolationException;
 import org.apache.chemistry.ContentStream;
+import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Property;
@@ -375,7 +376,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             // AbstractEntityCollectionAdapter#getEntryFromCollectionProvider is
             // package-private...
             Entry entry = request.getAbdera().getFactory().newEntry();
-            ObjectEntry object = spi.getProperties(objectId, null, false, null);
+            ObjectEntry object = spi.getProperties(objectId, null);
             addEntryDetails(request, entry, null, object);
             if (isMediaEntry(object)) {
                 addMediaContent(null, entry, object, request);
@@ -409,8 +410,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         try {
             // existing object
             String id = getResourceName(request);
-            ObjectEntry object = spi.getProperties(spi.newObjectId(id), null,
-                    false, null);
+            ObjectEntry object = spi.getProperties(spi.newObjectId(id), null);
             if (object == null) {
                 return new EmptyResponseContext(404);
             }
@@ -435,7 +435,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             // build response
             Entry entry = request.getAbdera().getFactory().newEntry();
             // refetch full object
-            object = spi.getProperties(object, null, false, null);
+            object = spi.getProperties(object, null);
             addEntryDetails(request, entry, null, object);
             if (isMediaEntry(object)) {
                 addMediaContent(null, entry, object, request);
@@ -538,22 +538,22 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         SPI spi = repository.getSPI();
         try {
             Target target = request.getTarget();
-            String filter = target.getParameter(AtomPubCMIS.PARAM_FILTER);
-            boolean includeAllowableActions = getParameter(request,
+            String properties = target.getParameter(AtomPubCMIS.PARAM_FILTER);
+            boolean allowableActions = getParameter(request,
                     AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
             String incl = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS);
-            RelationshipDirection includeRelationships = RelationshipDirection.fromInclusion(incl);
+            RelationshipDirection relationships = RelationshipDirection.fromInclusion(incl);
+            Inclusion inclusion = new Inclusion(properties, null,
+                    relationships, allowableActions, false, false);
             if ("path".equals(getType())) {
                 String path = resourceName;
                 if (!path.startsWith("/")) {
                     path = "/" + path;
                 }
-                return spi.getObjectByPath(path, filter,
-                        includeAllowableActions, includeRelationships);
+                return spi.getObjectByPath(path, inclusion);
             } else { // object
                 String id = resourceName;
-                return spi.getProperties(spi.newObjectId(id), filter,
-                        includeAllowableActions, includeRelationships);
+                return spi.getProperties(spi.newObjectId(id), inclusion);
             }
         } finally {
             spi.close();

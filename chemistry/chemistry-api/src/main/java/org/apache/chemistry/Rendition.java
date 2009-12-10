@@ -34,16 +34,25 @@ public interface Rendition {
 
     /**
      * The rendition filter specifying all renditions.
+     * <p>
+     * This is a convenience value, but implementations are required to use
+     * {@link String#equals} for comparison, not {@code =}.
      */
     String FILTER_ALL = "*";
 
     /**
      * The rendition filter specifying no rendition.
+     * <p>
+     * This is a convenience value, but implementations are required to use
+     * {@link String#equals} for comparison, not {@code =}.
      */
     String FILTER_NONE = "cmis:none";
 
     /**
      * The thumbnail rendition kind.
+     * <p>
+     * This is a convenience value, but implementations are required to use
+     * {@link String#equals} for comparison, not {@code =}.
      */
     String KIND_THUMBNAIL = "cmis:thumbnail";
 
