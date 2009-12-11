@@ -121,6 +121,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-jcr</artifactId>
+        <version>${version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry</groupId>
         <artifactId>chemistry-commons</artifactId>
         <version>${version}</version>
       </dependency>

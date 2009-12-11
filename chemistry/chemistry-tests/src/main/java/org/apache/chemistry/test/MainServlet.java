@@ -46,7 +46,7 @@ public class MainServlet {
     public static final int DEFAULT_PORT = 8080;
 
     public static void main(String[] args) throws Exception {
-        Repository repository = BasicHelper.makeRepository(ROOT_ID);
+        Repository repository = BasicHelper.makeSimpleRepository(ROOT_ID);
         MainServlet.run(args, repository, "/cmis", "/repository");
     }
 

@@ -48,7 +48,10 @@ public class TestAtomPubClientServer extends BasicTestCase {
     public Server server;
 
     public String startServer() throws Exception {
-        Repository repository = BasicHelper.makeRepository(null);
+        Repository repository = BasicHelper.makeSimpleRepository(null);
+        // populate repository from the server side
+        // could also be done from the server side
+        BasicHelper.populateRepository(repository);
         server = new Server();
         Connector connector = new SocketConnector();
         connector.setHost(HOST);
@@ -74,10 +77,10 @@ public class TestAtomPubClientServer extends BasicTestCase {
     }
 
     @Override
-    public void makeRepository() throws Exception {
+    public Repository makeRepository() throws Exception {
         String serverUrl = startServer();
         ContentManager cm = new APPContentManager(serverUrl);
-        repository = cm.getDefaultRepository();
+        return cm.getDefaultRepository();
     }
 
     @Override

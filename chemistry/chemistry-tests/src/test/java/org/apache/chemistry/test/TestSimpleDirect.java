@@ -16,14 +16,18 @@
  */
 package org.apache.chemistry.test;
 
+import org.apache.chemistry.Repository;
+
 /**
  * Tests the simple implementation directly (no client/server).
  */
 public class TestSimpleDirect extends BasicTestCase {
 
     @Override
-    public void makeRepository() throws Exception {
-        repository = BasicHelper.makeRepository(null);
+    public Repository makeRepository() throws Exception {
+        Repository repo = BasicHelper.makeSimpleRepository(null);
+        BasicHelper.populateRepository(repo);
+        return repo;
     }
 
 }

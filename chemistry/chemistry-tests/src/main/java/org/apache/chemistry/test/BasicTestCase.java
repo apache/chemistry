@@ -58,13 +58,12 @@ import org.apache.chemistry.util.GregorianCalendar;
 import org.apache.commons.io.IOUtils;
 
 /**
- * Basic test on a repository created with {@link BasicHelper#makeRepository}.
+ * Basic test on a repository populated with
+ * {@link BasicHelper#populateRepository}.
  * <p>
  * The {@link #setUp} method must initialize repository, conn and spi.
  */
 public abstract class BasicTestCase extends TestCase {
-
-    public static final String ROOT_TYPE_ID = "chemistry:root"; // not in spec
 
     public static final String ROOT_FOLDER_NAME = ""; // not in spec
 
@@ -74,11 +73,36 @@ public abstract class BasicTestCase extends TestCase {
 
     public SPI spi;
 
-    public abstract void makeRepository() throws Exception;
+    public String expectedRepositoryId = "test";
+
+    public String expectedRepositoryName = "test";
+
+    public String expectedRepositoryDescription = "Repository test";
+
+    public String expectedRepositoryVendor = "Apache";
+
+    public String expectedRepositoryProductName = "Chemistry Simple Repository";
+
+    public String expectedRepositoryProductVersion = "1.0-SNAPSHOT";
+
+    public boolean expectedCapabilityHasGetDescendants = true;
+
+    public boolean expectedCapabilityHasMultifiling = false;
+
+    public CapabilityQuery expectedCapabilityQuery = CapabilityQuery.BOTH_COMBINED;
+
+    public boolean expectedCapabilityHasUnfiling = false;
+
+    public String expectedRootTypeId = "chemistry:root"; // not in spec
+
+    /**
+     * Must be implemented by actual testing classes.
+     */
+    public abstract Repository makeRepository() throws Exception;
 
     @Override
     public void setUp() throws Exception {
-        makeRepository();
+        repository = makeRepository();
         openConn();
     }
 
@@ -119,13 +143,13 @@ public abstract class BasicTestCase extends TestCase {
 
     public void testRepository() {
         assertNotNull(repository);
-        assertEquals("test", repository.getId());
-        assertEquals("test", repository.getName());
+        assertEquals(expectedRepositoryId, repository.getId());
+        assertEquals(expectedRepositoryName, repository.getName());
         RepositoryInfo info = repository.getInfo();
-        assertEquals("Repository test", info.getDescription());
-        assertEquals("Apache", info.getVendorName());
-        assertEquals("Chemistry Simple Repository", info.getProductName());
-        assertEquals("1.0-SNAPSHOT", info.getProductVersion());
+        assertEquals(expectedRepositoryDescription, info.getDescription());
+        assertEquals(expectedRepositoryVendor, info.getVendorName());
+        assertEquals(expectedRepositoryProductName, info.getProductName());
+        assertEquals(expectedRepositoryProductVersion, info.getProductVersion());
         // assertEquals(new SimpleObjectId("XYZ"), info.getRootFolderId());
         // assertEquals("", info.getLatestChangeLogToken());
         assertEquals("1.0", info.getVersionSupported());
@@ -140,14 +164,15 @@ public abstract class BasicTestCase extends TestCase {
         assertFalse(cap.isAllVersionsSearchable());
         assertEquals(CapabilityChange.NONE, cap.getChangeCapability());
         assertTrue(cap.isContentStreamUpdatableAnytime());
-        assertTrue(cap.hasGetDescendants());
+        assertEquals(expectedCapabilityHasGetDescendants,
+                cap.hasGetDescendants());
         assertFalse(cap.hasGetFolderTree());
-        assertFalse(cap.hasMultifiling());
+        assertEquals(expectedCapabilityHasMultifiling, cap.hasMultifiling());
         assertFalse(cap.isPWCSearchable());
         assertFalse(cap.isPWCUpdatable());
-        assertEquals(CapabilityQuery.BOTH_COMBINED, cap.getQueryCapability());
+        assertEquals(expectedCapabilityQuery, cap.getQueryCapability());
         assertEquals(CapabilityRendition.NONE, cap.getRenditionCapability());
-        assertFalse(cap.hasUnfiling());
+        assertEquals(expectedCapabilityHasUnfiling, cap.hasUnfiling());
         assertFalse(cap.hasVersionSpecificFiling());
         assertEquals(CapabilityJoin.NONE, cap.getJoinCapability());
     }
@@ -159,8 +184,8 @@ public abstract class BasicTestCase extends TestCase {
         assertNotNull(root);
         Type rootType = root.getType();
         assertNotNull(rootType);
-        assertEquals(ROOT_TYPE_ID, rootType.getId());
-        assertEquals(ROOT_TYPE_ID, root.getTypeId());
+        assertEquals(expectedRootTypeId, rootType.getId());
+        assertEquals(expectedRootTypeId, root.getTypeId());
         assertEquals(ROOT_FOLDER_NAME, root.getName());
         assertEquals(null, root.getParent());
         Map<String, Property> props = root.getProperties();
@@ -220,8 +245,8 @@ public abstract class BasicTestCase extends TestCase {
 
     public void testGetChildren() {
         Folder root = conn.getRootFolder();
-        ListPage<ObjectEntry> page = spi.getChildren(root, null, null, new Paging(20,
-                        0));
+        ListPage<ObjectEntry> page = spi.getChildren(root, null, null,
+                new Paging(20, 0));
         assertEquals(1, page.size());
         assertFalse(page.getHasMoreItems());
         assertEquals(1, page.getNumItems());

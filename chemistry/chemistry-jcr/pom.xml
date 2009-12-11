@@ -29,39 +29,32 @@
   <artifactId>chemistry-jcr</artifactId>
   <name>Chemistry JCR Connector</name>
 
+  <properties>
+    <jackrabbit.version>1.6.0</jackrabbit.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.chemistry</groupId>
       <artifactId>chemistry-api</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.apache.chemistry</groupId>
       <artifactId>chemistry-commons</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
     </dependency>
-
     <dependency>
       <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>
       <version>1.0</version>
     </dependency>
-
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-jcr-commons</artifactId>
-      <version>1.4.2</version>
+      <version>${jackrabbit.version}</version>
     </dependency>
-
   </dependencies>
 </project>

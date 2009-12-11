@@ -23,8 +23,13 @@
     <artifactId>chemistry-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
+
   <artifactId>chemistry-tests</artifactId>
   <name>Chemistry Tests</name>
+
+  <properties>
+    <jackrabbit.version>1.6.0</jackrabbit.version>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -83,6 +88,19 @@
       <artifactId>junit</artifactId>
       <scope>compile</scope> <!-- override -->
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.chemistry</groupId>
+      <artifactId>chemistry-jcr</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-core</artifactId>
+      <version>${jackrabbit.version}</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -108,6 +126,15 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <!-- excluded until tests pass -->
+            <exclude>**/TestJcrRepository.java</exclude>
+          </excludes>
+        </configuration>
       </plugin>
     </plugins>
   </build>

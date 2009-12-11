@@ -45,7 +45,8 @@ public class BasicHelper {
 
     public static final String TEST_FILE_CONTENT = "This is a test file.\nTesting, testing...\n";
 
-    public static Repository makeRepository(String rootId) throws Exception {
+    public static Repository makeSimpleRepository(String rootId)
+            throws Exception {
         PropertyDefinition p1 = new SimplePropertyDefinition("title",
                 "def:title", null, "title", "Title", "", false,
                 PropertyType.STRING, false, null, false, false, "(no title)",
@@ -70,6 +71,10 @@ public class BasicHelper {
                         p1, p2));
         SimpleRepository repo = new SimpleRepository("test", Arrays.asList(dt,
                 ft), rootId);
+        return repo;
+    }
+
+    public static void populateRepository(Repository repo) throws Exception {
         Connection conn = repo.getConnection(null);
         Folder root = conn.getRootFolder();
 
@@ -115,7 +120,6 @@ public class BasicHelper {
         doc4.save();
 
         conn.close();
-        return repo;
     }
 
 }
