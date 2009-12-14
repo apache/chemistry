@@ -13,12 +13,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Authors:
+ *     Dominique Pfister, Day
+ *     Michael Mertins, Saperion
+ *     Florent Guillaume, Nuxeo
  */
 package org.apache.chemistry.jcr;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 import javax.jcr.nodetype.NodeType;
 
@@ -85,13 +90,23 @@ public class JcrType implements Type {
     }
 
     public PropertyDefinition getPropertyDefinition(String id) {
-        // TODO Auto-generated method stub
+        String jcrName = JcrCmisMap.cmisToJcr(id);
+        for (javax.jcr.nodetype.PropertyDefinition prop : nodeType.getPropertyDefinitions()) {
+            if (prop.getName().equals(jcrName)) {
+                return new JcrPropertyDefinition(prop);
+            }
+        }
         return null;
     }
 
     public Collection<PropertyDefinition> getPropertyDefinitions() {
-        // TODO Auto-generated method stub
-        return Collections.emptyList();
+        javax.jcr.nodetype.PropertyDefinition[] props = nodeType.getPropertyDefinitions();
+        Collection<PropertyDefinition> result = new ArrayList<PropertyDefinition>(
+                props.length);
+        for (javax.jcr.nodetype.PropertyDefinition prop : props) {
+            result.add(new JcrPropertyDefinition(prop));
+        }
+        return result;
     }
 
     public String getQueryName() {

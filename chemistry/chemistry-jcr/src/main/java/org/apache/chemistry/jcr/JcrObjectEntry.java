@@ -13,6 +13,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Authors:
+ *     Dominique Pfister, Day
+ *     Michael Mertins, Saperion
  */
 package org.apache.chemistry.jcr;
 
@@ -69,7 +73,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
 
     public Boolean getBoolean(String id) {
         try {
-            return Boolean.valueOf(node.getProperty(id).getBoolean());
+            return Boolean.valueOf(node.getProperty(JcrCmisMap.cmisToJcr(id)).getBoolean());
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
@@ -81,7 +85,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
 
     public Boolean[] getBooleans(String id) {
         try {
-            Value[] values = node.getProperty(id).getValues();
+            Value[] values = node.getProperty(JcrCmisMap.cmisToJcr(id)).getValues();
             Boolean[] result = new Boolean[values.length];
             for (int i = 0; i < values.length; i++) {
                 result[i] = Boolean.valueOf(values[i].getBoolean());
@@ -114,7 +118,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
 
     public Calendar getDateTime(String id) {
         try {
-            return node.getProperty(id).getDate();
+            return node.getProperty(JcrCmisMap.cmisToJcr(id)).getDate();
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
@@ -126,7 +130,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
 
     public Calendar[] getDateTimes(String id) {
         try {
-            Value[] values = node.getProperty(id).getValues();
+            Value[] values = node.getProperty(JcrCmisMap.cmisToJcr(id)).getValues();
             Calendar[] result = new Calendar[values.length];
             for (int i = 0; i < values.length; i++) {
                 result[i] = values[i].getDate();
@@ -143,7 +147,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
 
     public BigDecimal getDecimal(String id) {
         try {
-            return new BigDecimal(node.getProperty(id).getDouble());
+            return new BigDecimal(node.getProperty(JcrCmisMap.cmisToJcr(id)).getDouble());
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
@@ -155,7 +159,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
 
     public BigDecimal[] getDecimals(String id) {
         try {
-            Value[] values = node.getProperty(id).getValues();
+            Value[] values = node.getProperty(JcrCmisMap.cmisToJcr(id)).getValues();
             BigDecimal[] result = new BigDecimal[values.length];
             for (int i = 0; i < values.length; i++) {
                 result[i] = new BigDecimal(values[i].getDouble());
@@ -188,7 +192,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
 
     public String getId(String id) {
         try {
-            javax.jcr.Property prop = node.getProperty(id);
+            javax.jcr.Property prop = node.getProperty(JcrCmisMap.cmisToJcr(id));
             return getItemId(prop);
         } catch (PathNotFoundException e) {
             /* property does not exist */
@@ -215,7 +219,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
 
     public Integer getInteger(String id) {
         try {
-            return Integer.valueOf((int) node.getProperty(id).getLong());
+            return Integer.valueOf((int) node.getProperty(JcrCmisMap.cmisToJcr(id)).getLong());
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
@@ -227,7 +231,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
 
     public Integer[] getIntegers(String id) {
         try {
-            Value[] values = node.getProperty(id).getValues();
+            Value[] values = node.getProperty(JcrCmisMap.cmisToJcr(id)).getValues();
             Integer[] result = new Integer[values.length];
             for (int i = 0; i < values.length; i++) {
                 result[i] = Integer.valueOf((int) values[i].getLong());
@@ -295,7 +299,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
 
     public Property getProperty(String id) {
         try {
-            return new JcrProperty(node.getProperty(id));
+            return new JcrProperty(node.getProperty(JcrCmisMap.cmisToJcr(id)));
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
@@ -315,7 +319,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
 
     public String getString(String id) {
         try {
-            return node.getProperty(id).getString();
+            return node.getProperty(JcrCmisMap.cmisToJcr(id)).getString();
         } catch (PathNotFoundException e) {
             /* property does not exist */
         } catch (RepositoryException e) {
@@ -327,7 +331,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
 
     public String[] getStrings(String id) {
         try {
-            Value[] values = node.getProperty(id).getValues();
+            Value[] values = node.getProperty(JcrCmisMap.cmisToJcr(id)).getValues();
             String[] result = new String[values.length];
             for (int i = 0; i < values.length; i++) {
                 result[i] = values[i].getString();
@@ -365,11 +369,23 @@ public abstract class JcrObjectEntry implements ObjectEntry {
     }
 
     public Serializable getValue(String id) {
+        String name = JcrCmisMap.cmisToJcr(id);
         try {
-            if (node.hasProperty(id)) {
-                Value value = node.getProperty(id).getValue();
-                if (value instanceof Serializable) {
-                    return (Serializable) value;
+            if (node.hasProperty(name)) {
+                if (JcrCmisMap.isArray(name)) {
+                    // TODO: Array handling doesn't work yet
+                    // i.e. for (Value v : node.getProperty(name).getValues();
+                } else {
+                    Value value = node.getProperty(name).getValue();
+                    if (JcrCmisMap.isDate(name)) {
+                        return value.getDate();
+                    } else if (JcrCmisMap.isBool(name)) {
+                        return value.getBoolean();
+                    } else if (JcrCmisMap.isInt(name)) {
+                        return value.getLong();
+                    } else {
+                        return value.getString();
+                    }
                 }
             }
         } catch (PathNotFoundException e) {
@@ -385,7 +401,7 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         Map<String, Serializable> values = new HashMap<String, Serializable>();
         for (PropertyDefinition def : getType().getPropertyDefinitions()) {
             String id = def.getId();
-            values.put(id, getValue(id));
+            values.put(JcrCmisMap.cmisToJcr(id), getValue(id));
         }
         return values;
     }

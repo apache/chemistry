@@ -37,15 +37,15 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.nodetype.NodeTypeIterator;
 import javax.jcr.nodetype.NodeTypeManager;
 
-import org.apache.chemistry.CapabilityACL;
 import org.apache.chemistry.ACLCapabilityType;
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.CapabilityACL;
 import org.apache.chemistry.CapabilityChange;
-import org.apache.chemistry.Connection;
 import org.apache.chemistry.CapabilityJoin;
-import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.CapabilityQuery;
 import org.apache.chemistry.CapabilityRendition;
+import org.apache.chemistry.Connection;
+import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryEntry;
@@ -55,7 +55,6 @@ import org.apache.chemistry.Type;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jackrabbit.JcrConstants;
 import org.w3c.dom.Document;
 
 public class JcrRepository implements Repository, RepositoryInfo,
@@ -121,7 +120,7 @@ public class JcrRepository implements Repository, RepositoryInfo,
             NodeType nt = ntmgr.getNodeType(typeId);
 
             BaseType baseType = BaseType.FOLDER;
-            if (nt.getName().equals(JcrConstants.NT_FILE)) {
+            if (JcrCmisMap.isBaseTypeDocument(nt.getName())) {
                 baseType = BaseType.DOCUMENT;
             }
             return new JcrType(nt, baseType);
@@ -181,7 +180,15 @@ public class JcrRepository implements Repository, RepositoryInfo,
     }
 
     public URI getThinClientURI() {
-        return null;
+        URI uri = null;
+        try {
+            uri = new URI(
+                    repository.getDescriptor(javax.jcr.Repository.REP_VENDOR_URL_DESC));
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            // e.printStackTrace();
+        }
+        return uri;
     }
 
     // ---------------------------------------------------------- RepositoryInfo

@@ -13,6 +13,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Authors:
+ *     Dominique Pfister, Day
+ *     Michael Mertins, Saperion
  */
 package org.apache.chemistry.jcr;
 
@@ -84,10 +88,10 @@ public class JcrConnection implements Connection, SPI {
                 return getRootFolder();
             } else {
                 Node node = session.getRootNode().getNode(relPath);
-                if (node.isNodeType(JcrConstants.NT_FOLDER)) {
-                    return new JcrFolder(node);
-                } else if (node.isNodeType(JcrConstants.NT_FILE)) {
+                if (JcrCmisMap.isNodeDocument(node)) {
                     return new JcrDocument(node);
+                } else {
+                    return new JcrFolder(node);
                 }
             }
         } catch (RepositoryException e) {
@@ -148,8 +152,11 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public ObjectEntry newObjectEntry(String typeId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        if (JcrCmisMap.isBaseTypeDocument(typeId)) {
+            return new JcrDocument();
+        } else {
+            return new JcrFolder();
+        }
     }
 
     public ObjectId newObjectId(String id) {
@@ -291,10 +298,10 @@ public class JcrConnection implements Connection, SPI {
             SimpleListPage<ObjectEntry> result = new SimpleListPage<ObjectEntry>();
             while (result.size() < maxItems && iter.hasNext()) {
                 Node child = iter.nextNode();
-                if (child.isNodeType(JcrConstants.NT_FOLDER)) {
-                    result.add(new JcrFolder(child));
-                } else if (child.isNodeType(JcrConstants.NT_FILE)) {
+                if (JcrCmisMap.isNodeDocument(child)) {
                     result.add(new JcrDocument(child));
+                } else {
+                    result.add(new JcrFolder(child));
                 }
             }
             result.setHasMoreItems(iter.hasNext());
@@ -360,10 +367,10 @@ public class JcrConnection implements Connection, SPI {
                 return (ObjectEntry) getRootFolder();
             } else {
                 Node node = session.getRootNode().getNode(relPath);
-                if (node.isNodeType(JcrConstants.NT_FOLDER)) {
-                    return new JcrFolder(node);
-                } else if (node.isNodeType(JcrConstants.NT_FILE)) {
+                if (JcrCmisMap.isNodeDocument(node)) {
                     return new JcrDocument(node);
+                } else {
+                    return new JcrFolder(node);
                 }
             }
         } catch (RepositoryException e) {

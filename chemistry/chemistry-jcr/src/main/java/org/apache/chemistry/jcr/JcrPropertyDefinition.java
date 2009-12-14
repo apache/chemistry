@@ -13,12 +13,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Authors:
+ *     Dominique Pfister, Day
+ *     Michael Mertins, Saperion
  */
 package org.apache.chemistry.jcr;
 
 import java.io.Serializable;
 import java.net.URI;
 import java.util.List;
+
+import javax.jcr.Value;
 
 import org.apache.chemistry.Choice;
 import org.apache.chemistry.PropertyDefinition;
@@ -39,20 +45,26 @@ public class JcrPropertyDefinition implements PropertyDefinition {
     }
 
     public Serializable getDefaultValue() {
-        // TODO Auto-generated method stub
+        try {
+            Value[] values = propDef.getDefaultValues();
+            return values[0].getString();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return null;
     }
 
     public String getDescription() {
-        return propDef.getName();
+        return JcrCmisMap.jcrToCmis(propDef.getName());
     }
 
     public String getDisplayName() {
-        return propDef.getName();
+        return JcrCmisMap.jcrToCmis(propDef.getName());
     }
 
     public String getId() {
-        return propDef.getName();
+        return JcrCmisMap.jcrToCmis(propDef.getName());
     }
 
     public String getLocalName() {
@@ -79,7 +91,7 @@ public class JcrPropertyDefinition implements PropertyDefinition {
     }
 
     public String getQueryName() {
-        return propDef.getName();
+        return JcrCmisMap.jcrToCmis(propDef.getName());
     }
 
     public int getPrecision() {
@@ -94,30 +106,31 @@ public class JcrPropertyDefinition implements PropertyDefinition {
 
     public PropertyType getType() {
         switch (propDef.getRequiredType()) {
-            case javax.jcr.PropertyType.STRING:
-                return PropertyType.STRING;
-            case javax.jcr.PropertyType.LONG:
-                return PropertyType.INTEGER;
-            case javax.jcr.PropertyType.DOUBLE:
-                return PropertyType.DECIMAL;
-            case javax.jcr.PropertyType.DATE:
-                return PropertyType.DATETIME;
-            case javax.jcr.PropertyType.BOOLEAN:
-                return PropertyType.BOOLEAN;
-            case javax.jcr.PropertyType.REFERENCE:
-                return PropertyType.ID;
-            case javax.jcr.PropertyType.NAME:
-            case javax.jcr.PropertyType.BINARY:
-            case javax.jcr.PropertyType.PATH:
-            case javax.jcr.PropertyType.UNDEFINED:
-                return PropertyType.STRING;
-            default:
-                return null;
+        case javax.jcr.PropertyType.STRING:
+            return PropertyType.STRING;
+        case javax.jcr.PropertyType.LONG:
+            return PropertyType.INTEGER;
+        case javax.jcr.PropertyType.DOUBLE:
+            return PropertyType.DECIMAL;
+        case javax.jcr.PropertyType.DATE:
+            return PropertyType.DATETIME;
+        case javax.jcr.PropertyType.BOOLEAN:
+            return PropertyType.BOOLEAN;
+        case javax.jcr.PropertyType.REFERENCE:
+            return PropertyType.ID;
+        case javax.jcr.PropertyType.NAME:
+        case javax.jcr.PropertyType.BINARY:
+        case javax.jcr.PropertyType.PATH:
+        case javax.jcr.PropertyType.UNDEFINED:
+            return PropertyType.STRING;
+        default:
+            return null;
         }
     }
 
     public Updatability getUpdatability() {
-        return propDef.isProtected() ? Updatability.READ_ONLY : Updatability.READ_WRITE;
+        return propDef.isProtected() ? Updatability.READ_ONLY
+                : Updatability.READ_WRITE;
     }
 
     public boolean isInherited() {

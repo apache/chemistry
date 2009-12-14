@@ -13,6 +13,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Authors:
+ *     Dominique Pfister, Day
+ *     Michael Mertins, Saperion
  */
 package org.apache.chemistry.jcr;
 
@@ -58,12 +62,10 @@ public class JcrFolder extends JcrObjectEntry implements Folder {
             while (iter.hasNext()) {
                 Node child = iter.nextNode();
                 CMISObject entry = null;
-                if (child.isNodeType(JcrConstants.NT_FOLDER)) {
-                    entry = new JcrFolder(child);
-                } else if (child.isNodeType(JcrConstants.NT_FILE)) {
+                if (JcrCmisMap.isNodeDocument(child)) {
                     entry = new JcrDocument(child);
                 } else {
-                    continue;
+                    entry = new JcrFolder(child);
                 }
                 result.add(entry);
             }
