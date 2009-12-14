@@ -13,6 +13,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Authors:
+ *     Dominique Pfister, Day
+ *     Michael Mertins, Saperion
  */
 package org.apache.chemistry.jcr;
 
@@ -63,9 +67,19 @@ public class JcrRepository implements Repository, RepositoryInfo,
 
     private final String workspace;
 
+    private final SimpleCredentials creds;
+
+    public JcrRepository(javax.jcr.Repository repository, String workspace,
+            SimpleCredentials creds) {
+        this.repository = repository;
+        this.workspace = workspace;
+        this.creds = creds;
+    }
+
     public JcrRepository(javax.jcr.Repository repository, String workspace) {
         this.repository = repository;
         this.workspace = workspace;
+        this.creds = new SimpleCredentials("admin", "admin".toCharArray());
     }
 
     public JcrRepository(javax.jcr.Repository repository) {
@@ -78,10 +92,6 @@ public class JcrRepository implements Repository, RepositoryInfo,
     }
 
     public Connection getConnection(Map<String, Serializable> parameters) {
-        // TODO pass credentials as parameters
-        SimpleCredentials creds = new SimpleCredentials("admin",
-                "admin".toCharArray());
-
         try {
             return new JcrConnection(repository.login(creds, workspace), this);
         } catch (RepositoryException e) {
@@ -104,10 +114,6 @@ public class JcrRepository implements Repository, RepositoryInfo,
 
     public Type getType(String typeId) {
         try {
-            // TODO pass credentials as parameters
-            SimpleCredentials creds = new SimpleCredentials("admin",
-                    "admin".toCharArray());
-
             Session session = repository.login(creds, workspace);
 
             // TODO fetch the types only once, include other types
@@ -136,10 +142,6 @@ public class JcrRepository implements Repository, RepositoryInfo,
         // TODO depth, returnPropertyDefinitions
 
         try {
-            // TODO pass credentials as parameters
-            SimpleCredentials creds = new SimpleCredentials("admin",
-                    "admin".toCharArray());
-
             List<Type> result = new ArrayList<Type>();
 
             Session session = repository.login(creds, workspace);
