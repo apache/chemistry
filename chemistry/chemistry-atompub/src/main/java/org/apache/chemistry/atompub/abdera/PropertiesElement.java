@@ -188,8 +188,8 @@ public class PropertiesElement extends ExtensibleElementWrapper {
             return;
         }
         QName qname = propertyQName(propertyType);
-        boolean multi = false;
-        List<String> values = getStringsForValue(value, propertyType, multi);
+        List<String> values = getStringsForValue(value, propertyType,
+                value.getClass().isArray());
         ExtensibleElement el = addExtension(qname);
         el.setAttributeValue(CMIS.PDID, key);
         for (String s : values) {
