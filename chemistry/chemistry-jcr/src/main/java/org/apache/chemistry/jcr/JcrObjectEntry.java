@@ -278,6 +278,10 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         Map<String, Property> properties = new HashMap<String, Property>();
         for (PropertyDefinition pd : getType().getPropertyDefinitions()) {
             String id = pd.getId();
+            if ("*".equals(id)) {
+                // residual property
+                continue;
+            }
             properties.put(id, getProperty(id));
         }
         // TODO return other virtual properties and provide helper class

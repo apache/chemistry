@@ -13,18 +13,25 @@
  *
  * Authors:
  *     Florent Guillaume, Nuxeo
+ *     Michael Durig, Day
+ *     Serge Huber, Jahia
  */
 package org.apache.chemistry.test;
 
 import java.io.File;
+import java.io.InputStream;
 
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
+import javax.jcr.Workspace;
+import javax.jcr.nodetype.NodeTypeManager;
 
 import org.apache.chemistry.CapabilityQuery;
 import org.apache.chemistry.Repository;
+import org.apache.chemistry.jcr.JcrObjectEntry;
 import org.apache.chemistry.jcr.JcrRepository;
 import org.apache.commons.io.FileUtils;
+import org.apache.jackrabbit.api.JackrabbitNodeTypeManager;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.core.TransientRepository;
 
@@ -34,6 +41,8 @@ import org.apache.jackrabbit.core.TransientRepository;
 public class TestJcrRepository extends BasicTestCase {
 
     private static final String DIRECTORY = "target/test/jackrabbit";
+
+    private static final String NODETYPES_CND = "/nodetypes.cnd";
 
     protected JackrabbitRepository jackrabbitRepo;
 
@@ -48,7 +57,15 @@ public class TestJcrRepository extends BasicTestCase {
         jackrabbitRepo = new TransientRepository(config, home);
         Session session = jackrabbitRepo.login(new SimpleCredentials("userid",
                 "".toCharArray()));
-        String workspaceName = session.getWorkspace().getName();
+        Workspace workspace = session.getWorkspace();
+        String workspaceName = workspace.getName();
+        // add mix:unstructured if needed
+        JackrabbitNodeTypeManager ntm = (JackrabbitNodeTypeManager) workspace.getNodeTypeManager();
+        if (!ntm.hasNodeType(JcrObjectEntry.MIX_UNSTRUCTURED)) {
+            InputStream is = getClass().getResourceAsStream(NODETYPES_CND);
+            ntm.registerNodeTypes(is, JackrabbitNodeTypeManager.TEXT_X_JCR_CND);
+        }
+        session.logout();
 
         expectedRepositoryId = "Jackrabbit";
         expectedRepositoryName = "Jackrabbit";
