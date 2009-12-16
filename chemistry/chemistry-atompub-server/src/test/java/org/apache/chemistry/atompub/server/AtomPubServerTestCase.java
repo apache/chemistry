@@ -31,6 +31,7 @@ import org.apache.abdera.model.Workspace;
 import org.apache.abdera.protocol.EntityProvider;
 import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
+import org.apache.abdera.protocol.client.RequestOptions;
 import org.apache.abdera.protocol.util.AbstractEntityProvider;
 import org.apache.abdera.writer.StreamWriter;
 import org.apache.chemistry.BaseType;
@@ -229,6 +230,15 @@ public abstract class AtomPubServerTestCase extends TestCase {
 
         resp = client.get(base + "/object/" + doc3id + '?'
                 + AtomPubCMIS.PARAM_FILTER + "=cmis:name");
+        assertEquals(HttpStatus.SC_OK, resp.getStatus());
+        ob = resp.getDocument().getRoot();
+        assertNotNull(ob);
+
+        // update
+        RequestOptions options = new RequestOptions();
+        options.setContentType(AtomPub.MEDIA_TYPE_ATOM_ENTRY);
+        resp = client.put(base + "/object/" + doc3id,
+                load("templates/updatedocument.atomentry.xml"), options);
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         ob = resp.getDocument().getRoot();
         assertNotNull(ob);

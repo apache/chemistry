@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -209,13 +210,22 @@ public class AbderaResource {
         return getResponse(adapter.getEntry(requestContext));
     }
 
-    protected Response getAbderaPostEntry(int skipSegments) {
+    protected Response postAbderaEntry(int skipSegments) {
         RequestContext requestContext = getRequestContext(skipSegments);
         CollectionAdapter adapter = getAbderaCollectionAdapter(requestContext);
         if (adapter == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return getResponse(adapter.postEntry(requestContext));
+    }
+
+    protected Response putAbderaEntry(int skipSegments) {
+        RequestContext requestContext = getRequestContext(skipSegments);
+        CollectionAdapter adapter = getAbderaCollectionAdapter(requestContext);
+        if (adapter == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return getResponse(adapter.putEntry(requestContext));
     }
 
     @GET
@@ -268,7 +278,7 @@ public class AbderaResource {
     @Path("children/{objectid}")
     public Response doPostChildren() {
         // objectid decoded by Abdera getCollectionAdapter
-        return getAbderaPostEntry(2);
+        return postAbderaEntry(2);
     }
 
     @GET
@@ -277,6 +287,15 @@ public class AbderaResource {
     public Response doGetObject() {
         // objectid decoded by Abdera getCollectionAdapter
         return getAbderaEntry(2);
+    }
+
+    @PUT
+    @Consumes(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
+    @Produces(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
+    @Path("object/{objectid}")
+    public Response doPutObject() {
+        // objectid decoded by Abdera getCollectionAdapter
+        return putAbderaEntry(2);
     }
 
     @GET
@@ -293,7 +312,7 @@ public class AbderaResource {
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
     @Path("query")
     public Response doPostQuery() {
-        return getAbderaPostEntry(1);
+        return postAbderaEntry(1);
     }
 
 }

@@ -17,6 +17,8 @@
  */
 package org.apache.chemistry.atompub.server;
 
+import static org.apache.abdera.protocol.server.ProviderHelper.calculateEntityTag;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -442,8 +444,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             } else {
                 addContent(entry, object, request);
             }
-            String mediaLink = getMediaLink(object.getId(), request);
-            return buildCreateMediaResponse(mediaLink, entry);
+            return buildGetEntryResponse(request, entry);
 
         } catch (ResponseContextException e) {
             return createErrorResponse(e);
