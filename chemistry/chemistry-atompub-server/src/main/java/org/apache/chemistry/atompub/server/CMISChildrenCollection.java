@@ -69,9 +69,15 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
     @Override
     public ResponseContext getFeed(RequestContext request) {
         try {
-            ListPage<ObjectEntry> entries = getEntries(request);
-            Feed feed = createFeedBase(entries, request);
-            addFeedDetails(feed, entries, request);
+            Feed feed;
+            SPI spi = repository.getSPI();
+            try {
+                ListPage<ObjectEntry> entries = getEntries(request, spi);
+                feed = createFeedBase(entries, request, spi);
+                addFeedDetails(feed, entries, request);
+            } finally {
+                spi.close();
+            }
             return buildGetFeedResponse(feed);
         } catch (ResponseContextException e) {
             return createErrorResponse(e);
@@ -79,7 +85,7 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
     }
 
     protected Feed createFeedBase(ListPage<ObjectEntry> entries,
-            RequestContext request) throws ResponseContextException {
+            RequestContext request, SPI spi) throws ResponseContextException {
         Feed feed = super.createFeedBase(request);
 
         feed.addLink(getChildrenLink(id, request), AtomPub.LINK_SELF,
@@ -87,12 +93,7 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
 
         // link to parent children feed, needs parent id
         ObjectEntry entry;
-        SPI spi = repository.getSPI();
-        try {
-            entry = spi.getProperties(spi.newObjectId(id), null);
-        } finally {
-            spi.close();
-        }
+        entry = spi.getProperties(spi.newObjectId(id), null);
         if (entry == null) {
             throw new ResponseContextException("Not found: " + id, 404);
         }
@@ -160,37 +161,41 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
             throws ResponseContextException {
         SPI spi = repository.getSPI();
         try {
-            ObjectId objectId = spi.newObjectId(id);
-            Target target = request.getTarget();
-            String orderBy = target.getParameter(AtomPubCMIS.PARAM_ORDER_BY);
-            String properties = target.getParameter(AtomPubCMIS.PARAM_FILTER);
-            String renditions = target.getParameter(AtomPubCMIS.PARAM_RENDITION_FILTER);
-            String rel = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS);
-            RelationshipDirection relationships = RelationshipDirection.fromInclusion(rel);
-            boolean allowableActions = getParameter(request,
-                    AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
-            Inclusion inclusion = new Inclusion(properties, renditions,
-                    relationships, allowableActions, false, false);
-            if ("descendants".equals(getType())) {
-                int depth = getParameter(request, AtomPubCMIS.PARAM_DEPTH, 1);
-                List<ObjectEntry> descendants = spi.getDescendants(objectId,
-                        depth, orderBy, inclusion);
-                SimpleListPage<ObjectEntry> page = new SimpleListPage<ObjectEntry>(
-                        descendants);
-                page.setHasMoreItems(false);
-                page.setNumItems(page.size());
-                return page;
-            } else {
-                int maxItems = getParameter(request,
-                        AtomPubCMIS.PARAM_MAX_ITEMS, 0);
-                int skipCount = getParameter(request,
-                        AtomPubCMIS.PARAM_SKIP_COUNT, 0);
-                ListPage<ObjectEntry> children = spi.getChildren(objectId,
-                        inclusion, orderBy, new Paging(maxItems, skipCount));
-                return children;
-            }
+            return getEntries(request, spi);
         } finally {
             spi.close();
+        }
+    }
+
+    public ListPage<ObjectEntry> getEntries(RequestContext request, SPI spi)
+            throws ResponseContextException {
+        ObjectId objectId = spi.newObjectId(id);
+        Target target = request.getTarget();
+        String orderBy = target.getParameter(AtomPubCMIS.PARAM_ORDER_BY);
+        String properties = target.getParameter(AtomPubCMIS.PARAM_FILTER);
+        String renditions = target.getParameter(AtomPubCMIS.PARAM_RENDITION_FILTER);
+        String rel = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS);
+        RelationshipDirection relationships = RelationshipDirection.fromInclusion(rel);
+        boolean allowableActions = getParameter(request,
+                AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
+        Inclusion inclusion = new Inclusion(properties, renditions,
+                relationships, allowableActions, false, false);
+        if ("descendants".equals(getType())) {
+            int depth = getParameter(request, AtomPubCMIS.PARAM_DEPTH, 1);
+            List<ObjectEntry> descendants = spi.getDescendants(objectId, depth,
+                    orderBy, inclusion);
+            SimpleListPage<ObjectEntry> page = new SimpleListPage<ObjectEntry>(
+                    descendants);
+            page.setHasMoreItems(false);
+            page.setNumItems(page.size());
+            return page;
+        } else {
+            int maxItems = getParameter(request, AtomPubCMIS.PARAM_MAX_ITEMS, 0);
+            int skipCount = getParameter(request, AtomPubCMIS.PARAM_SKIP_COUNT,
+                    0);
+            ListPage<ObjectEntry> children = spi.getChildren(objectId,
+                    inclusion, orderBy, new Paging(maxItems, skipCount));
+            return children;
         }
     }
 
