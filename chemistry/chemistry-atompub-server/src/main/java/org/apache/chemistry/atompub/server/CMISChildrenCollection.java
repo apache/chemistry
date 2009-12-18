@@ -68,19 +68,16 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
 
     @Override
     public ResponseContext getFeed(RequestContext request) {
+        SPI spi = repository.getSPI();
         try {
-            Feed feed;
-            SPI spi = repository.getSPI();
-            try {
-                ListPage<ObjectEntry> entries = getEntries(request, spi);
-                feed = createFeedBase(entries, request, spi);
-                addFeedDetails(feed, entries, request);
-            } finally {
-                spi.close();
-            }
+            ListPage<ObjectEntry> entries = getEntries(request, spi);
+            Feed feed = createFeedBase(entries, request, spi);
+            addFeedDetails(feed, entries, request);
             return buildGetFeedResponse(feed);
         } catch (ResponseContextException e) {
             return createErrorResponse(e);
+        } finally {
+            spi.close();
         }
     }
 

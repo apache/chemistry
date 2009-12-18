@@ -17,8 +17,6 @@
  */
 package org.apache.chemistry.atompub.server;
 
-import static org.apache.abdera.protocol.server.ProviderHelper.calculateEntityTag;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -230,7 +228,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         boolean isNew = typeId == null;
         Entry entry = getEntryFromRequest(request);
         if (entry == null || !ProviderHelper.isValidEntry(entry)) {
-            throw new ResponseContextException(400);
+            throw new ResponseContextException("Invalid entry", 400);
         }
 
         // get properties and type from entry
@@ -492,12 +490,16 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             throws ResponseContextException {
         SPI spi = repository.getSPI();
         try {
-            return getContentType(object) != null
-                    && getContentSize(object) != -1
-                    && spi.hasContentStream(object);
+            return isMediaEntry(object, spi);
         } finally {
             spi.close();
         }
+    }
+
+    public boolean isMediaEntry(ObjectEntry object, SPI spi)
+            throws ResponseContextException {
+        return getContentType(object) != null && getContentSize(object) != -1
+                && spi.hasContentStream(object);
     }
 
     @Override
@@ -534,30 +536,60 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     }
 
     @Override
+    public ResponseContext getEntry(RequestContext request) {
+        SPI spi = repository.getSPI();
+        try {
+            String id = getResourceName(request);
+            ObjectEntry object = getEntry(id, request, spi);
+            if (object == null) {
+                return new EmptyResponseContext(404);
+            }
+            Entry entry = request.getAbdera().getFactory().newEntry();
+            IRI feedIri = new IRI(getFeedIriForEntry(object, request));
+            addEntryDetails(request, entry, feedIri, object);
+            if (isMediaEntry(object, spi)) {
+                addMediaContent(feedIri, entry, object, request);
+            } else {
+                addContent(entry, object, request);
+            }
+            return buildGetEntryResponse(request, entry);
+        } catch (ResponseContextException e) {
+            return createErrorResponse(e);
+        } finally {
+            spi.close();
+        }
+    }
+
+    @Override
     public ObjectEntry getEntry(String resourceName, RequestContext request)
             throws ResponseContextException {
         SPI spi = repository.getSPI();
         try {
-            Target target = request.getTarget();
-            String properties = target.getParameter(AtomPubCMIS.PARAM_FILTER);
-            boolean allowableActions = getParameter(request,
-                    AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
-            String incl = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS);
-            RelationshipDirection relationships = RelationshipDirection.fromInclusion(incl);
-            Inclusion inclusion = new Inclusion(properties, null,
-                    relationships, allowableActions, false, false);
-            if ("path".equals(getType())) {
-                String path = resourceName;
-                if (!path.startsWith("/")) {
-                    path = "/" + path;
-                }
-                return spi.getObjectByPath(path, inclusion);
-            } else { // object
-                String id = resourceName;
-                return spi.getProperties(spi.newObjectId(id), inclusion);
-            }
+            return getEntry(resourceName, request, spi);
         } finally {
             spi.close();
+        }
+    }
+
+    public ObjectEntry getEntry(String resourceName, RequestContext request,
+            SPI spi) throws ResponseContextException {
+        Target target = request.getTarget();
+        String properties = target.getParameter(AtomPubCMIS.PARAM_FILTER);
+        boolean allowableActions = getParameter(request,
+                AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
+        String incl = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS);
+        RelationshipDirection relationships = RelationshipDirection.fromInclusion(incl);
+        Inclusion inclusion = new Inclusion(properties, null, relationships,
+                allowableActions, false, false);
+        if ("path".equals(getType())) {
+            String path = resourceName;
+            if (!path.startsWith("/")) {
+                path = "/" + path;
+            }
+            return spi.getObjectByPath(path, inclusion);
+        } else { // object
+            String id = resourceName;
+            return spi.getProperties(spi.newObjectId(id), inclusion);
         }
     }
 
@@ -590,36 +622,35 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     @Override
     protected ResponseContext buildGetMediaResponse(String id,
             ObjectEntry object) throws ResponseContextException {
-        Date updated = getUpdated(object);
         SPI spi = repository.getSPI();
-        ContentStream contentStream;
         try {
-            contentStream = spi.getContentStream(object, null);
+            ContentStream contentStream = spi.getContentStream(object, null);
+            if (contentStream == null) {
+                return new EmptyResponseContext(409, "No content");
+            }
+            InputStream stream;
+            try {
+                stream = contentStream.getStream();
+            } catch (IOException e) {
+                return new EmptyResponseContext(500, e.toString());
+            }
+            if (stream == null) {
+                return new EmptyResponseContext(409, "No content");
+            }
+            Date updated = getUpdated(object);
+            SizedMediaResponseContext ctx = new SizedMediaResponseContext(
+                    stream, updated, 200);
+            ctx.setSize(getContentSize(object));
+            ctx.setContentType(getContentType(object));
+            ctx.setEntityTag(EntityTag.generate(id, AtomDate.format(updated)));
+            return ctx;
         } catch (ConstraintViolationException e) {
-            contentStream = null;
+            return new EmptyResponseContext(409, "No content");
         } catch (IOException e) {
             return new EmptyResponseContext(500, e.toString());
         } finally {
             spi.close();
         }
-        if (contentStream == null) {
-            return new EmptyResponseContext(409, "No content");
-        }
-        InputStream stream;
-        try {
-            stream = contentStream.getStream();
-        } catch (IOException e) {
-            return new EmptyResponseContext(500, e.toString());
-        }
-        if (stream == null) {
-            return new EmptyResponseContext(409, "No content");
-        }
-        SizedMediaResponseContext ctx = new SizedMediaResponseContext(stream,
-                updated, 200);
-        ctx.setSize(getContentSize(object));
-        ctx.setContentType(getContentType(object));
-        ctx.setEntityTag(EntityTag.generate(id, AtomDate.format(updated)));
-        return ctx;
     }
 
     @Override

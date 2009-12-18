@@ -289,8 +289,9 @@ public class AbderaResource {
         return getAbderaEntry(2);
     }
 
+    // TODO should we really accept AtomPub.MEDIA_TYPE_ATOM ?
     @PUT
-    @Consumes(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
+    @Consumes( { AtomPub.MEDIA_TYPE_ATOM_ENTRY, AtomPub.MEDIA_TYPE_ATOM })
     @Produces(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
     @Path("object/{objectid}")
     public Response doPutObject() {
