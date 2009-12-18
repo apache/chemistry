@@ -37,11 +37,11 @@ import org.apache.abdera.protocol.server.CollectionAdapter;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.ServiceManager;
-import org.apache.abdera.protocol.server.impl.AbstractCollectionAdapter;
 import org.apache.abdera.protocol.server.servlet.ServletRequestContext;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
+import org.apache.chemistry.atompub.server.CMISChildrenCollection;
 import org.apache.chemistry.atompub.server.CMISProvider;
 import org.apache.chemistry.atompub.server.jaxrs.AbderaResource.PathMunger.ContextAndServletPath;
 import org.apache.commons.logging.Log;
@@ -304,8 +304,17 @@ public class AbderaResource {
     public Response doGetFile() {
         // objectid decoded by Abdera getCollectionAdapter
         RequestContext requestContext = getRequestContext(2);
-        AbstractCollectionAdapter adapter = (AbstractCollectionAdapter) getAbderaCollectionAdapter(requestContext);
+        CMISChildrenCollection adapter = (CMISChildrenCollection) getAbderaCollectionAdapter(requestContext);
         return getResponse(adapter.getMedia(requestContext));
+    }
+
+    @PUT
+    @Path("file/{objectid}")
+    public Response doPutFile() {
+        // objectid decoded by Abdera getCollectionAdapter
+        RequestContext requestContext = getRequestContext(2);
+        CMISChildrenCollection adapter = (CMISChildrenCollection) getAbderaCollectionAdapter(requestContext);
+        return getResponse(adapter.putMedia(requestContext));
     }
 
     @POST
