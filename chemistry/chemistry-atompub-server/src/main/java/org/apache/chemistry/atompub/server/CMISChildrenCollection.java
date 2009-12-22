@@ -33,6 +33,7 @@ import org.apache.abdera.parser.stax.FOMFeed;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.Target;
+import org.apache.abdera.protocol.server.context.EmptyResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.axiom.om.OMElement;
 import org.apache.chemistry.ContentAlreadyExistsException;
@@ -197,6 +198,22 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
     }
 
     @Override
+    public ResponseContext putMedia(RequestContext request) {
+        try {
+            String id = getResourceName(request);
+            ObjectEntry object = getEntry(id, request);
+            putMedia(object, request.getContentType(), request.getSlug(),
+                    request.getInputStream(), request);
+            return buildCreateMediaResponse(getMediaLink(object.getId(),
+                    request));
+        } catch (IOException e) {
+            return new EmptyResponseContext(500);
+        } catch (ResponseContextException e) {
+            return createErrorResponse(e);
+        }
+    }
+
+    @Override
     public void putMedia(ObjectEntry entry, MimeType contentType, String slug,
             InputStream in, RequestContext request)
             throws ResponseContextException {
@@ -215,6 +232,14 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
         } finally {
             spi.close();
         }
+    }
+
+    protected ResponseContext buildCreateMediaResponse(String mediaLink) {
+        EmptyResponseContext rc = new EmptyResponseContext(200);
+        rc.setLocation(mediaLink);
+        rc.setContentLocation(mediaLink);
+        rc.setStatus(201);
+        return rc;
     }
 
     @Override

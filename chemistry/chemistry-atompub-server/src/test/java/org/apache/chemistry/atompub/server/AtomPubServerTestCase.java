@@ -18,6 +18,7 @@
  */
 package org.apache.chemistry.atompub.server;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 
@@ -65,6 +66,8 @@ import org.mortbay.jetty.Server;
 public abstract class AtomPubServerTestCase extends TestCase {
 
     public static final String TEST_FILE_CONTENT = "This is a test file.\nTesting, testing...\n";
+
+    public static final String TEST_FILE_CONTENT2 = "<html><head><title>foo</title></head><body>bar</body></html>";
 
     protected static final AbderaClient client = new AbderaClient();
 
@@ -187,6 +190,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         Element tmpl = uritmpl.getFirstChild(AtomPubCMIS.TEMPLATE);
         assertNotNull(tmpl);
         assertEquals(base + "/object/{id}", tmpl.getText());
+        resp.release();
     }
 
     public void testTypes() throws Exception {
@@ -194,6 +198,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Element el = resp.getDocument().getRoot();
         assertNotNull(el);
+        resp.release();
     }
 
     public void testChildren() throws Exception {
@@ -201,6 +206,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Element ch = resp.getDocument().getRoot();
         assertNotNull(ch);
+        resp.release();
 
         resp = client.get(base + "/children/"
                 + repository.getInfo().getRootFolderId().getId() + "?"
@@ -208,6 +214,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         ch = resp.getDocument().getRoot();
         assertNotNull(ch);
+        resp.release();
 
         // post of new document
         PostMethod postMethod = new PostMethod(base + "/children/"
@@ -219,7 +226,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         assertEquals(HttpStatus.SC_CREATED, status);
         assertNotNull(postMethod.getResponseHeader(HttpHeaders.LOCATION));
         assertNotNull(postMethod.getResponseHeader(HttpHeaders.CONTENT_LOCATION));
-
+        postMethod.releaseConnection();
     }
 
     public void testObject() throws Exception {
@@ -227,12 +234,14 @@ public abstract class AtomPubServerTestCase extends TestCase {
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Element ob = resp.getDocument().getRoot();
         assertNotNull(ob);
+        resp.release();
 
         resp = client.get(base + "/object/" + doc3id + '?'
                 + AtomPubCMIS.PARAM_FILTER + "=cmis:name");
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         ob = resp.getDocument().getRoot();
         assertNotNull(ob);
+        resp.release();
 
         // update
         RequestOptions options = new RequestOptions();
@@ -242,6 +251,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         ob = resp.getDocument().getRoot();
         assertNotNull(ob);
+        resp.release();
     }
 
     public void testFile() throws Exception {
@@ -261,6 +271,28 @@ public abstract class AtomPubServerTestCase extends TestCase {
         status = new HttpClient().executeMethod(method);
         assertEquals(HttpStatus.SC_CONFLICT, status);
         method.releaseConnection();
+
+        // put file (
+        RequestOptions options = new RequestOptions();
+        options.setContentType("text/html");
+        InputStream is = new ByteArrayInputStream(TEST_FILE_CONTENT2.getBytes());
+        ClientResponse resp = client.put(base + "/file/" + doc2id, is, options);
+        assertEquals(HttpStatus.SC_CREATED, resp.getStatus());
+        assertNotNull(resp.getLocation());
+        assertNotNull(resp.getContentLocation());
+        resp.release();
+
+        // get it again
+        method = new GetMethod(base + "/file/" + doc2id);
+        status = new HttpClient().executeMethod(method);
+        assertEquals(HttpStatus.SC_OK, status);
+        assertEquals("text/html",
+                method.getResponseHeader("Content-Type").getValue());
+        assertEquals(String.valueOf(TEST_FILE_CONTENT2.getBytes().length),
+                method.getResponseHeader("Content-Length").getValue());
+        body = method.getResponseBody();
+        assertEquals(TEST_FILE_CONTENT2, new String(body, "UTF-8"));
+        method.releaseConnection();
     }
 
     public void testQuery() throws Exception {
@@ -270,6 +302,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         assertEquals(HttpStatus.SC_CREATED, resp.getStatus());
         Element res = resp.getDocument().getRoot();
         assertNotNull(res);
+        resp.release();
     }
 
     protected InputStream load(String resource) throws Exception {

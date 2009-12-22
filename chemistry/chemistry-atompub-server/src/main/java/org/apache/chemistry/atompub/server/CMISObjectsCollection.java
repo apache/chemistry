@@ -121,15 +121,6 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         return rc;
     }
 
-    protected ResponseContext buildCreateMediaResponse(String mediaLink,
-            Entry entry) {
-        BaseResponseContext<Entry> rc = new BaseResponseContext<Entry>(entry);
-        rc.setLocation(mediaLink);
-        rc.setContentLocation(mediaLink);
-        rc.setStatus(201);
-        return rc;
-    }
-
     /*
      * ----- CollectionInfo -----
      */
