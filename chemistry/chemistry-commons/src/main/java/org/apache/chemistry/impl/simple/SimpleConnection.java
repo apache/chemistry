@@ -570,8 +570,8 @@ public class SimpleConnection implements Connection, SPI {
         return new SimpleContentStream(bytes, mimeType, filename);
     }
 
-    public ObjectId setContentStream(ObjectId document, boolean overwrite,
-            ContentStream contentStream) {
+    public ObjectId setContentStream(ObjectId document, ContentStream contentStream,
+            boolean overwrite) {
         SimpleData data = repository.datas.get(document.getId());
         if (contentStream == null) {
             data.remove(SimpleProperty.CONTENT_BYTES_KEY);
@@ -605,7 +605,7 @@ public class SimpleConnection implements Connection, SPI {
     }
 
     public ObjectId deleteContentStream(ObjectId document) {
-        return setContentStream(document, true, null);
+        return setContentStream(document, null, true);
     }
 
     public ObjectId updateProperties(ObjectId object, String changeToken,

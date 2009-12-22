@@ -350,7 +350,7 @@ public abstract class BasicTestCase extends TestCase {
         String filename = "doc.txt";
         ContentStream cs = new SimpleContentStream(blobBytes,
                 "text/plain;charset=UTF-8", filename);
-        spi.setContentStream(ob, true, cs);
+        spi.setContentStream(ob, cs, true);
 
         // refetch
         assertTrue(spi.hasContentStream(id));

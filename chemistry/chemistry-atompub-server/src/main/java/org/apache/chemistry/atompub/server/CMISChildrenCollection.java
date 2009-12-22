@@ -221,7 +221,7 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
         try {
             ContentStream cs = new SimpleContentStream(in,
                     contentType.toString(), slug);
-            spi.setContentStream(entry, true, cs);
+            spi.setContentStream(entry, cs, true);
         } catch (IOException e) {
             throw new ResponseContextException(e.toString(), 500);
         } catch (UpdateConflictException e) {

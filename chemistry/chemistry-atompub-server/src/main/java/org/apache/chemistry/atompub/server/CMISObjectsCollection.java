@@ -420,7 +420,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
                 ContentStream contentStream = put.stream == null ? null
                         : new SimpleContentStream(put.stream, put.mimeType,
                                 filename);
-                spi.setContentStream(object, true, contentStream);
+                spi.setContentStream(object, contentStream, true);
             }
 
             // build response

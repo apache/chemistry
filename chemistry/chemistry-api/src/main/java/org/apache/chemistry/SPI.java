@@ -405,9 +405,9 @@ public interface SPI {
      * provided as a parameter to this method.
      *
      * @param document the document
+     * @param contentStream the content stream to set
      * @param overwrite {@code true} if an already-existing content stream must
      *            be overwritten
-     * @param contentStream the content stream to set
      * @return the resulting document, which may differ from the one passed as
      *         input
      *
@@ -421,8 +421,8 @@ public interface SPI {
      * @throws IOException
      */
     // TODO return ObjectId or ObjectEntry?
-    ObjectId setContentStream(ObjectId document, boolean overwrite,
-            ContentStream contentStream) throws IOException,
+    ObjectId setContentStream(ObjectId document, ContentStream contentStream,
+            boolean overwrite) throws IOException,
             ContentAlreadyExistsException, UpdateConflictException;
 
     /**

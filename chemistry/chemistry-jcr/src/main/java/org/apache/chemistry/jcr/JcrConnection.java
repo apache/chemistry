@@ -478,8 +478,8 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId setContentStream(ObjectId documentId, boolean overwrite,
-            ContentStream contentStream) {
+    public ObjectId setContentStream(ObjectId documentId, ContentStream contentStream,
+            boolean overwrite) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

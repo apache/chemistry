@@ -465,8 +465,8 @@ public class APPConnection implements Connection, SPI {
         return cs;
     }
 
-    public ObjectId setContentStream(ObjectId document, boolean overwrite,
-            ContentStream cs) throws IOException {
+    public ObjectId setContentStream(ObjectId document, ContentStream cs,
+            boolean overwrite) throws IOException {
         APPObjectEntry current = getObjectEntry(document);
         String href = current.getLink(AtomPub.LINK_EDIT_MEDIA);
         if (href == null) {
