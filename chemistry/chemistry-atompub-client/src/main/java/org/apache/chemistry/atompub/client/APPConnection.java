@@ -63,7 +63,9 @@ import org.apache.chemistry.atompub.client.connector.Response;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.XmlProperty;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
+import org.apache.chemistry.impl.simple.SimpleFolder;
 import org.apache.chemistry.impl.simple.SimpleListPage;
+import org.apache.chemistry.impl.simple.SimpleObjectEntry;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
 
 /**
@@ -408,8 +410,15 @@ public class APPConnection implements Connection, SPI {
     }
 
     public Folder getFolder(String path) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        APPObjectEntry entry = (APPObjectEntry) getObjectByPath(path, null);
+        if (entry == null) {
+            return null;
+        }
+        if (entry.getBaseType() != BaseType.FOLDER) {
+            throw new IllegalArgumentException("Not a folder: " + path);
+        }
+        Type type = getRepository().getType(entry.getTypeId());
+        return new APPFolder(entry, type);
     }
 
     public List<Rendition> getRenditions(ObjectId object, Inclusion inclusion,

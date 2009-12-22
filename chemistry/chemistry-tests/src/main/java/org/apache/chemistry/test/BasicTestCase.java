@@ -241,6 +241,17 @@ public abstract class BasicTestCase extends TestCase {
         assertNotNull(spi.getObjectByPath("/folder 1/folder 2/doc 2", null));
         assertNotNull(spi.getObjectByPath("/folder 1/folder 2/doc 3", null));
         assertNull(spi.getObjectByPath("/notsuchname", null));
+
+        assertNotNull(conn.getFolder("/"));
+        assertNotNull(conn.getFolder("/folder 1"));
+        assertNotNull(conn.getFolder("/folder 1/folder 2"));
+        try {
+            conn.getFolder("/folder 1/doc 1");
+            fail();
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+        assertNull(conn.getFolder("/notsuchname"));
     }
 
     public void testGetChildren() {

@@ -521,8 +521,15 @@ public class SimpleConnection implements Connection, SPI {
     }
 
     public Folder getFolder(String path) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        SimpleObjectEntry entry = (SimpleObjectEntry) getObjectByPath(path,
+                null);
+        if (entry == null) {
+            return null;
+        }
+        if (entry.getBaseType() != BaseType.FOLDER) {
+            throw new IllegalArgumentException("Not a folder: " + path);
+        }
+        return new SimpleFolder(entry);
     }
 
     public CMISObject getObject(ObjectId object) {
@@ -570,8 +577,8 @@ public class SimpleConnection implements Connection, SPI {
         return new SimpleContentStream(bytes, mimeType, filename);
     }
 
-    public ObjectId setContentStream(ObjectId document, ContentStream contentStream,
-            boolean overwrite) {
+    public ObjectId setContentStream(ObjectId document,
+            ContentStream contentStream, boolean overwrite) {
         SimpleData data = repository.datas.get(document.getId());
         if (contentStream == null) {
             data.remove(SimpleProperty.CONTENT_BYTES_KEY);

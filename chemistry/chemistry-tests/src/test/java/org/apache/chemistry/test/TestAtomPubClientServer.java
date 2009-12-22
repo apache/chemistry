@@ -35,7 +35,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
  */
 public class TestAtomPubClientServer extends BasicTestCase {
 
-    private static final Log log = LogFactory.getLog(MainServlet.class);
+    private static final Log log = LogFactory.getLog(TestAtomPubClientServer.class);
 
     public static final String HOST = "0.0.0.0";
 
