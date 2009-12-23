@@ -25,6 +25,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -68,11 +69,16 @@ import org.apache.chemistry.atompub.abdera.ObjectElement;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.util.GregorianCalendar;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * CMIS Collection for object entries.
  */
 public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> {
+
+    private static final Log log = LogFactory.getLog(CMISObjectsCollection.class);
 
     public CMISObjectsCollection(String type, String name, String id,
             Repository repository) {
@@ -217,9 +223,51 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     protected PropertiesAndStream extractCMISProperties(RequestContext request,
             String typeId) throws ResponseContextException {
         boolean isNew = typeId == null;
-        Entry entry = getEntryFromRequest(request);
-        if (entry == null || !ProviderHelper.isValidEntry(entry)) {
-            throw new ResponseContextException("Invalid entry", 400);
+        Entry entry;
+        try {
+            entry = getEntryFromRequest(request);
+        } catch (ResponseContextException e) {
+            if (!e.toString().contains("Undeclared namespace prefix \"cmisra\"")) {
+                throw e;
+            }
+            // attempt to fixup missing cmisra ns for buggy clients
+            // (IBM Firefox plugin)
+            // TODO
+            entry = getEntryFromRequest(request);
+        }
+        if (entry == null) {
+            throw new ResponseContextException("Missing entry", 400);
+        }
+        if (!ProviderHelper.isValidEntry(entry)) {
+            List<String> errors = new LinkedList<String>();
+            // attempt to fixup entries for buggy clients
+            // (IBM Firefox plugin and others)
+            if (entry.getId() == null
+                    || entry.getId().toString().trim().length() == 0) {
+                errors.add("missing atom:id");
+            }
+            if (entry.getUpdated() == null) {
+                errors.add("missing atom:updated");
+            }
+            if (entry.getAuthor() == null
+                    && (entry.getSource() != null && entry.getSource().getAuthor() == null)) {
+                errors.add("missing atom:author");
+            }
+            Content content = entry.getContentElement();
+            if (content == null) {
+                if (entry.getAlternateLink() == null) {
+                    errors.add("missing atom:link rel=alternate");
+                }
+            } else {
+                if ((content.getSrc() != null || content.getContentType() == Content.Type.MEDIA)
+                        && entry.getSummaryElement() == null) {
+                    errors.add("missing atom:summary");
+                }
+            }
+            if (!errors.isEmpty()) {
+                log.error("Invalid entry: " + StringUtils.join(errors, ", "));
+                // throw new ResponseContextException("Invalid entry", 400);
+            }
         }
 
         // get properties and type from entry

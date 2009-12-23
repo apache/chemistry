@@ -17,13 +17,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  
+
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
     <version>6</version>
   </parent>
-  	
+
   <prerequisites>
     <maven>2.0.9</maven>
   </prerequisites>
@@ -35,7 +35,7 @@
   <description>Parent POM for the Chemistry project gathering all common settings</description>
   <inceptionYear>2009</inceptionYear>
   <packaging>pom</packaging>
-	
+
   <properties>
     <cxf.version>2.2.2</cxf.version>
   </properties>
@@ -69,7 +69,7 @@
         <configuration>
           <target>1.5</target>
           <source>1.5</source>
-          <encoding>UTF-8</encoding>          
+          <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
       <!-- Enable maven-source-plugin -->
@@ -176,6 +176,11 @@
         <version>1.1.1</version>
       </dependency>
       <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>2.4</version>
+      </dependency>
+      <dependency>
         <groupId>stax</groupId>
         <artifactId>stax-api</artifactId>
         <version>1.0.1</version>
@@ -191,9 +196,9 @@
         <version>1.0</version>
       </dependency>
       <dependency>
-	<groupId>org.apache.cxf</groupId>
-	<artifactId>cxf-rt-frontend-jaxrs</artifactId>
-	<version>${cxf.version}</version>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+        <version>${cxf.version}</version>
       </dependency>
       <dependency>
         <groupId>org.antlr</groupId>
