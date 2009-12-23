@@ -219,6 +219,7 @@ public abstract class BasicTestCase extends TestCase {
                 assertNotNull(descr);
             }
             assertNull(date);
+            assertNotNull(child.getProperty("date"));
         }
     }
 

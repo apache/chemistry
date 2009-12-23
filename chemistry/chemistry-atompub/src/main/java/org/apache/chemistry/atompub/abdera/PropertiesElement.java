@@ -123,12 +123,15 @@ public class PropertiesElement extends ExtensibleElementWrapper {
             if (pd.isMultiValued()) {
                 value = list.toArray(va.createArray(list.size()));
             } else {
-                if (list.size() != 1) {
+                if (list.isEmpty()) {
+                    value = null;
+                } else if (list.size() == 1) {
+                    value = list.get(0);
+                } else {
                     throw new RuntimeException("Property: " + name
                             + " for type: " + typeId
                             + " cannot have multi-values: " + list);
                 }
-                value = list.get(0);
             }
             properties.put(name, value);
         }

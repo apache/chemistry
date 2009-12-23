@@ -199,6 +199,8 @@ public class APPObjectEntry implements ObjectEntry {
             properties.put(pd.getId(), p);
         } else {
             // TODO not fetched...
+            p = new XmlProperty(pd);
+            properties.put(pd.getId(), p);
         }
         return p;
     }

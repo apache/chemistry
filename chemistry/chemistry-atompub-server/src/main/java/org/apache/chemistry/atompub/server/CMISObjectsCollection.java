@@ -347,8 +347,16 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
                     if (ct == org.apache.abdera.model.Content.Type.MEDIA) {
                         stream = content.getDataHandler().getInputStream();
                     } else {
-                        stream = new ByteArrayInputStream(
-                                content.getValue().getBytes("UTF-8"));
+                        String value = content.getValue();
+                        if (ct == org.apache.abdera.model.Content.Type.TEXT
+                                && "".equals(value)) {
+                            // stupid Abdera generates an empty <content> by
+                            // itself
+                            stream = null;
+                        } else {
+                            stream = new ByteArrayInputStream(
+                                    value.getBytes("UTF-8"));
+                        }
                     }
                 } catch (IOException e1) {
                     throw new ResponseContextException("cannot get stream", 500);
