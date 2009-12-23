@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -63,9 +64,7 @@ import org.apache.chemistry.atompub.client.connector.Response;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.XmlProperty;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
-import org.apache.chemistry.impl.simple.SimpleFolder;
 import org.apache.chemistry.impl.simple.SimpleListPage;
-import org.apache.chemistry.impl.simple.SimpleObjectEntry;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
 
 /**
@@ -331,17 +330,82 @@ public class APPConnection implements Connection, SPI {
         }
     }
 
+    protected String getPostHref(ObjectId parentId) {
+        APPObjectEntry parentEntry = getObjectEntry(parentId);
+        String href = parentEntry.getLink(AtomPub.LINK_DOWN,
+                AtomPub.MEDIA_TYPE_ATOM_FEED);
+        if (href == null) {
+            href = parentEntry.getLink(AtomPub.LINK_DOWN,
+                    AtomPub.MEDIA_TYPE_ATOM);
+            if (href == null) {
+                throw new IllegalArgumentException(
+                        "Cannot create entry: no 'down' link present");
+            }
+        }
+        return href;
+    }
+
+    protected APPObjectEntry createObject(String postHref,
+            Map<String, Serializable> properties, ContentStream contentStream,
+            BaseType baseType) {
+        String typeId = (String) properties.get(Property.TYPE_ID);
+        if (typeId == null) {
+            throw new IllegalArgumentException("Missing object type id");
+        }
+        Type type = repository.getType(typeId);
+        if (type == null || type.getBaseType() != baseType) {
+            throw new IllegalArgumentException(typeId);
+        }
+        APPObjectEntry entry = newObjectEntry(typeId);
+        for (Entry<String, Serializable> en : properties.entrySet()) {
+            entry._setValue(en.getKey(), en.getValue());
+        }
+        if (contentStream != null) {
+            entry.setContentStream(contentStream);
+        }
+
+        Request req = new Request(postHref);
+        req.setHeader("Content-Type", AtomPub.MEDIA_TYPE_ATOM_ENTRY);
+        Response resp = connector.postObject(req, entry);
+        if (resp.getStatusCode() != 201) { // Created
+            throw new ContentManagerException(
+                    "Remote server returned error code: "
+                            + resp.getStatusCode());
+        }
+        ReadContext ctx = new ReadContext(this);
+        APPObjectEntry newEntry = (APPObjectEntry) resp.getObject(ctx);
+        // newEntry SHOULD be returned (AtomPub 9.2)...
+        String loc = resp.getHeader("Location");
+        if (loc == null) {
+            throw new ContentManagerException(
+                    "Remote server failed to return a Location header");
+        }
+        if (newEntry == null || !loc.equals(resp.getHeader("Content-Location"))) {
+            // (Content-Location defined by AtomPub 9.2)
+            // fetch actual new entry from Location header
+            // TODO could fetch only a subset of the properties, if deemed ok
+            newEntry = (APPObjectEntry) connector.getObject(ctx, loc);
+            if (newEntry == null) {
+                throw new ContentManagerException(
+                        "Remote server failed to return an entry for Location: "
+                                + loc);
+            }
+        }
+        return newEntry;
+    }
+
     public ObjectId createDocument(Map<String, Serializable> properties,
             ObjectId folder, ContentStream contentStream,
             VersioningState versioningState) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // TODO versioningState
+        return createObject(getPostHref(folder), properties, contentStream,
+                BaseType.DOCUMENT);
     }
 
     public ObjectId createFolder(Map<String, Serializable> properties,
             ObjectId folder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return createObject(getPostHref(folder), properties, null,
+                BaseType.FOLDER);
     }
 
     public ObjectId createRelationship(Map<String, Serializable> properties) {

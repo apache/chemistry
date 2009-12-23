@@ -222,8 +222,27 @@ public abstract class BasicTestCase extends TestCase {
         }
     }
 
+    public void testCreateSPI() throws Exception {
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put(Property.TYPE_ID, "fold");
+        properties.put("description", "some descr");
+        ObjectId folderId = spi.createFolder(properties,
+                repository.getInfo().getRootFolderId());
+        assertNotNull(folderId);
+        Folder folder = (Folder) conn.getObject(folderId);
+        assertEquals("some descr", folder.getValue("description"));
+
+        properties = new HashMap<String, Serializable>();
+        properties.put(Property.TYPE_ID, "doc");
+        properties.put("title", "some title");
+        ObjectId docId = spi.createDocument(properties,
+                repository.getInfo().getRootFolderId(), null, null);
+        assertNotNull(docId);
+        Document doc = (Document) conn.getObject(docId);
+        assertEquals("some title", doc.getValue("title"));
+    }
+
     public void testQuery() {
-        Connection conn = repository.getConnection(null);
         Collection<CMISObject> res = conn.query("SELECT * FROM doc", false);
         assertNotNull(res);
         assertEquals(4, res.size());

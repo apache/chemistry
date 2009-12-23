@@ -48,7 +48,8 @@ public abstract class ObjectEntryWriter extends
             xw.start();
             // atom requires an ID to be set even on new created entries ..
             xw.element("id").content("urn:uuid:" + object.getId());
-            xw.element("title").content((String) object.getValue(Property.NAME));
+            String title = (String) object.getValue(Property.NAME);
+            xw.element("title").content(title == null ? "" : title);
             xw.element("updated").content(new Date());
             writeContent(object, xw);
             writeCmisObject(object, xw);
