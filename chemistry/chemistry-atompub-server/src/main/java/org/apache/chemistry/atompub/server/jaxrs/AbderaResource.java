@@ -26,6 +26,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -299,6 +300,19 @@ public class AbderaResource {
     public Response doPutObject() {
         // objectid decoded by Abdera getCollectionAdapter
         return putAbderaEntry(2);
+    }
+
+    @GET
+    @Produces(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
+    @Path("path/{path:.*}")
+    public Response doGetObjectByPath(@PathParam("path") String path) {
+        int skipSegments = 2;
+        for (int i = 0; i < path.length(); i++) {
+            if (path.charAt(i) == '/') {
+                skipSegments++;
+            }
+        }
+        return getAbderaEntry(skipSegments);
     }
 
     @GET

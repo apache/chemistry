@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import javax.ws.rs.core.HttpHeaders;
+import javax.xml.namespace.QName;
 
 import junit.framework.TestCase;
 
@@ -144,27 +145,32 @@ public abstract class AtomPubServerTestCase extends TestCase {
         rootFolderId = root.getId();
 
         Folder folder1 = root.newFolder("fold");
+        folder1.setName("folder1");
         folder1.setValue("title", "The folder 1 description");
         folder1.setValue("description", "folder 1 title");
         folder1.save();
 
         Folder folder2 = folder1.newFolder("fold");
+        folder2.setName("folder2");
         folder2.setValue("title", "The folder 2 description");
         folder2.setValue("description", "folder 2 title");
         folder2.save();
 
         Document doc1 = folder1.newDocument("doc");
+        doc1.setName("doc1");
         doc1.setValue("title", "doc 1 title");
         doc1.setValue("description", "The doc 1 descr");
         doc1.save();
 
         Document doc2 = folder2.newDocument("doc");
+        doc2.setName("doc2");
         doc2.setValue("title", "doc 2 title");
         doc2.setValue("description", "The doc 2 descr");
         doc2.save();
         doc2id = doc2.getId();
 
         Document doc3 = folder2.newDocument("doc");
+        doc3.setName("doc3");
         doc3.setValue("title", "doc 3 title");
         doc3.setValue("description", "The doc 3 descr");
         ContentStream cs = new SimpleContentStream(
@@ -251,6 +257,16 @@ public abstract class AtomPubServerTestCase extends TestCase {
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         ob = resp.getDocument().getRoot();
         assertNotNull(ob);
+        resp.release();
+    }
+
+    public void testGetObjectByPath() {
+        ClientResponse resp = client.get(base + "/path/folder1/folder2/doc3");
+        assertEquals(HttpStatus.SC_OK, resp.getStatus());
+        Element ob = resp.getDocument().getRoot();
+        assertNotNull(ob);
+        Element id = ob.getFirstChild(new QName(AtomPub.ATOM_NS, "id"));
+        assertEquals("urn:uuid:" + doc3id, id.getText());
         resp.release();
     }
 
