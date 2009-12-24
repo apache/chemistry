@@ -510,6 +510,10 @@ public class APPConnection implements Connection, SPI {
 
     public ContentStream getContentStream(ObjectId object,
             String contentStreamId) throws IOException {
+        if (contentStreamId != null) {
+            throw new UnsupportedOperationException(
+                    "Cannot get non-default content stream: " + contentStreamId);
+        }
         APPObjectEntry current = getObjectEntry(object);
         ContentStream cs = current.getContentStream();
         if (cs != APPObjectEntry.REMOTE_CONTENT_STREAM) {
@@ -710,9 +714,9 @@ public class APPConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId checkIn(ObjectId document, Map<String, Serializable> properties,
-            ContentStream contentStream, boolean major,
-            String comment) {
+    public ObjectId checkIn(ObjectId document,
+            Map<String, Serializable> properties, ContentStream contentStream,
+            boolean major, String comment) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

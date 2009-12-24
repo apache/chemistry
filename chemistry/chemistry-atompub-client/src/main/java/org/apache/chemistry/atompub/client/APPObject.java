@@ -17,7 +17,11 @@
  */
 package org.apache.chemistry.atompub.client;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -42,6 +46,17 @@ import org.apache.chemistry.impl.base.BaseObject;
  *
  */
 public abstract class APPObject extends BaseObject {
+
+    protected static final String UNINITIALIZED_STRING = "__UNINITIALIZED__\0\0\0";
+
+    protected static final URI UNINITIALIZED_URI;
+    static {
+        try {
+            UNINITIALIZED_URI = new URI("http://__UNINITIALIZED__/%00%00%00");
+        } catch (URISyntaxException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     protected APPObjectEntry entry;
 
@@ -92,9 +107,14 @@ public abstract class APPObject extends BaseObject {
         throw new UnsupportedOperationException();
     }
 
-    public ContentStream getContentStream(String contentStreamId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+    public ContentStream getContentStream(String contentStreamId)
+            throws IOException {
+        ContentStream contentStream = entry.getContentStream();
+        if (contentStream != APPObjectEntry.REMOTE_CONTENT_STREAM) {
+            return contentStream;
+        }
+        String url = entry.getContentHref();
+        return url == null ? null : new APPContentStream(url);
     }
 
     /*
@@ -260,6 +280,68 @@ public abstract class APPObject extends BaseObject {
             throw new ContentManagerException(
                     "Remote server returned error code: "
                             + resp.getStatusCode());
+        }
+    }
+
+    /**
+     * ContentStream class that fetches a remote URL when needed.
+     */
+    public class APPContentStream implements ContentStream {
+
+        protected final String url;
+
+        protected String mimeType = UNINITIALIZED_STRING;
+
+        protected String filename = UNINITIALIZED_STRING;
+
+        protected URI uri = UNINITIALIZED_URI;
+
+        protected long length = -1;
+
+        public APPContentStream(String url) {
+            this.url = url;
+        }
+
+        public String getMimeType() {
+            if (mimeType == UNINITIALIZED_STRING) {
+                mimeType = getString(Property.CONTENT_STREAM_MIME_TYPE);
+            }
+            return mimeType;
+        }
+
+        public String getFileName() {
+            if (filename == UNINITIALIZED_STRING) {
+                filename = getString(Property.CONTENT_STREAM_FILE_NAME);
+            }
+            return filename;
+        }
+
+        public long getLength() {
+            if (length == -1) {
+                Integer value = getInteger(Property.CONTENT_STREAM_LENGTH);
+                return length = value == null ? -1 : value.longValue();
+            }
+            return length;
+        }
+
+        // TODO this could save the stream in a side object and put it back in
+        // the entry's local content stream when done, to allow reuse
+        public InputStream getStream() throws IOException {
+            try {
+                Response resp = entry.connection.connector.get(new Request(url));
+                if (!resp.isOk()) {
+                    throw new IOException("Error: " + resp.getStatusCode()
+                            + " fetching: " + url);
+                }
+                if (length == -1) {
+                    // get the "official" length if available
+                    length = resp.getStreamLength();
+                }
+                return resp.getStream();
+            } catch (ContentManagerException e) {
+                throw (IOException) (new IOException(
+                        "Could not fetch stream from: " + url).initCause(e));
+            }
         }
     }
 

@@ -403,6 +403,18 @@ public abstract class BasicTestCase extends TestCase {
         assertFalse(spi.hasContentStream(id));
     }
 
+    public void testContentStream() throws Exception {
+        ObjectEntry docId = spi.getObjectByPath("/folder 1/folder 2/doc 3",
+                null);
+        Document doc = (Document) conn.getObject(docId);
+        ContentStream cs = doc.getContentStream();
+        assertNotNull(cs);
+        InputStream in = cs.getStream();
+        assertNotNull(in);
+        String s = new String(IOUtils.toByteArray(in), "UTF-8");
+        assertEquals(BasicHelper.TEST_FILE_CONTENT, s);
+    }
+
     public void testDeleteSPI() throws Exception {
         ObjectEntry doc1 = spi.getObjectByPath("/folder 1/doc 1", null);
         spi.deleteObject(doc1, false);
