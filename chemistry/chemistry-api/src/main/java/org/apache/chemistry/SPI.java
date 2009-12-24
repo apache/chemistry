@@ -754,10 +754,10 @@ public interface SPI {
      * Makes the private working copy the current version of the document.
      *
      * @param document the private working copy
-     * @param major {@code true} if the version is a major version
      * @param properties the properties to set on the document, or {@code null}
      * @param contentStream the content stream to set on the document, or
      *            {@code null}
+     * @param major {@code true} if the version is a major version
      * @param comment a check-in comment, or {@code null}
      * @return a reference to the new version of the document
      *
@@ -767,9 +767,9 @@ public interface SPI {
      *             document
      * @throws UpdateConflictException if the object is no longer current
      */
-    ObjectId checkIn(ObjectId document, boolean major,
-            Map<String, Serializable> properties, ContentStream contentStream,
-            String comment) throws UpdateConflictException;
+    ObjectId checkIn(ObjectId document, Map<String, Serializable> properties,
+            ContentStream contentStream, boolean major, String comment)
+            throws UpdateConflictException;
 
     // TODO 1.0 getObjectOfLatestVersion
 

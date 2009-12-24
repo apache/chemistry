@@ -181,8 +181,8 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId checkIn(ObjectId documentId, boolean major,
-            Map<String, Serializable> properties, ContentStream contentStream,
+    public ObjectId checkIn(ObjectId documentId, Map<String, Serializable> properties,
+            ContentStream contentStream, boolean major,
             String comment) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
