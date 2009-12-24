@@ -22,6 +22,7 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -229,6 +230,15 @@ public class AbderaResource {
         return getResponse(adapter.putEntry(requestContext));
     }
 
+    protected Response deleteAbderaEntry(int skipSegments) {
+        RequestContext requestContext = getRequestContext(skipSegments);
+        CollectionAdapter adapter = getAbderaCollectionAdapter(requestContext);
+        if (adapter == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return getResponse(adapter.deleteEntry(requestContext));
+    }
+
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_SERVICE)
     @Path("repository")
@@ -300,6 +310,13 @@ public class AbderaResource {
     public Response doPutObject() {
         // objectid decoded by Abdera getCollectionAdapter
         return putAbderaEntry(2);
+    }
+
+    @DELETE
+    @Path("object/{objectid}")
+    public Response deleteObject() {
+        // objectid decoded by Abdera getCollectionAdapter
+        return deleteAbderaEntry(2);
     }
 
     @GET

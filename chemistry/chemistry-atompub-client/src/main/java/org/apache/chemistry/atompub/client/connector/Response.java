@@ -62,4 +62,6 @@ public interface Response {
 
     boolean isOk();
 
+    String getStatusReasonPhrase();
+
 }

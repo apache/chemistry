@@ -42,6 +42,7 @@ import org.apache.chemistry.ACLPropagation;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
+import org.apache.chemistry.ConstraintViolationException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.Document;
@@ -50,6 +51,7 @@ import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.ObjectNotFoundException;
 import org.apache.chemistry.Paging;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
@@ -658,18 +660,18 @@ public class SimpleConnection implements Connection, SPI {
         // TODO allVersions
         String id = object.getId();
         if (repository.rootId.equals(id)) {
-            throw new RuntimeException("Cannot delete root"); // TODO
+            throw new ConstraintViolationException("Cannot delete root");
         }
         SimpleData data = repository.datas.get(id);
         if (data == null) {
-            throw new RuntimeException("Not found: " + object); // TODO
+            throw new ObjectNotFoundException(object.getId());
         }
         // delete children info
         Set<String> children = repository.children.get(id);
         if (children != null) {
             if (children.size() > 0) {
-                throw new RuntimeException(
-                        "Cannot delete, folder has children: " + object); // TODO
+                throw new ConstraintViolationException(
+                        "Cannot delete, folder has children: " + object);
             }
             // remove only if empty
             repository.children.remove(id);

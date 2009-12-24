@@ -64,6 +64,10 @@ public class HttpClientResponse implements Response {
         return method.getStatusCode() < 400;
     }
 
+    public String getStatusReasonPhrase() {
+        return method.getStatusLine().getReasonPhrase();
+    }
+
     public InputStream getStream() throws ContentManagerException {
         try {
             return method.getResponseBodyAsStream();

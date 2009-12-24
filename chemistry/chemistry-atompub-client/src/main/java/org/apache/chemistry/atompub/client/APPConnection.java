@@ -45,6 +45,7 @@ import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.ObjectNotFoundException;
 import org.apache.chemistry.Paging;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
@@ -66,6 +67,7 @@ import org.apache.chemistry.atompub.client.stax.XmlProperty;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.impl.simple.SimpleListPage;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
+import org.apache.commons.httpclient.HttpStatus;
 
 /**
  *
@@ -305,6 +307,9 @@ public class APPConnection implements Connection, SPI {
         // TODO proper URI template syntax
         href = href.replace("{id}", objectId.getId());
         Response resp = connector.get(new Request(href));
+        if (resp.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            throw new ObjectNotFoundException(objectId.getId());
+        }
         if (!resp.isOk()) {
             throw new ContentManagerException(
                     "Remote server returned error code: "
@@ -618,8 +623,25 @@ public class APPConnection implements Connection, SPI {
     }
 
     public void deleteObject(ObjectId object, boolean allVersions) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        APPObjectEntry current = getObjectEntry(object);
+        String href = current.getLink(AtomPub.LINK_SELF);
+        Request req = new Request(href);
+        // TODO XXX allVersions not in spec
+        req.setParameter("allVersions", String.valueOf(allVersions));
+        Response resp = connector.delete(req);
+        int status = resp.getStatusCode();
+        if (status == HttpStatus.SC_NOT_FOUND) {
+            throw new ObjectNotFoundException(object.getId());
+        }
+        if (status == HttpStatus.SC_CONFLICT) {
+            throw new ConstraintViolationException(resp.getStatusReasonPhrase());
+        }
+        if (!resp.isOk()) {
+            // TODO exceptions
+            throw new ContentManagerException(
+                    "Remote server returned error code: "
+                            + resp.getStatusCode());
+        }
     }
 
     public Collection<ObjectId> deleteTree(ObjectId folder, Unfiling unfiling,

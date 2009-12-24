@@ -39,12 +39,14 @@ import org.apache.chemistry.CapabilityJoin;
 import org.apache.chemistry.CapabilityQuery;
 import org.apache.chemistry.CapabilityRendition;
 import org.apache.chemistry.Connection;
+import org.apache.chemistry.ConstraintViolationException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.ObjectNotFoundException;
 import org.apache.chemistry.Paging;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.Repository;
@@ -399,6 +401,26 @@ public abstract class BasicTestCase extends TestCase {
         // delete
         spi.deleteContentStream(id);
         assertFalse(spi.hasContentStream(id));
+    }
+
+    public void testDeleteSPI() throws Exception {
+        ObjectEntry doc1 = spi.getObjectByPath("/folder 1/doc 1", null);
+        spi.deleteObject(doc1, false);
+        doc1 = spi.getObjectByPath("/folder 1/doc 1", null);
+        assertNull(doc1);
+        try {
+            spi.deleteObject(spi.newObjectId("nosuchid"), false);
+            fail();
+        } catch (ObjectNotFoundException e) {
+            // ok
+        }
+        ObjectEntry folder1 = spi.getObjectByPath("/folder 1", null);
+        try {
+            spi.deleteObject(folder1, false);
+            fail();
+        } catch (ConstraintViolationException e) {
+            // ok to fail, still has children
+        }
     }
 
     public void testNewDocument() throws Exception {

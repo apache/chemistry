@@ -270,6 +270,18 @@ public abstract class AtomPubServerTestCase extends TestCase {
         resp.release();
     }
 
+    public void testDelete() {
+        RequestOptions options = new RequestOptions();
+        options.setContentType(AtomPub.MEDIA_TYPE_ATOM_ENTRY);
+        ClientResponse resp = client.delete(base + "/object/" + doc3id, options);
+        assertEquals(HttpStatus.SC_NO_CONTENT, resp.getStatus());
+        resp.release();
+
+        resp = client.delete(base + "/object/nosuchid", options);
+        assertEquals(HttpStatus.SC_NOT_FOUND, resp.getStatus());
+        resp.release();
+    }
+
     public void testFile() throws Exception {
         HttpMethod method = new GetMethod(base + "/file/" + doc3id);
         int status = new HttpClient().executeMethod(method);

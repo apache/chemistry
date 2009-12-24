@@ -14,6 +14,7 @@
  * Authors:
  *     Florent Guillaume, Nuxeo
  *     Amelie Avramo, EntropySoft
+ *     Florian Roth, In-integrierte Informationssysteme
  */
 package org.apache.chemistry.atompub.server;
 
@@ -57,6 +58,7 @@ import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.ObjectNotFoundException;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
@@ -513,7 +515,25 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     @Override
     public void deleteEntry(String resourceName, RequestContext request)
             throws ResponseContextException {
-        throw new UnsupportedOperationException();
+        ObjectId object;
+        SPI spi = repository.getSPI();
+        try {
+            String oid = resourceName;
+            object = spi.newObjectId(oid);
+            // TODO XXX allVersions not in spec
+            boolean allVersions = getParameter(request, "allVersions", false);
+            spi.deleteObject(object, allVersions);
+        } catch (ObjectNotFoundException e) {
+            throw new ResponseContextException(404, e);
+        } catch (ConstraintViolationException e) {
+            throw new ResponseContextException(409, e);
+        } catch (CMISRuntimeException e) {
+            throw new ResponseContextException(500, e);
+        } catch (Exception e) {
+            throw new ResponseContextException(500, e);
+        } finally {
+            spi.close();
+        }
     }
 
     @Override
