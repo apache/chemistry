@@ -32,6 +32,7 @@ import java.util.Map;
 
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.i18n.iri.IRI;
+import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.model.AtomDate;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.model.DateTime;
@@ -707,13 +708,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             name = "objectid";
         }
         String resourceName = request.getTarget().getParameter(name);
-        // TODO decode properly
-        resourceName = resourceName.replace("%3a", ":");
-        resourceName = resourceName.replace("%3A", ":");
-        resourceName = resourceName.replace("%20", " ");
-        resourceName = resourceName.replace("%2f", "/");
-        resourceName = resourceName.replace("%2F", "/");
-        return resourceName;
+        return UrlEncoding.decode(resourceName);
     }
 
     @Override

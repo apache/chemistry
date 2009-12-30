@@ -25,6 +25,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.i18n.iri.IRI;
+import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
@@ -301,11 +302,7 @@ public class CMISTypesCollection extends CMISCollection<Type> {
     @Override
     public String getResourceName(RequestContext request) {
         String resourceName = request.getTarget().getParameter("typeid");
-        // TODO decode properly
-        resourceName = resourceName.replace("%3a", ":");
-        resourceName = resourceName.replace("%3A", ":");
-        resourceName = resourceName.replace("%20", " ");
-        return resourceName;
+        return UrlEncoding.decode(resourceName);
     }
 
     @Override
