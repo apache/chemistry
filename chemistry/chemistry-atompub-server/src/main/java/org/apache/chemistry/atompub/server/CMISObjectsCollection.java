@@ -553,6 +553,44 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     }
 
     @Override
+    public ResponseContext getMedia(RequestContext request) {
+        SPI spi = repository.getSPI();
+        try {
+            String id = getResourceName(request);
+            ObjectEntry object = getEntry(id, request, spi);
+            if (object == null) {
+                return new EmptyResponseContext(404);
+            }
+            ContentStream contentStream = spi.getContentStream(object, null);
+            if (contentStream == null) {
+                return new EmptyResponseContext(409, "No content");
+            }
+            InputStream stream = contentStream.getStream();
+            if (stream == null) {
+                return new EmptyResponseContext(409, "No content");
+            }
+            Date updated = getUpdated(object);
+            SizedMediaResponseContext ctx = new SizedMediaResponseContext(
+                    stream, updated, 200);
+            ctx.setSize(getContentSize(object));
+            ctx.setContentType(getContentType(object));
+            ctx.setEntityTag(EntityTag.generate(id, AtomDate.format(updated)));
+            return ctx;
+        } catch (ResponseContextException e) {
+            return e.getResponseContext();
+        } catch (ConstraintViolationException e) {
+            return new EmptyResponseContext(409, "No content");
+        } catch (IOException e) {
+            return new EmptyResponseContext(500, e.toString());
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+            return new EmptyResponseContext(400);
+        } finally {
+            spi.close();
+        }
+    }
+
+    @Override
     public boolean isMediaEntry(ObjectEntry object)
             throws ResponseContextException {
         SPI spi = repository.getSPI();
@@ -682,42 +720,6 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     protected String getLink(ObjectEntry object, IRI feedIri,
             RequestContext request) {
         return getObjectLink(object.getId(), request);
-    }
-
-    // override to use a custom SizedMediaResponseContext
-    // and return 409 on no content
-    @Override
-    protected ResponseContext buildGetMediaResponse(String id,
-            ObjectEntry object) throws ResponseContextException {
-        SPI spi = repository.getSPI();
-        try {
-            ContentStream contentStream = spi.getContentStream(object, null);
-            if (contentStream == null) {
-                return new EmptyResponseContext(409, "No content");
-            }
-            InputStream stream;
-            try {
-                stream = contentStream.getStream();
-            } catch (IOException e) {
-                return new EmptyResponseContext(500, e.toString());
-            }
-            if (stream == null) {
-                return new EmptyResponseContext(409, "No content");
-            }
-            Date updated = getUpdated(object);
-            SizedMediaResponseContext ctx = new SizedMediaResponseContext(
-                    stream, updated, 200);
-            ctx.setSize(getContentSize(object));
-            ctx.setContentType(getContentType(object));
-            ctx.setEntityTag(EntityTag.generate(id, AtomDate.format(updated)));
-            return ctx;
-        } catch (ConstraintViolationException e) {
-            return new EmptyResponseContext(409, "No content");
-        } catch (IOException e) {
-            return new EmptyResponseContext(500, e.toString());
-        } finally {
-            spi.close();
-        }
     }
 
     @Override
