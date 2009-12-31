@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -42,6 +43,10 @@ import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.model.Text;
+import org.apache.abdera.parser.Parser;
+import org.apache.abdera.parser.stax.FOMBuilder;
+import org.apache.abdera.parser.stax.FOMDocument;
+import org.apache.abdera.parser.stax.FOMEntry;
 import org.apache.abdera.protocol.server.ProviderHelper;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.ResponseContext;
@@ -51,6 +56,7 @@ import org.apache.abdera.protocol.server.context.BaseResponseContext;
 import org.apache.abdera.protocol.server.context.EmptyResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.util.EntityTag;
+import org.apache.axiom.om.impl.builder.StAXBuilder;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMIS;
 import org.apache.chemistry.CMISRuntimeException;
@@ -75,6 +81,9 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.ctc.wstx.sr.BasicStreamReader;
+import com.ctc.wstx.sr.NsInputElementStack;
 
 /**
  * CMIS Collection for object entries.
@@ -128,6 +137,50 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
                 entryDoc);
         rc.setEntityTag(ProviderHelper.calculateEntityTag(entry));
         return rc;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected Entry getEntryFromRequest(RequestContext request)
+            throws ResponseContextException {
+        Parser parser = request.getAbdera().getParser();
+        Document<Entry> entry;
+        try {
+            Document<Element> doc = request.getDocument(parser);
+            fixMissingNamespace(doc);
+            entry = (Document<Entry>) doc.clone();
+        } catch (Exception e) {
+            throw new ResponseContextException(500, e);
+        }
+        return entry == null ? null : entry.getRoot();
+    }
+
+    // attempt to fixup missing cmisra ns for buggy clients
+    // (IBM Firefox plugin)
+    private void fixMissingNamespace(Document<Element> doc) {
+        try {
+            FOMDocument<?> fomdoc = (FOMDocument<?>) doc;
+            FOMEntry fomentry = (FOMEntry) fomdoc.getOMDocumentElement();
+            FOMBuilder fombuilder = (FOMBuilder) fomentry.builder;
+
+            // BasicStreamReader parser = (BasicStreamReader) builder.parser;
+            Field parserField = StAXBuilder.class.getDeclaredField("parser");
+            parserField.setAccessible(true);
+            BasicStreamReader parser = (BasicStreamReader) parserField.get(fombuilder);
+
+            // NsInputElementStack stack = (NsInputElementStack)
+            // parser.mElementStack;
+            Field stackField = BasicStreamReader.class.getDeclaredField("mElementStack");
+            stackField.setAccessible(true);
+            NsInputElementStack stack = (NsInputElementStack) stackField.get(parser);
+
+            if (stack.getNamespaceURI(AtomPubCMIS.CMISRA_PREFIX) == null) {
+                stack.addNsBinding(AtomPubCMIS.CMISRA_PREFIX,
+                        AtomPubCMIS.CMISRA_NS);
+            }
+        } catch (Exception e) {
+            throw new CMISRuntimeException(e);
+        }
     }
 
     /*
@@ -226,18 +279,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     protected PropertiesAndStream extractCMISProperties(RequestContext request,
             String typeId) throws ResponseContextException {
         boolean isNew = typeId == null;
-        Entry entry;
-        try {
-            entry = getEntryFromRequest(request);
-        } catch (ResponseContextException e) {
-            if (!e.toString().contains("Undeclared namespace prefix \"cmisra\"")) {
-                throw e;
-            }
-            // attempt to fixup missing cmisra ns for buggy clients
-            // (IBM Firefox plugin)
-            // TODO
-            entry = getEntryFromRequest(request);
-        }
+        Entry entry = getEntryFromRequest(request);
         if (entry == null) {
             throw new ResponseContextException("Missing entry", 400);
         }
