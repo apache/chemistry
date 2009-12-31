@@ -34,6 +34,7 @@ import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.ExtensibleElement;
 import org.apache.abdera.model.ExtensibleElementWrapper;
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMIS;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
@@ -76,6 +77,16 @@ public class PropertiesElement extends ExtensibleElementWrapper {
                 continue;
             }
             String pdid = element.getAttributeValue(CMIS.PDID);
+            boolean buggyCompat = false;
+            if (pdid == null) {
+                // compat with buggy CMISSpacesAir
+                String name = element.getAttributeValue(new QName(CMIS.CMIS_NS,
+                        "name"));
+                if ("ObjectTypeId".equals(name)) {
+                    pdid = Property.TYPE_ID;
+                    buggyCompat = true;
+                }
+            }
             adapters.put(pdid, va);
             List<Serializable> list = new LinkedList<Serializable>();
             for (Element el : element.getElements()) {
@@ -83,6 +94,9 @@ public class PropertiesElement extends ExtensibleElementWrapper {
                     continue;
                 }
                 Serializable value = va.readValue(el.getText());
+                if (buggyCompat && "document".equals(value)) {
+                    value = BaseType.DOCUMENT.getId();
+                }
                 list.add(value);
                 if (pdid.equals(Property.TYPE_ID)) {
                     typeId = (String) value;

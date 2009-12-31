@@ -31,6 +31,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.i18n.text.UrlEncoding;
@@ -319,6 +321,10 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         Map<String, Serializable> properties;
         Element obb = entry.getFirstChild(AtomPubCMIS.OBJECT);
         if (obb == null) {
+            // compat with buggy CMISSpacesAir
+            obb = entry.getFirstChild(new QName(CMIS.CMIS_NS, "object"));
+        }
+        if (obb == null) {
             // no CMIS object, basic AtomPub post/put
             properties = new HashMap<String, Serializable>();
             if (isNew) {
@@ -449,6 +455,9 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             switch (baseType) {
             case DOCUMENT:
                 String filename = (String) posted.properties.get(Property.CONTENT_STREAM_FILE_NAME);
+                if (filename == null) {
+                    filename = (String) posted.properties.get(Property.NAME);
+                }
                 ContentStream contentStream = posted.stream == null ? null
                         : new SimpleContentStream(posted.stream,
                                 posted.mimeType, filename);
@@ -670,15 +679,19 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     }
 
     public long getContentSize(ObjectEntry object) {
-        Integer value = (Integer) object.getValue(Property.CONTENT_STREAM_LENGTH);
-        return value == null ? -1 : value.longValue();
+        try {
+            Integer value = (Integer) object.getValue(Property.CONTENT_STREAM_LENGTH);
+            return value == null ? -1 : value.longValue();
+        } catch (IllegalArgumentException e) {
+            return -1;
+        }
     }
 
     @Override
     public String getContentType(ObjectEntry object) {
         try {
             return (String) object.getValue(Property.CONTENT_STREAM_MIME_TYPE);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             return null;
         }
     }
