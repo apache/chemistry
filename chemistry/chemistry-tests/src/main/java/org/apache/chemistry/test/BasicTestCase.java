@@ -526,4 +526,25 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals("new descr", ob.getValue("description"));
     }
 
+    public void testUpdate() throws Exception {
+        byte[] blobBytes = "A file...\n".getBytes("UTF-8");
+        String filename = "doc.txt";
+        ContentStream cs = new SimpleContentStream(blobBytes,
+                "text/plain;charset=UTF-8", filename);
+
+        // update a doc with a content stream
+        ObjectEntry ob = spi.getObjectByPath("/folder 1/folder 2/doc 3", null);
+        Document doc = (Document) conn.getObject(ob);
+        doc.setContentStream(cs);
+        doc.setValue("title", "my doc 3");
+        doc.save();
+
+        // update a doc that doesn't have a content stream yet
+        ob = spi.getObjectByPath("/folder 1/doc 1", null);
+        doc = (Document) conn.getObject(ob);
+        doc.setContentStream(cs);
+        doc.setValue("title", "my doc 1");
+        doc.save();
+    }
+
 }

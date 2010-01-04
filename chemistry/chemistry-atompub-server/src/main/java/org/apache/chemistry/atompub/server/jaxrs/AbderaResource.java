@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -112,7 +113,7 @@ public class AbderaResource {
         String cpath = httpRequest.getContextPath();
         String spath = httpRequest.getServletPath();
         // find this Resource path (remove some segments from it)
-        String rpath = ui.getPath();
+        String rpath = ui.getPath(false);
         while (segments > 0) {
             segments--;
             if (rpath.contains("/")) {
@@ -322,7 +323,7 @@ public class AbderaResource {
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
     @Path("path/{path:.*}")
-    public Response doGetObjectByPath(@PathParam("path") String path) {
+    public Response doGetObjectByPath(@Encoded @PathParam("path") String path) {
         int skipSegments = 2;
         for (int i = 0; i < path.length(); i++) {
             if (path.charAt(i) == '/') {
