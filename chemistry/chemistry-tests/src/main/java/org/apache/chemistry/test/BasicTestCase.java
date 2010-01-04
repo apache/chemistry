@@ -527,10 +527,12 @@ public abstract class BasicTestCase extends TestCase {
     }
 
     public void testUpdate() throws Exception {
-        byte[] blobBytes = "A file...\n".getBytes("UTF-8");
-        String filename = "doc.txt";
-        ContentStream cs = new SimpleContentStream(blobBytes,
-                "text/plain;charset=UTF-8", filename);
+        // a non-text content type (-> base64)
+        String string = "A file...\n";
+        byte[] blobBytes = string.getBytes("UTF-8");
+        String filename = "doc.gif";
+        ContentStream cs = new SimpleContentStream(blobBytes, "image/gif",
+                filename);
 
         // update a doc with a content stream
         ObjectEntry ob = spi.getObjectByPath("/folder 1/folder 2/doc 3", null);
@@ -538,6 +540,14 @@ public abstract class BasicTestCase extends TestCase {
         doc.setContentStream(cs);
         doc.setValue("title", "my doc 3");
         doc.save();
+        // refetch
+        doc = (Document) conn.getObject(spi.newObjectId(ob.getId()));
+        ContentStream cs2 = doc.getContentStream();
+        assertEquals("doc.gif", cs2.getFileName());
+        assertEquals("image/gif", cs2.getMimeType());
+        assertEquals(blobBytes.length, cs2.getLength());
+        byte[] array = IOUtils.toByteArray(cs2.getStream());
+        assertEquals(string, new String(array, "UTF-8"));
 
         // update a doc that doesn't have a content stream yet
         ob = spi.getObjectByPath("/folder 1/doc 1", null);

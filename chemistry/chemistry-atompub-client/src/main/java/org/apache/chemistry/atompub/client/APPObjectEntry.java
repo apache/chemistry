@@ -329,6 +329,7 @@ public class APPObjectEntry implements ObjectEntry {
             // || mimeTypeLower.endsWith("/xml")) {
             // ...
         } else {
+            xw.attr("type", mimeType);
             // encode as base64
             xw.contentBase64(localContentStream.getStream());
         }
