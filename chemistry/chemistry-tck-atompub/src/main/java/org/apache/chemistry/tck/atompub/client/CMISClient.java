@@ -61,8 +61,8 @@ import org.xml.sax.SAXException;
  */
 public class CMISClient {
 
-	private TCKMessageWriter messageWriter;
-	
+    private TCKMessageWriter messageWriter;
+
     private Connection connection;
     private boolean traceConnection;
 
@@ -83,7 +83,7 @@ public class CMISClient {
     public CMISClient(Connection connection, String serviceUrl, TCKMessageWriter messageWriter) {
         this.connection = connection;
         this.serviceUrl = serviceUrl;
-    	this.messageWriter = messageWriter;
+        this.messageWriter = messageWriter;
     }
 
     public void setValidate(boolean validate) {
@@ -121,7 +121,7 @@ public class CMISClient {
         }
         return cmisRepositoryInfo;
     }
-    
+
     public CMISCapabilities getCapabilities() throws Exception {
         return getRepositoryInfo().getCapabilities();
     }
@@ -187,7 +187,7 @@ public class CMISClient {
         }
         return null;
     }
-    
+
     public CMISUriTemplate getObjectByIdUriTemplate(Workspace workspace) {
         return getUriTemplate(workspace, CMISConstants.URI_OBJECT_BY_ID);
     }
@@ -195,7 +195,7 @@ public class CMISClient {
     public CMISUriTemplate getObjectByPathUriTemplate(Workspace workspace) {
         return getUriTemplate(workspace, CMISConstants.URI_OBJECT_BY_PATH);
     }
-    
+
     public CMISUriTemplate getQueryUriTemplate(Workspace workspace) {
         return getUriTemplate(workspace, CMISConstants.URI_QUERY);
     }
@@ -376,7 +376,7 @@ public class CMISClient {
         Entry entry = appModel.parseEntry(new StringReader(xml), null);
         return entry;
     }
-    
+
     public Response moveObjectRequest(IRI destFolder, Entry atomEntry, String sourceFolderId, int expectedStatus) throws Exception {
         Map<String, String> args = new HashMap<String, String>();
         args.put("sourceFolderId", sourceFolderId);
@@ -384,7 +384,7 @@ public class CMISClient {
         Response res = executeRequest(req, expectedStatus);
         return res;
     }
-    
+
     /**
      * Execute Request
      *
@@ -423,13 +423,13 @@ public class CMISClient {
                         mimetypeValidator = getAppValidator();
                     }
                 } catch(SAXException e) {}
-                
+
                 if (mimetypeValidator != null) {
                     try {
                         if (traceConnection) {
                             messageWriter.trace("Validating response of content type " + contentType);
                         }
-                        
+
                         String resXML = res.getContentAsString();
                         assertValid(resXML, mimetypeValidator);
                     } catch (ParserConfigurationException e) {
@@ -439,7 +439,7 @@ public class CMISClient {
                 }
             }
         }
-        
+
         return res;
     }
 
