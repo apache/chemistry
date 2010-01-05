@@ -36,6 +36,7 @@ import org.apache.chemistry.ACE;
 import org.apache.chemistry.ACLPropagation;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.CMISRuntimeException;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ConstraintViolationException;
 import org.apache.chemistry.ContentStream;
@@ -650,8 +651,37 @@ public class APPConnection implements Connection, SPI {
 
     public Collection<ObjectId> deleteTree(ObjectId folder, Unfiling unfiling,
             boolean continueOnFailure) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        APPObjectEntry current = getObjectEntry(folder);
+        String href = current.getLink(AtomPub.LINK_DOWN,
+                AtomPubCMIS.MEDIA_TYPE_CMIS_TREE);
+        if (href == null) {
+            throw new CMISRuntimeException("Document is missing link "
+                    + AtomPub.LINK_DOWN + " "
+                    + AtomPubCMIS.MEDIA_TYPE_CMIS_TREE);
+        }
+        Request req = new Request(href);
+        if (unfiling != null) {
+            req.setParameter(AtomPubCMIS.PARAM_UNFILE_OBJECTS,
+                    unfiling.toString());
+        }
+        req.setParameter(AtomPubCMIS.PARAM_CONTINUE_ON_FAILURE,
+                Boolean.toString(continueOnFailure));
+        Response resp = connector.delete(req);
+        int status = resp.getStatusCode();
+        if (status == HttpStatus.SC_NOT_FOUND) {
+            throw new ObjectNotFoundException(folder.getId());
+        }
+        if (status == HttpStatus.SC_CONFLICT) {
+            throw new ConstraintViolationException(resp.getStatusReasonPhrase());
+        }
+        if (!resp.isOk()) {
+            // TODO exceptions
+            throw new ContentManagerException(
+                    "Remote server returned error code: "
+                            + resp.getStatusCode());
+        }
+        // AtomPub bindings cannot return the objects that could not be deleted
+        return Collections.emptyList();
     }
 
     public void addObjectToFolder(ObjectId object, ObjectId folder) {

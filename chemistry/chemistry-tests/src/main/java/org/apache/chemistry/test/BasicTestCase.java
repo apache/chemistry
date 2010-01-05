@@ -435,6 +435,15 @@ public abstract class BasicTestCase extends TestCase {
         }
     }
 
+    public void testDeleteTreeSPI() throws Exception {
+        ObjectEntry fold2 = spi.getObjectByPath("/folder 1/folder 2", null);
+        spi.deleteTree(fold2, null, true);
+        ObjectEntry oe = spi.getObjectByPath("/folder 1/doc 1", null);
+        assertNotNull(oe);
+        oe = spi.getObjectByPath("/folder 1/folder 2", null);
+        assertNull(oe);
+    }
+
     public void testNewDocument() throws Exception {
         Folder root = conn.getRootFolder();
         assertNull(getDocumentChild(root));

@@ -705,7 +705,7 @@ public class SimpleConnection implements Connection, SPI {
         if (repository.getType(typeId).getBaseType() != BaseType.FOLDER) {
             throw new RuntimeException("Not a folder: " + folder); // TODO
         }
-        for (String childId : repository.children.get(id)) {
+        for (String childId : new ArrayList<String>(repository.children.get(id))) {
             SimpleData childData = repository.datas.get(childId);
             String childTypeId = (String) childData.get(Property.TYPE_ID);
             ObjectId objectId = new SimpleObjectId(childId);
@@ -822,9 +822,9 @@ public class SimpleConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId checkIn(ObjectId document, Map<String, Serializable> properties,
-            ContentStream contentStream, boolean major,
-            String comment) {
+    public ObjectId checkIn(ObjectId document,
+            Map<String, Serializable> properties, ContentStream contentStream,
+            boolean major, String comment) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

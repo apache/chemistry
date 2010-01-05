@@ -100,6 +100,12 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
             feed.addLink(getChildrenLink(pid, request), AtomPub.LINK_UP,
                     AtomPub.MEDIA_TYPE_ATOM_FEED, null, null, -1);
         }
+        // TODO don't add descendants links if no children
+        feed.addLink(getDescendantsLink(pid, request), AtomPub.LINK_DOWN,
+                AtomPubCMIS.MEDIA_TYPE_CMIS_TREE, null, null, -1);
+        feed.addLink(getFolderTreeLink(pid, request),
+                AtomPubCMIS.LINK_FOLDER_TREE, AtomPub.MEDIA_TYPE_ATOM_FEED,
+                null, null, -1);
 
         // AtomPub paging
         // next
@@ -178,12 +184,21 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
                 AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
         Inclusion inclusion = new Inclusion(properties, renditions,
                 relationships, allowableActions, false, false);
-        if ("descendants".equals(getType())) {
+        if (COLTYPE_DESCENDANTS.equals(getType())) {
             int depth = getParameter(request, AtomPubCMIS.PARAM_DEPTH, 1);
             List<ObjectEntry> descendants = spi.getDescendants(objectId, depth,
                     orderBy, inclusion);
             SimpleListPage<ObjectEntry> page = new SimpleListPage<ObjectEntry>(
                     descendants);
+            page.setHasMoreItems(false);
+            page.setNumItems(page.size());
+            return page;
+        } else if (COLTYPE_FOLDER_TREE.equals(getType())) {
+            int depth = getParameter(request, AtomPubCMIS.PARAM_DEPTH, 1);
+            List<ObjectEntry> folderTree = spi.getFolderTree(objectId, depth,
+                    inclusion);
+            SimpleListPage<ObjectEntry> page = new SimpleListPage<ObjectEntry>(
+                    folderTree);
             page.setHasMoreItems(false);
             page.setNumItems(page.size());
             return page;

@@ -58,7 +58,13 @@ public class CMISWorkspaceManager extends AbstractWorkspaceManager {
         }
         if (paths.startsWith("/descendants/")) {
             String id = request.getTarget().getParameter("objectid");
-            return new CMISChildrenCollection("descendants", id, repository);
+            return new CMISChildrenCollection(
+                    CMISObjectsCollection.COLTYPE_DESCENDANTS, id, repository);
+        }
+        if (paths.startsWith("/foldertree/")) {
+            String id = request.getTarget().getParameter("objectid");
+            return new CMISChildrenCollection(
+                    CMISObjectsCollection.COLTYPE_FOLDER_TREE, id, repository);
         }
         if (paths.startsWith("/parents/")) {
             String id = request.getTarget().getParameter("objectid");
@@ -69,7 +75,8 @@ public class CMISWorkspaceManager extends AbstractWorkspaceManager {
             return new CMISChildrenCollection(null, null, repository);
         }
         if (paths.startsWith("/path/")) {
-            return new CMISChildrenCollection("path", null, repository);
+            return new CMISChildrenCollection(
+                    CMISObjectsCollection.COLTYPE_PATH, null, repository);
         }
         if (paths.startsWith("/file/")) {
             return new CMISChildrenCollection(null, null, repository);

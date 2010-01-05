@@ -138,6 +138,10 @@ public class AtomPubCMIS {
 
     public static final String PARAM_INCLUDE_PATH_SEGMENT = "includePathSegment";
 
+    public static final String PARAM_CONTINUE_ON_FAILURE = "continueOnFailure";
+
+    public static final String PARAM_UNFILE_OBJECTS = "unfileObjects";
+
     /*
      * ----- URI Template Types -----
      */

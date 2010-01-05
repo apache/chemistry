@@ -53,6 +53,7 @@ import org.apache.abdera.protocol.server.ProviderHelper;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.Target;
+import org.apache.abdera.protocol.server.TargetType;
 import org.apache.abdera.protocol.server.context.AbstractResponseContext;
 import org.apache.abdera.protocol.server.context.BaseResponseContext;
 import org.apache.abdera.protocol.server.context.EmptyResponseContext;
@@ -73,6 +74,7 @@ import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
@@ -94,6 +96,18 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
 
     private static final Log log = LogFactory.getLog(CMISObjectsCollection.class);
 
+    public static final String COLTYPE_PATH = "path";
+
+    public static final String COLTYPE_DESCENDANTS = "descendants";
+
+    public static final String COLTYPE_FOLDER_TREE = "foldertree";
+
+    public static final TargetType TARGET_TYPE_CMIS_DESCENDANTS = TargetType.get(
+            "CMISDESCENDANTS", true);
+
+    public static final TargetType TARGET_TYPE_CMIS_FOLDER_TREE = TargetType.get(
+            "CMISFOLDERTREE", true);
+
     public CMISObjectsCollection(String type, String name, String id,
             Repository repository) {
         super(type, name, id, repository);
@@ -102,6 +116,25 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     /*
      * ----- AbstractCollectionAdapter -----
      */
+
+    // called by AbstractProvider.process if unknown TargetType
+    @Override
+    public ResponseContext extensionRequest(RequestContext request) {
+        TargetType type = request.getTarget().getType();
+        if (type != TARGET_TYPE_CMIS_DESCENDANTS
+                && type != TARGET_TYPE_CMIS_FOLDER_TREE) {
+            return ProviderHelper.notsupported(request);
+        }
+        if (request.getMethod().equalsIgnoreCase("GET")) {
+            return getFeed(request);
+        } else if (request.getMethod().equalsIgnoreCase("DELETE")) {
+            return deleteEntry(request);
+        } else {
+            // stupid signature prevents use of varargs...
+            return ProviderHelper.notallowed(request, new String[] { "GET",
+                    "DELETE" });
+        }
+    }
 
     @Override
     protected Feed createFeedBase(RequestContext request)
@@ -247,6 +280,9 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             // TODO don't add descendants links if no children
             entry.addLink(getDescendantsLink(oid, request), AtomPub.LINK_DOWN,
                     AtomPubCMIS.MEDIA_TYPE_CMIS_TREE, null, null, -1);
+            entry.addLink(getFolderTreeLink(oid, request),
+                    AtomPubCMIS.LINK_FOLDER_TREE, AtomPub.MEDIA_TYPE_ATOM_FEED,
+                    null, null, -1);
         } else if (baseType == BaseType.DOCUMENT) {
             // edit-media link always needed for setContentStream
             entry.addLink(getMediaLink(oid, request), AtomPub.LINK_EDIT_MEDIA);
@@ -572,9 +608,21 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         try {
             String oid = resourceName;
             object = spi.newObjectId(oid);
-            // TODO XXX allVersions not in spec
-            boolean allVersions = getParameter(request, "allVersions", false);
-            spi.deleteObject(object, allVersions);
+            if (COLTYPE_DESCENDANTS.equals(getType())
+                    || COLTYPE_FOLDER_TREE.equals(getType())) {
+                String unfile = request.getTarget().getParameter(
+                        AtomPubCMIS.PARAM_UNFILE_OBJECTS);
+                Unfiling unfileObjects = unfile == null ? null
+                        : Unfiling.get(unfile);
+                boolean continueOnFailure = getParameter(request,
+                        AtomPubCMIS.PARAM_CONTINUE_ON_FAILURE, false);
+                spi.deleteTree(object, unfileObjects, continueOnFailure);
+            } else {
+                // TODO XXX allVersions not in spec
+                boolean allVersions = getParameter(request, "allVersions",
+                        false);
+                spi.deleteObject(object, allVersions);
+            }
         } catch (ObjectNotFoundException e) {
             throw new ResponseContextException(404, e);
         } catch (ConstraintViolationException e) {
@@ -742,7 +790,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         RelationshipDirection relationships = RelationshipDirection.fromInclusion(incl);
         Inclusion inclusion = new Inclusion(properties, null, relationships,
                 allowableActions, false, false);
-        if ("path".equals(getType())) {
+        if (COLTYPE_PATH.equals(getType())) {
             String path = resourceName;
             if (!path.startsWith("/")) {
                 path = "/" + path;
@@ -757,7 +805,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     @Override
     public String getResourceName(RequestContext request) {
         String name;
-        if ("path".equals(getType())) {
+        if (COLTYPE_PATH.equals(getType())) {
             name = "path";
         } else {
             name = "objectid";

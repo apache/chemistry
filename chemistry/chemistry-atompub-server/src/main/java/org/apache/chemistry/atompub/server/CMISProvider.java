@@ -98,7 +98,9 @@ public class CMISProvider extends AbstractProvider {
         targetResolver.setPattern("/children/([^/?]+)(\\?.*)?",
                 TargetType.TYPE_COLLECTION, "objectid");
         targetResolver.setPattern("/descendants/([^/?]+)(\\?.*)?",
-                TargetType.TYPE_COLLECTION, "objectid");
+                CMISObjectsCollection.TARGET_TYPE_CMIS_DESCENDANTS, "objectid");
+        targetResolver.setPattern("/foldertree/([^/?]+)(\\?.*)?",
+                CMISObjectsCollection.TARGET_TYPE_CMIS_FOLDER_TREE, "objectid");
         targetResolver.setPattern("/allversions/([^/?]+)",
                 TargetType.TYPE_COLLECTION, "objectid");
         targetResolver.setPattern("/relationships/([^/?]+)",
