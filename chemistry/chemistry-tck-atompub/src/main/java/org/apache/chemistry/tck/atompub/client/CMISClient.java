@@ -253,7 +253,7 @@ public class CMISClient {
     }
 
     public Link getFolderTreeLink(Entry entry) {
-        return getLink(entry, CMISConstants.REL_FOLDER_TREE, CMISConstants.MIMETYPE_CMISTREE);
+        return getLink(entry, CMISConstants.REL_FOLDER_TREE, CMISConstants.MIMETYPE_FEED);
     }
 
     public Link getObjectParentsLink(Entry entry) {
