@@ -59,6 +59,9 @@ import org.apache.chemistry.impl.simple.SimpleObjectId;
  */
 public class CMISChildrenCollection extends CMISObjectsCollection {
 
+    protected static Pattern PAT_PARAM_SKIP_COUNT = Pattern.compile("(.*[?&]"
+            + AtomPubCMIS.PARAM_SKIP_COUNT + "=)(-?[0-9]+)(.*)");
+
     public CMISChildrenCollection(String type, String id, Repository repository) {
         super(type, "children", id, repository);
     }
@@ -116,13 +119,13 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
             skipCount += entries.size();
             // compute new URI
             String uri = request.getResolvedUri().toString();
-            Pattern pat = Pattern.compile("(.*[?&]"
-                    + AtomPubCMIS.PARAM_SKIP_COUNT + "=)(-?[0-9]+)(.*)");
-            Matcher m = pat.matcher(uri);
+            Matcher m = PAT_PARAM_SKIP_COUNT.matcher(uri);
             if (m.matches()) {
                 uri = m.group(1) + skipCount + m.group(3);
             } else {
-                // unexpected URI...
+                char sep = uri.contains("?") ? '&' : '?';
+                uri = uri + sep + AtomPubCMIS.PARAM_SKIP_COUNT + '='
+                        + skipCount;
             }
             feed.addLink(uri, AtomPub.LINK_NEXT, AtomPub.MEDIA_TYPE_ATOM_FEED,
                     null, null, -1);
