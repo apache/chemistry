@@ -128,7 +128,7 @@ public abstract class BaseRepository implements Repository, RepositoryInfo,
 
     public String getProductVersion() {
         // TODO update this when releasing
-        return "1.0-SNAPSHOT";
+        return "0.5-SNAPSHOT";
     }
 
     public String getVersionSupported() {

@@ -88,7 +88,8 @@ public class TestSimpleRepository extends TestCase {
         assertNotNull(info.getRootFolderId());
         assertEquals("Apache", info.getVendorName());
         assertEquals("Chemistry Simple Repository", info.getProductName());
-        assertEquals("1.0-SNAPSHOT", info.getProductVersion());
+        // TODO update this when releasing
+        assertEquals("0.5-SNAPSHOT", info.getProductVersion());
         assertEquals("1.0", info.getVersionSupported());
         assertNull(info.getRepositorySpecificInformation());
 

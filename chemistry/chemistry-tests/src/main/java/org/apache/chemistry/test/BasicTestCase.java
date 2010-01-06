@@ -85,7 +85,8 @@ public abstract class BasicTestCase extends TestCase {
 
     public String expectedRepositoryProductName = "Chemistry Simple Repository";
 
-    public String expectedRepositoryProductVersion = "1.0-SNAPSHOT";
+    // TODO update this when releasing
+    public String expectedRepositoryProductVersion = "0.5-SNAPSHOT";
 
     public boolean expectedCapabilityHasGetDescendants = true;
 

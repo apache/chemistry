@@ -30,7 +30,7 @@
 
   <groupId>org.apache.chemistry</groupId>
   <artifactId>chemistry-parent</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.5-SNAPSHOT</version>
   <name>Chemistry Parent POM</name>
   <description>Parent POM for the Chemistry project gathering all common settings</description>
   <inceptionYear>2009</inceptionYear>

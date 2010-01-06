@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.chemistry</groupId>
     <artifactId>chemistry-parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.5-SNAPSHOT</version>
   </parent>
 
   <artifactId>chemistry-atompub-server</artifactId>
