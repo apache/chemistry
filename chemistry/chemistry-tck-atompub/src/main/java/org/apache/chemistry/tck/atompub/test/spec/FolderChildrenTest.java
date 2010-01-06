@@ -144,7 +144,10 @@ public class FolderChildrenTest extends TCKTest {
             CMISObject object = entry.getExtension(CMISConstants.OBJECT);
             Assert.assertNotNull(object.getObjectId().getStringValue());
             Assert.assertNotNull(object.getObjectTypeId());
-            Assert.assertNull(object.getBaseTypeId());
+            // Implementations aren't required to return ONLY the specified
+            // properties. In particular, the base type id is often useful to
+            // clients and systematically returned by servers.
+            // Assert.assertNull(object.getBaseTypeId());
         }
     }
 
