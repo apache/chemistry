@@ -178,17 +178,21 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
             throws ResponseContextException {
         ObjectId objectId = spi.newObjectId(id);
         Target target = request.getTarget();
-        String orderBy = target.getParameter(AtomPubCMIS.PARAM_ORDER_BY);
         String properties = target.getParameter(AtomPubCMIS.PARAM_FILTER);
         String renditions = target.getParameter(AtomPubCMIS.PARAM_RENDITION_FILTER);
         String rel = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS);
         RelationshipDirection relationships = RelationshipDirection.fromInclusion(rel);
         boolean allowableActions = getParameter(request,
                 AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
+        boolean policies = getParameter(request,
+                AtomPubCMIS.PARAM_INCLUDE_POLICY_IDS, false);
+        boolean acls = getParameter(request, AtomPubCMIS.PARAM_INCLUDE_ACL,
+                false);
         Inclusion inclusion = new Inclusion(properties, renditions,
-                relationships, allowableActions, false, false);
+                relationships, allowableActions, policies, acls);
         if (COLTYPE_DESCENDANTS.equals(getType())) {
-            int depth = getParameter(request, AtomPubCMIS.PARAM_DEPTH, 1);
+            int depth = getParameter(request, AtomPubCMIS.PARAM_DEPTH, -1);
+            String orderBy = target.getParameter(AtomPubCMIS.PARAM_ORDER_BY);
             List<ObjectEntry> descendants = spi.getDescendants(objectId, depth,
                     orderBy, inclusion);
             SimpleListPage<ObjectEntry> page = new SimpleListPage<ObjectEntry>(
@@ -197,7 +201,7 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
             page.setNumItems(page.size());
             return page;
         } else if (COLTYPE_FOLDER_TREE.equals(getType())) {
-            int depth = getParameter(request, AtomPubCMIS.PARAM_DEPTH, 1);
+            int depth = getParameter(request, AtomPubCMIS.PARAM_DEPTH, -1);
             List<ObjectEntry> folderTree = spi.getFolderTree(objectId, depth,
                     inclusion);
             SimpleListPage<ObjectEntry> page = new SimpleListPage<ObjectEntry>(
@@ -206,6 +210,7 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
             page.setNumItems(page.size());
             return page;
         } else {
+            String orderBy = target.getParameter(AtomPubCMIS.PARAM_ORDER_BY);
             int maxItems = getParameter(request, AtomPubCMIS.PARAM_MAX_ITEMS, 0);
             int skipCount = getParameter(request, AtomPubCMIS.PARAM_SKIP_COUNT,
                     0);

@@ -72,8 +72,8 @@ public class CMISProvider extends AbstractProvider {
                 TargetType.TYPE_ENTRY, "objectid"); // XXX entry?
         targetResolver.setPattern("/type/([^/?]+)(\\?.*)?",
                 TargetType.TYPE_ENTRY, "typeid");
-        targetResolver.setPattern("/path/([^?]*)", TargetType.TYPE_ENTRY,
-                "path");
+        targetResolver.setPattern("/path/([^?]*)(\\?.*)?",
+                TargetType.TYPE_ENTRY, "path");
 
         // media
         targetBuilder.setTemplate(TargetType.TYPE_MEDIA,
@@ -88,7 +88,7 @@ public class CMISProvider extends AbstractProvider {
         targetResolver.setPattern("/checkedout(\\?.*)?",
                 TargetType.TYPE_COLLECTION);
         targetResolver.setPattern("/unfiled", TargetType.TYPE_COLLECTION);
-        targetResolver.setPattern("/query",
+        targetResolver.setPattern("/query(\\?.*)?",
                 CMISQueryFeed.TARGET_TYPE_CMIS_QUERY);
         targetResolver.setPattern("/types(\\?.*)?", //
                 TargetType.TYPE_COLLECTION);
@@ -147,21 +147,50 @@ public class CMISProvider extends AbstractProvider {
         base += request.getTargetBasePath().substring(
                 request.getContextPath().length());
         List<URITemplate> list = new ArrayList<URITemplate>(3);
-        list.add(new URITemplate(AtomPubCMIS.URITMPL_OBJECT_BY_ID, //
-                AtomPub.MEDIA_TYPE_ATOM_ENTRY, //
-                base + "/object/{id}"));
-        list.add(new URITemplate(AtomPubCMIS.URITMPL_OBJECT_BY_PATH, //
-                AtomPub.MEDIA_TYPE_ATOM_ENTRY, //
-                base + "/path/{path}"));
+        list.add(new URITemplate(AtomPubCMIS.URITMPL_OBJECT_BY_ID,
+                AtomPub.MEDIA_TYPE_ATOM_ENTRY, addURITemplateParameters(
+                        base + "/object/{id}", //
+                        AtomPubCMIS.PARAM_FILTER,
+                        AtomPubCMIS.PARAM_RENDITION_FILTER,
+                        AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS,
+                        AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS,
+                        AtomPubCMIS.PARAM_INCLUDE_POLICY_IDS,
+                        AtomPubCMIS.PARAM_INCLUDE_ACL)));
+        list.add(new URITemplate(AtomPubCMIS.URITMPL_OBJECT_BY_PATH,
+                AtomPub.MEDIA_TYPE_ATOM_ENTRY, addURITemplateParameters(
+                        base + "/path/{path}", //
+                        AtomPubCMIS.PARAM_FILTER,
+                        AtomPubCMIS.PARAM_RENDITION_FILTER,
+                        AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS,
+                        AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS,
+                        AtomPubCMIS.PARAM_INCLUDE_POLICY_IDS,
+                        AtomPubCMIS.PARAM_INCLUDE_ACL)));
+        list.add(new URITemplate(AtomPubCMIS.URITMPL_QUERY, //
+                AtomPub.MEDIA_TYPE_ATOM_FEED, addURITemplateParameters(
+                        base + "/query",
+                        AtomPubCMIS.PARAM_QUERY, //
+                        AtomPubCMIS.PARAM_SEARCH_ALL_VERSIONS,
+                        AtomPubCMIS.PARAM_MAX_ITEMS,
+                        AtomPubCMIS.PARAM_SKIP_COUNT,
+                        AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS,
+                        AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS)));
         list.add(new URITemplate(AtomPubCMIS.URITMPL_TYPE_BY_ID, //
                 AtomPub.MEDIA_TYPE_ATOM_FEED, //
                 base + "/type/{id}"));
-        if (false) { // TODO
-            list.add(new URITemplate(AtomPubCMIS.URITMPL_QUERY, //
-                    AtomPub.MEDIA_TYPE_ATOM_FEED, //
-                    base + "/query?q={q}"));
-        }
         return list;
+    }
+
+    protected static String addURITemplateParameters(String s, String... params) {
+        StringBuilder buf = new StringBuilder(s);
+        for (int i = 0; i < params.length; i++) {
+            String param = params[i];
+            buf.append(i == 0 ? '?' : '&');
+            buf.append(param);
+            buf.append("={");
+            buf.append(param);
+            buf.append('}');
+        }
+        return buf.toString();
     }
 
     @Override

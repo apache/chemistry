@@ -51,6 +51,7 @@ import org.apache.chemistry.Paging;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.Relationship;
+import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Rendition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
@@ -213,12 +214,33 @@ public class APPConnection implements Connection, SPI {
 
     public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
             String orderBy, Inclusion inclusion) {
-        // TODO includeRelationship, includeAllowableActions, orderBy
-        // TODO filter, includeRenditions
         String href = getObjectEntry(folder).getLink(AtomPub.LINK_DOWN,
                 AtomPubCMIS.MEDIA_TYPE_CMIS_TREE);
         Request req = new Request(href);
         req.setParameter(AtomPubCMIS.PARAM_DEPTH, Integer.toString(depth));
+        if (orderBy != null) {
+            req.setParameter(AtomPubCMIS.PARAM_ORDER_BY, orderBy);
+        }
+        if (inclusion != null) {
+            if (inclusion.properties != null) {
+                req.setParameter(AtomPubCMIS.PARAM_FILTER, inclusion.properties);
+            }
+            if (inclusion.renditions != null) {
+                req.setParameter(AtomPubCMIS.PARAM_RENDITION_FILTER,
+                        inclusion.renditions);
+            }
+            if (inclusion.relationships != null) {
+                req.setParameter(
+                        AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS,
+                        RelationshipDirection.toInclusion(inclusion.relationships));
+            }
+            req.setParameter(AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS,
+                    Boolean.toString(inclusion.allowableActions));
+            req.setParameter(AtomPubCMIS.PARAM_INCLUDE_POLICY_IDS,
+                    Boolean.toString(inclusion.policies));
+            req.setParameter(AtomPubCMIS.PARAM_INCLUDE_ACL,
+                    Boolean.toString(inclusion.acls));
+        }
         Response resp = connector.get(req);
         if (!resp.isOk()) {
             throw new ContentManagerException(
@@ -305,8 +327,13 @@ public class APPConnection implements Connection, SPI {
         }
         URITemplate uriTemplate = repository.getURITemplate(AtomPubCMIS.URITMPL_OBJECT_BY_ID);
         String href = uriTemplate.template;
-        // TODO proper URI template syntax
-        href = href.replace("{id}", objectId.getId());
+        href = replace(href, AtomPubCMIS.PARAM_ID, objectId.getId());
+        href = replace(href, AtomPubCMIS.PARAM_FILTER, "");
+        href = replace(href, AtomPubCMIS.PARAM_RENDITION_FILTER, "");
+        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS, "");
+        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, "");
+        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_POLICY_IDS, "");
+        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_ACL, "");
         Response resp = connector.get(new Request(href));
         if (resp.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             throw new ObjectNotFoundException(objectId.getId());
@@ -317,6 +344,10 @@ public class APPConnection implements Connection, SPI {
                             + resp.getStatusCode());
         }
         return (APPObjectEntry) resp.getObject(new ReadContext(this));
+    }
+
+    protected String replace(String template, String param, String value) {
+        return template.replace('{' + param + '}', value);
     }
 
     public CMISObject getObject(ObjectId object) {
@@ -462,10 +493,16 @@ public class APPConnection implements Connection, SPI {
         if (uriTemplate == null) {
             throw new UnsupportedOperationException("Cannot get object by path");
         }
-        // TODO proper URI template syntax and encoding
+        // TODO proper encoding
         String encodedPath = path.replace(" ", "%20");
-        String href = uriTemplate.template.replace("{path}", encodedPath);
-
+        String href = uriTemplate.template;
+        href = replace(href, AtomPubCMIS.PARAM_PATH, encodedPath);
+        href = replace(href, AtomPubCMIS.PARAM_FILTER, "");
+        href = replace(href, AtomPubCMIS.PARAM_RENDITION_FILTER, "");
+        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS, "");
+        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, "");
+        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_POLICY_IDS, "");
+        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_ACL, "");
         Response resp = connector.get(new Request(href));
         if (!resp.isOk()) {
             if (resp.getStatusCode() == 404) {

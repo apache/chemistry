@@ -209,6 +209,10 @@ public class CMIS {
 
     public static final QName INCLUDE_RELATIONSHIPS = CMISName("includeRelationships");
 
+    public static final QName INCLUDE_POLICY_IDS = CMISName("includePolicyIds");
+
+    public static final QName INCLUDE_ACL = CMISName("includeACL");
+
     public static final QName RENDITION_FILTER = CMISName("renditionFilter");
 
     public static final QName MAX_ITEMS = CMISName("maxItems");

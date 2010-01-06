@@ -135,21 +135,21 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         el = factory.newElement(CMIS.DESCRIPTION, te);
         el.setText(type.getDescription());
         el = factory.newElement(CMIS.CREATABLE, te);
-        el.setText(bool(type.isCreatable()));
+        el.setText(Boolean.toString(type.isCreatable()));
         el = factory.newElement(CMIS.FILEABLE, te);
-        el.setText(bool(type.isFileable()));
+        el.setText(Boolean.toString(type.isFileable()));
         el = factory.newElement(CMIS.QUERYABLE, te);
-        el.setText(bool(type.isQueryable()));
+        el.setText(Boolean.toString(type.isQueryable()));
         el = factory.newElement(CMIS.CONTROLLABLE_POLICY, te);
-        el.setText(bool(type.isControllablePolicy()));
+        el.setText(Boolean.toString(type.isControllablePolicy()));
         el = factory.newElement(CMIS.CONTROLLABLE_ACL, te);
-        el.setText(bool(type.isControllableACL()));
+        el.setText(Boolean.toString(type.isControllableACL()));
         el = factory.newElement(CMIS.FULLTEXT_INDEXED, te);
-        el.setText(bool(type.isFulltextIndexed()));
+        el.setText(Boolean.toString(type.isFulltextIndexed()));
         el = factory.newElement(CMIS.INCLUDED_IN_SUPERTYPE_QUERY, te);
-        el.setText(bool(type.isIncludedInSuperTypeQuery()));
+        el.setText(Boolean.toString(type.isIncludedInSuperTypeQuery()));
         el = factory.newElement(CMIS.VERSIONABLE, te); // docs only
-        el.setText(bool(type.isVersionable()));
+        el.setText(Boolean.toString(type.isVersionable()));
         el = factory.newElement(CMIS.CONTENT_STREAM_ALLOWED, te); // docs only
         el.setText(type.getContentStreamAllowed().toString()); // TODO null
         // TODO allowedSourceTypes, allowedTargetTypes
@@ -257,14 +257,13 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         return link;
     }
 
-    protected static String bool(boolean bool) {
-        return bool ? "true" : "false";
-    }
-
     @Override
     public Iterable<Type> getEntries(RequestContext request)
             throws ResponseContextException {
-        return repository.getTypes(id);
+        int depth = getParameter(request, AtomPubCMIS.PARAM_DEPTH, -1);
+        boolean includePropertyDefinitions = getParameter(request,
+                AtomPubCMIS.PARAM_INCLUDE_PROPERTY_DEFINITIONS, false);
+        return repository.getTypes(id, depth, includePropertyDefinitions);
     }
 
     @Override

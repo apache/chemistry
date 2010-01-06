@@ -123,9 +123,9 @@ public class APPRepository implements Repository {
     }
 
     public Collection<Type> getTypes(String typeId, int depth,
-            boolean returnPropertyDefinitions) {
+            boolean includePropertyDefinitions) {
         loadTypes();
-        return typeManager.getTypes(typeId, depth, returnPropertyDefinitions);
+        return typeManager.getTypes(typeId, depth, includePropertyDefinitions);
     }
 
     public String getCollectionHref(String type) {

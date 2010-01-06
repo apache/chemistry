@@ -21,6 +21,7 @@ import org.apache.abdera.model.Element;
 import org.apache.abdera.protocol.server.ProviderHelper;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.ResponseContext;
+import org.apache.abdera.protocol.server.Target;
 import org.apache.abdera.protocol.server.TargetType;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.axiom.om.OMDocument;
@@ -28,6 +29,7 @@ import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Paging;
+import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.atompub.AtomPubCMIS;
@@ -46,9 +48,19 @@ public class CMISQueryFeed extends CMISObjectsCollection {
 
     protected boolean searchAllVersions;
 
-    protected Paging paging;
+    protected int maxItems;
 
-    protected Inclusion inclusion;
+    protected int skipCount;
+
+    protected String renditions;
+
+    protected RelationshipDirection relationships;
+
+    protected boolean allowableActions;
+
+    protected boolean policies;
+
+    protected boolean acls;
 
     public CMISQueryFeed(Repository repository) {
         super(AtomPubCMIS.COL_QUERY, "query", null, repository);
@@ -69,7 +81,9 @@ public class CMISQueryFeed extends CMISObjectsCollection {
         if (request.getTarget().getType() != TARGET_TYPE_CMIS_QUERY) {
             return ProviderHelper.notsupported(request);
         }
-        if (request.getMethod().equalsIgnoreCase("POST")) {
+        if (request.getMethod().equalsIgnoreCase("GET")) {
+            return getEntry(request);
+        } else if (request.getMethod().equalsIgnoreCase("POST")) {
             return postEntry(request);
         } else {
             // stupid signature prevents use of varargs...
@@ -96,12 +110,39 @@ public class CMISQueryFeed extends CMISObjectsCollection {
         QueryElement q = new QueryElement(element);
         statement = q.getStatement();
         searchAllVersions = q.getSearchAllVersions();
-        paging = new Paging(q.getMaxItems(), q.getSkipCount());
-        inclusion = new Inclusion(null, q.getRenditionFilter(),
-                q.getIncludeRelationships(), q.getIncludeAllowableActions(),
-                false, false);
+        maxItems = q.getMaxItems();
+        skipCount = q.getSkipCount();
+        renditions = q.getRenditionFilter();
+        relationships = q.getIncludeRelationships();
+        allowableActions = q.getIncludeAllowableActions();
+        policies = q.getIncludePolicyIds();
+        acls = q.getIncludeACL();
+        return doSearch(request);
+    }
+
+    @Override
+    public ResponseContext getEntry(RequestContext request) {
+        Target target = request.getTarget();
+        statement = target.getParameter(AtomPubCMIS.PARAM_QUERY);
+        searchAllVersions = getParameter(request,
+                AtomPubCMIS.PARAM_SEARCH_ALL_VERSIONS, false);
+        maxItems = getParameter(request, AtomPubCMIS.PARAM_MAX_ITEMS, -1);
+        skipCount = getParameter(request, AtomPubCMIS.PARAM_SKIP_COUNT, 0);
+        renditions = target.getParameter(AtomPubCMIS.PARAM_RENDITION_FILTER);
+        String rel = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS);
+        relationships = RelationshipDirection.fromInclusion(rel);
+        allowableActions = getParameter(request,
+                AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
+        policies = getParameter(request, AtomPubCMIS.PARAM_INCLUDE_POLICY_IDS,
+                false);
+        acls = getParameter(request, AtomPubCMIS.PARAM_INCLUDE_ACL, false);
+        return doSearch(request);
+    }
+
+    protected ResponseContext doSearch(RequestContext request) {
         ResponseContext res = getFeed(request); // calls getEntries
-        if (res.getStatus() == HttpStatus.SC_OK) {
+        if (res.getStatus() == HttpStatus.SC_OK
+                && request.getMethod().equalsIgnoreCase("POST")) {
             res.setStatus(HttpStatus.SC_CREATED);
         }
         return res;
@@ -112,6 +153,9 @@ public class CMISQueryFeed extends CMISObjectsCollection {
             throws ResponseContextException {
         SPI spi = repository.getSPI();
         try {
+            Paging paging = new Paging(maxItems, skipCount);
+            Inclusion inclusion = new Inclusion(null, renditions,
+                    relationships, allowableActions, policies, acls);
             ListPage<ObjectEntry> results = spi.query(statement,
                     searchAllVersions, inclusion, paging);
             return results;

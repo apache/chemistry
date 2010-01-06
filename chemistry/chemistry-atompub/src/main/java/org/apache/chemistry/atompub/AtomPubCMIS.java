@@ -118,6 +118,12 @@ public class AtomPubCMIS {
      * ----- AtomPub Link Parameters -----
      */
 
+    public static final String PARAM_ID = "id";
+
+    public static final String PARAM_PATH = "path";
+
+    public static final String PARAM_QUERY = "q";
+
     public static final String PARAM_FILTER = "filter";
 
     public static final String PARAM_MAX_ITEMS = "maxItems";
@@ -128,6 +134,8 @@ public class AtomPubCMIS {
 
     public static final String PARAM_DEPTH = "depth";
 
+    public static final String PARAM_INCLUDE_PROPERTY_DEFINITIONS = "includePropertyDefinitions";
+
     public final static String PARAM_FOLDER_ID = "folderId";
 
     public static final String PARAM_RENDITION_FILTER = "renditionFilter";
@@ -136,7 +144,13 @@ public class AtomPubCMIS {
 
     public static final String PARAM_INCLUDE_RELATIONSHIPS = "includeRelationships";
 
+    public static final String PARAM_INCLUDE_POLICY_IDS = "includePolicyIds";
+
+    public static final String PARAM_INCLUDE_ACL = "includeACL";
+
     public static final String PARAM_INCLUDE_PATH_SEGMENT = "includePathSegment";
+
+    public static final String PARAM_SEARCH_ALL_VERSIONS = "searchAllVersions";
 
     public static final String PARAM_CONTINUE_ON_FAILURE = "continueOnFailure";
 

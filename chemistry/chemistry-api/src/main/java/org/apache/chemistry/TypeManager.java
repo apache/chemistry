@@ -65,19 +65,19 @@ public interface TypeManager {
      * <li>1: only children of the type,</li>
      * <li>more than 1: grand-children up to that depth,</li>
      * </ul>
-     * If returnPropertyDefinitions is {@code false}, then the
+     * If includePropertyDefinitions is {@code false}, then the
      * {@link PropertyDefinition}s will not be returned in each {@link Type}.
      *
      * @param typeId the base type ID, or {@code null}
      * @param depth the number of levels of depth in the type hierarchy from
      *            which to return results
-     * @param returnPropertyDefinitions {@code false} to skip property
+     * @param includePropertyDefinitions {@code false} to skip property
      *            definitions
      * @return the types, or a subset of them
      *
      * @throws IllegalArgumentException if the depth is invalid
      */
     Collection<Type> getTypes(String typeId, int depth,
-            boolean returnPropertyDefinitions);
+            boolean includePropertyDefinitions);
 
 }

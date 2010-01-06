@@ -195,7 +195,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         assertNotNull(uritmpl);
         Element tmpl = uritmpl.getFirstChild(AtomPubCMIS.TEMPLATE);
         assertNotNull(tmpl);
-        assertEquals(base + "/object/{id}", tmpl.getText());
+        assertTrue(tmpl.getText().startsWith(base + "/object/{id}"));
         resp.release();
     }
 
@@ -323,11 +323,19 @@ public abstract class AtomPubServerTestCase extends TestCase {
         method.releaseConnection();
     }
 
-    public void testQuery() throws Exception {
+    public void testQueryPOST() throws Exception {
         EntityProvider provider = new QueryEntityProvider("SELECT * FROM doc",
                 true, null, null);
         ClientResponse resp = client.post(base + "/query", provider);
         assertEquals(HttpStatus.SC_CREATED, resp.getStatus());
+        Element res = resp.getDocument().getRoot();
+        assertNotNull(res);
+        resp.release();
+    }
+
+    public void testQueryGET() throws Exception {
+        ClientResponse resp = client.get(base + "/query?q=SELECT+*+FROM+doc");
+        assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Element res = resp.getDocument().getRoot();
         assertNotNull(res);
         resp.release();
@@ -371,14 +379,20 @@ public abstract class AtomPubServerTestCase extends TestCase {
             sw.startElement(CMIS.SEARCH_ALL_VERSIONS).writeElementText(
                     Boolean.toString(searchAllVersions)).endElement();
             if (inclusion != null) {
-                sw.startElement(CMIS.INCLUDE_ALLOWABLE_ACTIONS).writeElementText(
-                        Boolean.toString(inclusion.allowableActions)).endElement();
-                sw.startElement(CMIS.INCLUDE_RELATIONSHIPS).writeElementText(
-                        RelationshipDirection.toInclusion(inclusion.relationships)).endElement();
                 if (inclusion.renditions != null) {
                     sw.startElement(CMIS.RENDITION_FILTER).writeElementText(
                             inclusion.renditions).endElement();
                 }
+                if (inclusion.relationships != null) {
+                    sw.startElement(CMIS.INCLUDE_RELATIONSHIPS).writeElementText(
+                            RelationshipDirection.toInclusion(inclusion.relationships)).endElement();
+                }
+                sw.startElement(CMIS.INCLUDE_ALLOWABLE_ACTIONS).writeElementText(
+                        Boolean.toString(inclusion.allowableActions)).endElement();
+                sw.startElement(CMIS.INCLUDE_POLICY_IDS).writeElementText(
+                        Boolean.toString(inclusion.policies)).endElement();
+                sw.startElement(CMIS.INCLUDE_ACL).writeElementText(
+                        Boolean.toString(inclusion.acls)).endElement();
             }
             if (paging != null) {
                 if (paging.maxItems > -1) {

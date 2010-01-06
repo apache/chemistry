@@ -163,8 +163,8 @@ public abstract class BaseRepository implements Repository, RepositoryInfo,
     }
 
     public Collection<Type> getTypes(String typeId, int depth,
-            boolean returnPropertyDefinitions) {
-        return typeManager.getTypes(typeId, depth, returnPropertyDefinitions);
+            boolean includePropertyDefinitions) {
+        return typeManager.getTypes(typeId, depth, includePropertyDefinitions);
     }
 
 }

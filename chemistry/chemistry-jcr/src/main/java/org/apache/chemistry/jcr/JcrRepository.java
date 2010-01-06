@@ -136,9 +136,9 @@ public class JcrRepository implements Repository, RepositoryInfo,
     }
 
     public List<Type> getTypes(String typeId, int depth,
-            boolean returnPropertyDefinitions) {
+            boolean includePropertyDefinitions) {
 
-        // TODO depth, returnPropertyDefinitions
+        // TODO depth, includePropertyDefinitions
 
         try {
             List<Type> result = new ArrayList<Type>();

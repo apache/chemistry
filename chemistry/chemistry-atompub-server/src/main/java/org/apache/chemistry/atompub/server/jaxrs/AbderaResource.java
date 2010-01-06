@@ -351,6 +351,13 @@ public class AbderaResource {
         return getResponse(adapter.putMedia(requestContext));
     }
 
+    @GET
+    @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
+    @Path("query")
+    public Response doGetQuery() {
+        return getAbderaEntry(1);
+    }
+
     @POST
     @Consumes(AtomPubCMIS.MEDIA_TYPE_CMIS_QUERY)
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)

@@ -72,6 +72,14 @@ public class QueryElement extends ExtensibleElementWrapper {
         return RelationshipDirection.fromInclusion(getChildElementText(CMIS.INCLUDE_RELATIONSHIPS));
     }
 
+    public boolean getIncludePolicyIds() {
+        return Boolean.parseBoolean(getChildElementText(CMIS.INCLUDE_POLICY_IDS));
+    }
+
+    public boolean getIncludeACL() {
+        return Boolean.parseBoolean(getChildElementText(CMIS.INCLUDE_ACL));
+    }
+
     public String getRenditionFilter() {
         return getChildElementText(CMIS.RENDITION_FILTER);
     }

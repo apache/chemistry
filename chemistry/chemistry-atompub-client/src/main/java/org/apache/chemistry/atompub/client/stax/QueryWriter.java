@@ -62,13 +62,17 @@ public class QueryWriter extends AbstractXmlObjectWriter<String> {
         xw.element(CMIS.STATEMENT).econtent(statement);
         xw.element(CMIS.SEARCH_ALL_VERSIONS).content(searchAllVersions);
         if (inclusion != null) {
-            xw.element(CMIS.INCLUDE_ALLOWABLE_ACTIONS).content(
-                    inclusion.allowableActions);
-            xw.element(CMIS.INCLUDE_RELATIONSHIPS).content(
-                    RelationshipDirection.toInclusion(inclusion.relationships));
             if (inclusion.renditions != null) {
                 xw.element(CMIS.RENDITION_FILTER).econtent(inclusion.renditions);
             }
+            if (inclusion.relationships != null) {
+                xw.element(CMIS.INCLUDE_RELATIONSHIPS).content(
+                        RelationshipDirection.toInclusion(inclusion.relationships));
+            }
+            xw.element(CMIS.INCLUDE_ALLOWABLE_ACTIONS).content(
+                    inclusion.allowableActions);
+            xw.element(CMIS.INCLUDE_POLICY_IDS).content(inclusion.policies);
+            xw.element(CMIS.INCLUDE_ACL).content(inclusion.acls);
         }
         if (paging != null) {
             if (paging.maxItems > -1) {
