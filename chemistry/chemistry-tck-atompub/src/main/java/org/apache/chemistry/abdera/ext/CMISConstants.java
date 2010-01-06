@@ -166,7 +166,7 @@ public interface CMISConstants {
     public static final String REL_CURRENT_VERSION = "current-version";
     public static final String REL_WORKING_COPY = "working-copy";
     public static final String REL_ROOT_DESCENDANTS = CMISLINK_NS + "rootdescendants";
-    public static final String REL_TYPES_DESCENDANTS = CMISLINK_NS + "typesdescendants";
+    public static final String REL_TYPES_DESCENDANTS = CMISLINK_NS + "typedescendants";
     public static final String REL_FOLDER_TREE = CMISLINK_NS + "foldertree";
     public static final String REL_ALLOWABLE_ACTIONS = CMISLINK_NS + "allowableactions";
     public static final String REL_POLICIES = CMISLINK_NS + "policies";
