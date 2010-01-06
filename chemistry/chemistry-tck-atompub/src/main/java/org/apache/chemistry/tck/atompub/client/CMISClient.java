@@ -389,12 +389,26 @@ public class CMISClient {
      * Execute Request
      *
      * @param req
-     * @param expectedStatus
+     * @param expectedStatus the expected status, or -1 if ignored
      * @param asUser
      * @return response
      * @throws IOException
      */
     public Response executeRequest(Request req, int expectedStatus) throws IOException {
+        return executeRequest(req, expectedStatus, expectedStatus);
+    }
+
+    /**
+     * Execute Request
+     *
+     * @param req
+     * @param expectedStatusMin the minimum expected status
+     * @param expectedStatusMax the maximum expected status
+     * @param asUser
+     * @return response
+     * @throws IOException
+     */
+    public Response executeRequest(Request req, int expectedStatusMin, int expectedStatusMax) throws IOException {
         if (traceConnection) {
             messageWriter.trace("Request: " + req.getMethod() + " " + req.getFullUri()
                     + (req.getBody() == null ? "" : "\n" + new String(req.getBody(), req.getEncoding())));
@@ -407,8 +421,19 @@ public class CMISClient {
                     + req.getFullUri() + (res.getContentAsString() == null ? "" : "\n" + res.getContentAsString()));
         }
 
-        if (expectedStatus > -1)
-            Assert.assertEquals("Request status for " + req.getFullUri(), expectedStatus, res.getStatus());
+        if (expectedStatusMin > -1) {
+            int status = res.getStatus();
+            if (expectedStatusMin == expectedStatusMax) {
+                Assert.assertEquals("Request status for " + req.getFullUri(),
+                        expectedStatusMin, status);
+            } else {
+                Assert.assertTrue("Request status for " + req.getFullUri()
+                        + " was " + status + " but must be between "
+                        + expectedStatusMin + " and " + expectedStatusMax,
+                        expectedStatusMin <= status
+                                && status <= expectedStatusMax);
+            }
+        }
 
         if (validate) {
             Validator mimetypeValidator = null;

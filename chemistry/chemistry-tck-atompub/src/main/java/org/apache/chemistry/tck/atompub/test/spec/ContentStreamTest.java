@@ -55,7 +55,7 @@ public class ContentStreamTest extends TCKTest {
         Link editMediaLink = document.getEditMediaLink();
         Assert.assertNotNull(editMediaLink);
         Request putReq = new PutRequest(editMediaLink.getHref().toString(), UPDATED_CONTENT, CMISConstants.MIMETYPE_TEXT);
-        Response res = client.executeRequest(putReq, 200);
+        Response res = client.executeRequest(putReq, 200, 201);
         Assert.assertNotNull(res);
 
         // retrieve updated content
@@ -82,9 +82,9 @@ public class ContentStreamTest extends TCKTest {
 
         // retrieve document (ensure still exists)
         client.getEntry(document.getSelfLink().getHref());
-        
+
         // attempt to retrieve deleted content (ensure does not exist)
-        client.executeRequest(new GetRequest(document.getContentSrc().toString()), 404);
+        client.executeRequest(new GetRequest(document.getContentSrc().toString()), 404, 409);
     }
 
 }
