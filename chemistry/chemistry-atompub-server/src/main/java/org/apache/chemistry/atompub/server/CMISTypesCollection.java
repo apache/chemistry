@@ -32,6 +32,7 @@ import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.protocol.server.RequestContext;
+import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.chemistry.CMIS;
 import org.apache.chemistry.PropertyDefinition;
@@ -46,6 +47,8 @@ import org.apache.chemistry.atompub.abdera.PropertiesElement;
  * CMIS Collection for the Types.
  */
 public class CMISTypesCollection extends CMISCollection<Type> {
+
+    protected boolean singleEntry;
 
     public CMISTypesCollection(String type, String id, Repository repository) {
         super(type, "types", id, repository);
@@ -88,9 +91,17 @@ public class CMISTypesCollection extends CMISCollection<Type> {
      */
 
     @Override
+    public ResponseContext getEntry(RequestContext request) {
+        singleEntry = true;
+        return super.getEntry(request);
+    }
+
+    @Override
     public String addEntryDetails(RequestContext request, Entry entry,
             IRI feedIri, Type type) throws ResponseContextException {
-        boolean includePropertyDefinitions = "true".equals(request.getParameter("includePropertyDefinitions"));
+        boolean includePropertyDefinitions = singleEntry
+                || getParameter(request,
+                        AtomPubCMIS.PARAM_INCLUDE_PROPERTY_DEFINITIONS, false);
         Factory factory = request.getAbdera().getFactory();
 
         entry.setId(getId(type));

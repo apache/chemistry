@@ -207,6 +207,21 @@ public abstract class AtomPubServerTestCase extends TestCase {
         resp.release();
     }
 
+    public void testType() throws Exception {
+        ClientResponse resp = client.get(base + "/type/cmis:document");
+        assertEquals(HttpStatus.SC_OK, resp.getStatus());
+        Element el = resp.getDocument().getRoot();
+        assertNotNull(el);
+        Element t = el.getFirstChild(new QName(AtomPubCMIS.CMISRA_NS, "type"));
+        assertNotNull(t);
+        // check that when we get a simple type, the property definitions are
+        // returned as well
+        Element p = t.getFirstChild(new QName(CMIS.CMIS_NS,
+                "propertyIdDefinition"));
+        assertNotNull(p);
+        resp.release();
+    }
+
     public void testChildren() throws Exception {
         ClientResponse resp = client.get(base + "/children/" + rootFolderId);
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
