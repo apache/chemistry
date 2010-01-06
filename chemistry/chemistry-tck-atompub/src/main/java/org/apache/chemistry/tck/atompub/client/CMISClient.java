@@ -323,6 +323,11 @@ public class CMISClient {
     }
 
     public Entry createDocument(IRI parent, String name, String atomEntryFile) throws Exception {
+        return createDocument(parent, name, atomEntryFile, false);
+    }
+
+    public Entry createDocument(IRI parent, String name, String atomEntryFile,
+            boolean expectNoContent) throws Exception {
         String createFile = templates.load(atomEntryFile == null ? "createdocument.atomentry.xml" : atomEntryFile);
         createFile = createFile.replace("${NAME}", name);
         // determine if creating content via mediatype
@@ -339,7 +344,9 @@ public class CMISClient {
         Assert.assertNotNull(entry);
         Assert.assertEquals(name, entry.getTitle());
         // Assert.assertEquals(name + " (summary)", entry.getSummary());
-        Assert.assertNotNull(entry.getContentSrc());
+        if (!expectNoContent) {
+            Assert.assertNotNull(entry.getContentSrc());
+        }
         CMISObject object = entry.getExtension(CMISConstants.OBJECT);
         Assert.assertEquals(CMISConstants.TYPE_DOCUMENT, object.getBaseTypeId().getStringValue());
         String testFileHREF = (String) res.getHeader("Location");

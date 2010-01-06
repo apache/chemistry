@@ -33,7 +33,7 @@ import org.junit.Assert;
  * CMIS Test Data
  */
 public class CMISTestFixture {
-    
+
     private static Long testStartTime = null;
 
     private CMISClient client;
@@ -68,8 +68,14 @@ public class CMISTestFixture {
     }
 
     public Entry createTestDocument(String name, String template) throws Exception {
+        return createTestDocument(name, template, true);
+    }
+
+    public Entry createTestDocument(String name, String template,
+            boolean expectNoContent) throws Exception {
         Link children = client.getChildrenLink(getTestCaseFolder());
-        return client.createDocument(children.getHref(), name, template);
+        return client.createDocument(children.getHref(), name, template,
+                expectNoContent);
     }
 
     public Entry createTestFolder(String name) throws Exception {

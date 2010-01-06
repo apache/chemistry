@@ -35,10 +35,12 @@ public class ContentStreamTest extends TCKTest {
 
     public void testContentStreamEmpty() throws Exception {
         // create document for setting / getting content
-        Entry document = fixture.createTestDocument("testContent", "createdocumentNoContent.atomentry.xml");
+        Entry document = fixture.createTestDocument("testContent", "createdocumentNoContent.atomentry.xml", true);
 
         // retrieve content
-        client.executeRequest(new GetRequest(document.getContentSrc().toString()), 404);
+        Link editMediaLink = document.getEditMediaLink();
+        Assert.assertNotNull(editMediaLink);
+        client.executeRequest(new GetRequest(editMediaLink.getHref().toString()), 404, 409);
     }
 
     public void testUpdateContentStream() throws Exception {
