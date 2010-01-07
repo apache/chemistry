@@ -37,9 +37,9 @@
             <cmis:repositoryDescription>CMIS Repository Description</cmis:repositoryDescription>
             <cmis:vendorName>CMIS Vendor 1</cmis:vendorName>
             <cmis:productName>CMIS Prototype for VendorX</cmis:productName>
-            <cmis:productVersion>0.62</cmis:productVersion>
+            <cmis:productVersion>1.0</cmis:productVersion>
             <cmis:rootFolderId>rootfolder</cmis:rootFolderId>
-            <cmis:latestChangeLogToken>token-Mon Oct 19 10:09:57 PDT 2009</cmis:latestChangeLogToken>
+            <cmis:latestChangeLogToken>token-Thu Dec 24 09:01:46 PST 2009</cmis:latestChangeLogToken>
             <cmis:capabilities>
                 <cmis:capabilityACL>manage</cmis:capabilityACL>
                 <cmis:capabilityAllVersionsSearchable>true</cmis:capabilityAllVersionsSearchable>
@@ -56,7 +56,7 @@
                 <cmis:capabilityVersionSpecificFiling>true</cmis:capabilityVersionSpecificFiling>
                 <cmis:capabilityJoin>innerandouter</cmis:capabilityJoin>
             </cmis:capabilities>
-            <cmis:cmisVersionSupported>0.62</cmis:cmisVersionSupported>
+            <cmis:cmisVersionSupported>1.0</cmis:cmisVersionSupported>
             <cmis:changesIncomplete>true</cmis:changesIncomplete>
             <cmis:changesOnType>cmis:document</cmis:changesOnType>
             <cmis:changesOnType>cmis:folder</cmis:changesOnType>

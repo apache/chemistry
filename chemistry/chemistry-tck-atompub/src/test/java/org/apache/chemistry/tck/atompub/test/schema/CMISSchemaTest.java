@@ -135,16 +135,6 @@ public class CMISSchemaTest extends TestCase {
         assertValidXML(xml, cmisValidator.getCMISAtomValidator());
     }
 
-    public void testTypeRelationshipWith() throws Exception {
-        String xml = examples.load("TypeRelationshipWith.xml");
-        assertValidXML(xml, cmisValidator.getCMISAtomValidator());
-    }
-
-    public void testTypeRelationshipWithOut() throws Exception {
-        String xml = examples.load("TypeRelationshipWithout.xml");
-        assertValidXML(xml, cmisValidator.getCMISAtomValidator());
-    }
-
     public void testTypePolicyWith() throws Exception {
         String xml = examples.load("TypePolicyWith.xml");
         assertValidXML(xml, cmisValidator.getCMISAtomValidator());
@@ -152,6 +142,16 @@ public class CMISSchemaTest extends TestCase {
 
     public void testTypePolicyWithOut() throws Exception {
         String xml = examples.load("TypePolicyWithout.xml");
+        assertValidXML(xml, cmisValidator.getCMISAtomValidator());
+    }
+
+    public void testTypeRelationshipWith() throws Exception {
+        String xml = examples.load("TypeRelationshipWith.xml");
+        assertValidXML(xml, cmisValidator.getCMISAtomValidator());
+    }
+
+    public void testTypeRelationshipWithOut() throws Exception {
+        String xml = examples.load("TypeRelationshipWithout.xml");
         assertValidXML(xml, cmisValidator.getCMISAtomValidator());
     }
 
