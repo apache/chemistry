@@ -43,6 +43,19 @@ public class ContentStreamTest extends TCKTest {
         client.executeRequest(new GetRequest(editMediaLink.getHref().toString()), 404, 409);
     }
 
+    public void testCreateContentStream() throws Exception {
+        // create document without content
+        Entry document = fixture.createTestDocument("testContent", "createdocumentNoContent.atomentry.xml", true);
+
+        // create content
+        String CREATED_CONTENT = "Created via SetContentStream()";
+        Link editMediaLink = document.getEditMediaLink();
+        Assert.assertNotNull(editMediaLink);
+        Request putReq = new PutRequest(editMediaLink.getHref().toString(), CREATED_CONTENT, CMISConstants.MIMETYPE_TEXT);
+        Response res = client.executeRequest(putReq, 200, 201);
+        Assert.assertNotNull(res);
+    }
+    
     public void testUpdateContentStream() throws Exception {
         // create document for setting / getting content
         Entry document = fixture.createTestDocument("testContent");
