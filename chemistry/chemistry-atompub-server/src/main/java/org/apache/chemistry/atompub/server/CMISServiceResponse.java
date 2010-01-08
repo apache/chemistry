@@ -142,7 +142,7 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
             write(CMIS.CAPABILITY_ACL, cap.getACLCapability().toString());
             write(CMIS.CAPABILITY_ALL_VERSIONS_SEARCHABLE,
                     cap.isAllVersionsSearchable());
-            write(CMIS.CAPABILITY_CHANGES, cap.getJoinCapability().toString());
+            write(CMIS.CAPABILITY_CHANGES, cap.getChangeCapability().toString());
             write(CMIS.CAPABILITY_CONTENT_STREAM_UPDATABILITY,
                     cap.isContentStreamUpdatableAnytime() ? "anytime"
                             : "pwconly");
