@@ -324,7 +324,11 @@ public class AbderaResource {
     @Produces(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
     @Path("path/{path:.*}")
     public Response doGetObjectByPath(@Encoded @PathParam("path") String path) {
-        int skipSegments = 2;
+        // don't use the path argument but refetch it from the UriInfo
+        // to ensure that an initial slash isn't swallowed, which is important
+        // for the later segments count used in getRequestContext
+        path = ui.getPathParameters(false).get("path").get(0);
+        int skipSegments = 2; //
         for (int i = 0; i < path.length(); i++) {
             if (path.charAt(i) == '/') {
                 skipSegments++;

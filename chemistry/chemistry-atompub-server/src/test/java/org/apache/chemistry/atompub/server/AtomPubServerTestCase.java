@@ -276,11 +276,33 @@ public abstract class AtomPubServerTestCase extends TestCase {
     }
 
     public void testGetObjectByPath() {
-        ClientResponse resp = client.get(base + "/path/folder1/folder2/doc3");
+        String path = "/folder1/folder2/doc3";
+
+        // URL-encoded (what a compliant client using the URI template does)
+        ClientResponse resp = client.get(base + "/path/"
+                + path.replace("/", "%2F"));
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Element ob = resp.getDocument().getRoot();
         assertNotNull(ob);
         Element id = ob.getFirstChild(new QName(AtomPub.ATOM_NS, "id"));
+        assertEquals("urn:uuid:" + doc3id, id.getText());
+        resp.release();
+
+        // unencoded, single slash
+        resp = client.get(base + "/path" + path);
+        assertEquals(HttpStatus.SC_OK, resp.getStatus());
+        ob = resp.getDocument().getRoot();
+        assertNotNull(ob);
+        id = ob.getFirstChild(new QName(AtomPub.ATOM_NS, "id"));
+        assertEquals("urn:uuid:" + doc3id, id.getText());
+        resp.release();
+
+        // unencoded, double slash
+        resp = client.get(base + "/path/" + path);
+        assertEquals(HttpStatus.SC_OK, resp.getStatus());
+        ob = resp.getDocument().getRoot();
+        assertNotNull(ob);
+        id = ob.getFirstChild(new QName(AtomPub.ATOM_NS, "id"));
         assertEquals("urn:uuid:" + doc3id, id.getText());
         resp.release();
     }
