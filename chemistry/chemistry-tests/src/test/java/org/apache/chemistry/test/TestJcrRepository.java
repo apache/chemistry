@@ -24,7 +24,6 @@ import java.io.InputStream;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.jcr.Workspace;
-import javax.jcr.nodetype.NodeTypeManager;
 
 import org.apache.chemistry.CapabilityQuery;
 import org.apache.chemistry.Repository;

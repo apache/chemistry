@@ -190,7 +190,7 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals(expectedRootTypeId, rootType.getId());
         assertEquals(expectedRootTypeId, root.getTypeId());
         assertEquals(ROOT_FOLDER_NAME, root.getName());
-        assertEquals(null, root.getParent());
+        assertNull(root.getParent());
         Map<String, Property> props = root.getProperties();
         assertNotNull(props);
         assertTrue(props.size() > 0);

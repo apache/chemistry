@@ -38,8 +38,6 @@ public class ObjectElement extends ExtensibleElementWrapper {
 
     /**
      * Constructor used when parsing XML.
-     *
-     * @param repository
      */
     public ObjectElement(Element internal, Repository repository) {
         super(internal);

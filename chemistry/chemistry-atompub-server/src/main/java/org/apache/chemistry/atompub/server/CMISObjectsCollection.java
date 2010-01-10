@@ -354,12 +354,12 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         }
 
         // get properties and type from entry
-        Map<String, Serializable> properties;
         Element obb = entry.getFirstChild(AtomPubCMIS.OBJECT);
         if (obb == null) {
             // compat with buggy CMISSpacesAir
             obb = entry.getFirstChild(new QName(CMIS.CMIS_NS, "object"));
         }
+        Map<String, Serializable> properties;
         if (obb == null) {
             // no CMIS object, basic AtomPub post/put
             properties = new HashMap<String, Serializable>();

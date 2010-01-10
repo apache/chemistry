@@ -136,7 +136,7 @@ public class AtomPubCMIS {
 
     public static final String PARAM_INCLUDE_PROPERTY_DEFINITIONS = "includePropertyDefinitions";
 
-    public final static String PARAM_FOLDER_ID = "folderId";
+    public static final String PARAM_FOLDER_ID = "folderId";
 
     public static final String PARAM_RENDITION_FILTER = "renditionFilter";
 
