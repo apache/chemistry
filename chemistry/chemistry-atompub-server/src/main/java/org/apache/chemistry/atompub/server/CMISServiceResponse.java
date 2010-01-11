@@ -55,7 +55,7 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
 
     @Override
     protected void writeTo(StreamWriter sw) throws IOException {
-        sw.startDocument();
+        ((StaxStreamWriter) sw).startDocument("UTF-8", "1.0");
         sw.startService();
         ((StaxStreamWriter) sw).writeNamespace(CMIS.CMIS_PREFIX, CMIS.CMIS_NS);
         ((StaxStreamWriter) sw).writeNamespace(AtomPubCMIS.CMISRA_PREFIX,
