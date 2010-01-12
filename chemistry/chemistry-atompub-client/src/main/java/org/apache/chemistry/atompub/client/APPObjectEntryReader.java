@@ -36,7 +36,7 @@ import org.apache.chemistry.xml.stax.StaxReader;
  */
 public class APPObjectEntryReader extends AbstractObjectReader<APPObjectEntry> {
 
-    private static APPObjectEntryReader builder = new APPObjectEntryReader();
+    private static final APPObjectEntryReader builder = new APPObjectEntryReader();
 
     public static APPObjectEntryReader getBuilder() {
         return builder;

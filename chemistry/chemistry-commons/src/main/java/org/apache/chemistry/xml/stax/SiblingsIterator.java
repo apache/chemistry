@@ -23,7 +23,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public abstract class SiblingsIterator<T> extends ElementIterator<T> {
 
-    protected int depth;
+    protected final int depth;
 
     public SiblingsIterator(StaxReader sr) throws XMLStreamException {
         this(sr, sr.getElementDepth());

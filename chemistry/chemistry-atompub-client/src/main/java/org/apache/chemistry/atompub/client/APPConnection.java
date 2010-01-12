@@ -78,11 +78,11 @@ public class APPConnection implements Connection, SPI {
 
     public static final int DEFAULT_MAX_CHILDREN = 20;
 
+    protected final Connector connector;
+
+    protected final APPRepository repository;
+
     protected APPFolder root;
-
-    protected Connector connector;
-
-    protected APPRepository repository;
 
     protected Map<Class<?>, Object> singletons = new Hashtable<Class<?>, Object>();
 

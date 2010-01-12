@@ -53,9 +53,9 @@ public class APPObjectEntry implements ObjectEntry {
     protected static final ContentStream REMOTE_CONTENT_STREAM = new SimpleContentStream(
             new byte[0], null, null);
 
-    protected APPConnection connection;
+    protected final APPConnection connection;
 
-    protected Map<String, XmlProperty> properties;
+    protected final Map<String, XmlProperty> properties;
 
     protected ContentStream localContentStream = REMOTE_CONTENT_STREAM;
 

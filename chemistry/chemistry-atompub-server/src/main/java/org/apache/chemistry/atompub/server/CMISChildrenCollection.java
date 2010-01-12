@@ -59,7 +59,7 @@ import org.apache.chemistry.impl.simple.SimpleObjectId;
  */
 public class CMISChildrenCollection extends CMISObjectsCollection {
 
-    protected static Pattern PAT_PARAM_SKIP_COUNT = Pattern.compile("(.*[?&]"
+    protected static final Pattern PAT_PARAM_SKIP_COUNT = Pattern.compile("(.*[?&]"
             + AtomPubCMIS.PARAM_SKIP_COUNT + "=)(-?[0-9]+)(.*)");
 
     public CMISChildrenCollection(String type, String id, Repository repository) {

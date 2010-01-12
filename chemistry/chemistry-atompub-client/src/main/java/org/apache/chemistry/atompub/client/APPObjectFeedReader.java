@@ -29,7 +29,7 @@ import org.apache.chemistry.xml.stax.StaxReader;
 public class APPObjectFeedReader extends
         AbstractFeedReader<ListPage<ObjectEntry>, APPObjectEntry> {
 
-    private static APPObjectFeedReader builder = new APPObjectFeedReader();
+    private static final APPObjectFeedReader builder = new APPObjectFeedReader();
 
     public static APPObjectFeedReader getBuilder() {
         return builder;
@@ -37,7 +37,6 @@ public class APPObjectFeedReader extends
 
     public APPObjectFeedReader(EntryReader<APPObjectEntry> entryBuilder) {
         super(entryBuilder);
-
     }
 
     public APPObjectFeedReader() {

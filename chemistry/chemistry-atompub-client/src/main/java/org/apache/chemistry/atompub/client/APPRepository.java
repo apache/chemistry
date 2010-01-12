@@ -42,7 +42,7 @@ import org.apache.chemistry.atompub.client.stax.ReadContext;
  */
 public class APPRepository implements Repository {
 
-    protected APPContentManager cm;
+    protected final APPContentManager cm;
 
     protected RepositoryInfo info;
 
@@ -50,9 +50,9 @@ public class APPRepository implements Repository {
 
     protected TypeManager typeManager;
 
-    protected Map<String, String> collections = new HashMap<String, String>();
+    protected final Map<String, String> collections = new HashMap<String, String>();
 
-    protected Map<String, URITemplate> uriTemplates = new HashMap<String, URITemplate>();
+    protected final Map<String, URITemplate> uriTemplates = new HashMap<String, URITemplate>();
 
     public APPRepository(APPContentManager cm) {
         this(cm, null);

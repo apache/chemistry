@@ -24,7 +24,6 @@ public class CMISRuntimeException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     public CMISRuntimeException() {
-        super();
     }
 
     public CMISRuntimeException(String message) {

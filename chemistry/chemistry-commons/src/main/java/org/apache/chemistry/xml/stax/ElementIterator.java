@@ -27,7 +27,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public abstract class ElementIterator<T> implements Iterator<T> {
 
-    protected StaxReader reader;
+    protected final StaxReader reader;
 
     /** If null, then the state is not known. */
     protected Boolean hasNext;

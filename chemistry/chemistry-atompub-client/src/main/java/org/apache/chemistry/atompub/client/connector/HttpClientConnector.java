@@ -47,7 +47,7 @@ import org.apache.commons.httpclient.methods.RequestEntity;
  */
 public class HttpClientConnector implements Connector {
 
-    protected HttpClient client;
+    protected final HttpClient client;
 
     protected final IOProvider io;
 
@@ -252,9 +252,9 @@ public class HttpClientConnector implements Connector {
     public static class XmlObjectWriterRequestEntity<T> implements
             RequestEntity {
 
-        protected XmlObjectWriter<T> writer;
+        protected final XmlObjectWriter<T> writer;
 
-        protected T obj;
+        protected final T obj;
 
         public XmlObjectWriterRequestEntity(XmlObjectWriter<T> writer, T obj) {
             this.writer = writer;

@@ -61,7 +61,7 @@ public class JcrFolder extends JcrObjectEntry implements Folder {
             NodeIterator iter = node.getNodes();
             while (iter.hasNext()) {
                 Node child = iter.nextNode();
-                CMISObject entry = null;
+                CMISObject entry;
                 if (JcrCmisMap.isNodeDocument(child)) {
                     entry = new JcrDocument(child);
                 } else {

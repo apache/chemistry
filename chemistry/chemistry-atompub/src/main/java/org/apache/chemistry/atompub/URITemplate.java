@@ -21,11 +21,11 @@ package org.apache.chemistry.atompub;
  */
 public class URITemplate {
 
-    public String type;
+    public final String type;
 
-    public String mediaType;
+    public final String mediaType;
 
-    public String template;
+    public final String template;
 
     public URITemplate(String type, String mediaType, String template) {
         this.type = type;

@@ -31,9 +31,9 @@ public class XmlObject {
 
     protected Type type;
 
-    protected Connection connection;
+    protected final Connection connection;
 
-    protected Map<String, Serializable> properties;
+    protected final Map<String, Serializable> properties;
 
     protected Set<String> allowableActions;
 

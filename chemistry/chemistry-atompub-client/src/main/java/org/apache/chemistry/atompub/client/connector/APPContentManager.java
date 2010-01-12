@@ -31,24 +31,21 @@ import org.apache.commons.httpclient.auth.CredentialsProvider;
  */
 public class APPContentManager implements ContentManager {
 
-    protected String baseUrl;
+    protected final String baseUrl;
 
-    protected Connector connector;
+    protected final Connector connector;
 
     protected Repository[] repos;
 
     protected String username;
 
-    public APPContentManager(String url) {
-        this(url, null);
-    }
-
     protected APPContentManager(String url, Connector connector) {
         this.baseUrl = url;
-        if (connector == null) {
-            connector = new HttpClientConnector(new DefaultIOProvider());
-        }
         this.connector = connector;
+    }
+
+    public APPContentManager(String url) {
+        this(url, new HttpClientConnector(new DefaultIOProvider()));
     }
 
     public String getBaseUrl() {

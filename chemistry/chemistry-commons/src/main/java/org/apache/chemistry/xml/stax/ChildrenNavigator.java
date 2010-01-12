@@ -23,7 +23,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class ChildrenNavigator {
 
-    protected StaxReader sr;
+    protected final StaxReader sr;
 
     protected int depth;
 

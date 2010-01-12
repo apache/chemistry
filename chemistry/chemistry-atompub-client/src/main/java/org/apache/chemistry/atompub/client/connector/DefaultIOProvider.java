@@ -41,18 +41,18 @@ import org.apache.chemistry.atompub.client.stax.XmlObjectWriter;
  */
 public class DefaultIOProvider implements IOProvider {
 
-    protected APPObjectEntryReader objectReader = new APPObjectEntryReader();
+    protected final APPObjectEntryReader objectReader = new APPObjectEntryReader();
 
-    protected APPObjectFeedReader objectFeedReader = new APPObjectFeedReader(
+    protected final APPObjectFeedReader objectFeedReader = new APPObjectFeedReader(
             objectReader);
 
-    protected TypeEntryReader typeReader = new TypeEntryReader();
+    protected final TypeEntryReader typeReader = new TypeEntryReader();
 
-    protected TypeFeedReader typeFeedReader = new TypeFeedReader(typeReader);
+    protected final TypeFeedReader typeFeedReader = new TypeFeedReader(typeReader);
 
-    protected APPServiceDocumentReader serviceDocumentReader = new APPServiceDocumentReader();
+    protected final APPServiceDocumentReader serviceDocumentReader = new APPServiceDocumentReader();
 
-    protected APPObjectEntryWriter objectWriter = new APPObjectEntryWriter();
+    protected final APPObjectEntryWriter objectWriter = new APPObjectEntryWriter();
 
     public EntryReader<? extends ObjectEntry> getObjectEntryReader() {
         return objectReader;

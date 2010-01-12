@@ -47,7 +47,7 @@ public class APPPropertyDefinition implements PropertyDefinition {
 
     public static final Log log = LogFactory.getLog(APPPropertyDefinition.class);
 
-    protected Map<String, Object> map;
+    protected final Map<String, Object> map;
 
     protected String id;
 
@@ -285,7 +285,7 @@ public class APPPropertyDefinition implements PropertyDefinition {
         return "multi".equals(text);
     }
 
-    private static Map<String, ValueAdapter> adapters = new HashMap<String, ValueAdapter>();
+    private static final Map<String, ValueAdapter> adapters = new HashMap<String, ValueAdapter>();
     static {
         adapters.put(CMIS.INHERITED.getLocalPart(), ValueAdapter.BOOLEAN);
         adapters.put(CMIS.REQUIRED.getLocalPart(), ValueAdapter.BOOLEAN);

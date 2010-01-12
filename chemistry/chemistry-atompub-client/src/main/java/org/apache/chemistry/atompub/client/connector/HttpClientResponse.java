@@ -42,7 +42,7 @@ public class HttpClientResponse implements Response {
 
     static final int MAX_BUF_LEN = 128 * 1024;
 
-    protected HttpMethod method;
+    protected final HttpMethod method;
 
     protected final IOProvider io;
 
