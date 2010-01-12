@@ -246,7 +246,7 @@ public class XMLWriter {
         char[] chars = new char[4 * 19];
         while (true) {
             int n = in.read(buf);
-            if (n == 0) {
+            if (n == -1) {
                 break;
             }
             byte[] bytes;
