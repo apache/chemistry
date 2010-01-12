@@ -90,6 +90,7 @@ public class TestXMLWriter extends TestCase {
         x.end();
         String actual = w.toString();
         String expected = "YWJjZGVmZ2hpamFiY2RlZmdoaWphYmNkZWZnaGlqYWJjZGVmZ2hpamFiY2RlZmdoaWphYmNkZWZn";
+        assertTrue(actual.contains(expected));
     }
 
     public void testFormatDate() {
