@@ -16,6 +16,7 @@
  */
 package org.apache.chemistry.impl.simple;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +27,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.ListPage;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.TypeManager;
 
@@ -75,14 +78,46 @@ public class SimpleTypeManager implements TypeManager {
         return types.get(typeId);
     }
 
-    public Collection<Type> getTypes(String typeId) {
-        return getTypes(typeId, -1, true);
+    public Collection<Type> getTypes() {
+        return new ArrayList<Type>(types.values());
+    }
+
+    public Collection<Type> getTypeDescendants(String typeId) {
+        Collection<Type> list = getTypeDescendants(typeId, -1, true);
+        if (typeId != null) {
+            // add the type itself as first element
+            Type type = getType(typeId);
+            ((LinkedList<Type>) list).addFirst(type);
+        }
+        return list;
+    }
+
+    public ListPage<Type> getTypeChildren(String typeId,
+            boolean includePropertyDefinitions, Paging paging) {
+        // TODO includePropertyDefinitions, paging
+        List<Type> list;
+        if (typeId == null) {
+            list = new ArrayList<Type>(4);
+            for (String id : BaseType.ALL_IDS) {
+                Type type = types.get(id);
+                if (type != null) {
+                    list.add(type);
+                }
+            }
+        } else {
+            Collection<Type> children = typesChildren.get(typeId);
+            if (children == null) {
+                throw new IllegalArgumentException("No such type: " + typeId);
+            }
+            list = new ArrayList<Type>(children);
+        }
+        return new SimpleListPage<Type>(list);
     }
 
     /*
      * This implementation returns subtypes depth-first.
      */
-    public Collection<Type> getTypes(String typeId, int depth,
+    public Collection<Type> getTypeDescendants(String typeId, int depth,
             boolean returnPropertyDefinitions) {
         if (depth == 0) {
             throw new IllegalArgumentException("Depth 0 invalid");
@@ -90,7 +125,7 @@ public class SimpleTypeManager implements TypeManager {
         List<Type> list = new LinkedList<Type>();
         Set<String> done = new HashSet<String>();
         if (typeId == null) {
-            // ignore depth
+            // return all types
             for (String tid : BaseType.ALL_IDS) {
                 Type type = types.get(tid);
                 if (type == null) {
@@ -103,10 +138,6 @@ public class SimpleTypeManager implements TypeManager {
         } else {
             if (!types.containsKey(typeId)) {
                 throw new IllegalArgumentException("No such type: " + typeId);
-            }
-            // TODO spec unclear on depth 0
-            if (depth < 0) {
-                list.add(types.get(typeId));
             }
             collectSubTypes(typeId, depth, returnPropertyDefinitions, list,
                     done);

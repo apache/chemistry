@@ -98,6 +98,8 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
 
     public static final String COLTYPE_PATH = "path";
 
+    public static final String COLTYPE_CHILDREN = "children";
+
     public static final String COLTYPE_DESCENDANTS = "descendants";
 
     public static final String COLTYPE_FOLDER_TREE = "foldertree";

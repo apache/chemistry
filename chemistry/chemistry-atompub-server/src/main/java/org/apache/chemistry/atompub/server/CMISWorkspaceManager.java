@@ -17,11 +17,11 @@
  */
 package org.apache.chemistry.atompub.server;
 
+import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.protocol.server.CollectionAdapter;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.impl.AbstractWorkspaceManager;
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.atompub.AtomPubCMIS;
 
 /**
  * Workspace manager that correctly finds the appropriate collection adapter by
@@ -45,29 +45,41 @@ public class CMISWorkspaceManager extends AbstractWorkspaceManager {
         String path = spath == null ? uri : uri.substring(spath.length());
         String paths = path + '/';
 
-        if (paths.startsWith("/types/")) {
-            return new CMISTypesCollection(null, null, repository);
+        if (paths.startsWith("/typechildren/")) {
+            String param = request.getTarget().getParameter("typeid");
+            String tid = UrlEncoding.decode(param);
+            return new CMISTypesCollection(
+                    CMISObjectsCollection.COLTYPE_CHILDREN, tid, repository);
+        }
+        if (paths.startsWith("/typedescendants/")) {
+            String param = request.getTarget().getParameter("typeid");
+            String tid = UrlEncoding.decode(param);
+            return new CMISTypesCollection(
+                    CMISObjectsCollection.COLTYPE_DESCENDANTS, tid, repository);
         }
         if (paths.startsWith("/type/")) {
-            return new CMISTypesCollection(AtomPubCMIS.COL_TYPES, null,
-                    repository);
+            return new CMISTypesCollection(null, null, repository);
         }
         if (paths.startsWith("/children/")) {
-            String id = request.getTarget().getParameter("objectid");
+            String param = request.getTarget().getParameter("objectid");
+            String id = UrlEncoding.decode(param);
             return new CMISChildrenCollection(null, id, repository);
         }
         if (paths.startsWith("/descendants/")) {
-            String id = request.getTarget().getParameter("objectid");
+            String param = request.getTarget().getParameter("objectid");
+            String id = UrlEncoding.decode(param);
             return new CMISChildrenCollection(
                     CMISObjectsCollection.COLTYPE_DESCENDANTS, id, repository);
         }
         if (paths.startsWith("/foldertree/")) {
-            String id = request.getTarget().getParameter("objectid");
+            String param = request.getTarget().getParameter("objectid");
+            String id = UrlEncoding.decode(param);
             return new CMISChildrenCollection(
                     CMISObjectsCollection.COLTYPE_FOLDER_TREE, id, repository);
         }
         if (paths.startsWith("/parents/")) {
-            String id = request.getTarget().getParameter("objectid");
+            String param = request.getTarget().getParameter("objectid");
+            String id = UrlEncoding.decode(param);
             return new CMISParentsCollection(null, id, repository);
         }
         if (paths.startsWith("/object/")) {

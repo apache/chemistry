@@ -202,6 +202,11 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals(root.getId(), fold.getId());
     }
 
+    public void testTypes() {
+        Collection<Type> types = repository.getTypes();
+        assertEquals(7, types.size());
+    }
+
     public void testDefaultValues() {
         Folder root = conn.getRootFolder();
         Folder f1 = (Folder) root.getChildren().get(0);

@@ -250,22 +250,23 @@ public class AbderaResource {
 
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
-    @Path("types")
-    public Response doGetTypes() {
+    @Path("typechildren")
+    public Response doGetTypeChildrenAll() {
         return getAbderaFeed(1);
     }
 
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
-    @Path("typesdescendants")
-    public Response doGetTypesDescendantsAll() {
-        return getAbderaFeed(1);
+    @Path("typechildren/{typeid}")
+    public Response doGetTypeChildren() {
+        return getAbderaFeed(2);
     }
 
     @GET
+    // TODO produces tree
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
-    @Path("typesdescendants/{typeid}")
-    public Response doGetTypesDescendantsTyped() {
+    @Path("typedescendants/{typeid}")
+    public Response doGetTypeDescendants() {
         return getAbderaFeed(2);
     }
 

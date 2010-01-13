@@ -24,23 +24,32 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Connection;
+import org.apache.chemistry.ListPage;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.TypeManager;
+import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.URITemplate;
 import org.apache.chemistry.atompub.client.connector.APPContentManager;
 import org.apache.chemistry.atompub.client.connector.Request;
 import org.apache.chemistry.atompub.client.connector.Response;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
+import org.apache.chemistry.impl.simple.SimpleTypeManager;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * An APP client repository proxy
  */
 public class APPRepository implements Repository {
+
+    private static final Log log = LogFactory.getLog(APPRepository.class);
 
     protected final APPContentManager cm;
 
@@ -117,15 +126,28 @@ public class APPRepository implements Repository {
         return typeManager.getType(typeId);
     }
 
-    public Collection<Type> getTypes(String typeId) {
+    public Collection<Type> getTypes() {
         loadTypes();
-        return typeManager.getTypes(typeId);
+        return typeManager.getTypes();
     }
 
-    public Collection<Type> getTypes(String typeId, int depth,
+    public Collection<Type> getTypeDescendants(String typeId) {
+        loadTypes();
+        return typeManager.getTypeDescendants(typeId);
+    }
+
+    public ListPage<Type> getTypeChildren(String typeId,
+            boolean includePropertyDefinitions, Paging paging) {
+        loadTypes();
+        return typeManager.getTypeChildren(typeId, includePropertyDefinitions,
+                paging);
+    }
+
+    public Collection<Type> getTypeDescendants(String typeId, int depth,
             boolean includePropertyDefinitions) {
         loadTypes();
-        return typeManager.getTypes(typeId, depth, includePropertyDefinitions);
+        return typeManager.getTypeDescendants(typeId, depth,
+                includePropertyDefinitions);
     }
 
     public String getCollectionHref(String type) {
@@ -147,29 +169,55 @@ public class APPRepository implements Repository {
             return;
         }
         try {
+            // the base types
             String href = getCollectionHref(AtomPubCMIS.COL_TYPES);
             if (href == null) {
                 throw new IllegalArgumentException(
                         "Invalid CMIS repository. No types children collection defined");
             }
-            // TODO lazy load property definition
-            Request req = new Request(href + "?includePropertyDefinitions=true");
-            Response resp = cm.getConnector().get(req);
-            if (!resp.isOk()) {
-                throw new ContentManagerException(
-                        "Remote server returned error code: "
-                                + resp.getStatusCode());
-            }
-            InputStream in = resp.getStream();
-            try {
-                typeManager = TypeFeedReader.INSTANCE.read(
-                        new ReadContext(this), in);
-            } finally {
-                in.close();
+            typeManager = new SimpleTypeManager();
+            // for each base type read all the descendants
+            Collection<Type> baseTypes = readTypes(href).getTypes();
+            for (Type type : baseTypes) {
+                if (!BaseType.ALL_IDS.contains(type.getId())) {
+                    // not a base type, shouldn't be there
+                    continue;
+                }
+                typeManager.addType(type);
+                href = ((APPType) type).getLink(AtomPub.LINK_DOWN,
+                        AtomPubCMIS.MEDIA_TYPE_CMIS_TREE);
+                if (href == null) {
+                    // missing descendants types link
+                    log.error("Type " + type.getId()
+                            + " is missing descendants link");
+                    continue;
+                }
+                TypeManager rr = readTypes(href);
+                Collection<Type> subTypes = rr.getTypes();
+                for (Type t : subTypes) {
+                    typeManager.addType(t);
+                }
             }
         } catch (Exception e) { // TODO how to handle exceptions?
             throw new RuntimeException("Failed to load repository types for "
                     + getName(), e);
+        }
+    }
+
+    protected TypeManager readTypes(String href) throws Exception {
+        // TODO lazy load property definition
+        Request req = new Request(href + "?includePropertyDefinitions=true");
+        Response resp = cm.getConnector().get(req);
+        if (!resp.isOk()) {
+            throw new ContentManagerException(
+                    "Remote server returned error code: "
+                            + resp.getStatusCode());
+        }
+        InputStream in = resp.getStream();
+        try {
+            return TypeFeedReader.INSTANCE.read(new ReadContext(this), in);
+        } finally {
+            in.close();
         }
     }
 

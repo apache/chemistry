@@ -35,6 +35,7 @@ import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.chemistry.CMIS;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Repository;
@@ -51,7 +52,7 @@ public class CMISTypesCollection extends CMISCollection<Type> {
     protected boolean singleEntry;
 
     public CMISTypesCollection(String type, String id, Repository repository) {
-        super(type, "types", id, repository);
+        super(type, "typechildren", id, repository);
     }
 
     /*
@@ -104,6 +105,9 @@ public class CMISTypesCollection extends CMISCollection<Type> {
                         AtomPubCMIS.PARAM_INCLUDE_PROPERTY_DEFINITIONS, false);
         Factory factory = request.getAbdera().getFactory();
 
+        String tid = type.getId();
+        String tpid = type.getParentId();
+
         entry.setId(getId(type));
         entry.setTitle(getTitle(type));
         entry.setUpdated(getUpdated(type));
@@ -119,15 +123,26 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         // alternate is mandated by Atom when there is no atom:content
         entry.addLink(link, AtomPub.LINK_ALTERNATE);
         // CMIS links
+        if (tpid != null) {
+            entry.addLink(getTypeLink(tpid, request), AtomPub.LINK_UP,
+                    AtomPub.MEDIA_TYPE_ATOM_ENTRY, null, null, -1);
+        }
+        entry.addLink(getTypeChildrenLink(tid, request), AtomPub.LINK_DOWN,
+                AtomPub.MEDIA_TYPE_ATOM_FEED, null, null, -1);
+        entry.addLink(getTypeDescendantsLink(tid, request), AtomPub.LINK_DOWN,
+                AtomPubCMIS.MEDIA_TYPE_CMIS_TREE, null, null, -1);
+        entry.addLink(getTypeLink(type.getBaseType().getId(), request),
+                AtomPub.LINK_DESCRIBED_BY, AtomPub.MEDIA_TYPE_ATOM_ENTRY, null,
+                null, -1);
 
         // CMIS-specific
         Element te = factory.newElement(AtomPubCMIS.TYPE, entry);
-        te.setAttributeValue(AtomPubCMIS.ID, type.getId());
+        te.setAttributeValue(AtomPubCMIS.ID, tid);
         Element el;
         // note: setText is called in a separate statement as JDK 5 has problems
         // compiling when it's on one line (compiler generics bug)
         el = factory.newElement(CMIS.ID, te);
-        el.setText(type.getId());
+        el.setText(tid);
         el = factory.newElement(CMIS.LOCAL_NAME, te);
         el.setText(type.getLocalName());
         URI localNamespace = type.getLocalNamespace();
@@ -142,7 +157,7 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         el = factory.newElement(CMIS.BASE_ID, te);
         el.setText(type.getBaseType().getId());
         el = factory.newElement(CMIS.PARENT_ID, te);
-        el.setText(type.getParentId());
+        el.setText(tpid == null ? "" : tpid);
         el = factory.newElement(CMIS.DESCRIPTION, te);
         el.setText(type.getDescription());
         el = factory.newElement(CMIS.CREATABLE, te);
@@ -271,10 +286,19 @@ public class CMISTypesCollection extends CMISCollection<Type> {
     @Override
     public Iterable<Type> getEntries(RequestContext request)
             throws ResponseContextException {
-        int depth = getParameter(request, AtomPubCMIS.PARAM_DEPTH, -1);
         boolean includePropertyDefinitions = getParameter(request,
                 AtomPubCMIS.PARAM_INCLUDE_PROPERTY_DEFINITIONS, false);
-        return repository.getTypes(id, depth, includePropertyDefinitions);
+        if (CMISObjectsCollection.COLTYPE_DESCENDANTS.equals(getType())) {
+            int depth = getParameter(request, AtomPubCMIS.PARAM_DEPTH, -1);
+            return repository.getTypeDescendants(id, depth,
+                    includePropertyDefinitions);
+        } else { // children
+            int maxItems = getParameter(request, AtomPubCMIS.PARAM_MAX_ITEMS, 0);
+            int skipCount = getParameter(request, AtomPubCMIS.PARAM_SKIP_COUNT,
+                    0);
+            return repository.getTypeChildren(id, includePropertyDefinitions,
+                    new Paging(maxItems, skipCount));
+        }
     }
 
     @Override

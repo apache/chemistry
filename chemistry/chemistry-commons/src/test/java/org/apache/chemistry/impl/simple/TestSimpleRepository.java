@@ -106,24 +106,42 @@ public class TestSimpleRepository extends TestCase {
     }
 
     public void testTypes() {
-        Collection<Type> types = repo.getTypes(null);
+        Collection<Type> types = repo.getTypes();
         assertEquals(5 + 3, types.size()); // default types have been added
+        assertEquals(types.size(), repo.getTypeDescendants(null).size());
         assertNotNull(repo.getType("doc"));
         assertNotNull(repo.getType("subdoc"));
         assertNotNull(repo.getType("fold"));
         assertNull(repo.getType("no-such-type"));
-        assertEquals(3,
-                repo.getTypes(BaseType.DOCUMENT.getId(), -1, false).size());
-        assertEquals(1,
-                repo.getTypes(BaseType.DOCUMENT.getId(), 1, false).size());
-        assertEquals(2,
-                repo.getTypes(BaseType.DOCUMENT.getId(), 2, false).size());
-        assertEquals(2,
-                repo.getTypes(BaseType.DOCUMENT.getId(), 3, false).size());
-        assertEquals(2, repo.getTypes("doc", -1, false).size());
-        assertEquals(1, repo.getTypes("doc", 1, false).size());
-        assertEquals(1, repo.getTypes("doc", 2, false).size());
-        assertEquals(1, repo.getTypes("doc", 3, false).size());
+
+        assertEquals(1, repo.getTypeChildren(BaseType.DOCUMENT.getId(), true,
+                null).size());
+        assertEquals(1, repo.getTypeChildren("doc", true, null).size());
+        assertEquals(0, repo.getTypeChildren("subdoc", true, null).size());
+        // chemistry:root and fold
+        assertEquals(2, repo.getTypeChildren(BaseType.FOLDER.getId(), true,
+                null).size());
+        assertEquals(0, repo.getTypeChildren("fold", true, null).size());
+
+        assertEquals(2, repo.getTypeDescendants(BaseType.DOCUMENT.getId(), -1,
+                false).size());
+        assertEquals(1, repo.getTypeDescendants(BaseType.DOCUMENT.getId(), 1,
+                false).size());
+        assertEquals(2, repo.getTypeDescendants(BaseType.DOCUMENT.getId(), 2,
+                false).size());
+        assertEquals(2, repo.getTypeDescendants(BaseType.DOCUMENT.getId(), 3,
+                false).size());
+        assertEquals(1, repo.getTypeDescendants("doc", -1, false).size());
+        assertEquals(1, repo.getTypeDescendants("doc", 1, false).size());
+        assertEquals(1, repo.getTypeDescendants("doc", 2, false).size());
+        assertEquals(1, repo.getTypeDescendants("doc", 3, false).size());
+
+        try {
+            repo.getTypeDescendants("no-such-type");
+            fail();
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
     }
 
     public void testRoot() throws Exception {

@@ -90,7 +90,7 @@ public class CMISProvider extends AbstractProvider {
         targetResolver.setPattern("/unfiled", TargetType.TYPE_COLLECTION);
         targetResolver.setPattern("/query(\\?.*)?",
                 CMISQueryFeed.TARGET_TYPE_CMIS_QUERY);
-        targetResolver.setPattern("/types(\\?.*)?", //
+        targetResolver.setPattern("/typechildren(\\?.*)?", //
                 TargetType.TYPE_COLLECTION);
         // per-object collections
         targetResolver.setPattern("/parents/([^/?]+)",
@@ -107,7 +107,9 @@ public class CMISProvider extends AbstractProvider {
                 TargetType.TYPE_COLLECTION, "objectid");
         targetResolver.setPattern("/policies/([^/?]+)",
                 TargetType.TYPE_COLLECTION, "objectid");
-        targetResolver.setPattern("/types/([^/?]+)",
+        targetResolver.setPattern("/typechildren/([^/?]+)(\\?.*)?",
+                TargetType.TYPE_COLLECTION, "typeid");
+        targetResolver.setPattern("/typedescendants/([^/?]+)(\\?.*)?",
                 TargetType.TYPE_COLLECTION, "typeid");
 
         // CMIS workspaces available

@@ -22,10 +22,10 @@ package org.apache.chemistry.jcr;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +33,7 @@ import java.util.Set;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.nodetype.NodeTypeIterator;
 import javax.jcr.nodetype.NodeTypeManager;
@@ -45,13 +46,16 @@ import org.apache.chemistry.CapabilityJoin;
 import org.apache.chemistry.CapabilityQuery;
 import org.apache.chemistry.CapabilityRendition;
 import org.apache.chemistry.Connection;
+import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryEntry;
 import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.impl.simple.SimpleListPage;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -124,6 +128,8 @@ public class JcrRepository implements Repository, RepositoryInfo,
                 baseType = BaseType.DOCUMENT;
             }
             return new JcrType(nt, baseType);
+        } catch (NoSuchNodeTypeException e) {
+            return null;
         } catch (RepositoryException e) {
             String msg = "Unable get type: " + typeId;
             log.error(msg, e);
@@ -131,21 +137,44 @@ public class JcrRepository implements Repository, RepositoryInfo,
         return null;
     }
 
-    public Collection<Type> getTypes(String typeId) {
-        return getTypes(typeId, -1, true);
+    public Collection<Type> getTypes() {
+        return getTypeDescendants(null, -1, true);
     }
 
-    public List<Type> getTypes(String typeId, int depth,
+    public Collection<Type> getTypeDescendants(String typeId) {
+        Collection<Type> list = getTypeDescendants(typeId, -1, true);
+        if (typeId != null) {
+            // add the type itself as first element
+            Type type = getType(typeId);
+            ((LinkedList<Type>) list).addFirst(type);
+        }
+        return list;
+    }
+
+    public ListPage<Type> getTypeChildren(String typeId,
+            boolean includePropertyDefinitions, Paging paging) {
+        // TODO proper children
+        List<Type> list = getTypeDescendants(typeId, -1, true);
+        return new SimpleListPage<Type>(list);
+    }
+
+    public List<Type> getTypeDescendants(String typeId, int depth,
             boolean includePropertyDefinitions) {
 
         // TODO depth, includePropertyDefinitions
 
         try {
-            List<Type> result = new ArrayList<Type>();
+            List<Type> result = new LinkedList<Type>();
 
             Session session = repository.login(creds, workspace);
 
-            NodeTypeIterator nodeTypes = session.getWorkspace().getNodeTypeManager().getAllNodeTypes();
+            NodeTypeManager ntmgr = session.getWorkspace().getNodeTypeManager();
+            if (typeId != null) {
+                // check existence
+                ntmgr.getNodeType(typeId);
+            }
+
+            NodeTypeIterator nodeTypes = ntmgr.getAllNodeTypes();
             while (nodeTypes.hasNext()) {
                 NodeType nodeType = nodeTypes.nextNodeType();
                 if (nodeType.isMixin()) {
@@ -156,14 +185,17 @@ public class JcrRepository implements Repository, RepositoryInfo,
                 if (JcrCmisMap.isBaseTypeDocument(nodeType.getName())) {
                     baseType = BaseType.DOCUMENT;
                 }
-                // If typeId is provided, only the specific type and its
-                // descendants are returned, otherwise all types are returned.
-                if (typeId == null || typeId.equals(baseType.getId())) {
+                // If typeId is provided, only the descendants are returned,
+                // otherwise all types are returned.
+                // TODO proper hierarchy of types
+                if (typeId == null) {
                     result.add(new JcrType(nodeType, baseType));
                 }
             }
 
             return result;
+        } catch (NoSuchNodeTypeException e) {
+            throw new IllegalArgumentException("No such type: " + typeId);
         } catch (RepositoryException e) {
             String msg = "Unable to retrieve node types.";
             log.error(msg, e);

@@ -200,15 +200,26 @@ public abstract class AtomPubServerTestCase extends TestCase {
     }
 
     public void testTypes() throws Exception {
-        ClientResponse resp = client.get(base + "/types");
+        ClientResponse resp = client.get(base + "/typechildren");
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Element el = resp.getDocument().getRoot();
+        assertNotNull(el);
+        resp.release();
+
+        resp = client.get(base + "/typechildren/doc");
+        assertEquals(HttpStatus.SC_OK, resp.getStatus());
+        el = resp.getDocument().getRoot();
+        assertNotNull(el);
+        resp.release();
+        resp = client.get(base + "/typedescendants/doc");
+        assertEquals(HttpStatus.SC_OK, resp.getStatus());
+        el = resp.getDocument().getRoot();
         assertNotNull(el);
         resp.release();
     }
 
     public void testType() throws Exception {
-        ClientResponse resp = client.get(base + "/type/cmis:document");
+        ClientResponse resp = client.get(base + "/type/doc");
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         Element el = resp.getDocument().getRoot();
         assertNotNull(el);

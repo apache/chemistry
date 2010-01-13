@@ -42,21 +42,48 @@ public interface TypeManager {
     Type getType(String typeId);
 
     /**
-     * Gets the types.
-     * <p>
-     * If typeId is provided, only the specific type and its descendants are
-     * returned, otherwise all types are returned.
+     * Gets all the types.
      *
-     * @param typeId the base type ID, or {@code null}
-     * @return the types, or a subset of them
+     * @return all the types
      */
-    Collection<Type> getTypes(String typeId);
+    Collection<Type> getTypes();
 
     /**
-     * Gets the types.
+     * Gets a type and all its descendants.
      * <p>
-     * If typeId is provided, only the specific type and its descendants are
-     * returned, otherwise all types are returned.
+     * Note that contrary to {@link #getTypeDescendants(String, int, boolean)}
+     * the type itself is also returned.
+     *
+     * @param typeId the type ID, or {@code null} for all types
+     * @return the type and its descendants, or {@code null} if not found
+     *
+     * @throws IllegalArgumentException if the type does not exist
+     */
+    Collection<Type> getTypeDescendants(String typeId);
+
+    /**
+     * Gets the children of a given type.
+     * <p>
+     * If typeId is {@code null} then the supported base types are returned.
+     *
+     * @param typeId the type ID
+     * @param includePropertyDefinitions {@code false} to skip property
+     *            definitions
+     * @param paging paging information, or {@code null} for a
+     *            repository-specific default
+     * @return the children types
+     *
+     * @throws IllegalArgumentException if the type does not exist
+     */
+    ListPage<Type> getTypeChildren(String typeId,
+            boolean includePropertyDefinitions, Paging paging);
+
+    /**
+     * Gets the descendants of a given type.
+     * <p>
+     * If typeId is provided only its descendants are returned (up to the
+     * specified depth), otherwise if typeId is {@code null} all the types are
+     * returned (and depth is ignored).
      * <p>
      * The depth parameter controls the number of levels of the type hierarchy
      * to return:
@@ -67,17 +94,21 @@ public interface TypeManager {
      * </ul>
      * If includePropertyDefinitions is {@code false}, then the
      * {@link PropertyDefinition}s will not be returned in each {@link Type}.
+     * <p>
+     * Note that contrary to {@link #getTypeDescendants(String)} if a typeId is
+     * passed, the type itself is not returned.
      *
      * @param typeId the base type ID, or {@code null}
      * @param depth the number of levels of depth in the type hierarchy from
      *            which to return results
      * @param includePropertyDefinitions {@code false} to skip property
      *            definitions
-     * @return the types, or a subset of them
+     * @return the types, or a subset of them, or {@code null} if not found
      *
-     * @throws IllegalArgumentException if the depth is invalid
+     * @throws IllegalArgumentException if the depth is invalid or the type does
+     *             not exist
      */
-    Collection<Type> getTypes(String typeId, int depth,
+    Collection<Type> getTypeDescendants(String typeId, int depth,
             boolean includePropertyDefinitions);
 
 }

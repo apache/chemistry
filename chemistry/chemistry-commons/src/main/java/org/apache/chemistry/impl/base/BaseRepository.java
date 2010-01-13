@@ -22,6 +22,8 @@ import java.util.Collections;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ContentStreamPresence;
+import org.apache.chemistry.ListPage;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
@@ -158,13 +160,24 @@ public abstract class BaseRepository implements Repository, RepositoryInfo,
         return typeManager.getType(typeId);
     }
 
-    public Collection<Type> getTypes(String typeId) {
-        return typeManager.getTypes(typeId);
+    public Collection<Type> getTypes() {
+        return typeManager.getTypes();
     }
 
-    public Collection<Type> getTypes(String typeId, int depth,
+    public Collection<Type> getTypeDescendants(String typeId) {
+        return typeManager.getTypeDescendants(typeId);
+    }
+
+    public ListPage<Type> getTypeChildren(String typeId,
+            boolean includePropertyDefinitions, Paging paging) {
+        return typeManager.getTypeChildren(typeId, includePropertyDefinitions,
+                paging);
+    }
+
+    public Collection<Type> getTypeDescendants(String typeId, int depth,
             boolean includePropertyDefinitions) {
-        return typeManager.getTypes(typeId, depth, includePropertyDefinitions);
+        return typeManager.getTypeDescendants(typeId, depth,
+                includePropertyDefinitions);
     }
 
 }
