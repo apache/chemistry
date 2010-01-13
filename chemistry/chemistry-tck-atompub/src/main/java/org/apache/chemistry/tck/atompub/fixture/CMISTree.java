@@ -27,7 +27,7 @@ import org.apache.chemistry.abdera.ext.CMISProperty;
 
 
 /**
- * CMIS Tree of Folders and Documents
+ * CMIS Tree of Folders and Documents or Types
  */
 public class CMISTree extends EntryTree {
     
@@ -55,10 +55,13 @@ public class CMISTree extends EntryTree {
 
         CMISChildren children = entry.getFirstChild(CMISConstants.CHILDREN);
         if (children != null) {
-            entryTree.children = new ArrayList<EntryTree>();
-            for (Entry child : children.getEntries()) {
-                EntryTree childEntryTree = createEntryTree(entry, child);
-                entryTree.children.add(childEntryTree);
+            Feed childrenFeed = children.getFeed();
+            if (childrenFeed != null) {
+                entryTree.children = new ArrayList<EntryTree>();
+                for (Entry child : childrenFeed.getEntries()) {
+                    EntryTree childEntryTree = createEntryTree(entry, child);
+                    entryTree.children.add(childEntryTree);
+                }
             }
         }
         return entryTree;

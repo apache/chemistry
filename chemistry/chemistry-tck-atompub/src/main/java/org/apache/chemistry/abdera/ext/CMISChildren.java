@@ -16,22 +16,18 @@
  */
 package org.apache.chemistry.abdera.ext;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.abdera.factory.Factory;
-import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.ElementWrapper;
-import org.apache.abdera.model.Entry;
+import org.apache.abdera.model.Feed;
 
 
 /**
  * CMIS Children for the Abdera ATOM library.
  * 
- * Encapsulates access to nested children..
+ * Encapsulates access to nested feed of children
  */
-public class CMISChildren extends ElementWrapper /* implements Feed */ {
+public class CMISChildren extends ElementWrapper {
     
     public CMISChildren(Element internal) {
         super(internal);
@@ -42,47 +38,14 @@ public class CMISChildren extends ElementWrapper /* implements Feed */ {
     }
 
     /**
-     * Gets count of child entries
+     * Gets feed of children
      * 
      * @return
      */
-    public int size() {
-        return getEntries().size();
-    }
-
-    /**
-     * Gets all entries of child feed
-     * 
-     * @return
-     */
-    public List<Entry> getEntries() {
-        List<Element> elements = getElements();
-        List<Entry> entries = new ArrayList<Entry>(elements.size());
-        for (Element element : elements) {
-            if (element instanceof Entry) {
-                entries.add((Entry) element);
-            }
-        }
-        return entries;
-    }
-
-    /**
-     * Gets entry by id
-     * 
-     * @param id
-     * @return entry (or null, if not found)
-     */
-    public Entry getEntry(String id) {
-        List<Element> elements = getElements();
-        for (Element element : elements) {
-            if (element instanceof Entry) {
-                Entry entry = (Entry) element;
-                IRI entryId = entry.getId();
-                if (entryId != null && entryId.equals(new IRI(id))) {
-                    return entry;
-                }
-            }
-        }
+    public Feed getFeed() {
+        Element child = getFirstChild();
+        if (child != null && child instanceof Feed)
+            return (Feed)child;
         return null;
     }
 

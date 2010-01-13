@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 	<!--
-		$Revision: 147 $ $Date: 2009-12-21 21:31:42 -0800 (Mon, 21 Dec 2009) $
+		$Revision: 161 $ $Date: 2010-01-11 16:40:26 -0800 (Mon, 11 Jan 2010) $
 		$Author: albertcbrown $ $HeadURL:
 		http://tools.oasis-open.org/version-control/svn/cmis/trunk/SchemaProject/schema/CMIS-RestAtom.xsd
 		$
@@ -14,20 +14,21 @@
 	xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200908/"
 	xmlns:cmisra="http://docs.oasis-open.org/ns/cmis/restatom/200908/"
 	version="1.0">
-	
+
 	<xs:import namespace="http://docs.oasis-open.org/ns/cmis/core/200908/"
 		schemaLocation="CMIS-Core.xsd" />
 
 	<xs:attribute name="id" type="xs:string">
 		<xs:annotation>
 			<xs:documentation>
-				This attribute MAY be used on XML elements that refer to a CMIS resources.  Examples are:
+				This attribute MAY be used on XML elements that
+				refer to a CMIS resources. Examples are:
 				- atom:link
 				- cmis:type
 			</xs:documentation>
 		</xs:annotation>
 	</xs:attribute>
-	
+
 	<xs:attribute name="renditionKind" type="xs:string">
 		<xs:annotation>
 			<xs:documentation>
@@ -78,12 +79,20 @@
 	</xs:element>
 
 
-	<xs:element name="children">
+	<xs:complexType name="cmisChildrenType">
+		<xs:sequence>
+			<xs:any processContents="lax" namespace="##other" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attributeGroup ref="cmis:cmisUndefinedAttribute" />
+	</xs:complexType>
+
+	<xs:element name="children" type="cmisra:cmisChildrenType">
 		<xs:annotation>
 			<xs:documentation>
 				This is the Atom extension element that will be
-				used to contain a feed inside an atom entry element.  This element
-				MUST be of type atom:feedType
+				used to contain a feed inside an atom entry element. This element
+				MUST contain an atom:feed element.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -131,7 +140,9 @@
 			<xs:any processContents="lax" namespace="##other" minOccurs="0"
 				maxOccurs="unbounded" />
 		</xs:sequence>
+		<xs:attributeGroup ref="cmis:cmisUndefinedAttribute" />
 	</xs:complexType>
+	
 	<xs:element name="uritemplate" type="cmisra:cmisUriTemplateType">
 		<xs:annotation>
 			<xs:documentation>
@@ -185,6 +196,7 @@
 			<xs:any processContents="lax" namespace="##other" minOccurs="0"
 				maxOccurs="unbounded" />
 		</xs:sequence>
+		<xs:attributeGroup ref="cmis:cmisUndefinedAttribute" />
 	</xs:complexType>
 
 	<xs:element name="content" type="cmisra:cmisContentType">
@@ -213,7 +225,8 @@
 			<xs:enumeration value="this">
 				<xs:annotation>
 					<xs:documentation>
-						This is getObject service for the version specified
+						This is getObject service for the version
+						specified
 			</xs:documentation>
 				</xs:annotation>
 
@@ -385,7 +398,7 @@
 			<xs:enumeration value="length" />
 			<xs:enumeration value="major" />
 			<xs:enumeration value="maxItems" />
-      		<xs:enumeration value="overwriteFlag" />
+			<xs:enumeration value="overwriteFlag" />
 			<xs:enumeration value="relationshipDirection" />
 			<xs:enumeration value="relationshipType" />
 			<xs:enumeration value="renditionFilter" />

@@ -13,11 +13,11 @@
     <atom:link type="application/atom+xml;type=entry" rel="up" href="http://cmisexample.oasis-open.org/rep1/type/customer-relationship/parent"/>
     <atom:link type="application/atom+xml;type=feed" rel="down" href="http://cmisexample.oasis-open.org/rep1/type/customer-relationship/children/flat"/>
     <atom:link type="application/cmistree+xml" rel="down" href="http://cmisexample.oasis-open.org/rep1/type/customer-relationship/children/tree"/>
-    <atom:published>2009-12-24T09:01:47.062-08:00</atom:published>
+    <atom:published>2010-01-11T14:54:56.951-08:00</atom:published>
     <atom:summary type="html">HTML summary of Type Definition  customer-relationship</atom:summary>
     <atom:title type="text">Type Definition - customer-relationship</atom:title>
-    <atom:updated>2009-12-24T09:01:47.062-08:00</atom:updated>
-    <app:edited>2009-12-24T09:01:47.062-08:00</app:edited>
+    <atom:updated>2010-01-11T14:54:56.967-08:00</atom:updated>
+    <app:edited>2010-01-11T14:54:56.967-08:00</app:edited>
     <cmisra:type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="cmis:cmisTypeRelationshipDefinitionType" cmisra:id="customer-relationship">
         <cmis:id>dtcustomer-relationship</cmis:id>
         <cmis:localName>myrepname-customer-relationship</cmis:localName>

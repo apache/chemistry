@@ -35,7 +35,7 @@ import org.junit.Assert;
  */
 public class TypeDefinitionTest extends TCKTest {
 
-    public void testGetTypeDefinitionsAll() throws Exception {
+    public void testGetTypeDefinitionsBase() throws Exception {
         IRI typesHREF = client.getTypesChildrenCollection(client.getWorkspace());
         Feed types = client.getFeed(typesHREF);
         Assert.assertNotNull(types);
@@ -49,7 +49,7 @@ public class TypeDefinitionTest extends TCKTest {
         }
     }
 
-    public void testGetTypeDefinitionHierarchy() throws Exception {
+    public void testGetTypeDefinitionsChild() throws Exception {
         IRI typesHREF = client.getTypesChildrenCollection(client.getWorkspace());
         Map<String, String> args = new HashMap<String, String>();
         args.put("type", "folder");
