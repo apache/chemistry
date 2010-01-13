@@ -97,6 +97,9 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
             // TODO also for documents: versionable, contentStreamAllowed
             // TODO also for relationships: allowedSourceTypes,
             // allowedTargetTypes
+            if (!map.containsKey(CMIS.PARENT_ID.getLocalPart())) {
+                map.put(CMIS.PARENT_ID.getLocalPart(), null);
+            }
             for (QName qname : Arrays.asList( //
                     CMIS.ID, //
                     CMIS.LOCAL_NAME, //
@@ -114,10 +117,9 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
                     CMIS.INCLUDED_IN_SUPERTYPE_QUERY //
             )) {
                 if (!map.containsKey(qname.getLocalPart())) {
-                    throw new IllegalArgumentException(
-                            "Invalid type definition: missing "
-                                    + qname.getPrefix() + ':'
-                                    + qname.getLocalPart());
+                    log.error("Invalid type definition for "
+                            + map.get(CMIS.ID.getLocalPart()) + ", missing "
+                            + qname.getPrefix() + ':' + qname.getLocalPart());
                 }
             }
             entry.init(map, pdefs);
