@@ -288,7 +288,8 @@ public class AbderaResource {
 
     @POST
     @Consumes( { AtomPub.MEDIA_TYPE_ATOM_ENTRY,
-    // IBM Firefox plugin compat, stupid RESTEasy
+            // need for RESTeasy:
+            AtomPub.MEDIA_TYPE_ATOM,
             AtomPub.MEDIA_TYPE_ATOM_ENTRY + ";charset=UTF-8" })
     @Path("children/{objectid}")
     public Response doPostChildren() {

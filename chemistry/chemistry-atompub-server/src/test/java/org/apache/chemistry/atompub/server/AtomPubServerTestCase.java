@@ -248,17 +248,21 @@ public abstract class AtomPubServerTestCase extends TestCase {
         assertNotNull(ch);
         resp.release();
 
-        // post of new document
-        PostMethod postMethod = new PostMethod(base + "/children/"
-                + rootFolderId);
-        postMethod.setRequestEntity(new InputStreamRequestEntity(
-                load("templates/createdocument.atomentry.xml"),
-                AtomPub.MEDIA_TYPE_ATOM_ENTRY));
-        int status = new HttpClient().executeMethod(postMethod);
-        assertEquals(HttpStatus.SC_CREATED, status);
-        assertNotNull(postMethod.getResponseHeader(HttpHeaders.LOCATION));
-        assertNotNull(postMethod.getResponseHeader(HttpHeaders.CONTENT_LOCATION));
-        postMethod.releaseConnection();
+        // post of new document, test using various content types
+        for (String contentType : Arrays.<String> asList(
+                AtomPub.MEDIA_TYPE_ATOM, //
+                AtomPub.MEDIA_TYPE_ATOM_ENTRY, //
+                AtomPub.MEDIA_TYPE_ATOM_ENTRY + ";charset=UTF-8")) {
+            PostMethod postMethod = new PostMethod(base + "/children/"
+                    + rootFolderId);
+            postMethod.setRequestEntity(new InputStreamRequestEntity(
+                    load("templates/createdocument.atomentry.xml"), contentType));
+            int status = new HttpClient().executeMethod(postMethod);
+            assertEquals(HttpStatus.SC_CREATED, status);
+            assertNotNull(postMethod.getResponseHeader(HttpHeaders.LOCATION));
+            assertNotNull(postMethod.getResponseHeader(HttpHeaders.CONTENT_LOCATION));
+            postMethod.releaseConnection();
+        }
     }
 
     public void testObject() throws Exception {
