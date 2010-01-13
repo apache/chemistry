@@ -298,6 +298,13 @@ public class AbderaResource {
 
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
+    @Path("object")
+    public Response doGetObjectNoId() {
+        return getAbderaEntry(1);
+    }
+
+    @GET
+    @Produces(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
     @Path("object/{objectid}")
     public Response doGetObject() {
         // objectid decoded by Abdera getCollectionAdapter

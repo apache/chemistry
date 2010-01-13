@@ -66,7 +66,7 @@ public class CMISProvider extends AbstractProvider {
         // entry
         targetBuilder.setTemplate(TargetType.TYPE_ENTRY,
                 "{target_base}/{entrytype}/{id}");
-        targetResolver.setPattern("/object/([^/?]+)(\\?.*)?",
+        targetResolver.setPattern("/object(?:/?)([^/?]*)(\\?.*)?",
                 TargetType.TYPE_ENTRY, "objectid");
         targetResolver.setPattern("/allowableactions/([^/?]+)",
                 TargetType.TYPE_ENTRY, "objectid"); // XXX entry?
@@ -160,7 +160,8 @@ public class CMISProvider extends AbstractProvider {
                         AtomPubCMIS.PARAM_INCLUDE_ACL)));
         list.add(new URITemplate(AtomPubCMIS.URITMPL_OBJECT_BY_PATH,
                 AtomPub.MEDIA_TYPE_ATOM_ENTRY, addURITemplateParameters(
-                        base + "/path/{path}", //
+                        base + "/object", //
+                        AtomPubCMIS.PARAM_PATH, //
                         AtomPubCMIS.PARAM_FILTER,
                         AtomPubCMIS.PARAM_RENDITION_FILTER,
                         AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS,

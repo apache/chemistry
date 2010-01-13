@@ -792,8 +792,17 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         RelationshipDirection relationships = RelationshipDirection.fromInclusion(incl);
         Inclusion inclusion = new Inclusion(properties, null, relationships,
                 allowableActions, false, false);
-        if (COLTYPE_PATH.equals(getType())) {
-            String path = resourceName;
+        if (COLTYPE_PATH.equals(getType()) || "".equals(resourceName)) {
+            String path;
+            if (COLTYPE_PATH.equals(getType())) {
+                path = resourceName;
+            } else {
+                path = target.getParameter(AtomPubCMIS.PARAM_PATH);
+                if (path == null) {
+                    throw new ResponseContextException("Missing id and path",
+                            500);
+                }
+            }
             if (!path.startsWith("/")) {
                 path = "/" + path;
             }
