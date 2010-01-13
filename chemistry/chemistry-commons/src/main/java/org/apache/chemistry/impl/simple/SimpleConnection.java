@@ -712,15 +712,17 @@ public class SimpleConnection implements Connection, SPI {
         boolean allVersions = false; // TODO add in signature?
         String id = folder.getId();
         if (repository.rootId.equals(id)) {
-            throw new RuntimeException("Cannot delete root"); // TODO
+            throw new ConstraintViolationException("Cannot delete root");
         }
         SimpleData data = repository.datas.get(id);
         if (data == null) {
-            throw new RuntimeException("Not found: " + folder); // TODO
+            throw new ObjectNotFoundException("No such folder: "
+                    + folder.getId());
         }
         String typeId = (String) data.get(Property.TYPE_ID);
         if (repository.getType(typeId).getBaseType() != BaseType.FOLDER) {
-            throw new RuntimeException("Not a folder: " + folder); // TODO
+            throw new IllegalArgumentException("Not a folder: "
+                    + folder.getId());
         }
         for (String childId : new ArrayList<String>(repository.children.get(id))) {
             SimpleData childData = repository.datas.get(childId);

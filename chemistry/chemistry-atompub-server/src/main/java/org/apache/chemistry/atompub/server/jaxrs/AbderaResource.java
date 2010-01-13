@@ -297,6 +297,20 @@ public class AbderaResource {
         return postAbderaEntry(2);
     }
 
+    @DELETE
+    @Path("descendants/{objectid}")
+    public Response deleteDescendants() {
+        // objectid decoded by Abdera getCollectionAdapter
+        return deleteAbderaEntry(2);
+    }
+
+    @DELETE
+    @Path("foldertree/{objectid}")
+    public Response deleteFolderTree() {
+        // objectid decoded by Abdera getCollectionAdapter
+        return deleteAbderaEntry(2);
+    }
+
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
     @Path("object")

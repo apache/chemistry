@@ -74,6 +74,8 @@ public abstract class AtomPubServerTestCase extends TestCase {
 
     protected static String rootFolderId;
 
+    private static String folder1id;
+
     protected static String doc2id;
 
     protected static String doc3id;
@@ -149,6 +151,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         folder1.setValue("title", "The folder 1 description");
         folder1.setValue("description", "folder 1 title");
         folder1.save();
+        folder1id = folder1.getId();
 
         Folder folder2 = folder1.newFolder("fold");
         folder2.setName("folder2");
@@ -240,8 +243,7 @@ public abstract class AtomPubServerTestCase extends TestCase {
         assertNotNull(ch);
         resp.release();
 
-        resp = client.get(base + "/children/"
-                + repository.getInfo().getRootFolderId().getId() + "?"
+        resp = client.get(base + "/children/" + rootFolderId + "?"
                 + AtomPubCMIS.PARAM_MAX_ITEMS + "=4");
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         ch = resp.getDocument().getRoot();
@@ -344,12 +346,35 @@ public abstract class AtomPubServerTestCase extends TestCase {
 
     public void testDelete() {
         RequestOptions options = new RequestOptions();
-        options.setContentType(AtomPub.MEDIA_TYPE_ATOM_ENTRY);
         ClientResponse resp = client.delete(base + "/object/" + doc3id, options);
         assertEquals(HttpStatus.SC_NO_CONTENT, resp.getStatus());
         resp.release();
 
-        resp = client.delete(base + "/object/nosuchid", options);
+        resp = client.delete(base + "/object/no-such-id", options);
+        assertEquals(HttpStatus.SC_NOT_FOUND, resp.getStatus());
+        resp.release();
+    }
+
+    public void testDeleteDescendants() {
+        RequestOptions options = new RequestOptions();
+        ClientResponse resp = client.delete(base + "/descendants/" + folder1id,
+                options);
+        assertEquals(HttpStatus.SC_NO_CONTENT, resp.getStatus());
+        resp.release();
+
+        resp = client.delete(base + "/descendants/no-such-id", options);
+        assertEquals(HttpStatus.SC_NOT_FOUND, resp.getStatus());
+        resp.release();
+    }
+
+    public void testDeleteFolderTree() {
+        RequestOptions options = new RequestOptions();
+        ClientResponse resp = client.delete(base + "/foldertree/" + folder1id,
+                options);
+        assertEquals(HttpStatus.SC_NO_CONTENT, resp.getStatus());
+        resp.release();
+
+        resp = client.delete(base + "/foldertree/no-such-id", options);
         assertEquals(HttpStatus.SC_NOT_FOUND, resp.getStatus());
         resp.release();
     }
