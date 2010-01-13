@@ -318,18 +318,60 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals(2, page.size());
         assertTrue(page.getHasMoreItems());
         assertEquals(3, page.getNumItems());
+
+        ObjectEntry doc1 = spi.getObjectByPath("/folder 1/doc 1", null);
+        try {
+            spi.getChildren(doc1, null, null, null);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+        try {
+            spi.getChildren(spi.newObjectId("no-such-id"), null, null, null);
+            fail();
+        } catch (ObjectNotFoundException e) {
+            // ok
+        }
     }
 
     public void testGetFolderTree() {
         Folder root = conn.getRootFolder();
         List<ObjectEntry> desc = spi.getFolderTree(root, 4, null);
         assertEquals(2, desc.size());
+
+        ObjectEntry doc1 = spi.getObjectByPath("/folder 1/doc 1", null);
+        try {
+            spi.getFolderTree(doc1, -1, null);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+        try {
+            spi.getFolderTree(spi.newObjectId("no-such-id"), -1, null);
+            fail();
+        } catch (ObjectNotFoundException e) {
+            // ok
+        }
     }
 
     public void testGetDescendants() {
         Folder root = conn.getRootFolder();
         List<ObjectEntry> desc = spi.getDescendants(root, 4, null, null);
         assertEquals(6, desc.size());
+
+        ObjectEntry doc1 = spi.getObjectByPath("/folder 1/doc 1", null);
+        try {
+            spi.getDescendants(doc1, -1, null, null);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+        try {
+            spi.getDescendants(spi.newObjectId("no-such-id"), -1, null, null);
+            fail();
+        } catch (ObjectNotFoundException e) {
+            // ok
+        }
     }
 
     public void testGetFolderParent() {

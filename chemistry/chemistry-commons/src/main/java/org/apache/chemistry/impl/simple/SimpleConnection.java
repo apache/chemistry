@@ -180,6 +180,7 @@ public class SimpleConnection implements Connection, SPI {
 
     public List<ObjectEntry> getFolderTree(ObjectId folder, int depth,
             Inclusion inclusion) {
+        checkFolder(folder);
         List<ObjectEntry> list = new ArrayList<ObjectEntry>();
         accumulateFolders(folder, depth, inclusion, list);
         return list;
@@ -206,6 +207,7 @@ public class SimpleConnection implements Connection, SPI {
 
     public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
             String orderBy, Inclusion inclusion) {
+        checkFolder(folder);
         List<ObjectEntry> list = new ArrayList<ObjectEntry>();
         accumulateDescendants(folder, depth, inclusion, orderBy, list);
         return list;
@@ -214,6 +216,7 @@ public class SimpleConnection implements Connection, SPI {
     public ListPage<ObjectEntry> getChildren(ObjectId folder,
             Inclusion inclusion, String orderBy, Paging paging) {
         // TODO orderBy
+        checkFolder(folder);
         Set<String> ids = repository.children.get(folder.getId());
         List<ObjectEntry> all = new ArrayList<ObjectEntry>(ids.size());
         for (String id : ids) {
@@ -221,6 +224,20 @@ public class SimpleConnection implements Connection, SPI {
             all.add(new SimpleObjectEntry(data, this));
         }
         return getListPage(all, paging);
+    }
+
+    protected void checkFolder(ObjectId object) throws ObjectNotFoundException,
+            ConstraintViolationException {
+        String id = object.getId();
+        SimpleData data = repository.datas.get(id);
+        if (data == null) {
+            throw new ObjectNotFoundException(id);
+        }
+        String baseTypeId = (String) data.get(Property.BASE_TYPE_ID);
+        if (baseTypeId != BaseType.FOLDER.getId()) {
+            throw new IllegalArgumentException("Not a folder: " + id);
+        }
+
     }
 
     /**

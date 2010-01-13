@@ -214,7 +214,7 @@ public class APPConnection implements Connection, SPI {
 
     public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
             String orderBy, Inclusion inclusion) {
-        String href = getObjectEntry(folder).getLink(AtomPub.LINK_DOWN,
+        String href = getFolderEntry(folder).getLink(AtomPub.LINK_DOWN,
                 AtomPubCMIS.MEDIA_TYPE_CMIS_TREE);
         Request req = new Request(href);
         req.setParameter(AtomPubCMIS.PARAM_DEPTH, Integer.toString(depth));
@@ -253,7 +253,7 @@ public class APPConnection implements Connection, SPI {
     public ListPage<ObjectEntry> getChildren(ObjectId folder,
             Inclusion inclusion, String orderBy, Paging paging) {
         // TODO filter, includeRelationship, includeAllowableActions, orderBy
-        String href = getObjectEntry(folder).getLink(AtomPub.LINK_DOWN,
+        String href = getFolderEntry(folder).getLink(AtomPub.LINK_DOWN,
                 AtomPub.MEDIA_TYPE_ATOM_FEED);
         Request req = new Request(href);
         if (paging != null) {
@@ -273,11 +273,8 @@ public class APPConnection implements Connection, SPI {
 
     public ObjectEntry getFolderParent(ObjectId folder, String filter) {
         // TODO filter
-        APPObjectEntry current = getObjectEntry(folder);
-        if (!current.getBaseType().equals(BaseType.FOLDER)) {
-            throw new IllegalArgumentException("Not a folder: " + folder);
-        }
-        String rootId = current.connection.getRootFolder().getId();
+        APPObjectEntry current = getFolderEntry(folder);
+        String rootId = repository.getInfo().getRootFolderId().getId();
         if (current.getId().equals(rootId)) {
             return null;
         }
@@ -344,6 +341,14 @@ public class APPConnection implements Connection, SPI {
                             + resp.getStatusCode());
         }
         return (APPObjectEntry) resp.getObject(new ReadContext(this));
+    }
+
+    protected APPObjectEntry getFolderEntry(ObjectId objectId) {
+        APPObjectEntry entry = getObjectEntry(objectId);
+        if (!entry.getBaseType().equals(BaseType.FOLDER)) {
+            throw new IllegalArgumentException("Not a folder: " + objectId);
+        }
+        return entry;
     }
 
     protected String replace(String template, String param, String value) {
