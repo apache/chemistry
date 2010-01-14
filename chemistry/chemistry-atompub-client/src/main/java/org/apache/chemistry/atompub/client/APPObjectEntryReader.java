@@ -24,7 +24,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.client.stax.AbstractObjectReader;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
@@ -44,14 +43,9 @@ public class APPObjectEntryReader extends AbstractObjectReader<APPObjectEntry> {
 
     @Override
     protected APPObjectEntry createObject(ReadContext ctx) {
-        Type type = ctx.getType();
         APPConnection connection = (APPConnection) ctx.getConnection();
-        if (type == null) {
-            return new APPObjectEntry(connection,
-                    new HashMap<String, XmlProperty>(), null);
-        } else {
-            return connection.newObjectEntry(type.getId());
-        }
+        return new APPObjectEntry(connection,
+                new HashMap<String, XmlProperty>(), null);
     }
 
     @Override

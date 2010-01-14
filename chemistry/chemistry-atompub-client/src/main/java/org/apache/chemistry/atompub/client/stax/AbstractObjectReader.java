@@ -18,18 +18,14 @@
  */
 package org.apache.chemistry.atompub.client.stax;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.chemistry.CMIS;
-import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
-import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.xml.stax.ChildrenNavigator;
 import org.apache.chemistry.xml.stax.ParseException;
@@ -80,59 +76,20 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
         }
     }
 
-    /*
-     * Reads the properties. Because the ObjectTypeId may not be known
-     * initially, the properties' types cannot be computed on the fly. So the
-     * properties are held until the type is found.
-     */
     protected void readProperties(ReadContext ctx, StaxReader reader, T object)
             throws XMLStreamException {
-        PropertyIterator it = new PropertyIterator(reader);
-        List<XmlProperty> incomplete = null;
-        Type entryType = ctx.getType();
-        // find the type
-        if (entryType == null) {
-            incomplete = new ArrayList<XmlProperty>();
-            while (it.hasNext()) {
-                XmlProperty p = it.next();
-                if (Property.TYPE_ID.equals(p.getId())) {
-                    // type has been found
-                    String v = (String) p.getXmlValue();
-                    entryType = ctx.getRepository().getType(v);
-                    if (entryType == null) {
-                        throw new ParseException("No such type: " + v);
-                    }
-                    incomplete.add(p);
-                    // stop looking for type
-                    break;
-                } else {
-                    incomplete.add(p);
-                }
-            }
-            if (entryType == null) {
-                throw new IllegalStateException("Type not known");
-            }
-        }
-        // fill in the type for incomplete properties
-        if (incomplete != null) {
-            for (XmlProperty p : incomplete) {
-                readPropertyWithType(ctx, reader, object, p, entryType);
-            }
-        }
-        // consume the rest of the stream
-        while (it.hasNext()) {
+        for (PropertyIterator it = new PropertyIterator(reader); it.hasNext();) {
             XmlProperty p = it.next();
-            readPropertyWithType(ctx, reader, object, p, entryType);
+            readPropertyWithType(ctx, reader, object, p);
         }
     }
 
     protected void readPropertyWithType(ReadContext ctx, StaxReader reader,
-            T object, XmlProperty p, Type entryType) {
+            T object, XmlProperty p) {
         String id = p.getId();
-        PropertyDefinition def = entryType.getPropertyDefinition(id);
+        PropertyDefinition def = ctx.getRepository().getPropertyDefinition(id);
         if (def == null) {
-            throw new ParseException("No such property definition: " + id
-                    + " in type: " + entryType);
+            throw new ParseException("No such property definition: " + id);
         }
         p.setDefinition(def);
         readProperty(ctx, reader, object, p);

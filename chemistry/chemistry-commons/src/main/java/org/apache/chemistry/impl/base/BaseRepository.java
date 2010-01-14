@@ -160,6 +160,10 @@ public abstract class BaseRepository implements Repository, RepositoryInfo,
         return typeManager.getType(typeId);
     }
 
+    public PropertyDefinition getPropertyDefinition(String id) {
+        return typeManager.getPropertyDefinition(id);
+    }
+
     public Collection<Type> getTypes() {
         return typeManager.getTypes();
     }

@@ -42,6 +42,14 @@ public interface TypeManager {
     Type getType(String typeId);
 
     /**
+     * Gets the specified property definition.
+     *
+     * @param id the property ID
+     * @return the property definition, or {@code null} if not found
+     */
+    PropertyDefinition getPropertyDefinition(String id);
+
+    /**
      * Gets all the types.
      *
      * @return all the types

@@ -32,6 +32,21 @@
       <cmis:fulltextIndexed>true</cmis:fulltextIndexed>
       <cmis:includedInSupertypeQuery>true
       </cmis:includedInSupertypeQuery>
+      <cmis:propertyIdDefinition>
+        <cmis:id>cmis:baseTypeId</cmis:id>
+        <cmis:localName>rep-cmis:baseTypeId</cmis:localName>
+        <cmis:displayName>cmis:baseTypeId</cmis:displayName>
+        <cmis:description>Description for cmis:baseTypeId
+        </cmis:description>
+        <cmis:propertyType>id</cmis:propertyType>
+        <cmis:cardinality>single</cmis:cardinality>
+        <cmis:updatability>readonly</cmis:updatability>
+        <cmis:inherited>true</cmis:inherited>
+        <cmis:required>false</cmis:required>
+        <cmis:queryable>true</cmis:queryable>
+        <cmis:orderable>true</cmis:orderable>
+        <cmis:openChoice>false</cmis:openChoice>
+      </cmis:propertyIdDefinition>
     </cmisra:type>
   </entry>
   <entry>
@@ -59,6 +74,21 @@
       <cmis:fulltextIndexed>true</cmis:fulltextIndexed>
       <cmis:includedInSupertypeQuery>true
       </cmis:includedInSupertypeQuery>
+      <cmis:propertyIdDefinition>
+        <cmis:id>cmis:baseTypeId</cmis:id>
+        <cmis:localName>rep-cmis:baseTypeId</cmis:localName>
+        <cmis:displayName>cmis:baseTypeId</cmis:displayName>
+        <cmis:description>Description for cmis:baseTypeId
+        </cmis:description>
+        <cmis:propertyType>id</cmis:propertyType>
+        <cmis:cardinality>single</cmis:cardinality>
+        <cmis:updatability>readonly</cmis:updatability>
+        <cmis:inherited>true</cmis:inherited>
+        <cmis:required>false</cmis:required>
+        <cmis:queryable>true</cmis:queryable>
+        <cmis:orderable>true</cmis:orderable>
+        <cmis:openChoice>false</cmis:openChoice>
+      </cmis:propertyIdDefinition>
     </cmisra:type>
   </entry>
   <entry>
@@ -86,6 +116,21 @@
       <cmis:fulltextIndexed>false</cmis:fulltextIndexed>
       <cmis:includedInSupertypeQuery>true
       </cmis:includedInSupertypeQuery>
+      <cmis:propertyIdDefinition>
+        <cmis:id>cmis:baseTypeId</cmis:id>
+        <cmis:localName>rep-cmis:baseTypeId</cmis:localName>
+        <cmis:displayName>cmis:baseTypeId</cmis:displayName>
+        <cmis:description>Description for cmis:baseTypeId
+        </cmis:description>
+        <cmis:propertyType>id</cmis:propertyType>
+        <cmis:cardinality>single</cmis:cardinality>
+        <cmis:updatability>readonly</cmis:updatability>
+        <cmis:inherited>true</cmis:inherited>
+        <cmis:required>false</cmis:required>
+        <cmis:queryable>true</cmis:queryable>
+        <cmis:orderable>true</cmis:orderable>
+        <cmis:openChoice>false</cmis:openChoice>
+      </cmis:propertyIdDefinition>
     </cmisra:type>
   </entry>
   <entry>
@@ -113,6 +158,21 @@
       <cmis:fulltextIndexed>false</cmis:fulltextIndexed>
       <cmis:includedInSupertypeQuery>true
       </cmis:includedInSupertypeQuery>
+      <cmis:propertyIdDefinition>
+        <cmis:id>cmis:baseTypeId</cmis:id>
+        <cmis:localName>rep-cmis:baseTypeId</cmis:localName>
+        <cmis:displayName>cmis:baseTypeId</cmis:displayName>
+        <cmis:description>Description for cmis:baseTypeId
+        </cmis:description>
+        <cmis:propertyType>id</cmis:propertyType>
+        <cmis:cardinality>single</cmis:cardinality>
+        <cmis:updatability>readonly</cmis:updatability>
+        <cmis:inherited>true</cmis:inherited>
+        <cmis:required>false</cmis:required>
+        <cmis:queryable>true</cmis:queryable>
+        <cmis:orderable>true</cmis:orderable>
+        <cmis:openChoice>false</cmis:openChoice>
+      </cmis:propertyIdDefinition>
     </cmisra:type>
   </entry>
   <entry>
@@ -140,6 +200,21 @@
       <cmis:fulltextIndexed>false</cmis:fulltextIndexed>
       <cmis:includedInSupertypeQuery>false
       </cmis:includedInSupertypeQuery>
+      <cmis:propertyIdDefinition>
+        <cmis:id>cmis:baseTypeId</cmis:id>
+        <cmis:localName>rep-cmis:baseTypeId</cmis:localName>
+        <cmis:displayName>cmis:baseTypeId</cmis:displayName>
+        <cmis:description>Description for cmis:baseTypeId
+        </cmis:description>
+        <cmis:propertyType>id</cmis:propertyType>
+        <cmis:cardinality>single</cmis:cardinality>
+        <cmis:updatability>readonly</cmis:updatability>
+        <cmis:inherited>true</cmis:inherited>
+        <cmis:required>false</cmis:required>
+        <cmis:queryable>true</cmis:queryable>
+        <cmis:orderable>true</cmis:orderable>
+        <cmis:openChoice>false</cmis:openChoice>
+      </cmis:propertyIdDefinition>
     </cmisra:type>
   </entry>
 </feed>

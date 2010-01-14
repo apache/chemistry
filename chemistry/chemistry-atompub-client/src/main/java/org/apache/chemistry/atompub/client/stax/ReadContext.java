@@ -19,7 +19,6 @@ package org.apache.chemistry.atompub.client.stax;
 
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.client.ContentManager;
 
 /**
@@ -27,39 +26,23 @@ import org.apache.chemistry.atompub.client.ContentManager;
  */
 public class ReadContext {
 
-    protected Type type;
-
     protected Repository repository;
 
     protected Connection connection;
 
     protected ContentManager contentManager;
 
-    public ReadContext() {
-
-    }
-
     public ReadContext(Connection connection) {
-        this(connection, null);
+        this.connection = connection;
+        this.repository = connection.getRepository();
     }
 
     public ReadContext(Repository repository) {
-        this(repository, null);
+        this.repository = repository;
     }
 
     public ReadContext(ContentManager contentManager) {
         this.contentManager = contentManager;
-    }
-
-    public ReadContext(Repository repository, Type type) {
-        this.type = type;
-        this.repository = repository;
-    }
-
-    public ReadContext(Connection connection, Type type) {
-        this.connection = connection;
-        this.type = type;
-        this.repository = connection.getRepository();
     }
 
     public Repository getRepository() {
@@ -72,10 +55,6 @@ public class ReadContext {
 
     public ContentManager getContentManager() {
         return contentManager;
-    }
-
-    public Type getType() {
-        return type;
     }
 
 }

@@ -29,13 +29,20 @@ import java.util.Set;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.Paging;
+import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.TypeManager;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class SimpleTypeManager implements TypeManager {
 
+    private static final Log log = LogFactory.getLog(SimpleTypeManager.class);
+
     // linked so that values() returns things in a parent-before-children order
     protected final Map<String, Type> types = new LinkedHashMap<String, Type>();
+
+    protected final Map<String, PropertyDefinition> propertyDefinitions = new HashMap<String, PropertyDefinition>();
 
     protected final Map<String, Collection<Type>> typesChildren;
 
@@ -53,6 +60,9 @@ public class SimpleTypeManager implements TypeManager {
             throw new RuntimeException("Type already defined: " + typeId);
         }
         types.put(typeId, type);
+        for (PropertyDefinition pdef : type.getPropertyDefinitions()) {
+            addPropertyDefinition(pdef);
+        }
         typesChildren.put(typeId, new LinkedList<Type>());
         String parentId = type.getParentId();
         if (parentId == null) {
@@ -74,8 +84,32 @@ public class SimpleTypeManager implements TypeManager {
         }
     }
 
+    protected void addPropertyDefinition(PropertyDefinition pdef) {
+        PropertyDefinition old = propertyDefinitions.get(pdef.getId());
+        if (old != null) {
+            // some sanity checks
+            if (!eq(old.getLocalName(), pdef.getLocalName())
+                    || !eq(old.getDisplayName(), pdef.getDisplayName())
+                    || !eq(old.getQueryName(), pdef.getQueryName())
+                    || !old.getType().equals(pdef.getType())) {
+                log.error("Property definition redefined differently: "
+                        + pdef.getId());
+            }
+            return;
+        }
+        propertyDefinitions.put(pdef.getId(), pdef);
+    }
+
+    protected static boolean eq(String a, String b) {
+        return a == null ? b == null : a.equals(b);
+    }
+
     public Type getType(String typeId) {
         return types.get(typeId);
+    }
+
+    public PropertyDefinition getPropertyDefinition(String id) {
+        return propertyDefinitions.get(id);
     }
 
     public Collection<Type> getTypes() {

@@ -225,6 +225,8 @@ public class CMIS {
 
     public static final QName LOCAL_NAME_NONS = new QName("localName");
 
+    public static final QName QUERY_NAME_NONS = new QName("queryName");
+
     public static final QName DISPLAY_NAME_NONS = new QName("displayName");
 
 }

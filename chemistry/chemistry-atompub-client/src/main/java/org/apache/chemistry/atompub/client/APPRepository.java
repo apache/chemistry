@@ -28,6 +28,7 @@ import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.Paging;
+import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.SPI;
@@ -124,6 +125,11 @@ public class APPRepository implements Repository {
     public Type getType(String typeId) {
         loadTypes();
         return typeManager.getType(typeId);
+    }
+
+    public PropertyDefinition getPropertyDefinition(String id) {
+        loadTypes();
+        return typeManager.getPropertyDefinition(id);
     }
 
     public Collection<Type> getTypes() {

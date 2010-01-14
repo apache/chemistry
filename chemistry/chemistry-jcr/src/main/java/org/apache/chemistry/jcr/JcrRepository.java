@@ -49,6 +49,7 @@ import org.apache.chemistry.Connection;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Paging;
+import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryEntry;
@@ -133,6 +134,17 @@ public class JcrRepository implements Repository, RepositoryInfo,
         } catch (RepositoryException e) {
             String msg = "Unable get type: " + typeId;
             log.error(msg, e);
+        }
+        return null;
+    }
+
+    public PropertyDefinition getPropertyDefinition(String id) {
+        // TODO improve by caching
+        for (Type type : getTypes()) {
+            PropertyDefinition pdef = type.getPropertyDefinition(id);
+            if (pdef != null) {
+                return pdef;
+            }
         }
         return null;
     }
