@@ -297,16 +297,32 @@ public class AbderaResource {
         return postAbderaEntry(2);
     }
 
+    @GET
+    @Produces(AtomPubCMIS.MEDIA_TYPE_CMIS_TREE)
+    @Path("descendants/{objectid}")
+    public Response doGetDescendants() {
+        // objectid decoded by Abdera getCollectionAdapter
+        return getAbderaFeed(2);
+    }
+
     @DELETE
     @Path("descendants/{objectid}")
-    public Response deleteDescendants() {
+    public Response doDeleteDescendants() {
         // objectid decoded by Abdera getCollectionAdapter
         return deleteAbderaEntry(2);
     }
 
+    @GET
+    @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
+    @Path("foldetree/{objectid}")
+    public Response doGetFolderTree() {
+        // objectid decoded by Abdera getCollectionAdapter
+        return getAbderaFeed(2);
+    }
+
     @DELETE
     @Path("foldertree/{objectid}")
-    public Response deleteFolderTree() {
+    public Response doDeleteFolderTree() {
         // objectid decoded by Abdera getCollectionAdapter
         return deleteAbderaEntry(2);
     }
