@@ -186,36 +186,50 @@ public class APPConnection implements Connection, SPI {
      * ----- Navigation Services -----
      */
 
-    /**
-     * Accumulates the descendant folders into a list recursively.
-     */
-    protected void accumulateFolders(ObjectId folder, int depth,
-            Inclusion inclusion, List<ObjectEntry> list) {
-        List<ObjectEntry> children = getChildren(folder, inclusion, null,
-                new Paging(Integer.MAX_VALUE, 0));
-        for (ObjectEntry child : children) {
-            if (child.getBaseType() != BaseType.FOLDER) {
-                continue;
-            }
-            list.add(child);
-            if (depth > 1) {
-                accumulateFolders(child, depth - 1, inclusion, list);
-            }
-        }
-    }
+    // TODO check capabilityGetDescendants / capabilityGetFolderTree
+    // and folder fall back on recursion based on getChildren
 
-    // TODO use foldertree feed
     public List<ObjectEntry> getFolderTree(ObjectId folder, int depth,
             Inclusion inclusion) {
-        List<ObjectEntry> list = new ArrayList<ObjectEntry>();
-        accumulateFolders(folder, depth, inclusion, list);
-        return list;
+        String href = getFolderEntry(folder).getLink(
+                AtomPubCMIS.LINK_FOLDER_TREE, AtomPub.MEDIA_TYPE_ATOM_FEED);
+        if (href == null) {
+            throw new CMISRuntimeException("Missing foldertree link");
+        }
+        Request req = new Request(href);
+        req.setParameter(AtomPubCMIS.PARAM_DEPTH, Integer.toString(depth));
+        if (inclusion != null) {
+            if (inclusion.properties != null) {
+                req.setParameter(AtomPubCMIS.PARAM_FILTER, inclusion.properties);
+            }
+            if (inclusion.renditions != null) {
+                req.setParameter(AtomPubCMIS.PARAM_RENDITION_FILTER,
+                        inclusion.renditions);
+            }
+            if (inclusion.relationships != null) {
+                req.setParameter(
+                        AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS,
+                        RelationshipDirection.toInclusion(inclusion.relationships));
+            }
+            req.setParameter(AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS,
+                    Boolean.toString(inclusion.allowableActions));
+        }
+        Response resp = connector.get(req);
+        if (!resp.isOk()) {
+            throw new ContentManagerException(
+                    "Remote server returned error code: "
+                            + resp.getStatusCode());
+        }
+        return resp.getObjectFeed(new ReadContext(this));
     }
 
     public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
             String orderBy, Inclusion inclusion) {
         String href = getFolderEntry(folder).getLink(AtomPub.LINK_DOWN,
                 AtomPubCMIS.MEDIA_TYPE_CMIS_TREE);
+        if (href == null) {
+            throw new CMISRuntimeException("Missing down tree link");
+        }
         Request req = new Request(href);
         req.setParameter(AtomPubCMIS.PARAM_DEPTH, Integer.toString(depth));
         if (orderBy != null) {

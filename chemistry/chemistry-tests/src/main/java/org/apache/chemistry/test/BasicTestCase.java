@@ -374,6 +374,34 @@ public abstract class BasicTestCase extends TestCase {
         }
     }
 
+
+    public void testTrees() throws Exception {
+        List<ObjectEntry> list;
+
+        Folder root = conn.getRootFolder();
+        list = spi.getDescendants(root, -1, null, null);
+        assertEquals(6, list.size());
+        list = spi.getDescendants(root, 1, null, null);
+        assertEquals(1, list.size());
+        list = spi.getDescendants(root, 2, null, null);
+        assertEquals(3, list.size());
+        list = spi.getDescendants(root, 3, null, null);
+        assertEquals(6, list.size());
+        list = spi.getDescendants(root, 4, null, null);
+        assertEquals(6, list.size());
+
+        ObjectEntry fold1 = spi.getObjectByPath("/folder 1", null);
+        list = spi.getDescendants(fold1, -1, null, null);
+        assertEquals(5, list.size());
+        list = spi.getDescendants(fold1, 1, null, null);
+        assertEquals(2, list.size());
+        list = spi.getDescendants(fold1, 2, null, null);
+        assertEquals(5, list.size());
+        list = spi.getDescendants(fold1, 3, null, null);
+        assertEquals(5, list.size());
+    }
+
+
     public void testGetFolderParent() {
         Folder root = conn.getRootFolder();
         assertNull(spi.getFolderParent(root, null));

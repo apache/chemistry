@@ -161,19 +161,20 @@ public class SimpleConnection implements Connection, SPI {
      */
 
     /**
-     * Accumulates the descendant folders into a list recursively.
+     * Accumulates descendants into a list recursively.
      */
-    protected void accumulateFolders(ObjectId folder, int depth,
-            Inclusion inclusion, List<ObjectEntry> list) {
-        ListPage<ObjectEntry> children = getChildren(folder, inclusion, null,
+    // TODO optimized paging
+    protected void accumulate(ObjectId folder, int depth, Inclusion inclusion,
+            String orderBy, BaseType baseType, List<ObjectEntry> list) {
+        List<ObjectEntry> children = getChildren(folder, inclusion, orderBy,
                 null);
         for (ObjectEntry child : children) {
-            if (child.getBaseType() != BaseType.FOLDER) {
-                continue;
+            BaseType childBaseType = child.getBaseType();
+            if (baseType == null || baseType == childBaseType) {
+                list.add(child);
             }
-            list.add(child);
-            if (depth > 1) {
-                accumulateFolders(child, depth - 1, inclusion, list);
+            if (childBaseType == BaseType.FOLDER && depth != 1) {
+                accumulate(child, depth - 1, inclusion, orderBy, baseType, list);
             }
         }
     }
@@ -182,40 +183,21 @@ public class SimpleConnection implements Connection, SPI {
             Inclusion inclusion) {
         checkFolder(folder);
         List<ObjectEntry> list = new ArrayList<ObjectEntry>();
-        accumulateFolders(folder, depth, inclusion, list);
+        accumulate(folder, depth, inclusion, null, BaseType.FOLDER, list);
         return list;
-    }
-
-    /**
-     * Accumulates the descendants into a list recursively.
-     *
-     * @param includeRenditions TODO
-     */
-    protected void accumulateDescendants(ObjectId folder, int depth,
-            Inclusion inclusion, String orderBy, List<ObjectEntry> list) {
-        // TODO deal with paging properly
-        List<ObjectEntry> children = getChildren(folder, inclusion, orderBy,
-                null);
-        for (ObjectEntry child : children) {
-            list.add(child);
-            if (depth > 1 && child.getBaseType() == BaseType.FOLDER) {
-                accumulateDescendants(child, depth - 1, inclusion, orderBy,
-                        list);
-            }
-        }
     }
 
     public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
             String orderBy, Inclusion inclusion) {
         checkFolder(folder);
         List<ObjectEntry> list = new ArrayList<ObjectEntry>();
-        accumulateDescendants(folder, depth, inclusion, orderBy, list);
+        accumulate(folder, depth, inclusion, orderBy, null, list);
         return list;
     }
 
     public ListPage<ObjectEntry> getChildren(ObjectId folder,
             Inclusion inclusion, String orderBy, Paging paging) {
-        // TODO orderBy
+        // TODO orderBy, inclusion
         checkFolder(folder);
         Set<String> ids = repository.children.get(folder.getId());
         List<ObjectEntry> all = new ArrayList<ObjectEntry>(ids.size());
@@ -223,7 +205,7 @@ public class SimpleConnection implements Connection, SPI {
             SimpleData data = repository.datas.get(id);
             all.add(new SimpleObjectEntry(data, this));
         }
-        return getListPage(all, paging);
+        return SimpleListPage.fromPaging(all, paging);
     }
 
     protected void checkFolder(ObjectId object) throws ObjectNotFoundException,
@@ -238,41 +220,6 @@ public class SimpleConnection implements Connection, SPI {
             throw new IllegalArgumentException("Not a folder: " + id);
         }
 
-    }
-
-    /**
-     * Extracts part of a list according to given paging parameters.
-     *
-     * @param all the complete list
-     * @param paging the paging info, which may be {@code null}
-     * @return the page
-     */
-    public static ListPage<ObjectEntry> getListPage(List<ObjectEntry> all,
-            Paging paging) {
-        int total = all.size();
-        int fromIndex = paging == null ? 0 : paging.skipCount;
-        if (fromIndex < 0 || fromIndex > total) {
-            return SimpleListPage.emptyList();
-        }
-        int maxItems = paging == null ? -1 : paging.maxItems;
-        if (maxItems <= 0) {
-            maxItems = total;
-        }
-        int toIndex = fromIndex + maxItems;
-        if (toIndex > total) {
-            toIndex = total;
-        }
-        List<ObjectEntry> slice;
-        if (fromIndex == 0 && toIndex == total) {
-            slice = all;
-        } else {
-            slice = all.subList(fromIndex, toIndex);
-        }
-        SimpleListPage<ObjectEntry> page;
-        page = new SimpleListPage<ObjectEntry>(slice);
-        page.setHasMoreItems(toIndex < total);
-        page.setNumItems(total);
-        return page;
     }
 
     public ObjectEntry getFolderParent(ObjectId folder, String filter) {
@@ -776,7 +723,7 @@ public class SimpleConnection implements Connection, SPI {
                 all.add(new SimpleObjectEntry(data, this));
             }
         }
-        return getListPage(all, paging);
+        return SimpleListPage.fromPaging(all, paging);
     }
 
     protected boolean typeMatches(String tableName, String typeId) {

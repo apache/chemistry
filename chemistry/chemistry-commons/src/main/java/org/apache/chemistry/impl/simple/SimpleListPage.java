@@ -20,9 +20,12 @@ import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.RandomAccess;
 
 import org.apache.chemistry.ListPage;
+import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.Paging;
 
 /**
  * A simple implementation of {@link ListPage} based on {@link ArrayList}.
@@ -96,6 +99,41 @@ public class SimpleListPage<T> extends ArrayList<T> implements ListPage<T> {
      */
     public SimpleListPage(Collection<? extends T> collection) {
         super(collection);
+    }
+
+    /**
+     * Extracts part of a list according to given paging parameters.
+     *
+     * @param all the complete list
+     * @param paging the paging info, which may be {@code null}
+     * @return the page
+     */
+    public static ListPage<ObjectEntry> fromPaging(List<ObjectEntry> all,
+            Paging paging) {
+        int total = all.size();
+        int fromIndex = paging == null ? 0 : paging.skipCount;
+        if (fromIndex < 0 || fromIndex > total) {
+            return emptyList();
+        }
+        int maxItems = paging == null ? -1 : paging.maxItems;
+        if (maxItems <= 0) {
+            maxItems = total;
+        }
+        int toIndex = fromIndex + maxItems;
+        if (toIndex > total) {
+            toIndex = total;
+        }
+        List<ObjectEntry> slice;
+        if (fromIndex == 0 && toIndex == total) {
+            slice = all;
+        } else {
+            slice = all.subList(fromIndex, toIndex);
+        }
+        SimpleListPage<ObjectEntry> page = new SimpleListPage<ObjectEntry>(
+                slice);
+        page.setHasMoreItems(toIndex < total);
+        page.setNumItems(total);
+        return page;
     }
 
     public boolean getHasMoreItems() {
