@@ -111,8 +111,8 @@ public class AtomPubCMIS {
     public static final String LINK_FOLDER_TREE = CMIS_LINK_NS_BASE
             + "foldertree";
 
-    public static final String LINK_ROOT_DESCENDANTS = CMIS_LINK_NS_BASE
-            + "rootdescendants";
+    public static final String LINK_TYPE_DESCENDANTS = CMIS_LINK_NS_BASE
+            + "typedescendants";
 
     /*
      * ----- AtomPub Link Parameters -----

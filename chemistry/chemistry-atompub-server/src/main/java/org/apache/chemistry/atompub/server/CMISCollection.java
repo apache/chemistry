@@ -140,7 +140,7 @@ public abstract class CMISCollection<T> extends
         return request.absoluteUrlFor(TargetType.TYPE_COLLECTION, params);
     }
 
-    public String getTypeDescendantsLink(String tid, RequestContext request) {
+    public static String getTypeDescendantsLink(String tid, RequestContext request) {
         Map<String, String> params = new HashMap<String, String>();
         params.put("collection", "typedescendants");
         params.put("id", tid);
@@ -161,7 +161,7 @@ public abstract class CMISCollection<T> extends
         return request.absoluteUrlFor(TargetType.TYPE_COLLECTION, params);
     }
 
-    public String getFolderTreeLink(String fid, RequestContext request) {
+    public static String getFolderTreeLink(String fid, RequestContext request) {
         Map<String, String> params = new HashMap<String, String>();
         params.put("collection", "foldertree");
         params.put("id", fid);

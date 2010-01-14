@@ -31,6 +31,7 @@ import org.apache.chemistry.CMIS;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryInfo;
+import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.URITemplate;
 import org.w3c.dom.Document;
@@ -55,6 +56,8 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
 
     @Override
     protected void writeTo(StreamWriter sw) throws IOException {
+        RepositoryInfo info = provider.getRepository().getInfo();
+
         ((StaxStreamWriter) sw).startDocument("UTF-8", "1.0");
         sw.startService();
         ((StaxStreamWriter) sw).writeNamespace(CMIS.CMIS_PREFIX, CMIS.CMIS_NS);
@@ -78,25 +81,31 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
                 sw.endCollection();
             }
             // CMIS links
-            // sw.startElement(AtomPub.ATOM_LINK);
-            // sw.writeAttribute("type", "application/cmistree+xml");
-            // sw.writeAttribute("rel", AtomPubCMIS.LINK_TYPES_DESCENDANTS);
-            // String tdurl = request.absoluteUrlFor(TargetType.TYPE_SERVICE,
-            // null);
-            // tdurl = tdurl.replaceFirst("/repository$", "/typesdescendants");
-            // sw.writeAttribute("href", tdurl);
-            // sw.endElement();
+            sw.startElement(AtomPub.ATOM_LINK);
+            sw.writeAttribute("rel", AtomPubCMIS.LINK_TYPE_DESCENDANTS);
+            sw.writeAttribute("type", AtomPub.MEDIA_TYPE_ATOM_FEED);
+            String tdurl = CMISTypesCollection.getTypeDescendantsLink(null,
+                    request);
+            sw.writeAttribute("href", tdurl);
+            sw.endElement();
+            sw.startElement(AtomPub.ATOM_LINK);
+            sw.writeAttribute("rel", AtomPubCMIS.LINK_FOLDER_TREE);
+            sw.writeAttribute("type", AtomPub.MEDIA_TYPE_ATOM_FEED);
+            String fturl = CMISTypesCollection.getFolderTreeLink(
+                    info.getRootFolderId().getId(), request);
+            sw.writeAttribute("href", fturl);
+            sw.endElement();
             // URI templates
-            for (URITemplate info : provider.getURITemplates(request)) {
+            for (URITemplate uritmpl : provider.getURITemplates(request)) {
                 sw.startElement(AtomPubCMIS.URI_TEMPLATE);
                 sw.startElement(AtomPubCMIS.TYPE);
-                sw.writeElementText(info.type);
+                sw.writeElementText(uritmpl.type);
                 sw.endElement();
                 sw.startElement(AtomPubCMIS.MEDIA_TYPE);
-                sw.writeElementText(info.mediaType);
+                sw.writeElementText(uritmpl.mediaType);
                 sw.endElement();
                 sw.startElement(AtomPubCMIS.TEMPLATE);
-                sw.writeElementText(info.template);
+                sw.writeElementText(uritmpl.template);
                 sw.endElement();
                 sw.endElement();
             }
