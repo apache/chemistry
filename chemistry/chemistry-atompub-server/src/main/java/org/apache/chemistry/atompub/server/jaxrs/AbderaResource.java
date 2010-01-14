@@ -314,7 +314,7 @@ public class AbderaResource {
 
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
-    @Path("foldetree/{objectid}")
+    @Path("foldertree/{objectid}")
     public Response doGetFolderTree() {
         // objectid decoded by Abdera getCollectionAdapter
         return getAbderaFeed(2);
