@@ -83,14 +83,14 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
             // CMIS links
             sw.startElement(AtomPub.ATOM_LINK);
             sw.writeAttribute("rel", AtomPubCMIS.LINK_TYPE_DESCENDANTS);
-            sw.writeAttribute("type", AtomPub.MEDIA_TYPE_ATOM_FEED);
+            sw.writeAttribute("type", AtomPubCMIS.MEDIA_TYPE_CMIS_TREE);
             String tdurl = CMISTypesCollection.getTypeDescendantsLink(null,
                     request);
             sw.writeAttribute("href", tdurl);
             sw.endElement();
             sw.startElement(AtomPub.ATOM_LINK);
             sw.writeAttribute("rel", AtomPubCMIS.LINK_FOLDER_TREE);
-            sw.writeAttribute("type", AtomPub.MEDIA_TYPE_ATOM_FEED);
+            sw.writeAttribute("type", AtomPubCMIS.MEDIA_TYPE_CMIS_TREE);
             String fturl = CMISTypesCollection.getFolderTreeLink(
                     info.getRootFolderId().getId(), request);
             sw.writeAttribute("href", fturl);
