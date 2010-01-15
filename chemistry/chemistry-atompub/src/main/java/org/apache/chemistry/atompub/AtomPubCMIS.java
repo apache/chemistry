@@ -156,6 +156,8 @@ public class AtomPubCMIS {
 
     public static final String PARAM_UNFILE_OBJECTS = "unfileObjects";
 
+    public static final String PARAM_SOURCE_FOLDER_ID = "sourceFolderId";
+
     /*
      * ----- URI Template Types -----
      */

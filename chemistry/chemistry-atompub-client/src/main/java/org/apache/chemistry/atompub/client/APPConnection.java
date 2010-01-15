@@ -679,8 +679,37 @@ public class APPConnection implements Connection, SPI {
 
     public ObjectId moveObject(ObjectId object, ObjectId targetFolder,
             ObjectId sourceFolder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        APPObjectEntry entry = getObjectEntry(object);
+        Request req = new Request(getPostHref(targetFolder));
+        req.setHeader("Content-Type", AtomPub.MEDIA_TYPE_ATOM_ENTRY);
+        req.setParameter(AtomPubCMIS.PARAM_SOURCE_FOLDER_ID,
+                sourceFolder == null ? "" : sourceFolder.getId());
+        Response resp = connector.postObject(req, entry);
+        if (resp.getStatusCode() != 201) { // Created
+            throw new ContentManagerException(
+                    "Remote server returned error code: "
+                            + resp.getStatusCode());
+        }
+        ReadContext ctx = new ReadContext(this);
+        APPObjectEntry newEntry = (APPObjectEntry) resp.getObject(ctx);
+        // newEntry SHOULD be returned (AtomPub 9.2)...
+        String loc = resp.getHeader("Location");
+        if (loc == null) {
+            throw new ContentManagerException(
+                    "Remote server failed to return a Location header");
+        }
+        if (newEntry == null || !loc.equals(resp.getHeader("Content-Location"))) {
+            // (Content-Location defined by AtomPub 9.2)
+            // fetch actual new entry from Location header
+            // TODO could fetch only a subset of the properties, if deemed ok
+            newEntry = (APPObjectEntry) connector.getObject(ctx, loc);
+            if (newEntry == null) {
+                throw new ContentManagerException(
+                        "Remote server failed to return an entry for Location: "
+                                + loc);
+            }
+        }
+        return newEntry;
     }
 
     public void deleteObject(ObjectId object, boolean allVersions) {

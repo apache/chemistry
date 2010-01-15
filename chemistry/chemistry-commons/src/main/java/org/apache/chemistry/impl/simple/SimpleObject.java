@@ -17,7 +17,9 @@
 package org.apache.chemistry.impl.simple;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -25,6 +27,7 @@ import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.NameConstraintViolationException;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
@@ -65,9 +68,9 @@ public class SimpleObject extends BaseObject {
         }
     }
 
-    public void move(Folder targetFolder, Folder sourceFolder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+    public void move(Folder targetFolder, Folder sourceFolder)
+            throws NameConstraintViolationException, UpdateConflictException {
+        entry.connection.getSPI().moveObject(this, targetFolder, sourceFolder);
     }
 
     public void delete() throws UpdateConflictException {
@@ -94,8 +97,17 @@ public class SimpleObject extends BaseObject {
     }
 
     public Collection<Folder> getParents() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        SimpleConnection connection = (SimpleConnection) entry.connection;
+        Set<String> parents = connection.repository.parents.get(getId());
+        if (parents == SimpleRepository.NO_PARENT) {
+            return Collections.emptyList();
+        }
+        List<Folder> list = new ArrayList<Folder>(parents.size());
+        for (String pid : parents) {
+            SimpleData data = connection.repository.datas.get(pid);
+            list.add(new SimpleFolder(new SimpleObjectEntry(data, connection)));
+        }
+        return list;
     }
 
     public List<Relationship> getRelationships(RelationshipDirection direction,

@@ -480,35 +480,50 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
 
     @Override
     public ResponseContext postEntry(RequestContext request) {
-        // TODO parameter sourceFolderId
         // TODO parameter versioningState
         SPI spi = repository.getSPI();
         try {
             PropertiesAndStream posted = extractCMISProperties(request, null);
-
             ObjectId folderId = spi.newObjectId(id);
+            String sourceFolderId = request.getTarget().getParameter(
+                    AtomPubCMIS.PARAM_SOURCE_FOLDER_ID);
+            boolean isMove = sourceFolderId != null;
             ObjectId objectId;
-            String typeId = (String) posted.properties.get(Property.TYPE_ID);
-            BaseType baseType = repository.getType(typeId).getBaseType();
-            switch (baseType) {
-            case DOCUMENT:
-                String filename = (String) posted.properties.get(Property.CONTENT_STREAM_FILE_NAME);
-                if (filename == null) {
-                    filename = (String) posted.properties.get(Property.NAME);
+            if (isMove) {
+                if ("null".equals(sourceFolderId) || "".equals(sourceFolderId)) {
+                    sourceFolderId = null;
                 }
-                ContentStream contentStream = posted.stream == null ? null
-                        : new SimpleContentStream(posted.stream,
-                                posted.mimeType, filename);
-                VersioningState versioningState = null; // TODO
-                objectId = spi.createDocument(posted.properties, folderId,
-                        contentStream, versioningState);
-                break;
-            case FOLDER:
-                objectId = spi.createFolder(posted.properties, folderId);
-                break;
-            default:
-                throw new UnsupportedOperationException("not implemented: "
-                        + baseType);
+                String oid = (String) posted.properties.get(Property.ID);
+                if (oid == null) {
+                    throw new ResponseContextException("Missing id", 400);
+                }
+                objectId = spi.newObjectId(oid);
+                ObjectId sourceFolder = sourceFolderId == null ? null
+                        : spi.newObjectId(sourceFolderId);
+                objectId = spi.moveObject(objectId, folderId, sourceFolder);
+            } else {
+                String typeId = (String) posted.properties.get(Property.TYPE_ID);
+                BaseType baseType = repository.getType(typeId).getBaseType();
+                switch (baseType) {
+                case DOCUMENT:
+                    String filename = (String) posted.properties.get(Property.CONTENT_STREAM_FILE_NAME);
+                    if (filename == null) {
+                        filename = (String) posted.properties.get(Property.NAME);
+                    }
+                    ContentStream contentStream = posted.stream == null ? null
+                            : new SimpleContentStream(posted.stream,
+                                    posted.mimeType, filename);
+                    VersioningState versioningState = null; // TODO
+                    objectId = spi.createDocument(posted.properties, folderId,
+                            contentStream, versioningState);
+                    break;
+                case FOLDER:
+                    objectId = spi.createFolder(posted.properties, folderId);
+                    break;
+                default:
+                    throw new UnsupportedOperationException("not implemented: "
+                            + baseType);
+                }
             }
 
             // prepare the updated entry to return in the response
@@ -526,6 +541,8 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             return buildCreateEntryResponse(link, entry);
         } catch (ResponseContextException e) {
             return createErrorResponse(e);
+        } catch (ConstraintViolationException e) {
+            return createErrorResponse(new ResponseContextException(400, e));
         } catch (CMISRuntimeException e) {
             return createErrorResponse(new ResponseContextException(500, e));
         } catch (Exception e) {

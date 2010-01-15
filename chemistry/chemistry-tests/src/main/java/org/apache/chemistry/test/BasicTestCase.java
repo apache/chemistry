@@ -374,7 +374,6 @@ public abstract class BasicTestCase extends TestCase {
         }
     }
 
-
     public void testTrees() throws Exception {
         List<ObjectEntry> list;
 
@@ -400,7 +399,6 @@ public abstract class BasicTestCase extends TestCase {
         list = spi.getDescendants(fold1, 3, null, null);
         assertEquals(5, list.size());
     }
-
 
     public void testGetFolderParent() {
         Folder root = conn.getRootFolder();
@@ -640,6 +638,32 @@ public abstract class BasicTestCase extends TestCase {
         doc.setContentStream(cs);
         doc.setValue("title", "my doc 1");
         doc.save();
+    }
+
+    public void testMoveSPI() throws Exception {
+        ObjectEntry fold = spi.getObjectByPath("/folder 1", null);
+        ObjectEntry doc = spi.getObjectByPath("/folder 1/folder 2/doc 3", null);
+        ObjectId res = spi.moveObject(doc, fold, null);
+        assertEquals(doc.getId(), res.getId());
+        doc = spi.getObjectByPath("/folder 1/folder 2/doc 3", null);
+        assertNull(doc);
+        doc = spi.getObjectByPath("/folder 1/doc 3", null);
+        assertNotNull(doc);
+    }
+
+    public void testMove() throws Exception {
+        ObjectEntry foldid = spi.getObjectByPath("/folder 1", null);
+        Folder fold = (Folder) conn.getObject(foldid);
+
+        ObjectEntry docid = spi.getObjectByPath("/folder 1/folder 2/doc 3",
+                null);
+        Document doc = (Document) conn.getObject(docid);
+        doc.move(fold, null);
+        assertEquals(docid.getId(), doc.getId());
+        ObjectEntry d = spi.getObjectByPath("/folder 1/folder 2/doc 3", null);
+        assertNull(d);
+        d = spi.getObjectByPath("/folder 1/doc 3", null);
+        assertNotNull(d);
     }
 
 }

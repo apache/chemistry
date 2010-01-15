@@ -219,7 +219,6 @@ public class SimpleConnection implements Connection, SPI {
         if (baseTypeId != BaseType.FOLDER.getId()) {
             throw new IllegalArgumentException("Not a folder: " + id);
         }
-
     }
 
     public ObjectEntry getFolderParent(ObjectId folder, String filter) {
@@ -239,8 +238,8 @@ public class SimpleConnection implements Connection, SPI {
             return null;
         }
         if (parents.size() > 1) {
-            throw new AssertionError(folder + " has " + parents.size()
-                    + " parents");
+            throw new ConstraintViolationException(folder + " has "
+                    + parents.size() + " parents");
         }
         String parentId = parents.iterator().next();
         return new SimpleObjectEntry(repository.datas.get(parentId), this);
@@ -616,15 +615,49 @@ public class SimpleConnection implements Connection, SPI {
 
     public ObjectId moveObject(ObjectId object, ObjectId targetFolder,
             ObjectId sourceFolder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        String id = object.getId();
+        if (repository.rootId.equals(id)) {
+            throw new IllegalArgumentException("Cannot move root");
+        }
+        SimpleData data = repository.datas.get(id);
+        if (data == null) {
+            throw new ObjectNotFoundException(object.getId());
+        }
+        checkFolder(targetFolder);
+        Set<String> parents = repository.parents.get(id);
+        String sourceFolderId;
+        if (sourceFolder == null) {
+            if (parents.size() > 1) {
+                throw new ConstraintViolationException("Object "
+                        + object.getId() + " has " + parents.size()
+                        + " parents");
+            } else if (!parents.isEmpty()) {
+                sourceFolderId = parents.iterator().next();
+            } else {
+                sourceFolderId = null;
+            }
+        } else {
+            sourceFolderId = sourceFolder.getId();
+            if (!parents.contains(sourceFolderId)) {
+                throw new ConstraintViolationException("Object " + id
+                        + " is not filed in " + sourceFolderId);
+            }
+        }
+        if (sourceFolderId != null) {
+            parents.remove(sourceFolderId);
+            repository.children.get(sourceFolderId).remove(id);
+        }
+        String targetFolderId = targetFolder.getId();
+        parents.add(targetFolderId);
+        repository.children.get(targetFolderId).add(id);
+        return object;
     }
 
     public void deleteObject(ObjectId object, boolean allVersions) {
         // TODO allVersions
         String id = object.getId();
         if (repository.rootId.equals(id)) {
-            throw new ConstraintViolationException("Cannot delete root");
+            throw new IllegalArgumentException("Cannot delete root");
         }
         SimpleData data = repository.datas.get(id);
         if (data == null) {
@@ -659,7 +692,7 @@ public class SimpleConnection implements Connection, SPI {
         boolean allVersions = false; // TODO add in signature?
         String id = folder.getId();
         if (repository.rootId.equals(id)) {
-            throw new ConstraintViolationException("Cannot delete root");
+            throw new IllegalArgumentException("Cannot delete root");
         }
         SimpleData data = repository.datas.get(id);
         if (data == null) {

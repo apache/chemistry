@@ -88,23 +88,15 @@ public abstract class APPObject extends BaseObject {
      */
 
     public void move(Folder targetFolder, Folder sourceFolder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        entry.connection.moveObject(entry, targetFolder, sourceFolder);
     }
 
     public void delete() {
-        Request req = new Request(entry.getEditLink());
-        Response resp = entry.connection.getConnector().delete(req);
-        if (!resp.isOk()) {
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
+        entry.connection.deleteObject(entry, false);
     }
 
     public void unfile() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        entry.connection.removeObjectFromFolder(entry, null);
     }
 
     public ContentStream getContentStream(String contentStreamId)
