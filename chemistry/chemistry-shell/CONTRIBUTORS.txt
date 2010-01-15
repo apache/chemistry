@@ -1,0 +1,12 @@
+Authors
+-------
+
+- Bogdan Stefanescu: initial implementation
+- Stefane Fermigier: refactoring, maintainer
+
+Contributors
+------------
+
+- Florent Guillaume: code review
+- Olivier Grisel: feature requests
+

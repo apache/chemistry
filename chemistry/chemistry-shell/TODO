@@ -1,0 +1,27 @@
+P1:
+- [DONE] welcome banner
+- [DONE] refresh cache
+- [DONE] Clean up warnings
+- [DONE] fix NPE when quitting w/ ^D
+- [DONE] Make a first release + mini-announcement
+
+P2: 
+- [DONE] 'put filename.txt'
+- [DONE] Don't assume File and Workspace types exist on server
+- [DONE] move to Apache Chemistry
+- write help for all commands
+- decide on a name for executable (cmissh vs. cmis)
+- bigger announcement
+
+P3:
+- 'rm -r'
+- 'ls -l'
+- 'put -t type ...' and 'mkfile/mkdir -t type'
+- variables (or at least constants): -Dname=value -> $name
+- simple wildcards
+- multiple arguments (ex: rm toto1 toto2 toto3...)
+- better error reporting (no stracktrace unless specifically asked for)
+
+P4:
+- Specify/implement .cmisrc for global configuration
+

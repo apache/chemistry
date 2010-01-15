@@ -40,6 +40,7 @@
     <module>chemistry-ws</module>
     <module>chemistry-jcr</module>
     <module>chemistry-tck-atompub</module>
+    <module>chemistry-shell</module>
   </modules>
 
 </project>

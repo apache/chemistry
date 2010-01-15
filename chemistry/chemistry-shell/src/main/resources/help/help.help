@@ -1,0 +1,5 @@
+Usage: help [command]
+
+To get help of a specific command, type 'help name_of_command'.
+
+List of available commands:
