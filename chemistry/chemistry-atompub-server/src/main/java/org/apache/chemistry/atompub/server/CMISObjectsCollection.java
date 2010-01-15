@@ -372,7 +372,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         } else {
             ObjectElement objectElement = new ObjectElement(obb, repository);
             try {
-                properties = objectElement.getProperties();
+                properties = objectElement.getProperties(typeId);
             } catch (Exception e) { // TODO proper exception
                 throw new ResponseContextException(500, e);
             }
@@ -381,7 +381,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             if (isNew) {
                 // post
                 typeId = tid;
-            } else if (!typeId.equals(tid)) {
+            } else if (tid != null && !tid.equals(typeId)) {
                 // mismatched types during put
                 throw new ResponseContextException("Invalid type: " + tid, 500);
             }

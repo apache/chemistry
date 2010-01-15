@@ -56,11 +56,11 @@ public class ObjectElement extends ExtensibleElementWrapper {
         setProperties(object.getValues(), type);
     }
 
-    public Map<String, Serializable> getProperties() {
+    public Map<String, Serializable> getProperties(String typeId) {
         if (properties == null) {
             return Collections.emptyMap();
         }
-        return properties.getProperties();
+        return properties.getProperties(typeId);
     }
 
     public void setProperties(Map<String, Serializable> values, Type type) {

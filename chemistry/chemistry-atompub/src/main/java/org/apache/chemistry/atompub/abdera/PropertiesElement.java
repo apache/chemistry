@@ -36,6 +36,7 @@ import org.apache.abdera.model.ExtensibleElement;
 import org.apache.abdera.model.ExtensibleElementWrapper;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMIS;
+import org.apache.chemistry.CMISRuntimeException;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
@@ -66,11 +67,10 @@ public class PropertiesElement extends ExtensibleElementWrapper {
         repository = null;
     }
 
-    public Map<String, Serializable> getProperties() {
+    public Map<String, Serializable> getProperties(String typeId) {
         // collector raw values
         Map<String, List<Serializable>> raw = new HashMap<String, List<Serializable>>();
         Map<String, ValueAdapter> adapters = new HashMap<String, ValueAdapter>();
-        String typeId = null;
         for (Element element : getElements()) {
             ValueAdapter va = ValueAdapter.getAdapter(element.getQName());
             if (va == null) {
@@ -99,7 +99,12 @@ public class PropertiesElement extends ExtensibleElementWrapper {
                 }
                 list.add(value);
                 if (pdid.equals(Property.TYPE_ID)) {
-                    typeId = (String) value;
+                    String tid = (String) value;
+                    if (tid == null || !(typeId == null || tid.equals(typeId))) {
+                        // mismatched types during put
+                        throw new CMISRuntimeException("Invalid type: " + tid);
+                    }
+                    typeId = tid;
                 }
             }
             raw.put(pdid, list);
