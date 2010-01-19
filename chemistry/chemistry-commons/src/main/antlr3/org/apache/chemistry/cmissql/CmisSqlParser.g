@@ -130,19 +130,17 @@ join_specification:
 where_clause: WHERE^ search_condition;
 
 search_condition:
-    // not a BIN_OP
-    boolean_term ( OR^ boolean_term )*;
+    boolean_term ( OR boolean_term )*;
 
 boolean_term:
-    // not a BIN_OP
-    boolean_factor ( AND^ boolean_factor )*;
+    boolean_factor ( AND boolean_factor )*;
 
 boolean_factor:
-    NOT^?  boolean_test;
+    NOT? boolean_test;
 
 boolean_test:
       predicate
-    | LPAR! search_condition RPAR!
+    | LPAR search_condition RPAR
     ;
 
 predicate:
@@ -212,7 +210,9 @@ quantified_in_predicate:
     ;
 
 text_search_predicate:
-    CONTAINS^ LPAR! (qualifier COMMA!)? text_search_expression RPAR!;
+    CONTAINS LPAR (qualifier COMMA)? text_search_expression RPAR
+      -> ^(FUNC CONTAINS qualifier? text_search_expression)
+    ;
 
 folder_predicate:
     ( f=IN_FOLDER | f=IN_TREE ) LPAR (qualifier COMMA)? folder_id RPAR

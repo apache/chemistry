@@ -41,4 +41,27 @@ public class SimpleData extends ConcurrentHashMap<String, Serializable> {
         }
     }
 
+    /**
+     * Returns the value to which the specified key is mapped, or {@code null}
+     * if this map contains no mapping for the key.
+     * <p>
+     * Key comparison is done case insensitively.
+     *
+     * @throws NullPointerException if the specified key is {@code null}
+     * @see ConcurrentHashMap#get(Object)
+     */
+    public Serializable getIgnoreCase(String key) {
+        // shortcut for exact case match
+        if (contains(key)) {
+            return get(key);
+        }
+        // try all keys
+        for (String k : keySet()) {
+            if (key.equalsIgnoreCase(k)) {
+                return get(k);
+            }
+        }
+        return null;
+    }
+
 }

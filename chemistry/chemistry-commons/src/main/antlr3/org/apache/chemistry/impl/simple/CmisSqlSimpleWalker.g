@@ -53,11 +53,23 @@ import org.apache.chemistry.impl.simple.SimpleData;
 
 @members {
     public SimpleData data;
+    public SimpleConnection connection;
+
+    public String errorMessage;
+
+    @Override
+    public void displayRecognitionError(String[] tokenNames,
+            RecognitionException e) {
+        if (errorMessage == null) {
+            errorMessage = getErrorMessage(e, tokenNames);
+        }
+    }
 }
 
-query [SimpleData d] returns [String tableName, boolean matches]
+query [SimpleData d, SimpleConnection conn] returns [String tableName, boolean matches]
 @init {
     data = $d;
+    connection = $conn;
 }:
     ^(SELECT select_list from_clause where_clause order_by_clause?)
     {
@@ -90,7 +102,7 @@ column_reference returns [Object value]:
       {
           String col = $column_name.start.getText();
           // TODO should use query name
-          $value = data.get(col); // TODO error if unknown prop
+          $value = data.getIgnoreCase(col); // TODO error if unknown prop
       }
     ;
 
@@ -144,67 +156,31 @@ where_clause returns [boolean matches]:
     ;
 
 search_condition returns [boolean matches]:
-      boolean_term
-        {
-            $matches = $boolean_term.matches;
-        }
-    | ^(OR (list+=boolean_term)+)
-        {
-            $matches = false;
-            for (boolean_term_return t : (List<boolean_term_return>) $list) {
-                if (t.matches) {
-                    $matches = true;
-                    break;
-                }
-            }
-        }
+    b1=boolean_term { $matches = $b1.matches; }
+    (OR b2=boolean_term { $matches |= $b2.matches; })*
     ;
 
 boolean_term returns [boolean matches]:
-      boolean_factor
-        {
-            $matches = $boolean_factor.matches;
-        }
-    | ^(AND (list+=boolean_factor)+)
-        {
-            $matches = true;
-            for (boolean_factor_return t : (List<boolean_factor_return>) $list) {
-                if (t.matches) {
-                    $matches = false;
-                    break;
-                }
-            }
-        }
+    b1=boolean_factor { $matches = $b1.matches; }
+    (AND b2=boolean_factor { $matches &= $b2.matches; })*
     ;
 
 boolean_factor returns [boolean matches]:
-      boolean_test
-        {
-            $matches = $boolean_test.matches;
-        }
-    | ^(NOT boolean_test)
-        {
-            $matches = ! $boolean_test.matches;
-        }
+      b=boolean_test { $matches = $b.matches; }
+    | NOT b=boolean_test { $matches = ! $b.matches; }
     ;
 
 boolean_test returns [boolean matches]:
-      predicate
-        {
-            $matches = $predicate.matches;
-        }
-//    | search_condition
+      predicate { $matches = $predicate.matches; }
+    | LPAR search_condition RPAR { $matches = $search_condition.matches; }
     ;
 
-predicate returns [boolean matches]:
-      ^(UN_OP IS_NULL un_arg)
-        {
-            $matches = $un_arg.value == null;
-        }
-    | ^(UN_OP IS_NOT_NULL un_arg)
-        {
-            $matches = $un_arg.value != null;
-        }
+predicate returns [boolean matches]
+@init {
+    List<Object> literals = new ArrayList<Object>();
+}:
+      ^(UN_OP IS_NULL un_arg) { $matches = $un_arg.value == null; }
+    | ^(UN_OP IS_NOT_NULL un_arg) { $matches = $un_arg.value != null; }
     | ^(BIN_OP bin_op arg1=bin_arg arg2=bin_arg)
         {
             int token = $bin_op.start.getType();
@@ -221,8 +197,24 @@ predicate returns [boolean matches]:
                     throw new UnwantedTokenException(token, input);
             }
         }
-//    | text_search_predicate
-//    | folder_predicate
+    | ^(FUNC func_name (literal { literals.add($literal.value); })*)
+        {
+            int func = $func_name.start.getType();
+            switch (func) {
+                case IN_FOLDER:
+                    $matches = connection.isInFolder(data, literals.get(0));
+                    break;
+                case IN_TREE:
+                    $matches = connection.isInTree(data, literals.get(0));
+                    break;
+                case CONTAINS:
+                    $matches = connection.fulltextContains(data, literals);
+                    break;
+                case ID:
+                default:
+                    throw new UnwantedTokenException(Token.INVALID_TOKEN_TYPE, input);
+            }
+        }
     ;
 
 un_arg returns [Object value]:
@@ -235,7 +227,10 @@ un_arg returns [Object value]:
 bin_op:
     EQ | NEQ | LT | GT | LTEQ | GTEQ | LIKE | NOT_LIKE;
 
-bin_arg returns [Object value]:
+bin_arg returns [Object value]
+@init {
+    List<Object> literals = new ArrayList<Object>();
+}:
       value_expression
         {
             $value = $value_expression.value;
@@ -244,15 +239,14 @@ bin_arg returns [Object value]:
         {
             $value = $literal.value;
         }
-    | ^(LIST (list+=literal)+)
+    | ^(LIST (literal { literals.add($literal.value); })+)
         {
-            List<Object> ret = new ArrayList<Object>($list.size());
-            for (literal_return l : (List<literal_return>) $list) {
-                ret.add(l.value);
-            }
-            $value = ret;
+            $value = literals;
         }
     ;
+
+func_name:
+    IN_FOLDER | IN_TREE | CONTAINS | ID;
 
 literal returns [Object value]:
       NUM_LIT

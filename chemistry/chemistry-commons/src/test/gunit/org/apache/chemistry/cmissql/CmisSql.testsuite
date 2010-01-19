@@ -113,12 +113,12 @@ folder_predicate:
 "IN_TREE('ID123')" -> (FUNC IN_TREE 'ID123')
 
 text_search_predicate:
-"CONTAINS('foo')" -> (CONTAINS 'foo')
-"CONTAINS(bar, 'foo')" -> (CONTAINS bar 'foo')
+"CONTAINS('foo')" -> (FUNC CONTAINS 'foo')
+"CONTAINS(bar, 'foo')" -> (FUNC CONTAINS bar 'foo')
 
-search_condition:
-"foo = 1" -> (BIN_OP = (COL foo) 1)
-"a = 1 AND b <> 2 OR c >= 3 AND NOT d <= 4" -> (OR (AND (BIN_OP = (COL a) 1) (BIN_OP <> (COL b) 2)) (AND (BIN_OP >= (COL c) 3) (NOT (BIN_OP <= (COL d) 4))))
+where_clause:
+"WHERE foo = 1" -> (WHERE (BIN_OP = (COL foo) 1))
+"WHERE a = 1 AND b <> 2 OR c >= 3 AND NOT d <= 4" -> (WHERE (BIN_OP = (COL a) 1) AND (BIN_OP <> (COL b) 2) OR (BIN_OP >= (COL c) 3) AND NOT (BIN_OP <= (COL d) 4))
 
 query:
 "SELECT * FROM Document" -> (SELECT * (FROM (TABLE Document)))
@@ -132,7 +132,7 @@ query:
 SELECT TITLE, AUTHORS, DATE
 FROM WHITE_PAPER
 WHERE ( IN_TREE('ID00093854763') ) AND ( 'SMITH' = ANY AUTHORS )
->> -> (SELECT (LIST (COL TITLE) (COL AUTHORS) (COL DATE)) (FROM (TABLE WHITE_PAPER)) (WHERE (AND (FUNC IN_TREE 'ID00093854763') (BIN_OP_ANY = 'SMITH' (COL AUTHORS)))))
+>> -> (SELECT (LIST (COL TITLE) (COL AUTHORS) (COL DATE)) (FROM (TABLE WHITE_PAPER)) (WHERE ( (FUNC IN_TREE 'ID00093854763') ) AND ( (BIN_OP_ANY = 'SMITH' (COL AUTHORS)) )))
 
 <<
 SELECT OBJECT_ID, SCORE() AS X, DESTINATION, DEPARTURE_DATES

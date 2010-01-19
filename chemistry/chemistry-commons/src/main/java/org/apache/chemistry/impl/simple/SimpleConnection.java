@@ -23,8 +23,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -41,6 +43,7 @@ import org.apache.chemistry.ACE;
 import org.apache.chemistry.ACLPropagation;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.CMISRuntimeException;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ConstraintViolationException;
 import org.apache.chemistry.ContentStream;
@@ -66,6 +69,7 @@ import org.apache.chemistry.Updatability;
 import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.cmissql.CmisSqlLexer;
 import org.apache.chemistry.cmissql.CmisSqlParser;
+import org.apache.chemistry.impl.simple.CmisSqlSimpleWalker.query_return;
 import org.apache.chemistry.util.GregorianCalendar;
 
 public class SimpleConnection implements Connection, SPI {
@@ -781,12 +785,69 @@ public class SimpleConnection implements Connection, SPI {
             CommonTree tree = (CommonTree) new CmisSqlParser(tokens).query().getTree();
             CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
             nodes.setTokenStream(tokens);
-            return new CmisSqlSimpleWalker(nodes).query(data);
+            CmisSqlSimpleWalker walker = new CmisSqlSimpleWalker(nodes);
+            query_return res = walker.query(data, this);
+            if (walker.errorMessage != null) {
+                throw new CMISRuntimeException("Cannot parse query: "
+                        + statement + " (" + walker.errorMessage + ")");
+            }
+            return res;
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new CMISRuntimeException(e.getMessage(), e);
         } catch (RecognitionException e) {
-            throw new RuntimeException("Cannot parse query: " + statement, e);
+            throw new CMISRuntimeException("Cannot parse query: " + statement,
+                    e);
         }
+    }
+
+    // IN_FOLDER
+    protected boolean isInFolder(SimpleData data, Object folderId) {
+        if (!(folderId instanceof String)) {
+            throw new IllegalArgumentException(folderId.toString());
+        }
+        Set<String> children = repository.children.get(folderId);
+        if (children == null) {
+            return false; // no such id
+        }
+        return children.contains(data.get(Property.ID));
+    }
+
+    // IN_TREE
+    protected boolean isInTree(SimpleData data, Object folderId) {
+        if (!(folderId instanceof String)) {
+            throw new IllegalArgumentException(folderId.toString());
+        }
+        String id = (String) data.get(Property.ID);
+        if (id == null) {
+            return false; // no such id
+        }
+        Queue<String> todo = new LinkedList<String>(Collections.singleton(id));
+        while (!todo.isEmpty()) {
+            String cur = todo.remove();
+            Set<String> parents = repository.parents.get(cur);
+            for (String pid : parents) {
+                if (pid.equals(folderId)) {
+                    return true;
+                }
+            }
+            todo.addAll(parents);
+        }
+        return false;
+    }
+
+    // CONTAINS
+    protected boolean fulltextContains(SimpleData data, List<Object> args) {
+        // String qual;
+        String query;
+        if (args.size() == 2) {
+            // qual = (String) args.get(0);
+            query = (String) args.get(1);
+        } else {
+            // qual = null;
+            query = (String) args.get(0);
+        }
+        Set<String> words = SimpleFulltext.parseFulltext(data);
+        return SimpleFulltext.matchesFullText(words, query);
     }
 
     public Collection<CMISObject> query(String statement,

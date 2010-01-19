@@ -252,11 +252,65 @@ public abstract class BasicTestCase extends TestCase {
     }
 
     public void testQuery() {
-        Collection<CMISObject> res = conn.query("SELECT * FROM doc", false);
+        String rootId = spi.getRepository().getInfo().getRootFolderId().getId();
+        String folder1Id = spi.getObjectByPath("/folder 1", null).getId();
+        String folder2Id = spi.getObjectByPath("/folder 1/folder 2", null).getId();
+        Collection<CMISObject> res;
+
+        res = conn.query("SELECT * FROM doc", false);
         assertNotNull(res);
         assertEquals(4, res.size());
+        res = conn.query("SELECT * FROM cmis:document", false);
+        assertNotNull(res);
+        assertEquals(4, res.size());
+        ObjectEntry doc = spi.getObjectByPath("/folder 1/folder 2/doc 2", null);
+        res = conn.query(String.format(
+                "SELECT * FROM cmis:document WHERE cmis:objectId = '%s'",
+                doc.getId()), false);
+        assertEquals(1, res.size());
+
         res = conn.query("SELECT * FROM fold", false);
         assertEquals(2, res.size());
+        res = conn.query("SELECT * FROM cmis:folder", false);
+        assertEquals(3, res.size()); // root as well
+        res = conn.query(String.format(
+                "SELECT * FROM cmis:folder WHERE cmis:objectId = '%s'",
+                folder2Id), false);
+        assertEquals(1, res.size());
+        res = conn.query(String.format(
+                "SELECT * FROM cmis:folder WHERE cmis:objectId = '%s'"
+                        + " AND cmis:name = 'folder 2'"
+                        + " AND title <> 'blarg'", //
+                folder2Id), false);
+        assertEquals(1, res.size());
+
+        // IN_FOLDER
+        String sqlpat = "SELECT * FROM cmis:document WHERE IN_FOLDER('%s')";
+        res = conn.query(String.format(sqlpat, folder2Id), false);
+        assertEquals(3, res.size());
+        sqlpat = "SELECT * FROM cmis:folder WHERE IN_FOLDER('%s')";
+        res = conn.query(String.format(sqlpat, folder1Id), false);
+        assertEquals(1, res.size());
+
+        // IN_TREE
+        sqlpat = "SELECT * FROM cmis:document WHERE IN_TREE('%s')";
+        res = conn.query(String.format(sqlpat, folder2Id), false);
+        assertEquals(3, res.size());
+        sqlpat = "SELECT * FROM cmis:document WHERE IN_TREE('%s')";
+        res = conn.query(String.format(sqlpat, folder1Id), false);
+        assertEquals(4, res.size());
+        sqlpat = "SELECT * FROM cmis:folder WHERE IN_TREE('%s')";
+        res = conn.query(String.format(sqlpat, rootId), false);
+        assertEquals(2, res.size());
+
+        // CONTAINS
+        res = conn.query(
+                "SELECT * FROM cmis:folder WHERE CONTAINS('description')",
+                false);
+        assertEquals(2, res.size());
+        res = conn.query("SELECT * FROM cmis:document WHERE CONTAINS('small')",
+                false);
+        assertEquals(1, res.size());
     }
 
     public void testGetObjectByPath() {
