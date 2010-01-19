@@ -27,14 +27,8 @@ import org.apache.chemistry.xml.stax.StaxReader;
  */
 public class TypeFeedReader extends AbstractFeedReader<TypeManager, APPType> {
 
-    public static final TypeFeedReader INSTANCE = new TypeFeedReader();
-
-    public TypeFeedReader() {
-        super(TypeEntryReader.INSTANCE);
-    }
-
-    public TypeFeedReader(TypeEntryReader entryReader) {
-        super(entryReader);
+    public TypeFeedReader(boolean includePropertyDefinitions) {
+        super(new TypeEntryReader(includePropertyDefinitions));
     }
 
     @Override

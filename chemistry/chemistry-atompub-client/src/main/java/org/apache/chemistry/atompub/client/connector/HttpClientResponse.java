@@ -132,18 +132,21 @@ public class HttpClientResponse implements Response {
         }
     }
 
-    public Type getType(ReadContext ctx) throws ContentManagerException {
+    public Type getType(ReadContext ctx, boolean includePropertyDefinitions)
+            throws ContentManagerException {
         try {
-            return io.getTypeEntryReader().read(ctx, getStream());
+            return io.getTypeEntryReader(includePropertyDefinitions).read(ctx,
+                    getStream());
         } catch (XMLStreamException e) {
             throw new ContentManagerException(e);
         }
     }
 
-    public TypeManager getTypeFeed(ReadContext ctx)
-            throws ContentManagerException {
+    public TypeManager getTypeFeed(ReadContext ctx,
+            boolean includePropertyDefinitions) throws ContentManagerException {
         try {
-            return io.getTypeFeedReader().read(ctx, getStream());
+            return io.getTypeFeedReader(includePropertyDefinitions).read(ctx,
+                    getStream());
         } catch (XMLStreamException e) {
             throw new ContentManagerException(e);
         }

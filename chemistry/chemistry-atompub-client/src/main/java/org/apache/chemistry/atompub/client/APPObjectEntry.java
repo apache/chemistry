@@ -53,6 +53,8 @@ public class APPObjectEntry implements ObjectEntry {
     protected static final ContentStream REMOTE_CONTENT_STREAM = new SimpleContentStream(
             new byte[0], null, null);
 
+    protected final APPRepository repository;
+
     protected final APPConnection connection;
 
     protected final Map<String, XmlProperty> properties;
@@ -102,9 +104,10 @@ public class APPObjectEntry implements ObjectEntry {
         }
     }
 
-    public APPObjectEntry(APPConnection connection,
+    protected APPObjectEntry(APPRepository repository, APPConnection connection,
             Map<String, XmlProperty> properties,
             Map<QName, Boolean> allowableActions) {
+        this.repository = repository;
         this.connection = connection;
         this.properties = properties;
         if (allowableActions == null) {
@@ -114,6 +117,17 @@ public class APPObjectEntry implements ObjectEntry {
         }
         this.allowableActions = allowableActions;
         links = new ArrayList<Link>();
+    }
+
+    public APPObjectEntry(APPConnection connection,
+            Map<String, XmlProperty> properties,
+            Map<QName, Boolean> allowableActions) {
+        this((APPRepository) connection.getRepository(), connection,
+                properties, allowableActions);
+    }
+
+    public APPObjectEntry(APPRepository repository) {
+        this(repository, null, new HashMap<String, XmlProperty>(), null);
     }
 
     public void addContentHref(String href, String type) {
@@ -162,10 +176,6 @@ public class APPObjectEntry implements ObjectEntry {
     }
 
     // -----
-
-    public APPConnection getConnection() {
-        return connection;
-    }
 
     protected boolean isCreation() {
         return getId() == null;
@@ -220,8 +230,8 @@ public class APPObjectEntry implements ObjectEntry {
         if (p != null) {
             p.setValue(value);
         } else {
-            PropertyDefinition pd = connection.getRepository().getType(
-                    getTypeId()).getPropertyDefinition(id);
+            PropertyDefinition pd = repository.getType(getTypeId()).getPropertyDefinition(
+                    id);
             if (pd == null) {
                 throw new IllegalArgumentException("No such property: " + id);
             }
@@ -236,8 +246,8 @@ public class APPObjectEntry implements ObjectEntry {
         if (p != null) {
             p._setValue(value);
         } else {
-            PropertyDefinition pd = connection.getRepository().getType(
-                    getTypeId()).getPropertyDefinition(id);
+            PropertyDefinition pd = repository.getType(getTypeId()).getPropertyDefinition(
+                    id);
             if (pd == null) {
                 throw new IllegalArgumentException("No such property: " + id);
             }

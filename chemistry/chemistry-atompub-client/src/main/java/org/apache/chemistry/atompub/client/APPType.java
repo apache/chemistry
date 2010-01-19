@@ -29,8 +29,8 @@ import org.apache.chemistry.CMIS;
 import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.atompub.client.connector.Connector;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
-import org.apache.chemistry.atompub.client.stax.XmlProperty;
 
 /**
  *
@@ -45,10 +45,11 @@ public class APPType extends APPObjectEntry implements Type {
 
     protected String parentId = UNDEFINED;
 
+    /** Property definitions. {@code null} when not yet loaded (lazy). */
     protected Map<String, PropertyDefinition> propertyDefs;
 
-    public APPType(APPConnection connection) {
-        super(connection, new HashMap<String, XmlProperty>(), null);
+    public APPType(APPRepository repository) {
+        super(repository);
     }
 
     public void init(Map<String, String> properties,
@@ -175,9 +176,12 @@ public class APPType extends APPObjectEntry implements Type {
 
     protected void loadPropertyDef() {
         if (propertyDefs == null) {
-            APPType typeDef = (APPType) connection.getConnector().getType(
-                    new ReadContext(connection), getEditLink());
-            propertyDefs = typeDef.propertyDefs;
+            Connector connector = repository.getContentManager().getConnector();
+            String href = APPRepository.includePropertyDefinitionsInURI(getEditLink());
+            APPType typeDef = (APPType) connector.getType(new ReadContext(
+                    repository), href, true);
+            propertyDefs = typeDef.propertyDefs == null ? new HashMap<String, PropertyDefinition>()
+                    : typeDef.propertyDefs;
         }
     }
 

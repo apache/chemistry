@@ -27,6 +27,7 @@ import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Paging;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.atompub.client.ContentManagerException;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.XmlObjectWriter;
@@ -54,6 +55,10 @@ public class HttpClientConnector implements Connector {
     public HttpClientConnector(IOProvider io) {
         this.io = io;
         client = new HttpClient();
+        // use a multi-threaded connection manager because we need reentrancy
+        // when reading some property definition
+        // client.setHttpConnectionManager(new
+        // MultiThreadedHttpConnectionManager());
     }
 
     public void setCredentialsProvider(CredentialsProvider cp) {
@@ -167,7 +172,8 @@ public class HttpClientConnector implements Connector {
         }
     }
 
-    public Type getType(ReadContext ctx, String href) {
+    public Type getType(ReadContext ctx, String href,
+            boolean includePropertyDefinitions) {
         Request req = new Request(href);
         Response resp = get(req);
         if (!resp.isOk()) {
@@ -175,7 +181,7 @@ public class HttpClientConnector implements Connector {
                     "Remote server returned error code: "
                             + resp.getStatusCode() + "\n\n" + resp.getString());
         }
-        return resp.getType(ctx);
+        return resp.getType(ctx, includePropertyDefinitions);
     }
 
     public ObjectEntry getObject(ReadContext ctx, String href) {
@@ -201,8 +207,8 @@ public class HttpClientConnector implements Connector {
         return resp.getObjectFeed(ctx);
     }
 
-    public List<ObjectEntry> getTypeFeed(ReadContext ctx, String href)
-            throws ContentManagerException {
+    public TypeManager getTypeFeed(ReadContext ctx, String href,
+            boolean includePropertyDefinitions) throws ContentManagerException {
         Request req = new Request(href);
         Response resp = get(req);
         if (!resp.isOk()) {
@@ -210,7 +216,7 @@ public class HttpClientConnector implements Connector {
                     "Remote server returned error code: "
                             + resp.getStatusCode() + "\n\n" + resp.getString());
         }
-        return resp.getObjectFeed(ctx);
+        return resp.getTypeFeed(ctx, includePropertyDefinitions);
     }
 
     public Repository[] getServiceDocument(ReadContext ctx, String href)

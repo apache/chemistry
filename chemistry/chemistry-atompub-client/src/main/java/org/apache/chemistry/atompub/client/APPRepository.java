@@ -17,7 +17,6 @@
  */
 package org.apache.chemistry.atompub.client;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.Collection;
@@ -38,8 +37,6 @@ import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.URITemplate;
 import org.apache.chemistry.atompub.client.connector.APPContentManager;
-import org.apache.chemistry.atompub.client.connector.Request;
-import org.apache.chemistry.atompub.client.connector.Response;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.impl.simple.SimpleTypeManager;
 import org.apache.commons.logging.Log;
@@ -77,7 +74,7 @@ public class APPRepository implements Repository {
         this.info = info;
     }
 
-    public ContentManager getContentManager() {
+    public APPContentManager getContentManager() {
         return cm;
     }
 
@@ -211,20 +208,17 @@ public class APPRepository implements Repository {
     }
 
     protected TypeManager readTypes(String href) throws Exception {
-        // TODO lazy load property definition
-        Request req = new Request(href + "?includePropertyDefinitions=true");
-        Response resp = cm.getConnector().get(req);
-        if (!resp.isOk()) {
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
+        href = includePropertyDefinitionsInURI(href);
+        return cm.getConnector().getTypeFeed(new ReadContext(this), href, true);
+    }
+
+    protected static String includePropertyDefinitionsInURI(String href) {
+        if (!href.contains(AtomPubCMIS.PARAM_INCLUDE_PROPERTY_DEFINITIONS)) {
+            char sep = href.contains("?") ? '&' : '?';
+            href += sep + AtomPubCMIS.PARAM_INCLUDE_PROPERTY_DEFINITIONS
+                    + "=true";
         }
-        InputStream in = resp.getStream();
-        try {
-            return TypeFeedReader.INSTANCE.read(new ReadContext(this), in);
-        } finally {
-            in.close();
-        }
+        return href;
     }
 
     /*

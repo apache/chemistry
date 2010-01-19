@@ -29,8 +29,8 @@ public class TypeFeedReaderTest extends TestCase {
 
     public void testReadTypesFeed() throws Exception {
         InputStream is = getClass().getResourceAsStream("/types-feed.xml");
-        TypeManager typeManager = TypeFeedReader.INSTANCE.read(new ReadContext(
-                (Repository) null), is);
+        TypeManager typeManager = new TypeFeedReader(true).read(
+                new ReadContext((Repository) null), is);
         assertEquals(5, typeManager.getTypes().size());
     }
 

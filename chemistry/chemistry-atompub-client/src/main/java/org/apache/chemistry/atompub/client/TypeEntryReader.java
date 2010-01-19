@@ -43,11 +43,15 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
 
     private static final Log log = LogFactory.getLog(TypeEntryReader.class);
 
-    public static final TypeEntryReader INSTANCE = new TypeEntryReader();
+    protected final boolean includePropertyDefinitions;
+
+    public TypeEntryReader(boolean includePropertyDefinitions) {
+        this.includePropertyDefinitions = includePropertyDefinitions;
+    }
 
     @Override
     protected APPType createObject(ReadContext ctx) {
-        APPType type = new APPType((APPConnection) ctx.getConnection());
+        APPType type = new APPType((APPRepository) ctx.getRepository());
         return type;
     }
 
@@ -69,19 +73,18 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
         if (AtomPubCMIS.TYPE.getLocalPart().equals(reader.getLocalName())) {
             ChildrenNavigator children = reader.getChildren();
             Map<String, String> map = new HashMap<String, String>();
-            Map<String, PropertyDefinition> pdefs = null;
+            Map<String, PropertyDefinition> pdefs = new HashMap<String, PropertyDefinition>();
             while (children.next()) {
                 String name = reader.getLocalName();
                 if (name.startsWith("property")) {
-                    if (pdefs == null) {
-                        pdefs = new HashMap<String, PropertyDefinition>();
+                    if (includePropertyDefinitions) {
+                        PropertyDefinition pdef = readPropertyDef(reader);
+                        if (pdef.getId() == null) {
+                            throw new IllegalArgumentException(
+                                    "Invalid property definition: no id given");
+                        }
+                        pdefs.put(pdef.getId(), pdef);
                     }
-                    PropertyDefinition pdef = readPropertyDef(reader);
-                    if (pdef.getId() == null) {
-                        throw new IllegalArgumentException(
-                                "Invalid property definition: no id given");
-                    }
-                    pdefs.put(pdef.getId(), pdef);
                 } else {
                     String text;
                     try {
@@ -121,6 +124,9 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
                             + map.get(CMIS.ID.getLocalPart()) + ", missing "
                             + qname.getPrefix() + ':' + qname.getLocalPart());
                 }
+            }
+            if (!includePropertyDefinitions) {
+                pdefs = null;
             }
             entry.init(map, pdefs);
         }

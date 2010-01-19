@@ -51,11 +51,13 @@ public interface Response {
     ListPage<ObjectEntry> getObjectFeed(ReadContext ctx)
             throws ContentManagerException;
 
-    TypeManager getTypeFeed(ReadContext ctx) throws ContentManagerException;
+    TypeManager getTypeFeed(ReadContext ctx, boolean includePropertyDefinitions)
+            throws ContentManagerException;
 
     ObjectEntry getObject(ReadContext ctx) throws ContentManagerException;
 
-    Type getType(ReadContext ctx) throws ContentManagerException;
+    Type getType(ReadContext ctx, boolean includePropertyDefinitions)
+            throws ContentManagerException;
 
     Repository[] getServiceDocument(ReadContext ctx)
             throws ContentManagerException;

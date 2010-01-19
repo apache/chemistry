@@ -36,13 +36,14 @@ public interface IOProvider {
 
     EntryReader<? extends ObjectEntry> getObjectEntryReader();
 
-    EntryReader<? extends Type> getTypeEntryReader();
+    EntryReader<? extends Type> getTypeEntryReader(
+            boolean includePropertyDefinitions);
 
     ServiceDocumentReader<?> getServiceDocumentReader();
 
     FeedReader<ListPage<ObjectEntry>> getObjectFeedReader();
 
-    FeedReader<TypeManager> getTypeFeedReader();
+    FeedReader<TypeManager> getTypeFeedReader(boolean includePropertyDefinitions);
 
     XmlObjectWriter<ObjectEntry> getObjectEntryWriter();
 

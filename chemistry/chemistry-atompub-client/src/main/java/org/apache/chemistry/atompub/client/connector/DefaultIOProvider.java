@@ -46,10 +46,6 @@ public class DefaultIOProvider implements IOProvider {
     protected final APPObjectFeedReader objectFeedReader = new APPObjectFeedReader(
             objectReader);
 
-    protected final TypeEntryReader typeReader = new TypeEntryReader();
-
-    protected final TypeFeedReader typeFeedReader = new TypeFeedReader(typeReader);
-
     protected final APPServiceDocumentReader serviceDocumentReader = new APPServiceDocumentReader();
 
     protected final APPObjectEntryWriter objectWriter = new APPObjectEntryWriter();
@@ -66,12 +62,12 @@ public class DefaultIOProvider implements IOProvider {
         return serviceDocumentReader;
     }
 
-    public FeedReader<TypeManager> getTypeFeedReader() {
-        return typeFeedReader;
+    public FeedReader<TypeManager> getTypeFeedReader(boolean includePropertyDefinitions) {
+        return new TypeFeedReader(includePropertyDefinitions);
     }
 
-    public EntryReader<? extends Type> getTypeEntryReader() {
-        return typeReader;
+    public EntryReader<? extends Type> getTypeEntryReader(boolean includePropertyDefinitions) {
+        return new TypeEntryReader(includePropertyDefinitions);
     }
 
     public XmlObjectWriter<ObjectEntry> getObjectEntryWriter() {

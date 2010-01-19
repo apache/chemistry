@@ -24,6 +24,7 @@ import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Paging;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.atompub.client.ContentManagerException;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.XmlObjectWriter;
@@ -51,7 +52,8 @@ public interface Connector {
 
     Response delete(Request operation) throws ContentManagerException;
 
-    Type getType(ReadContext ctx, String href) throws ContentManagerException;
+    Type getType(ReadContext ctx, String href,
+            boolean includePropertyDefinitions) throws ContentManagerException;
 
     ObjectEntry getObject(ReadContext ctx, String href)
             throws ContentManagerException;
@@ -59,8 +61,8 @@ public interface Connector {
     List<ObjectEntry> getObjectFeed(ReadContext ctx, String href)
             throws ContentManagerException;
 
-    List<ObjectEntry> getTypeFeed(ReadContext ctx, String href)
-            throws ContentManagerException;
+    TypeManager getTypeFeed(ReadContext ctx, String href,
+            boolean includePropertyDefinitions) throws ContentManagerException;
 
     Repository[] getServiceDocument(ReadContext ctx, String href)
             throws ContentManagerException;
