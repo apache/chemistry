@@ -96,19 +96,11 @@ value_expression returns [Object value]:
         {
             $value = $column_reference.value;
         }
-    | ^(FUNC func_name arg*)
+    | ^(FUNC SCORE)
         {
-            int func = $func_name.start.getType();
-            switch (func) {
-                case SCORE:
-                    $value = Double.valueOf(1);
-                    break;
-                // case ID:
-                // TODO provide extension points for other functions
-                default:
-                    throw new UnwantedTokenException(Token.INVALID_TOKEN_TYPE, input);
-            }
+            $value = Double.valueOf(1);
         }
+    // TODO provide extension points for other functions
     ;
 
 column_reference returns [Object value]:
@@ -244,9 +236,6 @@ predicate returns [boolean matches]
 
 bin_op:
     EQ | NEQ | LT | GT | LTEQ | GTEQ | LIKE | NOT_LIKE;
-
-func_name:
-    SCORE | ID;
 
 bool_func_name:
     IN_FOLDER | IN_TREE | CONTAINS | ID;
