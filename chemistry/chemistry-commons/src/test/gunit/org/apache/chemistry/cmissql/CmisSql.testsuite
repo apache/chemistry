@@ -59,7 +59,7 @@ literal:
 "-123" OK
 "0" OK
 "0123" FAIL
-"abc123" FAIL
+"abc123" OK
 "123abc" FAIL
 "'abc'" OK
 

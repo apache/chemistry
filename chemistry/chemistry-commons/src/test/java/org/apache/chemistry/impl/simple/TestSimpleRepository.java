@@ -270,6 +270,9 @@ public class TestSimpleRepository extends TestCase {
         Collection<CMISObject> res = conn.query("SELECT * FROM cmis:folder",
                 false);
         assertEquals(1, res.size()); // the root
+        // case insensitive on keywords and types
+        res = conn.query("seLect * fRoM cmis:Folder", false);
+        assertEquals(1, res.size());
         res = conn.query("SELECT * FROM fold", false);
         assertEquals(0, res.size());
         res = conn.query("SELECT * FROM doc", false);

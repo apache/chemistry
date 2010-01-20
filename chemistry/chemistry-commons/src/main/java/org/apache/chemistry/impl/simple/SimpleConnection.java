@@ -69,7 +69,6 @@ import org.apache.chemistry.Updatability;
 import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.cmissql.CmisSqlLexer;
 import org.apache.chemistry.cmissql.CmisSqlParser;
-import org.apache.chemistry.impl.simple.CmisSqlSimpleWalker.query_return;
 import org.apache.chemistry.util.GregorianCalendar;
 
 public class SimpleConnection implements Connection, SPI {
@@ -782,11 +781,17 @@ public class SimpleConnection implements Connection, SPI {
                     statement.getBytes("UTF-8")));
             TokenSource lexer = new CmisSqlLexer(input);
             TokenStream tokens = new CommonTokenStream(lexer);
-            CommonTree tree = (CommonTree) new CmisSqlParser(tokens).query().getTree();
+            CmisSqlParser parser = new CmisSqlParser(tokens);
+            CmisSqlParser.query_return query = parser.query();
+            if (parser.errorMessage != null) {
+                throw new CMISRuntimeException("Cannot parse query: "
+                        + statement + " (" + parser.errorMessage + ")");
+            }
+            CommonTree tree = (CommonTree) query.getTree();
             CommonTreeNodeStream nodes = new CommonTreeNodeStream(tree);
             nodes.setTokenStream(tokens);
             CmisSqlSimpleWalker walker = new CmisSqlSimpleWalker(nodes);
-            query_return res = walker.query(data, this);
+            CmisSqlSimpleWalker.query_return res = walker.query(data, this);
             if (walker.errorMessage != null) {
                 throw new CMISRuntimeException("Cannot parse query: "
                         + statement + " (" + walker.errorMessage + ")");

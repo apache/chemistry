@@ -53,6 +53,7 @@ import org.apache.chemistry.impl.simple.SimpleData;
 
 @members {
     public SimpleData data;
+
     public SimpleConnection connection;
 
     public String errorMessage;
@@ -61,7 +62,9 @@ import org.apache.chemistry.impl.simple.SimpleData;
     public void displayRecognitionError(String[] tokenNames,
             RecognitionException e) {
         if (errorMessage == null) {
-            errorMessage = getErrorMessage(e, tokenNames);
+            String hdr = getErrorHeader(e);
+            String msg = getErrorMessage(e, tokenNames);
+            errorMessage = hdr + " " + msg;
         }
     }
 }

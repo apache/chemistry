@@ -62,34 +62,34 @@ package org.apache.chemistry.cmissql;
 
 // ----- Generic SQL -----
 
-SELECT : 'SELECT';
-FROM : 'FROM';
-AS : 'AS';
-JOIN : 'JOIN';
-INNER : 'INNER';
-OUTER : 'OUTER';
-LEFT : 'LEFT';
-RIGHT : 'RIGHT';
-ON : 'ON';
-WHERE : 'WHERE';
-ORDER : 'ORDER';
-BY : 'BY';
-ASC : 'ASC';
-DESC : 'DESC';
+SELECT : ('S'|'s')('E'|'e')('L'|'l')('E'|'e')('C'|'c')('T'|'t');
+FROM : ('F'|'f')('R'|'r')('O'|'o')('M'|'m');
+AS : ('A'|'a')('S'|'s');
+JOIN : ('J'|'j')('O'|'o')('I'|'i')('N'|'n');
+INNER : ('I'|'i')('N'|'n')('N'|'n')('E'|'e')('R'|'r');
+OUTER : ('O'|'o')('U'|'u')('T'|'t')('E'|'e')('R'|'r');
+LEFT : ('L'|'l')('E'|'e')('F'|'f')('T'|'t');
+RIGHT : ('R'|'r')('I'|'i')('G'|'g')('H'|'h')('T'|'t');
+ON : ('O'|'o')('N'|'n');
+WHERE : ('W'|'w')('H'|'h')('E'|'e')('R'|'r')('E'|'e');
+ORDER : ('O'|'o')('R'|'r')('D'|'d')('E'|'e')('R'|'r');
+BY : ('B'|'b')('Y'|'y');
+ASC : ('A'|'a')('S'|'s')('C'|'c');
+DESC : ('D'|'d')('E'|'e')('S'|'s')('C'|'c');
 
 // ----- Operators -----
-IS : 'IS';
-NULL : 'NULL';
-AND : 'AND';
-OR : 'OR';
-NOT : 'NOT';
-IN : 'IN';
-LIKE : 'LIKE';
-ANY : 'ANY';
-CONTAINS : 'CONTAINS';
-SCORE : 'SCORE';
-IN_FOLDER : 'IN_FOLDER';
-IN_TREE : 'IN_TREE';
+IS : ('I'|'i')('S'|'s');
+NULL : ('N'|'n')('U'|'u')('L'|'l')('L'|'l');
+AND : ('A'|'a')('N'|'n')('D'|'d');
+OR : ('O'|'o')('R'|'r');
+NOT : ('N'|'n')('O'|'o')('T'|'t');
+IN : ('I'|'i')('N'|'n');
+LIKE : ('L'|'l')('I'|'i')('K'|'k')('E'|'e');
+ANY : ('A'|'a')('N'|'n')('Y'|'y');
+CONTAINS : ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('S'|'s');
+SCORE : ('S'|'s')('C'|'c')('O'|'o')('R'|'r')('E'|'e');
+IN_FOLDER : ('I'|'i')('N'|'n')'_'('F'|'f')('O'|'o')('L'|'l')('D'|'d')('E'|'e')('R'|'r');
+IN_TREE : ('I'|'i')('N'|'n')'_'('T'|'t')('R'|'r')('E'|'e')('E'|'e');
 
 STAR : '*';
 LPAR : '(';

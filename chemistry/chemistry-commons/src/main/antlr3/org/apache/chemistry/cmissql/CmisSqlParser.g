@@ -50,6 +50,20 @@ options {
 package org.apache.chemistry.cmissql;
 }
 
+@members {
+    public String errorMessage;
+
+    @Override
+    public void displayRecognitionError(String[] tokenNames,
+            RecognitionException e) {
+        if (errorMessage == null) {
+            String hdr = getErrorHeader(e);
+            String msg = getErrorMessage(e, tokenNames);
+            errorMessage = hdr + " " + msg;
+        }
+    }
+}
+
 query: SELECT^ select_list from_clause where_clause? order_by_clause?;
 
 select_list
