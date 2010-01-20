@@ -35,12 +35,6 @@ import org.apache.chemistry.xml.stax.StaxReader;
  */
 public class APPObjectEntryReader extends AbstractObjectReader<APPObjectEntry> {
 
-    private static final APPObjectEntryReader builder = new APPObjectEntryReader();
-
-    public static APPObjectEntryReader getBuilder() {
-        return builder;
-    }
-
     @Override
     protected APPObjectEntry createObject(ReadContext ctx) {
         APPConnection connection = (APPConnection) ctx.getConnection();

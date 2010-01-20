@@ -18,7 +18,6 @@ package org.apache.chemistry.atompub.client;
 
 import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.atompub.URITemplate;
-import org.apache.chemistry.atompub.client.connector.APPContentManager;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.ServiceDocumentReader;
 

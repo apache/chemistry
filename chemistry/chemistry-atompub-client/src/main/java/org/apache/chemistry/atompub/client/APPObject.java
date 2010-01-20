@@ -27,8 +27,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.CMISRuntimeException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
@@ -36,11 +38,8 @@ import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.AtomPub;
-import org.apache.chemistry.atompub.client.connector.Connector;
-import org.apache.chemistry.atompub.client.connector.Request;
-import org.apache.chemistry.atompub.client.connector.Response;
-import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.impl.base.BaseObject;
+import org.apache.commons.httpclient.Header;
 
 /**
  *
@@ -114,19 +113,26 @@ public abstract class APPObject extends BaseObject {
      */
 
     public Folder getParent() {
-        String href = entry.getLink(AtomPub.LINK_UP); // usually a feed entry
-        if (href == null) {
-            return null;
+        APPObjectEntry parentEntry;
+        if (getBaseType() == BaseType.FOLDER) {
+            parentEntry = (APPObjectEntry) entry.connection.getFolderParent(
+                    this, null);
+            if (parentEntry == null) {
+                return null;
+            }
+        } else {
+            String href = entry.getLink(AtomPub.LINK_UP); // feed or entry
+            if (href == null) {
+                return null;
+            }
+            Collection<ObjectEntry> parents = entry.connection.getObjectParents(
+                    this, null);
+            if (parents.isEmpty()) {
+                return null;
+            }
+            parentEntry = (APPObjectEntry) parents.iterator().next();
         }
-        // can read an entry directly, or the first one from a feed
-        APPObjectEntry e = (APPObjectEntry) entry.connection.getConnector().getObject(
-                new ReadContext(entry.connection), href);
-        if (e == null) {
-            return null; // no parent
-        }
-        Type t = entry.connection.getRepository().getType(e.getTypeId());
-        APPFolder f = new APPFolder(e, t);
-        return f;
+        return (Folder) construct(parentEntry);
     }
 
     public Collection<Folder> getParents() {
@@ -219,60 +225,25 @@ public abstract class APPObject extends BaseObject {
     }
 
     protected void create() throws ContentManagerException {
-        Connector connector = entry.connection.getConnector();
-        ReadContext ctx = new ReadContext(entry.connection);
-
         // this link value is local, set by APPConnection#newDocument
         String href = entry.getLink(AtomPub.LINK_UP);
         if (href == null) {
-            throw new IllegalArgumentException(
-                    "Cannot create entry: no 'cmis-parents' link is present");
+            throw new CMISRuntimeException("Missing up link");
         }
         // TODO hardcoded Chemistry URL pattern here...
         href = href.replaceAll("/object/([0-9a-f-]{36}$)", "/children/$1");
-        Request req = new Request(href);
-        req.setHeader("Content-Type", AtomPub.MEDIA_TYPE_ATOM_ENTRY);
-        Response resp = connector.postObject(req, entry);
-        if (resp.getStatusCode() != 201) { // Created
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
-        APPObjectEntry newEntry = (APPObjectEntry) resp.getObject(ctx);
-        // newEntry SHOULD be returned (AtomPub 9.2)...
-        String loc = resp.getHeader("Location");
-        if (loc == null) {
-            throw new ContentManagerException(
-                    "Remote server failed to return a Location header");
-        }
-        if (newEntry == null || !loc.equals(resp.getHeader("Content-Location"))) {
-            // (Content-Location defined by AtomPub 9.2)
-            // fetch actual new entry from Location header
-            // TODO could fetch only a subset of the properties, if deemed ok
-            newEntry = (APPObjectEntry) connector.getObject(ctx, loc);
-            if (newEntry == null) {
-                throw new ContentManagerException(
-                        "Remote server failed to return an entry for Location: "
-                                + loc);
-            }
-        }
-        entry = newEntry;
+
+        entry = entry.connection.connector.postEntry(href, null, entry);
     }
 
     protected void update() throws ContentManagerException {
         String href = entry.getEditLink();
         if (href == null) {
-            throw new IllegalArgumentException(
-                    "Cannot edit entry: no 'edit' link is present");
+            throw new CMISRuntimeException("Missing edit link");
         }
-        Request req = new Request(href);
-        req.setHeader("Content-Type", AtomPub.MEDIA_TYPE_ATOM_ENTRY);
-        Response resp = entry.connection.getConnector().putObject(req, entry);
-        if (!resp.isOk()) {
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
+        Header header = new Header("Content-Type",
+                AtomPub.MEDIA_TYPE_ATOM_ENTRY);
+        entry = entry.connection.connector.putEntry(href, header, entry);
     }
 
     /**
@@ -319,21 +290,13 @@ public abstract class APPObject extends BaseObject {
         // TODO this could save the stream in a side object and put it back in
         // the entry's local content stream when done, to allow reuse
         public InputStream getStream() throws IOException {
-            try {
-                Response resp = entry.connection.connector.get(new Request(url));
-                if (!resp.isOk()) {
-                    throw new IOException("Error: " + resp.getStatusCode()
-                            + " fetching: " + url);
-                }
-                if (length == -1) {
-                    // get the "official" length if available
-                    length = resp.getStreamLength();
-                }
-                return resp.getStream();
-            } catch (ContentManagerException e) {
-                throw (IOException) (new IOException(
-                        "Could not fetch stream from: " + url).initCause(e));
+            ContentStream cs = entry.connection.connector.getContentStream(url,
+                    null, null);
+            if (length == -1) {
+                // ((HttpMethodBase) method).getResponseContentLength();
+                length = cs.getLength();
             }
+            return cs.getStream();
         }
     }
 

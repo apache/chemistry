@@ -19,13 +19,11 @@
 package org.apache.chemistry.atompub.client;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,7 +36,6 @@ import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.CMISRuntimeException;
 import org.apache.chemistry.Connection;
-import org.apache.chemistry.ConstraintViolationException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
@@ -61,35 +58,28 @@ import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.URITemplate;
-import org.apache.chemistry.atompub.client.connector.Connector;
-import org.apache.chemistry.atompub.client.connector.Request;
-import org.apache.chemistry.atompub.client.connector.Response;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.XmlProperty;
-import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.impl.simple.SimpleListPage;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.Header;
 
 /**
- *
+ * A {@link Connection} and {@link SPI} using the AtomPub protocol to talk to a
+ * CMIS server.
  */
 public class APPConnection implements Connection, SPI {
 
-    public static final int DEFAULT_MAX_CHILDREN = 20;
+    protected final APPRepository repository;
 
     protected final Connector connector;
 
-    protected final APPRepository repository;
-
     protected APPFolder root;
 
-    protected Map<Class<?>, Object> singletons = new Hashtable<Class<?>, Object>();
-
-    public APPConnection(APPRepository repo) {
-        this.repository = repo;
-        this.connector = repo.cm.getConnector(); // TODO clone connector to be
-        // able to use different logins
+    public APPConnection(APPRepository repository) {
+        this.repository = repository;
+        connector = new Connector(repository.getContentManager().getClient(),
+                new ReadContext(this));
     }
 
     public Connection getConnection() {
@@ -109,17 +99,15 @@ public class APPConnection implements Connection, SPI {
         return repository;
     }
 
+    public Connector getConnector() {
+        return connector;
+    }
+
     public Folder getRootFolder() {
         if (root == null) {
             root = (APPFolder) getObject(repository.info.getRootFolderId());
         }
         return root;
-    }
-
-    // not in API
-
-    public Connector getConnector() {
-        return connector;
     }
 
     public String getBaseUrl() {
@@ -196,31 +184,25 @@ public class APPConnection implements Connection, SPI {
         if (href == null) {
             throw new CMISRuntimeException("Missing foldertree link");
         }
-        Request req = new Request(href);
-        req.setParameter(AtomPubCMIS.PARAM_DEPTH, Integer.toString(depth));
+        NameValuePairs params = new NameValuePairs();
+        params.add(AtomPubCMIS.PARAM_DEPTH, Integer.toString(depth));
         if (inclusion != null) {
             if (inclusion.properties != null) {
-                req.setParameter(AtomPubCMIS.PARAM_FILTER, inclusion.properties);
+                params.add(AtomPubCMIS.PARAM_FILTER, inclusion.properties);
             }
             if (inclusion.renditions != null) {
-                req.setParameter(AtomPubCMIS.PARAM_RENDITION_FILTER,
+                params.add(AtomPubCMIS.PARAM_RENDITION_FILTER,
                         inclusion.renditions);
             }
             if (inclusion.relationships != null) {
-                req.setParameter(
+                params.add(
                         AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS,
                         RelationshipDirection.toInclusion(inclusion.relationships));
             }
-            req.setParameter(AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS,
+            params.add(AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS,
                     Boolean.toString(inclusion.allowableActions));
         }
-        Response resp = connector.get(req);
-        if (!resp.isOk()) {
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
-        return resp.getObjectFeed(new ReadContext(this));
+        return connector.getEntryFeed(href, params);
     }
 
     public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
@@ -230,38 +212,32 @@ public class APPConnection implements Connection, SPI {
         if (href == null) {
             throw new CMISRuntimeException("Missing down tree link");
         }
-        Request req = new Request(href);
-        req.setParameter(AtomPubCMIS.PARAM_DEPTH, Integer.toString(depth));
+        NameValuePairs params = new NameValuePairs();
+        params.add(AtomPubCMIS.PARAM_DEPTH, Integer.toString(depth));
         if (orderBy != null) {
-            req.setParameter(AtomPubCMIS.PARAM_ORDER_BY, orderBy);
+            params.add(AtomPubCMIS.PARAM_ORDER_BY, orderBy);
         }
         if (inclusion != null) {
             if (inclusion.properties != null) {
-                req.setParameter(AtomPubCMIS.PARAM_FILTER, inclusion.properties);
+                params.add(AtomPubCMIS.PARAM_FILTER, inclusion.properties);
             }
             if (inclusion.renditions != null) {
-                req.setParameter(AtomPubCMIS.PARAM_RENDITION_FILTER,
+                params.add(AtomPubCMIS.PARAM_RENDITION_FILTER,
                         inclusion.renditions);
             }
             if (inclusion.relationships != null) {
-                req.setParameter(
+                params.add(
                         AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS,
                         RelationshipDirection.toInclusion(inclusion.relationships));
             }
-            req.setParameter(AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS,
+            params.add(AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS,
                     Boolean.toString(inclusion.allowableActions));
-            req.setParameter(AtomPubCMIS.PARAM_INCLUDE_POLICY_IDS,
+            params.add(AtomPubCMIS.PARAM_INCLUDE_POLICY_IDS,
                     Boolean.toString(inclusion.policies));
-            req.setParameter(AtomPubCMIS.PARAM_INCLUDE_ACL,
+            params.add(AtomPubCMIS.PARAM_INCLUDE_ACL,
                     Boolean.toString(inclusion.acls));
         }
-        Response resp = connector.get(req);
-        if (!resp.isOk()) {
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
-        return resp.getObjectFeed(new ReadContext(this));
+        return connector.getEntryFeed(href, params);
     }
 
     public ListPage<ObjectEntry> getChildren(ObjectId folder,
@@ -269,20 +245,17 @@ public class APPConnection implements Connection, SPI {
         // TODO filter, includeRelationship, includeAllowableActions, orderBy
         String href = getFolderEntry(folder).getLink(AtomPub.LINK_DOWN,
                 AtomPub.MEDIA_TYPE_ATOM_FEED);
-        Request req = new Request(href);
+        if (href == null) {
+            throw new CMISRuntimeException("Missing down link");
+        }
+        NameValuePairs params = new NameValuePairs();
         if (paging != null) {
-            req.setParameter(AtomPubCMIS.PARAM_MAX_ITEMS,
+            params.add(AtomPubCMIS.PARAM_MAX_ITEMS,
                     Integer.toString(paging.maxItems));
-            req.setParameter(AtomPubCMIS.PARAM_SKIP_COUNT,
+            params.add(AtomPubCMIS.PARAM_SKIP_COUNT,
                     Integer.toString(paging.skipCount));
         }
-        Response resp = connector.get(req);
-        if (!resp.isOk()) {
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
-        return resp.getObjectFeed(new ReadContext(this));
+        return connector.getEntryFeed(href, params);
     }
 
     public ObjectEntry getFolderParent(ObjectId folder, String filter) {
@@ -297,13 +270,7 @@ public class APPConnection implements Connection, SPI {
         if (href == null) {
             return null;
         }
-        Response resp = connector.get(new Request(href));
-        if (!resp.isOk()) {
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
-        return (APPObjectEntry) resp.getObject(new ReadContext(this));
+        return connector.getEntry(href, folder.getId());
     }
 
     public Collection<ObjectEntry> getObjectParents(ObjectId object,
@@ -311,13 +278,10 @@ public class APPConnection implements Connection, SPI {
         // TODO filter
         APPObjectEntry current = getObjectEntry(object);
         String href = current.getLink(AtomPub.LINK_UP);
-        Response resp = connector.get(new Request(href));
-        if (!resp.isOk()) {
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
+        if (href == null) {
+            throw new CMISRuntimeException("Missing up link");
         }
-        return resp.getObjectFeed(new ReadContext(this));
+        return connector.getEntryFeed(href, null);
     }
 
     public ListPage<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
@@ -345,16 +309,7 @@ public class APPConnection implements Connection, SPI {
         href = replace(href, AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, "");
         href = replace(href, AtomPubCMIS.PARAM_INCLUDE_POLICY_IDS, "");
         href = replace(href, AtomPubCMIS.PARAM_INCLUDE_ACL, "");
-        Response resp = connector.get(new Request(href));
-        if (resp.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-            throw new ObjectNotFoundException(objectId.getId());
-        }
-        if (!resp.isOk()) {
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
-        return (APPObjectEntry) resp.getObject(new ReadContext(this));
+        return connector.getEntry(href, objectId.getId());
     }
 
     protected APPObjectEntry getFolderEntry(ObjectId objectId) {
@@ -401,7 +356,7 @@ public class APPConnection implements Connection, SPI {
         return href;
     }
 
-    protected APPObjectEntry createObject(String postHref,
+    protected APPObjectEntry createObject(String href,
             Map<String, Serializable> properties, ContentStream contentStream,
             BaseType baseType) {
         String typeId = (String) properties.get(Property.TYPE_ID);
@@ -412,6 +367,7 @@ public class APPConnection implements Connection, SPI {
         if (type == null || type.getBaseType() != baseType) {
             throw new IllegalArgumentException(typeId);
         }
+
         APPObjectEntry entry = newObjectEntry(typeId);
         for (Entry<String, Serializable> en : properties.entrySet()) {
             entry._setValue(en.getKey(), en.getValue());
@@ -419,35 +375,7 @@ public class APPConnection implements Connection, SPI {
         if (contentStream != null) {
             entry.setContentStream(contentStream);
         }
-
-        Request req = new Request(postHref);
-        req.setHeader("Content-Type", AtomPub.MEDIA_TYPE_ATOM_ENTRY);
-        Response resp = connector.postObject(req, entry);
-        if (resp.getStatusCode() != 201) { // Created
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
-        ReadContext ctx = new ReadContext(this);
-        APPObjectEntry newEntry = (APPObjectEntry) resp.getObject(ctx);
-        // newEntry SHOULD be returned (AtomPub 9.2)...
-        String loc = resp.getHeader("Location");
-        if (loc == null) {
-            throw new ContentManagerException(
-                    "Remote server failed to return a Location header");
-        }
-        if (newEntry == null || !loc.equals(resp.getHeader("Content-Location"))) {
-            // (Content-Location defined by AtomPub 9.2)
-            // fetch actual new entry from Location header
-            // TODO could fetch only a subset of the properties, if deemed ok
-            newEntry = (APPObjectEntry) connector.getObject(ctx, loc);
-            if (newEntry == null) {
-                throw new ContentManagerException(
-                        "Remote server failed to return an entry for Location: "
-                                + loc);
-            }
-        }
-        return newEntry;
+        return connector.postEntry(href, null, entry);
     }
 
     public ObjectId createDocument(Map<String, Serializable> properties,
@@ -484,18 +412,13 @@ public class APPConnection implements Connection, SPI {
         // TODO inclusion
         APPObjectEntry current = getObjectEntry(object);
         String href = current.getLink(AtomPub.LINK_SELF);
-        Response resp = connector.get(new Request(href));
-        if (!resp.isOk()) {
-            if (resp.getStatusCode() == 404) {
-                // object not found, signature says return null
-                return null;
-            }
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
+        try {
+            return connector.getEntry(href, object.getId());
+            // TODO fill current
+        } catch (ObjectNotFoundException e) {
+            // object not found, signature says return null
+            return null;
         }
-        // TODO fill current
-        return (APPObjectEntry) resp.getObject(new ReadContext(this));
     }
 
     public ObjectEntry getObjectByPath(String path, Inclusion inclusion) {
@@ -522,17 +445,13 @@ public class APPConnection implements Connection, SPI {
         href = replace(href, AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, "");
         href = replace(href, AtomPubCMIS.PARAM_INCLUDE_POLICY_IDS, "");
         href = replace(href, AtomPubCMIS.PARAM_INCLUDE_ACL, "");
-        Response resp = connector.get(new Request(href));
-        if (!resp.isOk()) {
-            if (resp.getStatusCode() == 404) {
-                // object not found, signature says return null
-                return null;
-            }
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
+        try {
+            return connector.getEntry(href, path);
+            // TODO fill current
+        } catch (ObjectNotFoundException e) {
+            // object not found, signature says return null
+            return null;
         }
-        return (APPObjectEntry) resp.getObject(new ReadContext(this));
     }
 
     public Folder getFolder(String path) {
@@ -577,29 +496,13 @@ public class APPConnection implements Connection, SPI {
             return cs;
         }
 
-        // must fetch the content stream
         String href = current.getContentHref();
         if (href == null) {
-            throw new RuntimeException("Object is missing content src");
+            throw new RuntimeException("Missing content src");
         }
-        Request req = new Request(href);
-        Response resp = connector.get(req);
-        int status = resp.getStatusCode();
-        if (status == 404 || status == 409) {
-            throw new ConstraintViolationException("No content stream");
-        }
-        if (!resp.isOk()) {
-            // TODO exceptions
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
-        // get MIME type and filename from entry
-        InputStream stream = resp.getStream();
-        // String mimeType = resp.getHeader("Content-Type");
         String mimeType = (String) current.getValue(Property.CONTENT_STREAM_MIME_TYPE);
         String filename = (String) current.getValue(Property.CONTENT_STREAM_FILE_NAME);
-        cs = new SimpleContentStream(stream, mimeType, filename);
+        cs = connector.getContentStream(href, mimeType, filename);
         // current.localContentStream = cs; // problem reusing the stream
         return cs;
     }
@@ -609,23 +512,10 @@ public class APPConnection implements Connection, SPI {
         APPObjectEntry current = getObjectEntry(document);
         String href = current.getLink(AtomPub.LINK_EDIT_MEDIA);
         if (href == null) {
-            throw new RuntimeException("Document is missing link "
+            throw new RuntimeException("Missing link "
                     + AtomPub.LINK_EDIT_MEDIA);
         }
-        Request req = new Request(href);
-        String filename = cs.getFileName();
-        if (filename != null) {
-            // Use Slug: header for filename
-            req.setHeader(AtomPub.HEADER_SLUG, filename);
-        }
-        Response resp = connector.put(req, cs.getStream(), cs.getLength(),
-                cs.getMimeType());
-        if (!resp.isOk()) {
-            // TODO exceptions
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
+        connector.putStream(href, cs);
         // TODO AtomPub cannot return a new id... (autoversioning)
         return new SimpleObjectId(document.getId());
     }
@@ -634,17 +524,10 @@ public class APPConnection implements Connection, SPI {
         APPObjectEntry current = getObjectEntry(document);
         String href = current.getLink(AtomPub.LINK_EDIT_MEDIA);
         if (href == null) {
-            throw new RuntimeException("Document is missing link "
+            throw new RuntimeException("Missing link "
                     + AtomPub.LINK_EDIT_MEDIA);
         }
-        Response resp = connector.delete(new Request(href));
-        if (!resp.isOk()) {
-            // TODO exceptions
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
-
+        connector.delete(href, null, document.getId());
         // TODO AtomPub cannot return a new id... (autoversioning)
         return new SimpleObjectId(document.getId());
     }
@@ -653,6 +536,11 @@ public class APPConnection implements Connection, SPI {
             Map<String, Serializable> properties) {
         // make properties into an entry for putObject
         APPObjectEntry current = getObjectEntry(object);
+        String href = current.getLink(AtomPub.LINK_EDIT);
+        if (href == null) {
+            throw new RuntimeException("Missing link " + AtomPub.LINK_EDIT);
+        }
+
         APPObjectEntry update = newObjectEntry(current.getTypeId());
         for (String key : properties.keySet()) {
             update._setValue(key, properties.get(key));
@@ -661,77 +549,28 @@ public class APPConnection implements Connection, SPI {
         // TODO proper title
         update._setValue(Property.NAME, current.getValue(Property.NAME));
 
-        String href = current.getLink(AtomPub.LINK_EDIT);
-        if (href == null) {
-            throw new RuntimeException("Object is missing link "
-                    + AtomPub.LINK_EDIT);
-        }
-        Request req = new Request(href);
-        req.setHeader("Content-Type", AtomPub.MEDIA_TYPE_ATOM_ENTRY);
-        Response resp = connector.putObject(req, update);
-        if (!resp.isOk()) {
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
-        return (APPObjectEntry) resp.getObject(new ReadContext(this));
+        Header header = new Header("Content-Type",
+                AtomPub.MEDIA_TYPE_ATOM_ENTRY);
+        return connector.putEntry(href, header, update);
     }
 
     public ObjectId moveObject(ObjectId object, ObjectId targetFolder,
             ObjectId sourceFolder) {
         APPObjectEntry entry = getObjectEntry(object);
-        Request req = new Request(getPostHref(targetFolder));
-        req.setHeader("Content-Type", AtomPub.MEDIA_TYPE_ATOM_ENTRY);
-        req.setParameter(AtomPubCMIS.PARAM_SOURCE_FOLDER_ID,
+        NameValuePairs params = new NameValuePairs();
+        params.add(AtomPubCMIS.PARAM_SOURCE_FOLDER_ID,
                 sourceFolder == null ? "" : sourceFolder.getId());
-        Response resp = connector.postObject(req, entry);
-        if (resp.getStatusCode() != 201) { // Created
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
-        ReadContext ctx = new ReadContext(this);
-        APPObjectEntry newEntry = (APPObjectEntry) resp.getObject(ctx);
-        // newEntry SHOULD be returned (AtomPub 9.2)...
-        String loc = resp.getHeader("Location");
-        if (loc == null) {
-            throw new ContentManagerException(
-                    "Remote server failed to return a Location header");
-        }
-        if (newEntry == null || !loc.equals(resp.getHeader("Content-Location"))) {
-            // (Content-Location defined by AtomPub 9.2)
-            // fetch actual new entry from Location header
-            // TODO could fetch only a subset of the properties, if deemed ok
-            newEntry = (APPObjectEntry) connector.getObject(ctx, loc);
-            if (newEntry == null) {
-                throw new ContentManagerException(
-                        "Remote server failed to return an entry for Location: "
-                                + loc);
-            }
-        }
-        return newEntry;
+        return connector.postEntry(getPostHref(targetFolder), params,
+                entry);
     }
 
     public void deleteObject(ObjectId object, boolean allVersions) {
         APPObjectEntry current = getObjectEntry(object);
         String href = current.getLink(AtomPub.LINK_SELF);
-        Request req = new Request(href);
+        NameValuePairs params = new NameValuePairs();
         // TODO XXX allVersions not in spec
-        req.setParameter("allVersions", String.valueOf(allVersions));
-        Response resp = connector.delete(req);
-        int status = resp.getStatusCode();
-        if (status == HttpStatus.SC_NOT_FOUND) {
-            throw new ObjectNotFoundException(object.getId());
-        }
-        if (status == HttpStatus.SC_CONFLICT) {
-            throw new ConstraintViolationException(resp.getStatusReasonPhrase());
-        }
-        if (!resp.isOk()) {
-            // TODO exceptions
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
+        params.add("allVersions", String.valueOf(allVersions));
+        connector.delete(href, params, object.getId());
     }
 
     public Collection<ObjectId> deleteTree(ObjectId folder, Unfiling unfiling,
@@ -740,31 +579,16 @@ public class APPConnection implements Connection, SPI {
         String href = current.getLink(AtomPub.LINK_DOWN,
                 AtomPubCMIS.MEDIA_TYPE_CMIS_TREE);
         if (href == null) {
-            throw new CMISRuntimeException("Document is missing link "
-                    + AtomPub.LINK_DOWN + " "
-                    + AtomPubCMIS.MEDIA_TYPE_CMIS_TREE);
+            throw new CMISRuntimeException("Missing link " + AtomPub.LINK_DOWN
+                    + " " + AtomPubCMIS.MEDIA_TYPE_CMIS_TREE);
         }
-        Request req = new Request(href);
+        NameValuePairs params = new NameValuePairs();
         if (unfiling != null) {
-            req.setParameter(AtomPubCMIS.PARAM_UNFILE_OBJECTS,
-                    unfiling.toString());
+            params.add(AtomPubCMIS.PARAM_UNFILE_OBJECTS, unfiling.toString());
         }
-        req.setParameter(AtomPubCMIS.PARAM_CONTINUE_ON_FAILURE,
+        params.add(AtomPubCMIS.PARAM_CONTINUE_ON_FAILURE,
                 Boolean.toString(continueOnFailure));
-        Response resp = connector.delete(req);
-        int status = resp.getStatusCode();
-        if (status == HttpStatus.SC_NOT_FOUND) {
-            throw new ObjectNotFoundException(folder.getId());
-        }
-        if (status == HttpStatus.SC_CONFLICT) {
-            throw new ConstraintViolationException(resp.getStatusReasonPhrase());
-        }
-        if (!resp.isOk()) {
-            // TODO exceptions
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
+        connector.delete(href, params, folder.getId());
         // AtomPub bindings cannot return the objects that could not be deleted
         return Collections.emptyList();
     }
@@ -786,15 +610,12 @@ public class APPConnection implements Connection, SPI {
     public ListPage<ObjectEntry> query(String statement,
             boolean searchAllVersions, Inclusion inclusion, Paging paging) {
         String href = repository.getCollectionHref(AtomPubCMIS.COL_QUERY);
-        Response resp = connector.postQuery(new Request(href), statement,
-                searchAllVersions, inclusion, paging);
-        if (!resp.isOk()) {
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
+        if (href == null) {
+            throw new CMISRuntimeException("Missing collection "
+                    + AtomPubCMIS.COL_QUERY);
         }
-        ListPage<ObjectEntry> objects = resp.getObjectFeed(new ReadContext(this));
-        return objects;
+        return connector.postQuery(href, statement, searchAllVersions,
+                inclusion, paging);
     }
 
     public Collection<CMISObject> query(String statement,

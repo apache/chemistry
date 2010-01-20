@@ -24,7 +24,7 @@
 
 package org.apache.chemistry.shell.app;
 
-import org.apache.chemistry.atompub.client.connector.APPContentManager;
+import org.apache.chemistry.atompub.client.APPContentManager;
 import org.apache.chemistry.shell.cmds.cmis.Cat;
 import org.apache.chemistry.shell.cmds.cmis.CreateFile;
 import org.apache.chemistry.shell.cmds.cmis.CreateFolder;

@@ -27,10 +27,6 @@ import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
-import org.apache.chemistry.atompub.AtomPub;
-import org.apache.chemistry.atompub.client.connector.Request;
-import org.apache.chemistry.atompub.client.connector.Response;
-import org.apache.chemistry.atompub.client.stax.ReadContext;
 
 /**
  *
@@ -57,15 +53,7 @@ public class APPFolder extends APPDocument implements Folder {
     }
 
     public List<CMISObject> getChildren() {
-        String href = entry.getLink(AtomPub.LINK_DOWN);
-        Response resp = entry.connection.getConnector().get(new Request(href));
-        if (!resp.isOk()) {
-            throw new ContentManagerException(
-                    "Remote server returned error code: "
-                            + resp.getStatusCode());
-        }
-        List<ObjectEntry> feed = resp.getObjectFeed(new ReadContext(
-                entry.connection));
+        List<ObjectEntry> feed = entry.connection.getChildren(this, null, null, null);
         List<CMISObject> children = new ArrayList<CMISObject>(feed.size());
         for (ObjectEntry child : feed) {
             children.add(APPObject.construct((APPObjectEntry) child));

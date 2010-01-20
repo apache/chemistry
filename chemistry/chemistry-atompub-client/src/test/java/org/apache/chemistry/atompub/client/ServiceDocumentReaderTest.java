@@ -41,7 +41,8 @@ public class ServiceDocumentReaderTest extends TestCase {
     public void testReadServiceDocument() throws Exception {
         InputStream is = getClass().getResourceAsStream("/service-document.xml");
         ServiceDocumentReader<APPRepository> reader = new APPServiceDocumentReader();
-        Repository[] repos = reader.read(new ReadContext((Repository) null), is);
+        ReadContext ctx = new ReadContext(new APPContentManager(""));
+        Repository[] repos = reader.read(ctx, is);
         assertEquals(1, repos.length);
         Repository repo = repos[0];
         assertEquals("test", repo.getId());
@@ -62,7 +63,8 @@ public class ServiceDocumentReaderTest extends TestCase {
         RepositoryCapabilities cap = info.getCapabilities();
         assertEquals(CapabilityACL.MANAGE, cap.getACLCapability());
         assertFalse(cap.isAllVersionsSearchable());
-        assertEquals(CapabilityChange.OBJECT_IDS_ONLY, cap.getChangeCapability());
+        assertEquals(CapabilityChange.OBJECT_IDS_ONLY,
+                cap.getChangeCapability());
         assertTrue(cap.isContentStreamUpdatableAnytime());
         assertTrue(cap.hasGetDescendants());
         assertTrue(cap.hasGetFolderTree());

@@ -36,9 +36,9 @@ import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.URITemplate;
-import org.apache.chemistry.atompub.client.connector.APPContentManager;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.impl.simple.SimpleTypeManager;
+import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -50,6 +50,8 @@ public class APPRepository implements Repository {
     private static final Log log = LogFactory.getLog(APPRepository.class);
 
     protected final APPContentManager cm;
+
+    protected final Connector connector;
 
     protected RepositoryInfo info;
 
@@ -67,6 +69,7 @@ public class APPRepository implements Repository {
 
     public APPRepository(APPContentManager cm, RepositoryInfo info) {
         this.cm = cm;
+        connector = new Connector(cm.getClient(), new ReadContext(this));
         this.info = info;
     }
 
@@ -76,6 +79,10 @@ public class APPRepository implements Repository {
 
     public APPContentManager getContentManager() {
         return cm;
+    }
+
+    public HttpClient client() {
+        return cm.getClient();
     }
 
     public String getId() {
@@ -209,7 +216,7 @@ public class APPRepository implements Repository {
 
     protected TypeManager readTypes(String href) throws Exception {
         href = includePropertyDefinitionsInURI(href);
-        return cm.getConnector().getTypeFeed(new ReadContext(this), href, true);
+        return connector.getTypeFeed(href, true);
     }
 
     protected static String includePropertyDefinitionsInURI(String href) {

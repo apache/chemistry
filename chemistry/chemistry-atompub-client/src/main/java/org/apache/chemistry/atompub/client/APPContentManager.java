@@ -15,13 +15,12 @@
  *     Bogdan Stefanescu, Nuxeo
  *     Florent Guillaume, Nuxeo
  */
-package org.apache.chemistry.atompub.client.connector;
+package org.apache.chemistry.atompub.client;
 
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.atompub.client.ContentManager;
-import org.apache.chemistry.atompub.client.ContentManagerException;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
@@ -33,40 +32,31 @@ public class APPContentManager implements ContentManager {
 
     protected final String baseUrl;
 
-    protected final Connector connector;
+    protected final HttpClient client;
 
     protected Repository[] repos;
 
     protected String username;
 
-    protected APPContentManager(String url, Connector connector) {
-        this.baseUrl = url;
-        this.connector = connector;
-    }
-
     public APPContentManager(String url) {
-        this(url, new HttpClientConnector(new DefaultIOProvider()));
+        this.baseUrl = url;
+        client = new HttpClient();
+        // client.setHttpConnectionManager(new
+        // MultiThreadedHttpConnectionManager());
     }
 
     public String getBaseUrl() {
         return baseUrl;
     }
 
-    public Connector getConnector() {
-        return connector;
+    public HttpClient getClient() {
+        return client;
     }
 
     public Repository[] getRepositories() throws ContentManagerException {
         if (repos == null) {
-            Request req = new Request(getBaseUrl());
-            Response resp = connector.get(req);
-            if (!resp.isOk()) {
-                throw new ContentManagerException(
-                        "Remote server returned error code: "
-                                + resp.getStatusCode());
-            }
-            ReadContext ctx = new ReadContext(this);
-            repos = resp.getServiceDocument(ctx);
+            Connector connector = new Connector(client, new ReadContext(this));
+            repos = connector.getServiceDocument(getBaseUrl());
         }
         return repos;
     }
@@ -99,12 +89,14 @@ public class APPContentManager implements ContentManager {
         this.username = username;
         CredentialsProvider cp = new UsernamePasswordCredentialsProvider(
                 username, password);
-        connector.setCredentialsProvider(cp);
+        client.getParams().setAuthenticationPreemptive(true);
+        client.getParams().setParameter(CredentialsProvider.PROVIDER, cp);
     }
 
     public void logout() {
         username = null;
-        connector.setCredentialsProvider(null);
+        client.getParams().setAuthenticationPreemptive(true);
+        client.getParams().setParameter(CredentialsProvider.PROVIDER, null);
     }
 
     public String getCurrentLogin() {

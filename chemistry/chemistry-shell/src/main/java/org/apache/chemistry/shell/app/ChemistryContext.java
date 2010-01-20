@@ -33,7 +33,7 @@ import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.atompub.client.APPConnection;
-import org.apache.chemistry.atompub.client.connector.APPContentManager;
+import org.apache.chemistry.atompub.client.APPContentManager;
 import org.apache.chemistry.shell.util.ColorHelper;
 import org.apache.chemistry.shell.util.Path;
 

@@ -29,8 +29,6 @@ import org.apache.chemistry.CMIS;
 import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Type;
-import org.apache.chemistry.atompub.client.connector.Connector;
-import org.apache.chemistry.atompub.client.stax.ReadContext;
 
 /**
  *
@@ -176,10 +174,8 @@ public class APPType extends APPObjectEntry implements Type {
 
     protected void loadPropertyDef() {
         if (propertyDefs == null) {
-            Connector connector = repository.getContentManager().getConnector();
             String href = APPRepository.includePropertyDefinitionsInURI(getEditLink());
-            APPType typeDef = (APPType) connector.getType(new ReadContext(
-                    repository), href, true);
+            APPType typeDef = repository.connector.getType(href, true, getId());
             propertyDefs = typeDef.propertyDefs == null ? new HashMap<String, PropertyDefinition>()
                     : typeDef.propertyDefs;
         }

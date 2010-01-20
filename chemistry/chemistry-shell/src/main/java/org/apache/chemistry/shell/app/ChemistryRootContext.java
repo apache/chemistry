@@ -30,8 +30,8 @@ import java.util.Map;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.atompub.client.APPConnection;
+import org.apache.chemistry.atompub.client.APPContentManager;
 import org.apache.chemistry.atompub.client.ContentManager;
-import org.apache.chemistry.atompub.client.connector.APPContentManager;
 import org.apache.chemistry.shell.util.ColorHelper;
 import org.apache.chemistry.shell.util.Path;
 

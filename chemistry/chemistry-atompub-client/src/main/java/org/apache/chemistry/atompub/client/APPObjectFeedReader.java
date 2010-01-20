@@ -19,7 +19,6 @@ package org.apache.chemistry.atompub.client;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.atompub.client.stax.AbstractFeedReader;
-import org.apache.chemistry.atompub.client.stax.EntryReader;
 import org.apache.chemistry.impl.simple.SimpleListPage;
 import org.apache.chemistry.xml.stax.StaxReader;
 
@@ -29,18 +28,8 @@ import org.apache.chemistry.xml.stax.StaxReader;
 public class APPObjectFeedReader extends
         AbstractFeedReader<ListPage<ObjectEntry>, APPObjectEntry> {
 
-    private static final APPObjectFeedReader builder = new APPObjectFeedReader();
-
-    public static APPObjectFeedReader getBuilder() {
-        return builder;
-    }
-
-    public APPObjectFeedReader(EntryReader<APPObjectEntry> entryBuilder) {
-        super(entryBuilder);
-    }
-
     public APPObjectFeedReader() {
-        this(APPObjectEntryReader.getBuilder());
+        super(new APPObjectEntryReader());
     }
 
     @Override

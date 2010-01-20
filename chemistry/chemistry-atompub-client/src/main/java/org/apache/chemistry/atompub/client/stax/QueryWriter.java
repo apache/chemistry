@@ -31,21 +31,16 @@ import org.apache.chemistry.xml.stax.XMLWriter;
  */
 public class QueryWriter extends AbstractXmlObjectWriter<String> {
 
-    protected boolean searchAllVersions;
+    protected final boolean searchAllVersions;
 
-    protected Inclusion inclusion;
+    protected final Inclusion inclusion;
 
-    protected Paging paging;
+    protected final Paging paging;
 
-    public void setSearchAllVersions(boolean searchAllVersions) {
+    public QueryWriter(boolean searchAllVersions, Inclusion inclusion,
+            Paging paging) {
         this.searchAllVersions = searchAllVersions;
-    }
-
-    public void setInclusion(Inclusion inclusion) {
         this.inclusion = inclusion;
-    }
-
-    public void setPaging(Paging paging) {
         this.paging = paging;
     }
 
