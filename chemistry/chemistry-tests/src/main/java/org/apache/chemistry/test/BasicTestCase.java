@@ -311,6 +311,11 @@ public abstract class BasicTestCase extends TestCase {
         res = conn.query("SELECT * FROM cmis:document WHERE CONTAINS('small')",
                 false);
         assertEquals(1, res.size());
+
+        // SCORE
+        res = conn.query("SELECT cmis:name, SCORE() FROM cmis:document WHERE CONTAINS('small')",
+                false);
+        assertEquals(1, res.size());
     }
 
     public void testGetObjectByPath() {

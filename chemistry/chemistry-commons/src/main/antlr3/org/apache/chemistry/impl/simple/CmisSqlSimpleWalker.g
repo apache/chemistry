@@ -96,8 +96,19 @@ value_expression returns [Object value]:
         {
             $value = $column_reference.value;
         }
-//    | string_value_function
-//    | numeric_value_function
+    | ^(FUNC func_name arg*)
+        {
+            int func = $func_name.start.getType();
+            switch (func) {
+                case SCORE:
+                    $value = Double.valueOf(1);
+                    break;
+                // case ID:
+                // TODO provide extension points for other functions
+                default:
+                    throw new UnwantedTokenException(Token.INVALID_TOKEN_TYPE, input);
+            }
+        }
     ;
 
 column_reference returns [Object value]:
@@ -108,6 +119,9 @@ column_reference returns [Object value]:
           $value = data.getIgnoreCase(col); // TODO error if unknown prop
       }
     ;
+
+// multi_valued_column_reference returns [Object value]:
+//    ^(COL qualifier? column_name)
 
 qualifier:
       table_name
@@ -180,11 +194,11 @@ boolean_test returns [boolean matches]:
 
 predicate returns [boolean matches]
 @init {
-    List<Object> literals = new ArrayList<Object>();
+    List<Object> literals;
 }:
-      ^(UN_OP IS_NULL un_arg) { $matches = $un_arg.value == null; }
-    | ^(UN_OP IS_NOT_NULL un_arg) { $matches = $un_arg.value != null; }
-    | ^(BIN_OP bin_op arg1=bin_arg arg2=bin_arg)
+      ^(UN_OP IS_NULL arg) { $matches = $arg.value == null; }
+    | ^(UN_OP IS_NOT_NULL arg) { $matches = $arg.value != null; }
+    | ^(BIN_OP bin_op arg1=arg arg2=arg)
         {
             int token = $bin_op.start.getType();
             Object value1 = $arg1.value;
@@ -196,13 +210,21 @@ predicate returns [boolean matches]
                 case NEQ:
                     $matches = value1 != null && value2 != null && ! value1.equals(value2);
                     break;
+                case LT:
+                case LTEQ:
+                case GT:
+                case GTEQ:
+                case LIKE:
+                case NOT_LIKE:
                 default:
                     throw new UnwantedTokenException(token, input);
             }
         }
-    | ^(FUNC func_name (literal { literals.add($literal.value); })*)
+    // | ^(BIN_OP_ANY bin_op_any arg mvc=multi_valued_column_reference)
+    | ^(FUNC bool_func_name { literals = new ArrayList<Object>(); }
+         (literal { literals.add($literal.value); })*)
         {
-            int func = $func_name.start.getType();
+            int func = $bool_func_name.start.getType();
             switch (func) {
                 case IN_FOLDER:
                     $matches = connection.isInFolder(data, literals.get(0));
@@ -220,36 +242,25 @@ predicate returns [boolean matches]
         }
     ;
 
-un_arg returns [Object value]:
-    column_reference
-      {
-          $value = $column_reference.value;
-      }
-    ;
-
 bin_op:
     EQ | NEQ | LT | GT | LTEQ | GTEQ | LIKE | NOT_LIKE;
 
-bin_arg returns [Object value]
-@init {
-    List<Object> literals = new ArrayList<Object>();
-}:
-      value_expression
-        {
-            $value = $value_expression.value;
-        }
-    | literal
-        {
-            $value = $literal.value;
-        }
-    | ^(LIST (literal { literals.add($literal.value); })+)
-        {
-            $value = literals;
-        }
-    ;
-
 func_name:
+    SCORE | ID;
+
+bool_func_name:
     IN_FOLDER | IN_TREE | CONTAINS | ID;
+
+arg returns [Object value]
+@init {
+    List<Object> literals;
+}:
+      v=value_expression { $value = $v.value; }
+    | l=literal { $value = $l.value; }
+    | ^(LIST { literals = new ArrayList<Object>(); }
+         (l=literal { literals.add($l.value); } )+)
+            { $value = literals; }
+    ;
 
 literal returns [Object value]:
       NUM_LIT
@@ -278,7 +289,4 @@ table_name:
     ID;
 
 column_name:
-    ID;
-
-multi_valued_column_name:
     ID;
