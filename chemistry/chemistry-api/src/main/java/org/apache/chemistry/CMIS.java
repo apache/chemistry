@@ -16,6 +16,10 @@
  */
 package org.apache.chemistry;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.xml.namespace.QName;
 
 /**
@@ -229,4 +233,24 @@ public class CMIS {
 
     public static final QName DISPLAY_NAME_NONS = new QName("displayName");
 
+    // types from schema
+
+    public static final QName SCHEMA_TYPE_DOCUMENT = CMISName("cmisTypeDocumentDefinitionType");
+
+    public static final QName SCHEMA_TYPE_FOLDER = CMISName("cmisTypeFolderDefinitionType");
+
+    public static final QName SCHEMA_TYPE_RELATIONSHIP = CMISName("cmisTypeRelationshipDefinitionType");
+
+    public static final QName SCHEMA_TYPE_POLICY = CMISName("cmisTypePolicyDefinitionType");
+
+    public static final Map<BaseType, QName> SCHEMA_TYPES;
+
+    static {
+        Map<BaseType, QName> map = new HashMap<BaseType, QName>();
+        map.put(BaseType.DOCUMENT, SCHEMA_TYPE_DOCUMENT);
+        map.put(BaseType.FOLDER, SCHEMA_TYPE_FOLDER);
+        map.put(BaseType.RELATIONSHIP, SCHEMA_TYPE_RELATIONSHIP);
+        map.put(BaseType.POLICY, SCHEMA_TYPE_POLICY);
+        SCHEMA_TYPES = Collections.unmodifiableMap(map);
+    }
 }

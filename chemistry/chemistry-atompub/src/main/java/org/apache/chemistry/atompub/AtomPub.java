@@ -31,6 +31,10 @@ public class AtomPub {
      * ----- Namespaces -----
      */
 
+    public static final String XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
+
+    public static final String XSI_PREFIX = "xsi";
+
     public static final String ATOM_NS = "http://www.w3.org/2005/Atom";
 
     public static final String APP_NS = "http://www.w3.org/2007/app";
@@ -38,6 +42,8 @@ public class AtomPub {
     /*
      * ----- XML Qualified Names-----
      */
+
+    public static final QName XSI_TYPE = new QName(XSI_NS, "type");
 
     public static final QName ATOM_FEED = new QName(ATOM_NS, "feed");
 

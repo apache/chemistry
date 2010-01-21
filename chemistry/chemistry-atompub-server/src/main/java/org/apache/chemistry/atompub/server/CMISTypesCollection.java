@@ -64,6 +64,8 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         Factory factory = request.getAbdera().getFactory();
         Feed feed = factory.newFeed();
         feed.declareNS(CMIS.CMIS_NS, CMIS.CMIS_PREFIX);
+        feed.declareNS(AtomPubCMIS.CMISRA_NS, AtomPubCMIS.CMISRA_PREFIX);
+        feed.declareNS(AtomPub.XSI_NS, AtomPub.XSI_PREFIX);
         feed.setId(getId(request));
         feed.setTitle(getTitle(request));
         feed.addLink(request.getResolvedUri().toString(), "self");
@@ -138,6 +140,9 @@ public class CMISTypesCollection extends CMISCollection<Type> {
         // CMIS-specific
         Element te = factory.newElement(AtomPubCMIS.TYPE, entry);
         te.setAttributeValue(AtomPubCMIS.ID, tid);
+        QName schemaType = CMIS.SCHEMA_TYPES.get(type.getBaseType());
+        te.setAttributeValue(AtomPub.XSI_TYPE, schemaType.getPrefix() + ':'
+                + schemaType.getLocalPart());
         Element el;
         // note: setText is called in a separate statement as JDK 5 has problems
         // compiling when it's on one line (compiler generics bug)
