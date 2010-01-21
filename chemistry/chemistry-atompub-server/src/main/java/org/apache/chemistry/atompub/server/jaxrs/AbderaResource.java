@@ -409,4 +409,11 @@ public class AbderaResource {
         return postAbderaEntry(1);
     }
 
+    @GET
+    @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
+    @Path("checkedout")
+    public Response doGetCheckedOut() {
+        return getAbderaEntry(1);
+    }
+
 }
