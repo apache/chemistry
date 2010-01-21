@@ -150,8 +150,10 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         feed.setUpdated(new Date()); // XXX
         feed.addLink(getServiceLink(request), AtomPub.LINK_SERVICE,
                 AtomPub.MEDIA_TYPE_ATOM_SERVICE, null, null, -1);
-        feed.addLink(getObjectLink(id, request), AtomPub.LINK_VIA,
-                AtomPub.MEDIA_TYPE_ATOM_ENTRY, null, null, -1);
+        if (id != null) {
+            feed.addLink(getObjectLink(id, request), AtomPub.LINK_VIA,
+                    AtomPub.MEDIA_TYPE_ATOM_ENTRY, null, null, -1);
+        }
         return feed;
     }
 

@@ -38,7 +38,7 @@ import org.apache.chemistry.atompub.AtomPubCMIS;
 public class CMISCheckedOutCollection extends CMISObjectsCollection {
 
     public CMISCheckedOutCollection(Repository repository) {
-        super("checkedout", null, null, repository);
+        super("checkedout", "checkedout", null, repository);
     }
 
     /*
@@ -53,6 +53,11 @@ public class CMISCheckedOutCollection extends CMISObjectsCollection {
                 AtomPub.MEDIA_TYPE_ATOM_FEED, null, null, -1);
         // RFC 5005 paging
         return feed;
+    }
+
+    @Override
+    public String getId(RequestContext request) {
+        return "urn:x-checkedout";
     }
 
     /*

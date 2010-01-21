@@ -263,7 +263,7 @@ public class SimpleConnection implements Connection, SPI {
     public ListPage<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
             Inclusion inclusion, Paging paging) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return SimpleListPage.emptyList();
     }
 
     /*
@@ -439,7 +439,7 @@ public class SimpleConnection implements Connection, SPI {
 
     public Collection<QName> getAllowableActions(ObjectId object) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return SimpleListPage.emptyList();
     }
 
     public ObjectEntry getProperties(ObjectId object, Inclusion inclusion) {
@@ -914,7 +914,7 @@ public class SimpleConnection implements Connection, SPI {
             String typeId, boolean includeSubRelationshipTypes,
             Inclusion inclusion, Paging paging) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return SimpleListPage.emptyList();
     }
 
     /*
@@ -934,7 +934,7 @@ public class SimpleConnection implements Connection, SPI {
     public Collection<ObjectEntry> getAppliedPolicies(ObjectId policy,
             String filter) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return Collections.emptyList();
     }
 
     /*
