@@ -413,7 +413,7 @@ public class AbderaResource {
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
     @Path("checkedout")
     public Response doGetCheckedOut() {
-        return getAbderaEntry(1);
+        return getAbderaFeed(1);
     }
 
 }
