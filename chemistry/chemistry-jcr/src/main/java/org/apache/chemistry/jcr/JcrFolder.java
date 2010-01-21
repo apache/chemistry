@@ -41,17 +41,13 @@ import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Unfiling;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jackrabbit.JcrConstants;
 
 public class JcrFolder extends JcrObjectEntry implements Folder {
 
     private static final Log log = LogFactory.getLog(JcrFolder.class);
 
-    public JcrFolder(Node node) {
-        super(node);
-    }
-
-    protected JcrFolder() {
+    public JcrFolder(Node node, JcrConnection connection) {
+        super(node, connection);
     }
 
     public List<CMISObject> getChildren() {
@@ -63,9 +59,9 @@ public class JcrFolder extends JcrObjectEntry implements Folder {
                 Node child = iter.nextNode();
                 CMISObject entry;
                 if (JcrCmisMap.isNodeDocument(child)) {
-                    entry = new JcrDocument(child);
+                    entry = new JcrDocument(child, connection);
                 } else {
-                    entry = new JcrFolder(child);
+                    entry = new JcrFolder(child, connection);
                 }
                 result.add(entry);
             }
@@ -78,17 +74,17 @@ public class JcrFolder extends JcrObjectEntry implements Folder {
     }
 
     public Document newDocument(String typeId) {
-        return new JcrNewDocument(node);
+        return new JcrNewDocument(node, connection);
     }
 
     public Folder newFolder(String typeId) {
-        return new JcrNewFolder(node);
+        return new JcrNewFolder(node, connection);
     }
 
     public Folder getParent() {
         try {
             if (node.getDepth() > 0) {
-                return new JcrFolder(node.getParent());
+                return new JcrFolder(node.getParent(), connection);
             }
         } catch (RepositoryException e) {
             String msg = "Unable to get parent.";

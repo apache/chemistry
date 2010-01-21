@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.NameConstraintViolationException;
@@ -66,6 +67,10 @@ public class SimpleObject extends BaseObject {
         default:
             throw new AssertionError();
         }
+    }
+
+    public Connection getConnection() {
+        return entry.connection;
     }
 
     public void move(Folder targetFolder, Folder sourceFolder)

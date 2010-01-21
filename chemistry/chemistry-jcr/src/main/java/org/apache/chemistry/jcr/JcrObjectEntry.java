@@ -37,6 +37,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 import javax.xml.namespace.QName;
 
+import org.apache.chemistry.Connection;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectEntry;
@@ -60,11 +61,15 @@ public abstract class JcrObjectEntry implements ObjectEntry {
 
     protected Node node;
 
-    public JcrObjectEntry(Node node) {
+    protected final JcrConnection connection;
+
+    public JcrObjectEntry(Node node, JcrConnection connection) {
         this.node = node;
+        this.connection = connection;
     }
 
-    public JcrObjectEntry() {
+    public Connection getConnection() {
+        return connection;
     }
 
     public Map<QName, Boolean> getAllowableActions() {

@@ -89,9 +89,9 @@ public class JcrConnection implements Connection, SPI {
             } else {
                 Node node = session.getRootNode().getNode(relPath);
                 if (JcrCmisMap.isNodeDocument(node)) {
-                    return new JcrDocument(node);
+                    return new JcrDocument(node, this);
                 } else {
-                    return new JcrFolder(node);
+                    return new JcrFolder(node, this);
                 }
             }
         } catch (RepositoryException e) {
@@ -107,7 +107,7 @@ public class JcrConnection implements Connection, SPI {
 
     public Folder getRootFolder() {
         try {
-            return new JcrFolder(session.getRootNode());
+            return new JcrFolder(session.getRootNode(), this);
         } catch (RepositoryException e) {
             String msg = "Unable to get root entry.";
             log.error(msg, e);
@@ -153,9 +153,9 @@ public class JcrConnection implements Connection, SPI {
 
     public ObjectEntry newObjectEntry(String typeId) {
         if (JcrCmisMap.isBaseTypeDocument(typeId)) {
-            return new JcrDocument();
+            return new JcrDocument(null, this);
         } else {
-            return new JcrFolder();
+            return new JcrFolder(null, this);
         }
     }
 
@@ -299,9 +299,9 @@ public class JcrConnection implements Connection, SPI {
             while (result.size() < maxItems && iter.hasNext()) {
                 Node child = iter.nextNode();
                 if (JcrCmisMap.isNodeDocument(child)) {
-                    result.add(new JcrDocument(child));
+                    result.add(new JcrDocument(child, this));
                 } else {
-                    result.add(new JcrFolder(child));
+                    result.add(new JcrFolder(child, this));
                 }
             }
             result.setHasMoreItems(iter.hasNext());
@@ -326,7 +326,7 @@ public class JcrConnection implements Connection, SPI {
             String relPath = JcrObjectEntry.getPath(documentId.getId()).substring(
                     1);
             Node node = session.getRootNode().getNode(relPath);
-            JcrDocument document = new JcrDocument(node);
+            JcrDocument document = new JcrDocument(node, this);
             return document.getContentStream();
         } catch (RepositoryException e) {
             String msg = "Unable to get object: " + documentId;
@@ -368,9 +368,9 @@ public class JcrConnection implements Connection, SPI {
             } else {
                 Node node = session.getRootNode().getNode(relPath);
                 if (JcrCmisMap.isNodeDocument(node)) {
-                    return new JcrDocument(node);
+                    return new JcrDocument(node, this);
                 } else {
-                    return new JcrFolder(node);
+                    return new JcrFolder(node, this);
                 }
             }
         } catch (RepositoryException e) {
@@ -390,9 +390,9 @@ public class JcrConnection implements Connection, SPI {
                 }
                 Node node = session.getRootNode().getNode(path);
                 if (node.isNodeType(JcrConstants.NT_FOLDER)) {
-                    return new JcrFolder(node);
+                    return new JcrFolder(node, this);
                 } else if (node.isNodeType(JcrConstants.NT_FILE)) {
-                    return new JcrDocument(node);
+                    return new JcrDocument(node, this);
                 }
             }
         } catch (RepositoryException e) {
@@ -452,9 +452,9 @@ public class JcrConnection implements Connection, SPI {
             while (result.size() < maxItems && iter.hasNext()) {
                 Node child = iter.nextNode();
                 if (child.isNodeType(JcrConstants.NT_FOLDER)) {
-                    result.add(new JcrFolder(child));
+                    result.add(new JcrFolder(child, this));
                 } else if (child.isNodeType(JcrConstants.NT_FILE)) {
-                    result.add(new JcrDocument(child));
+                    result.add(new JcrDocument(child, this));
                 }
             }
             result.setHasMoreItems(iter.hasNext());

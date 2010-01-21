@@ -38,11 +38,8 @@ public class JcrDocument extends JcrObjectEntry implements Document {
 
     private static final Log log = LogFactory.getLog(JcrDocument.class);
 
-    public JcrDocument(Node node) {
-        super(node);
-    }
-
-    protected JcrDocument() {
+    public JcrDocument(Node node, JcrConnection connection) {
+        super(node, connection);
     }
 
     public ContentStream getContentStream() {
@@ -63,7 +60,7 @@ public class JcrDocument extends JcrObjectEntry implements Document {
 
     public Folder getParent() {
         try {
-            return new JcrFolder(node.getParent());
+            return new JcrFolder(node.getParent(), connection);
         } catch (RepositoryException e) {
             String msg = "Unable to get parent.";
             log.error(msg, e);

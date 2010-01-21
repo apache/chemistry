@@ -43,6 +43,13 @@ import java.util.Map;
  */
 public interface CMISObject extends ObjectId {
 
+    /**
+     * Gets the connection to which this object is associated.
+     *
+     * @return the connection
+     */
+    Connection getConnection();
+
     /*
      * ----- Object Services -----
      */

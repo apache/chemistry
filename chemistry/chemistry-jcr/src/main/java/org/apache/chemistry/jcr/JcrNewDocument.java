@@ -44,7 +44,8 @@ public class JcrNewDocument extends JcrDocument {
     private ContentStream cs;
     private boolean saved;
 
-    public JcrNewDocument(Node parent) {
+    public JcrNewDocument(Node parent, JcrConnection connection) {
+        super(null, connection);
         this.parent = parent;
     }
 
@@ -59,7 +60,7 @@ public class JcrNewDocument extends JcrDocument {
     @Override
     public Folder getParent() {
         if (!saved) {
-            return new JcrFolder(parent);
+            return new JcrFolder(parent, connection);
         }
         return super.getParent();
     }

@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISRuntimeException;
+import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectEntry;
@@ -80,6 +81,10 @@ public abstract class APPObject extends BaseObject {
         default:
             throw new AssertionError(entry.getBaseType().getId());
         }
+    }
+
+    public Connection getConnection() {
+        return entry.connection;
     }
 
     /*

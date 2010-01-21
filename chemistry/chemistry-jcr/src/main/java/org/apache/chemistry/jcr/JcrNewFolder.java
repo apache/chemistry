@@ -43,7 +43,8 @@ public class JcrNewFolder extends JcrFolder {
     private String name;
     private boolean saved;
 
-    public JcrNewFolder(Node parent) {
+    public JcrNewFolder(Node parent, JcrConnection connection) {
+        super(null, connection);
         this.parent = parent;
     }
 
@@ -74,7 +75,7 @@ public class JcrNewFolder extends JcrFolder {
     @Override
     public Folder getParent() {
         if (!saved) {
-            return new JcrFolder(parent);
+            return new JcrFolder(parent, connection);
         }
         return super.getParent();
     }
