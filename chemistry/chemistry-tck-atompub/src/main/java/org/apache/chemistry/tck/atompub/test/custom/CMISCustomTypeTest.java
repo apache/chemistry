@@ -197,6 +197,7 @@ public class CMISCustomTypeTest extends TCKCustomTest {
             String queryReq = queryDoc.replace("${STATEMENT}", query);
             queryReq = queryReq.replace("${SKIPCOUNT}", "0");
             queryReq = queryReq.replace("${PAGESIZE}", "5");
+            queryReq = queryReq.replace("${RENDITIONFILTER}", "cmis:none");
 
             // issue structured query
             Response queryRes = client.executeRequest(new PostRequest(queryHREF.toString(), queryReq,

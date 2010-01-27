@@ -111,7 +111,30 @@ public class CMISTestFixture {
             EntryTree docEntry = new EntryTree();
             String docName = name + " doc " + docIdx;
             docEntry.parent = entry;
-            docEntry.entry = client.createDocument(childrenLink.getHref(), docName, docTemplate);
+            String cmisType = null;
+            String cmisContentPath = null;
+            String content = null;
+            // If no template is specified, use a selection of files of
+            // different types
+            if (docTemplate == null) {
+                switch (docIdx % 3) {
+                case 1:
+                    cmisType = "image/jpeg";
+                    cmisContentPath = "org/apache/chemistry/tck/atompub/images/image1.jpg";
+                    break;
+                case 2:
+                    cmisType = "image/png";
+                    cmisContentPath = "org/apache/chemistry/tck/atompub/images/image2.png";
+                    break;
+                default:
+                    content = name;
+                    break;
+                }
+                docEntry.entry = client.createDocument(childrenLink.getHref(), docName, null, false, content, cmisType,
+                        cmisContentPath);
+            } else {
+                docEntry.entry = client.createDocument(childrenLink.getHref(), docName, docTemplate);
+            }
             docEntry.type = CMISConstants.TYPE_DOCUMENT;
             folderEntry.children.add(docEntry);
         }

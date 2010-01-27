@@ -78,4 +78,9 @@ public class CMISCapabilities extends ElementWrapper {
         return child.getText();
     }
 
+    public String getRenditions() {
+        Element child = getFirstChild(CMISConstants.CAPABILITY_RENDITIONS);
+        return child.getText();
+    }
+
 }

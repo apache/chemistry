@@ -3,4 +3,5 @@
   <cmis:includeAllowableActions>${INCLUDEALLOWABLEACTIONS}</cmis:includeAllowableActions>
   <cmis:skipCount>${SKIPCOUNT}</cmis:skipCount>
   <cmis:maxItems>${MAXITEMS}</cmis:maxItems>
+  <cmis:renditionFilter>${RENDITIONFILTER}</cmis:renditionFilter>
 </cmis:query>

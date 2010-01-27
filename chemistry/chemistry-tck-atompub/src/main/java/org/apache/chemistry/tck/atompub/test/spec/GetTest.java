@@ -17,16 +17,23 @@
  */
 package org.apache.chemistry.tck.atompub.test.spec;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.abdera.i18n.iri.IRI;
+import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
+import org.apache.abdera.model.Feed;
+import org.apache.abdera.model.Link;
 import org.apache.chemistry.abdera.ext.CMISConstants;
 import org.apache.chemistry.abdera.ext.CMISObject;
 import org.apache.chemistry.abdera.ext.CMISRepositoryInfo;
 import org.apache.chemistry.abdera.ext.CMISUriTemplate;
 import org.apache.chemistry.tck.atompub.TCKTest;
+import org.apache.chemistry.tck.atompub.fixture.CMISTree;
+import org.apache.chemistry.tck.atompub.fixture.EntryTree;
+import org.apache.chemistry.tck.atompub.fixture.GatherRenditionsVisitor;
 import org.apache.chemistry.tck.atompub.http.GetRequest;
 import org.junit.Assert;
 
@@ -62,6 +69,21 @@ public class GetTest extends TCKTest {
         client.executeRequest(new GetRequest(folder.getSelfLink().getHref().toString() + guid), 404);
     }
 
+    public void testGetDocumentRenditions() throws Exception {
+        final Entry document = fixture.createTestDocument("testGetDocumentRenditions");
+
+        GatherRenditionsVisitor visitor = new GatherRenditionsVisitor(client);
+        visitor.testRenditions(new CMISTree(fixture.getTestCaseFolder(), document, CMISConstants.TYPE_DOCUMENT),
+                new GatherRenditionsVisitor.EntryGenerator() {
+
+                    public EntryTree getEntries(String renditionFilter) throws Exception {
+                        return new CMISTree(fixture.getTestCaseFolder(), client.getEntry(document.getSelfLink()
+                                .getHref(), Collections.singletonMap("renditionFilter", renditionFilter)),
+                                CMISConstants.TYPE_DOCUMENT);
+                    }
+                });
+    }
+    
     public void testObjectById() throws Exception
     {
         // construct document
@@ -133,4 +155,79 @@ public class GetTest extends TCKTest {
         Assert.assertEquals(objectId, folderByPathObject.getObjectId().getStringValue());
     }
     
+    public void testObjectByIdRenditions() throws Exception {
+        // construct document
+        Entry document = fixture.createTestDocument("testObjectByIdRenditions");
+        Assert.assertNotNull(document);
+        CMISObject documentObject = document.getExtension(CMISConstants.OBJECT);
+        Assert.assertNotNull(documentObject);
+        final String objectId = documentObject.getObjectId().getStringValue();
+        Assert.assertNotNull(objectId);
+
+        GatherRenditionsVisitor visitor = new GatherRenditionsVisitor(client);
+
+        // Create simple entry tree and walk it with the renditions visitor
+        EntryTree entryTree = new CMISTree(fixture.getTestCaseFolder(), document, CMISConstants.TYPE_DOCUMENT);
+        visitor.testRenditions(entryTree, new GatherRenditionsVisitor.EntryGenerator() {
+
+            public EntryTree getEntries(String renditionFilter) throws Exception {
+                // formulate get request via id
+                CMISUriTemplate objectByIdTemplate = client.getObjectByIdUriTemplate(client.getWorkspace());
+                Map<String, Object> variables = new HashMap<String, Object>(5);
+                variables.put("id", objectId);
+                variables.put("renditionFilter", renditionFilter);
+                IRI objectByIdRequest = objectByIdTemplate.generateUri(variables);
+
+                return new CMISTree(fixture.getTestCaseFolder(), client.getEntry(objectByIdRequest),
+                        CMISConstants.TYPE_DOCUMENT);
+            }
+        });
+    }
+
+    public void testObjectByPathRenditions() throws Exception {
+        // construct document
+        Entry document = fixture.createTestDocument("testObjectByPath");
+        Assert.assertNotNull(document);
+        
+        // Get path of its folder
+        final Entry folder = fixture.getTestCaseFolder();
+        Assert.assertNotNull(folder);
+        CMISObject folderObject = folder.getExtension(CMISConstants.OBJECT);
+        Assert.assertNotNull(folderObject);
+        String folderPath = folderObject.getPath().getStringValue();
+        Assert.assertNotNull(folderPath);
+        
+        // Get path of the document within its folder 
+        Link parentLink = client.getObjectParentsLink(document);
+        Assert.assertNotNull(parentLink);
+        Feed parents = client.getFeed(parentLink.getHref(), Collections.singletonMap("includeRelativePathSegment", "true"));        
+        Entry parent = parents.getEntry(folder.getId().toString());        
+        Assert.assertNotNull(parent);
+        Element pathEl = parent.getFirstChild(CMISConstants.RELATIVE_PATH_SEGMENT);
+        Assert.assertNotNull(pathEl);
+        String relPath = pathEl.getText();
+        Assert.assertNotNull(relPath);
+        
+        // Generate the full path of the document
+        final String path = folderPath + '/' + relPath;
+
+        GatherRenditionsVisitor visitor = new GatherRenditionsVisitor(client);
+
+        // Create simple entry tree and walk it with the renditions visitor
+        EntryTree entryTree = new CMISTree(fixture.getTestCaseFolder(), document, CMISConstants.TYPE_DOCUMENT);
+        visitor.testRenditions(entryTree, new GatherRenditionsVisitor.EntryGenerator() {
+
+            public EntryTree getEntries(String renditionFilter) throws Exception {
+                // formulate get request via path
+                CMISUriTemplate objectByPathTemplate = client.getObjectByPathUriTemplate(client.getWorkspace());
+                Map<String, Object> variables = new HashMap<String, Object>();
+                variables.put("path", path);
+                variables.put("renditionFilter", renditionFilter);
+                IRI objectByPathRequest = objectByPathTemplate.generateUri(variables);
+
+                return new CMISTree(folder, client.getEntry(objectByPathRequest),
+                        CMISConstants.TYPE_DOCUMENT);
+            }
+        });
+    }
 }

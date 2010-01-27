@@ -18,6 +18,7 @@
  */
 package org.apache.chemistry.tck.atompub.test.spec;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -35,7 +36,9 @@ import org.apache.chemistry.abdera.ext.CMISUriTemplate;
 import org.apache.chemistry.tck.atompub.TCKTest;
 import org.apache.chemistry.tck.atompub.fixture.AssertEntryInFeedVisitor;
 import org.apache.chemistry.tck.atompub.fixture.AssertValidFolderParentVisitor;
+import org.apache.chemistry.tck.atompub.fixture.CMISTree;
 import org.apache.chemistry.tck.atompub.fixture.EntryTree;
+import org.apache.chemistry.tck.atompub.fixture.GatherRenditionsVisitor;
 import org.junit.Assert;
 
 /**
@@ -156,5 +159,37 @@ public class FolderChildrenTest extends TCKTest {
 
         folder.walkTree(new AssertValidFolderParentVisitor(client));
     }
+    
+    public void testGetChildrenRenditions() throws Exception {
+        final EntryTree folder = fixture.createTestTree("children", 1, 3, null, null);
+        final Link childrenLink = client.getChildrenLink(folder.entry);
 
+        // Walk the tree with a visitor that gathers its renditions and then
+        // tries getChildren requests with various forms of renditionFilter
+        GatherRenditionsVisitor visitor = new GatherRenditionsVisitor(client);
+        visitor.testRenditions(folder, new GatherRenditionsVisitor.EntryGenerator() {
+
+            public EntryTree getEntries(String renditionFilter) throws Exception {
+                // get children
+                return new CMISTree(folder, client.getFeed(childrenLink.getHref(), Collections.singletonMap(
+                        "renditionFilter", renditionFilter)));
+            }
+        });
+    }
+
+    public void testGetParentRenditions() throws Exception {
+        final EntryTree folder = fixture.createTestTree("children", 2, 0, null, null);
+        EntryTree child = folder.children.get(0);
+        final Link parentLink = client.getFolderParentLink(child.entry);
+        Assert.assertNotNull(parentLink);
+
+        GatherRenditionsVisitor visitor = new GatherRenditionsVisitor(client);
+        visitor.testRenditions(folder, new GatherRenditionsVisitor.EntryGenerator() {
+
+            public EntryTree getEntries(String renditionFilter) throws Exception {
+                return new CMISTree(folder.entry, client.getEntry(parentLink.getHref(), Collections.singletonMap(
+                        "renditionFilter", renditionFilter)), CMISConstants.TYPE_FOLDER);
+            }
+        });
+    }
 }

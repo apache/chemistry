@@ -17,17 +17,20 @@
  */
 package org.apache.chemistry.tck.atompub.test.spec;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Link;
 import org.apache.chemistry.abdera.ext.CMISCapabilities;
+import org.apache.chemistry.abdera.ext.CMISConstants;
 import org.apache.chemistry.tck.atompub.TCKSkipCapabilityException;
 import org.apache.chemistry.tck.atompub.TCKTest;
 import org.apache.chemistry.tck.atompub.fixture.AssertValidObjectParentsVisitor;
 import org.apache.chemistry.tck.atompub.fixture.CMISTree;
 import org.apache.chemistry.tck.atompub.fixture.EntryTree;
+import org.apache.chemistry.tck.atompub.fixture.GatherRenditionsVisitor;
 import org.junit.Assert;
 
 
@@ -68,6 +71,30 @@ public class FolderHierarchyTest extends TCKTest {
 
     public void testGetFolderTreeOverDepth() throws Exception {
         getFolderTreeDepthN(3, 4);
+    }
+    
+    public void testGetFolderTreeRenditions() throws Exception {
+        testLinkRenditions("foldertree", CMISConstants.REL_FOLDER_TREE, CMISConstants.MIMETYPE_FEED);
+    }
+
+    private void testLinkRenditions(String name, String linkRel, String linkMimeType) throws Exception {
+        // construct hierarchy of folders and docs
+        final EntryTree folderTree = fixture.createTestTree(name, 3, 2, null, null);
+
+        final Link treeLink = client.getLink(folderTree.entry, linkRel, linkMimeType);
+        Assert.assertNotNull(treeLink);
+
+        GatherRenditionsVisitor visitor = new GatherRenditionsVisitor(client);
+        visitor.testRenditions(folderTree, new GatherRenditionsVisitor.EntryGenerator() {
+
+            public EntryTree getEntries(String renditionFilter) throws Exception {
+                // retrieve feed
+                Map<String, String> args = new HashMap<String, String>();
+                args.put("depth", "3");
+                args.put("renditionFilter", renditionFilter);
+                return new CMISTree(folderTree, client.getFeed(treeLink.getHref(), args));
+            }
+        });
     }
 
     private void getDescendantsDepthN(int depth, int getDepth) throws Exception {
@@ -114,10 +141,30 @@ public class FolderHierarchyTest extends TCKTest {
         getDescendantsDepthN(3, 4);
     }
 
+    public void testGetDescendantRenditions() throws Exception {
+        checkGetDescendantsCapability();
+        testLinkRenditions("descendants", CMISConstants.REL_DOWN, CMISConstants.MIMETYPE_CMISTREE);
+    }
+
     public void testGetObjectParents() throws Exception {
         EntryTree folder = fixture.createTestTree("children", 3, 2, null, null);
 
         folder.walkTree(new AssertValidObjectParentsVisitor(client));
     }
+    
+    public void testObjectParentRenditions() throws Exception {
+        final EntryTree folder = fixture.createTestTree("children", 1, 1, null, null);
+        EntryTree child = folder.children.get(0);
+        final Link parentLink = client.getObjectParentsLink(child.entry);
+        Assert.assertNotNull(parentLink);
 
+        GatherRenditionsVisitor visitor = new GatherRenditionsVisitor(client);
+        visitor.testRenditions(folder, new GatherRenditionsVisitor.EntryGenerator() {
+
+            public EntryTree getEntries(String renditionFilter) throws Exception {
+                return new CMISTree(folder, client.getFeed(parentLink.getHref(), Collections.singletonMap(
+                        "renditionFilter", renditionFilter)));
+            }
+        });
+    }    
 }

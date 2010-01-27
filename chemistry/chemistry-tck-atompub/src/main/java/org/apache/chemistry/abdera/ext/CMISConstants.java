@@ -81,6 +81,7 @@ public interface CMISConstants {
     public static final QName CAPABILITY_ALL_VERIONS_SEARCHABLE = new QName(CMIS_NS, "capabilityAllVersionsSearchable");
     public static final QName CAPABILITY_QUERY = new QName(CMIS_NS, "capabilityQuery");
     public static final QName CAPABILITY_JOIN = new QName(CMIS_NS, "capabilityJoin");
+    public static final QName CAPABILITY_RENDITIONS = new QName(CMIS_NS, "capabilityRenditions");
 
     // CMIS Object
     public static final QName OBJECT = new QName(CMISRA_NS, "object");
@@ -101,7 +102,13 @@ public interface CMISConstants {
     public static final QName CONTENT = new QName(CMISRA_NS, "content");
     public static final QName CONTENT_MEDIATYPE = new QName(CMISRA_NS, "mediatype");
     public static final QName CONTENT_BASE64 = new QName(CMISRA_NS, "base64");
+
+    // CMIS Relative Path Segment
+    public static final QName RELATIVE_PATH_SEGMENT = new QName(CMISRA_NS, "relativePathSegment");
     
+    // CMIS Renditions
+    public static final QName RENDITION_KIND = new QName(CMISRA_NS, "renditionKind");
+
     // CMIS Type Definition
     public static final QName TYPE_DEFINITION = new QName(CMISRA_NS, "type");
     public static final QName TYPE_ID = new QName(CMIS_NS, "id");
@@ -165,6 +172,7 @@ public interface CMISConstants {
     public static final String REL_VERSION_HISTORY = "version-history";
     public static final String REL_CURRENT_VERSION = "current-version";
     public static final String REL_WORKING_COPY = "working-copy";
+    public static final String REL_ALTERNATE = "alternate";
     public static final String REL_ROOT_DESCENDANTS = CMISLINK_NS + "rootdescendants";
     public static final String REL_TYPES_DESCENDANTS = CMISLINK_NS + "typedescendants";
     public static final String REL_FOLDER_TREE = CMISLINK_NS + "foldertree";

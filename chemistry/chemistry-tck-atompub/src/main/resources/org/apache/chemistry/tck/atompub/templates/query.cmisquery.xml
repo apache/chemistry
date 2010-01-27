@@ -2,4 +2,5 @@
   <cmis:statement><![CDATA[${STATEMENT}]]></cmis:statement>
   <cmis:skipCount>${SKIPCOUNT}</cmis:skipCount>
   <cmis:maxItems>${MAXITEMS}</cmis:maxItems>
+  <cmis:renditionFilter>${RENDITIONFILTER}</cmis:renditionFilter>
 </cmis:query>

@@ -17,7 +17,9 @@
  */
 package org.apache.chemistry.tck.atompub.client;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.List;
@@ -263,6 +265,10 @@ public class CMISClient {
     public Link getFolderParentLink(Entry entry) {
         return getLink(entry, CMISConstants.REL_UP, CMISConstants.MIMETYPE_ENTRY);
     }
+    
+    public List<Link> getRenditionLinks(Entry entry) {
+        return entry.getLinks(CMISConstants.REL_ALTERNATE);
+    }
 
     public Entry getEntry(IRI href) throws Exception {
         return getEntry(href, null);
@@ -326,16 +332,52 @@ public class CMISClient {
         return createDocument(parent, name, atomEntryFile, false);
     }
 
-    public Entry createDocument(IRI parent, String name, String atomEntryFile,
-            boolean expectNoContent) throws Exception {
-        String createFile = templates.load(atomEntryFile == null ? "createdocument.atomentry.xml" : atomEntryFile);
+    public Entry createDocument(IRI parent, String name, String atomEntryFile, boolean expectNoContent)
+            throws Exception {
+        return createDocument(parent, name, atomEntryFile, expectNoContent, name, null, null);
+    }
+
+    public Entry createDocument(IRI parent, String name, String atomEntryFile, boolean expectNoContent, String content,
+            String cmisType, String cmisContentPath) throws Exception {
+
+        // If no preference is expressed, use the base64 template if binary
+        // content has been supplied or the basic atom entry template otherwise
+        String createFile = templates
+                .load(atomEntryFile == null ? (cmisContentPath == null ? "createdocument.atomentry.xml"
+                        : "createdocumentBase64.cmisatomentry.xml") : atomEntryFile);
         createFile = createFile.replace("${NAME}", name);
+
         // determine if creating content via mediatype
         Entry createEntry = appModel.parseEntry(new StringReader(createFile), null);
         MimeType mimeType = createEntry.getContentMimeType();
-        boolean mediaType = (mimeType != null);
-        createFile = createFile.replace("${CMISCONTENT}", new String(Base64.encodeBase64(name.getBytes())));
-        createFile = createFile.replace("${CONTENT}", mediaType ? new String(Base64.encodeBase64(name.getBytes())) : name);
+
+        if (content != null) {
+            createFile = createFile.replace("${CONTENT}", mimeType == null ? content : new String(Base64
+                    .encodeBase64(content.getBytes("UTF-8")), "8859_1"));
+        }
+
+        createFile = createFile.replace("${CMISTYPE}", cmisType == null ? "text/plain" : cmisType);
+
+        byte[] contentBytes = null;
+        if (cmisContentPath != null) {
+            InputStream in = getClass().getResourceAsStream('/' + cmisContentPath);
+            if (in != null) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
+                int bytesRead;
+                byte[] buffer = new byte[1024];
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
+                }
+                in.close();
+                out.close();
+                contentBytes = out.toByteArray();
+            }
+        }
+        if (contentBytes == null) {
+            contentBytes = name.getBytes("UTF-8");
+        }
+        createFile = createFile.replace("${CMISCONTENT}", new String(Base64.encodeBase64(contentBytes), "8859_1"));
+
         Request req = new PostRequest(parent.toString(), createFile, CMISConstants.MIMETYPE_ENTRY);
         Response res = executeRequest(req, 201);
         Assert.assertNotNull(res);

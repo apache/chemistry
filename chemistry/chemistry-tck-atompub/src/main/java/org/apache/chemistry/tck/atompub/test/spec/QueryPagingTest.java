@@ -79,6 +79,7 @@ public class QueryPagingTest extends TCKTest {
         String queryReq = queryDoc.replace("${STATEMENT}", query);
         queryReq = queryReq.replace("${SKIPCOUNT}", "0");
         queryReq = queryReq.replace("${MAXITEMS}", "4");
+        queryReq = queryReq.replace("${RENDITIONFILTER}", "cmis:none");
         Response queryRes = client.executeRequest(new PostRequest(queryHREF.toString(), queryReq,
                 CMISConstants.MIMETYPE_CMIS_QUERY), 201);
         Assert.assertNotNull(queryRes);

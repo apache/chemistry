@@ -17,6 +17,7 @@
 package org.apache.chemistry.tck.atompub.fixture;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
@@ -24,7 +25,6 @@ import org.apache.chemistry.abdera.ext.CMISChildren;
 import org.apache.chemistry.abdera.ext.CMISConstants;
 import org.apache.chemistry.abdera.ext.CMISObject;
 import org.apache.chemistry.abdera.ext.CMISProperty;
-
 
 /**
  * CMIS Tree of Folders and Documents or Types
@@ -41,6 +41,13 @@ public class CMISTree extends EntryTree {
             EntryTree childEntryTree = createEntryTree(entry, child);
             children.add(childEntryTree);
         }
+    }
+
+    public CMISTree(Entry parent, Entry entry, String type) {
+        this.parent = parent;
+        this.entry = entry;
+        this.type = type;
+        this.children = Collections.emptyList();
     }
 
     private EntryTree createEntryTree(Entry parent, Entry entry) {
