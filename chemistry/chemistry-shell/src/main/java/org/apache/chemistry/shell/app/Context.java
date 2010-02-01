@@ -74,7 +74,8 @@ public interface Context {
      * Lists the keys of the available sub contexts.
      * This is used by the command line completor.
      *
-     * @return an empty array if no sub contexts are available, otherwise return the array of sub context names
+     * @return an empty array if no sub contexts are available,
+     *         otherwise return the array of sub context names
      */
     String[] entries();
 
