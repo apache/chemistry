@@ -39,6 +39,7 @@ import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Link;
 import org.apache.abdera.model.Service;
 import org.apache.abdera.model.Workspace;
+import org.apache.chemistry.abdera.ext.CMISACLCapability;
 import org.apache.chemistry.abdera.ext.CMISCapabilities;
 import org.apache.chemistry.abdera.ext.CMISConstants;
 import org.apache.chemistry.abdera.ext.CMISObject;
@@ -65,6 +66,7 @@ public class CMISClient {
 
     private TCKMessageWriter messageWriter;
 
+    private String userId;
     private Connection connection;
     private boolean traceConnection;
 
@@ -82,7 +84,8 @@ public class CMISClient {
     private CMISRepositoryInfo cmisRepositoryInfo = null;
 
 
-    public CMISClient(Connection connection, String serviceUrl, TCKMessageWriter messageWriter) {
+    public CMISClient(String userId, Connection connection, String serviceUrl, TCKMessageWriter messageWriter) {
+        this.userId = userId;
         this.connection = connection;
         this.serviceUrl = serviceUrl;
         this.messageWriter = messageWriter;
@@ -98,6 +101,11 @@ public class CMISClient {
 
     public void setTrace(boolean trace) {
         this.traceConnection = trace;
+    }
+    
+    public String getUserId()
+    {
+        return this.userId;
     }
 
     public Service getRepository() throws Exception {
@@ -126,6 +134,10 @@ public class CMISClient {
 
     public CMISCapabilities getCapabilities() throws Exception {
         return getRepositoryInfo().getCapabilities();
+    }
+
+    public CMISACLCapability getACLCapability() throws Exception {
+        return getRepositoryInfo().getACLCapability();
     }
 
     public Workspace getWorkspace() throws Exception {
@@ -493,7 +505,8 @@ public class CMISClient {
                     if (contentType.startsWith(CMISConstants.MIMETYPE_ATOM)) {
                         mimetypeValidator = getAtomValidator();
                     }
-                    else if (contentType.startsWith(CMISConstants.MIMETYPE_APP)) {
+                    else if (contentType.startsWith(CMISConstants.MIMETYPE_APP)
+                            || contentType.startsWith(CMISConstants.MIMETYPE_CMISACL)) {
                         mimetypeValidator = getAppValidator();
                     }
                 } catch(SAXException e) {}

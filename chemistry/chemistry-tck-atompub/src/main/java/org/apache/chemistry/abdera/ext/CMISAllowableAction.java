@@ -26,7 +26,7 @@ import org.apache.abdera.model.ElementWrapper;
 /**
  * CMIS Allowable Action for the Abdera ATOM library.
  */
-public abstract class CMISAllowableAction extends ElementWrapper {
+public class CMISAllowableAction extends ElementWrapper {
     
     /**
      * @param internal
@@ -58,7 +58,7 @@ public abstract class CMISAllowableAction extends ElementWrapper {
      * @return
      */
     public boolean isAllowed() {
-        return Boolean.getBoolean(this.getText());
+        return Boolean.parseBoolean(this.getText());
     }
 
 }

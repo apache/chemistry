@@ -44,6 +44,16 @@ public class CMISTypeDefinition extends ExtensibleElementWrapper {
     }
 
     /**
+     * Determines whether objects of this type are controllable by ACLs.
+     * 
+     * @return <code>true</code> if objects of this type are controllable by
+     *         ACLs
+     */
+    public boolean getControllableACL() {
+        return Boolean.parseBoolean(getFirstChild(CMISConstants.TYPE_CONTROLLABLE_ACL).getText());
+    }
+
+    /**
      * Gets all Property Definitions for this CMIS Type
      * 
      * @return property definitions

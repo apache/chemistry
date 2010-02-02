@@ -76,7 +76,7 @@ public class TCKTest extends TestCase {
         String url = options.getServiceUrl();
         if (url == null)
             fail("CMIS Service URL not specified");
-        client = new CMISClient(connection, url, messageWriter);
+        client = new CMISClient(user, connection, url, messageWriter);
         boolean validate = options.getValidate();
         client.setValidate(validate);
         boolean failOnValidationError = options.getFailOnValidationError();

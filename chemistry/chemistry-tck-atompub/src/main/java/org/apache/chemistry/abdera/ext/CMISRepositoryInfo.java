@@ -116,4 +116,28 @@ public class CMISRepositoryInfo extends ElementWrapper {
         }
         return null;
     }
+
+    public CMISACLCapability getACLCapability() {
+        Element child = getFirstChild(CMISConstants.ACL_CAPABILITY);
+        if (child != null) {
+            return (CMISACLCapability) child;
+        }
+        return null;
+    }
+
+    public String getPrincipalAnonymous() {
+        Element child = getFirstChild(CMISConstants.PRINCIPAL_ANONYMOUS);
+        if (child != null) {
+            return child.getText();
+        }
+        return null;
+    }
+
+    public String getPrincipalAnyone() {
+        Element child = getFirstChild(CMISConstants.PRINCIPAL_ANYONE);
+        if (child != null) {
+            return child.getText();
+        }
+        return null;
+    }
 }

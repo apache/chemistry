@@ -39,6 +39,7 @@ public interface CMISConstants {
     public static final String MIMETYPE_CMIS_ALLOWABLE_ACTIONS = "application/cmisallowableactions+xml";
     public static final String MIMETYPE_CMISATOM = "application/cmisatom+xml";
     public static final String MIMETYPE_CMISTREE = "application/cmistree+xml";
+    public static final String MIMETYPE_CMISACL = "application/cmisacl+xml";
 
     // CMIS Service Document
     public static final QName COLLECTION_TYPE = new QName(CMISRA_NS, "collectionType");
@@ -59,6 +60,8 @@ public interface CMISConstants {
     public static final QName PRODUCT_VERSION = new QName(CMIS_NS, "productVersion");
     public static final QName ROOT_FOLDER_ID = new QName(CMIS_NS, "rootFolderId");
     public static final QName VERSION_SUPPORTED = new QName(CMIS_NS, "cmisVersionSupported");
+    public static final QName PRINCIPAL_ANONYMOUS = new QName(CMIS_NS, "principalAnonymous");
+    public static final QName PRINCIPAL_ANYONE = new QName(CMIS_NS, "principalAnyone");
 
     // CMIS URI Templates
     public static final QName URI_TEMPLATE = new QName(CMISRA_NS, "uritemplate");
@@ -82,7 +85,15 @@ public interface CMISConstants {
     public static final QName CAPABILITY_QUERY = new QName(CMIS_NS, "capabilityQuery");
     public static final QName CAPABILITY_JOIN = new QName(CMIS_NS, "capabilityJoin");
     public static final QName CAPABILITY_RENDITIONS = new QName(CMIS_NS, "capabilityRenditions");
+    public static final QName CAPABILITY_ACL = new QName(CMIS_NS, "capabilityACL");
 
+    // ACL Capabilities
+    public static final QName ACL_CAPABILITY = new QName(CMIS_NS, "aclCapability");
+    public static final QName ACL_SUPPORTED_PERMISSIONS  = new QName(CMIS_NS, "supportedPermissions");
+    public static final QName ACL_PROPAGATION = new QName(CMIS_NS, "propagation");
+    public static final QName ACL_PERMISSIONS = new QName(CMIS_NS, "permissions");
+    public static final QName ACL_PERMISSION = new QName(CMIS_NS, "permission");
+    
     // CMIS Object
     public static final QName OBJECT = new QName(CMISRA_NS, "object");
     public static final QName PROPERTIES = new QName(CMIS_NS, "properties");
@@ -179,6 +190,7 @@ public interface CMISConstants {
     public static final String REL_ALLOWABLE_ACTIONS = CMISLINK_NS + "allowableactions";
     public static final String REL_POLICIES = CMISLINK_NS + "policies";
     public static final String REL_RELATIONSHIPS = CMISLINK_NS + "relationships";
+    public static final String REL_ACL = CMISLINK_NS + "acl";
     public static final String REL_ASSOC_SOURCE = CMISLINK_NS + "source";
     public static final String REL_ASSOC_TARGET = CMISLINK_NS + "target";
 
@@ -197,34 +209,42 @@ public interface CMISConstants {
 
     // CMIS Allowable Actions
     public static final QName ALLOWABLE_ACTIONS = new QName(CMIS_NS, "allowableActions");
-    public static final QName CAN_DELETE = new QName(CMIS_NS, "canDelete");
+    public static final QName CAN_DELETE_OBJECT = new QName(CMIS_NS, "canDeleteObject");
     public static final QName CAN_UPDATE_PROPERTIES = new QName(CMIS_NS, "canUpdateProperties");
+    public static final QName CAN_GET_FOLDER_TREE = new QName(CMIS_NS, "canGetFolderTree");
     public static final QName CAN_GET_PROPERTIES = new QName(CMIS_NS, "canGetProperties");
     public static final QName CAN_GET_OBJECT_RELATIONSHIPS = new QName(CMIS_NS, "canGetObjectRelationships");
-    public static final QName CAN_GET_PARENTS = new QName(CMIS_NS, "canGetParents");
+    public static final QName CAN_GET_OBJECT_PARENTS = new QName(CMIS_NS, "canGetObjectParents");
     public static final QName CAN_GET_FOLDER_PARENT = new QName(CMIS_NS, "canGetFolderParent");
     public static final QName CAN_GET_DESCENDANTS = new QName(CMIS_NS, "canGetDescendants");
-    public static final QName CAN_GET_FOLDER_TREE = new QName(CMIS_NS, "canGetFolderTree");
-    public static final QName CAN_MOVE = new QName(CMIS_NS, "canMove");
-    public static final QName CAN_DELETE_VERSION = new QName(CMIS_NS, "canDeleteVersion");
-    public static final QName CAN_DELETE_CONTENT = new QName(CMIS_NS, "canDeleteContent");
-    public static final QName CAN_CHECKOUT = new QName(CMIS_NS, "canCheckout");
-    public static final QName CAN_CANCEL_CHECKOUT = new QName(CMIS_NS, "canCancelCheckout");
-    public static final QName CAN_CHECKIN = new QName(CMIS_NS, "canCheckin");
-    public static final QName CAN_SET_CONTENT = new QName(CMIS_NS, "canSetContent");
+    public static final QName CAN_MOVE_OBJECT = new QName(CMIS_NS, "canMoveObject");
+    public static final QName CAN_DELETE_CONTENT_STREAM = new QName(CMIS_NS, "canDeleteContentStream");
+    public static final QName CAN_CHECK_OUT = new QName(CMIS_NS, "canCheckOut");
+    public static final QName CAN_CANCEL_CHECK_OUT = new QName(CMIS_NS, "canCancelCheckOut");
+    public static final QName CAN_CHECK_IN = new QName(CMIS_NS, "canCheckIn");
+    public static final QName CAN_SET_CONTENT_STREAM = new QName(CMIS_NS, "canSetContentStream");
     public static final QName CAN_GET_ALL_VERSIONS = new QName(CMIS_NS, "canGetAllVersions");
-    public static final QName CAN_ADD_TO_FOLDER = new QName(CMIS_NS, "canAddToFolder");
-    public static final QName CAN_REMOVE_FROM_FOLDER = new QName(CMIS_NS, "canRemoveFromFolder");
-    public static final QName CAN_VIEW_CONTENT = new QName(CMIS_NS, "canViewContent");
-    public static final QName CAN_ADD_POLICY = new QName(CMIS_NS, "canAddPolicy");
+    public static final QName CAN_ADD_OBJECT_TO_FOLDER = new QName(CMIS_NS, "canAddObjectToFolder");
+    public static final QName CAN_REMOVE_OBJECT_FROM_FOLDER = new QName(CMIS_NS, "canRemoveObjectFromFolder");
+    public static final QName CAN_GET_CONTENT_STREAM = new QName(CMIS_NS, "canGetContentStream");
+    public static final QName CAN_APPLY_POLICY = new QName(CMIS_NS, "canApplyPolicy");
     public static final QName CAN_GET_APPLIED_POLICIES = new QName(CMIS_NS, "canGetAppliedPolicies");
     public static final QName CAN_REMOVE_POLICY = new QName(CMIS_NS, "canRemovePolicy");
     public static final QName CAN_GET_CHILDREN = new QName(CMIS_NS, "canGetChildren");
     public static final QName CAN_CREATE_DOCUMENT = new QName(CMIS_NS, "canCreateDocument");
     public static final QName CAN_CREATE_FOLDER = new QName(CMIS_NS, "canCreateFolder");
     public static final QName CAN_CREATE_RELATIONSHIP = new QName(CMIS_NS, "canCreateRelationship");
-    public static final QName CAN_CREATE_POLICY = new QName(CMIS_NS, "canCreatePolicy");
     public static final QName CAN_DELETE_TREE = new QName(CMIS_NS, "canDeleteTree");
+    public static final QName CAN_GET_RENDITIONS = new QName(CMIS_NS, "canGetRenditions");
+    public static final QName CAN_GET_ACL = new QName(CMIS_NS, "canGetACL");
+    public static final QName CAN_APPLY_ACL = new QName(CMIS_NS, "canApplyACL");
+
+    // CMIS Access Control List
+    public static final QName ACCESS_CONTROL_LIST = new QName(CMIS_NS, "acl");
+    public static final QName PRINCIPAL = new QName(CMIS_NS, "principal");
+    public static final QName PRINCIPAL_ID = new QName(CMIS_NS, "principalId");
+    public static final QName PERMISSION = new QName(CMIS_NS, "permission");
+    public static final QName DIRECT = new QName(CMIS_NS, "direct");
 
     // CMIS Type Names
     public static final String TYPE_DOCUMENT = "cmis:document";
