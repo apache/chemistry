@@ -37,7 +37,7 @@ import org.apache.chemistry.shell.command.CommandLine;
 import org.apache.chemistry.shell.util.Path;
 import org.apache.chemistry.shell.util.SimplePropertyManager;
 
-@Cmd(syntax="setstream target filename:file", synopsis="Set the given file content as a stream on the current context object")
+@Cmd(syntax="setstream target:item filename:file", synopsis="Set the given file content as a stream on the current context object")
 public class SetStream extends ChemistryCommand {
 
     @Override

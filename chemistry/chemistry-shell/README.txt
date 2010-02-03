@@ -13,7 +13,7 @@ first Apache Chemistry, by checking out the sources and running "mvn install"
 there, since it is not yet released.
 
 If you have make on you system, you can also use the following make targets:
-clean, build, test and release.
+"clean", "build", "test" and "release".
 
 Dependencies
 ------------
