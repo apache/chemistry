@@ -70,7 +70,7 @@ public abstract class Command {
     public String getHelp() {
         URL url = getClass().getResource("/help/"+getName()+".help");
         if (url == null) {
-            return "N/A";
+            return "";
         }
         InputStream in = null;
         try {
@@ -81,7 +81,7 @@ public abstract class Command {
         } finally {
             try { if (in != null) in.close(); } catch (IOException e) {}
         }
-        return "N/A";
+        return "";
     }
 
     public void print(InputStream in) throws IOException {

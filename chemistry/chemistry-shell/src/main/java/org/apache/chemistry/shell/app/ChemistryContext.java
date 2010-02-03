@@ -124,7 +124,11 @@ public class ChemistryContext extends AbstractContext {
             for (CMISObject entry : feed) {
                 children.put(entry.getName(), entry);
                 keys[i] = entry.getName();
-                ls[i++] = ColorHelper.decorateNameByType(entry.getName(), entry.getTypeId());
+                String entryTypeId = entry.getTypeId();
+                if (entryTypeId.startsWith("cmis:")) {
+                    entryTypeId = entryTypeId.substring("cmis:".length());
+                }
+                ls[i++] = ColorHelper.decorateNameByType(entry.getName(), entryTypeId);
             }
         }
     }
