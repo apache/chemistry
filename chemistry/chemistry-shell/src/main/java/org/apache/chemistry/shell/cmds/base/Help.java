@@ -51,7 +51,11 @@ public class Help extends Command {
     private void printHelpForCommand(Application app, String cmdName) throws CommandException {
         Command cmd = app.getCommandRegistry().getCommand(cmdName);
         if (cmd != null) {
-            println(cmd.getHelp());
+            String help = cmd.getHelp();
+            if (help.isEmpty()) {
+                help = cmd.getSynopsis();
+            }
+            println(help);
         } else {
             throw new CommandException("Unknown command: " + cmdName);
         }
