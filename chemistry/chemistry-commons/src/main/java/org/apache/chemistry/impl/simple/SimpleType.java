@@ -226,6 +226,7 @@ public class SimpleType implements Type {
     }
 
     public static final List<PropertyDefinition> PROPS_DOCUMENT_BASE = commonPlus(
+            PROP_PATH, //
             PROP_IS_LATEST_VERSION, //
             PROP_IS_MAJOR_VERSION, //
             PROP_IS_LATEST_MAJOR_VERSION, //
@@ -250,7 +251,7 @@ public class SimpleType implements Type {
             PROP_TARGET_ID);
 
     public static final List<PropertyDefinition> PROPS_POLICY_BASE = commonPlus( //
-    PROP_POLICY_TEXT);
+            PROP_POLICY_TEXT);
 
     protected final String id;
 
