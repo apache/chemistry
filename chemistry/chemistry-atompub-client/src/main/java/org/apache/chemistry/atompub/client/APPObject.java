@@ -14,6 +14,7 @@
  * Authors:
  *     Bogdan Stefanescu, Nuxeo
  *     Florent Guillaume, Nuxeo
+ *     Chris Hubick
  */
 package org.apache.chemistry.atompub.client;
 
@@ -186,6 +187,10 @@ public abstract class APPObject extends BaseObject {
     @Override
     public String getTypeId() {
         return entry.getTypeId();
+    }
+
+    public APPObjectEntry getEntry() {
+        return entry;
     }
 
     public Type getType() {

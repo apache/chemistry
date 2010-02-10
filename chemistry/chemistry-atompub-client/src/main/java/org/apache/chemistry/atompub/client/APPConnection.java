@@ -15,6 +15,7 @@
  *     Bogdan Stefanescu, Nuxeo
  *     Florent Guillaume, Nuxeo
  *     Ugo Cei, Sourcesense
+ *     Chris Hubick
  */
 package org.apache.chemistry.atompub.client;
 
@@ -299,6 +300,8 @@ public class APPConnection implements Connection, SPI {
     protected APPObjectEntry getObjectEntry(ObjectId objectId) {
         if (objectId instanceof APPObjectEntry) {
             return (APPObjectEntry) objectId;
+        } else if (objectId instanceof APPObject) {
+            return ((APPObject) objectId).getEntry();
         }
         URITemplate uriTemplate = repository.getURITemplate(AtomPubCMIS.URITMPL_OBJECT_BY_ID);
         String href = uriTemplate.template;
@@ -560,8 +563,7 @@ public class APPConnection implements Connection, SPI {
         NameValuePairs params = new NameValuePairs();
         params.add(AtomPubCMIS.PARAM_SOURCE_FOLDER_ID,
                 sourceFolder == null ? "" : sourceFolder.getId());
-        return connector.postEntry(getPostHref(targetFolder), params,
-                entry);
+        return connector.postEntry(getPostHref(targetFolder), params, entry);
     }
 
     public void deleteObject(ObjectId object, boolean allVersions) {
