@@ -13,6 +13,7 @@
  *
  * Authors:
  *     Bogdan Stefanescu, Nuxeo
+ *     Michael Durig, Day
  */
 package org.apache.chemistry.xml.stax;
 
@@ -307,14 +308,15 @@ public class StaxReader extends StreamReaderDelegate {
 
     @Override
     public String getAttributeValue(String namespaceURI, String localName) {
-        if (namespaceURI == null) {
-            namespaceURI = "";
-        }
-        String val = super.getAttributeValue(namespaceURI, localName);
-        if (val == null
-                && (namespaceURI.length() != 0 && namespaceURI.equals(getDefaultNamespaceURI()))) {
-            // try with empty namespace
-            val = getAttributeValue("", localName);
+        String val;
+        if (namespaceURI == null || "".equals(namespaceURI)) {
+            val = getAttributeValue(localName);
+        } else {
+            val = super.getAttributeValue(namespaceURI, localName);
+            if (val == null && namespaceURI.equals(getDefaultNamespaceURI())) {
+                // try without namespace
+                val = getAttributeValue(localName);
+            }
         }
         return val;
     }
