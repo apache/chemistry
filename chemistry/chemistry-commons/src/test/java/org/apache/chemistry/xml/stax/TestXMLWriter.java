@@ -14,6 +14,7 @@
  * Authors:
  *     Bogdan Stefanescu, Nuxeo
  *     Florent Guillaume, Nuxeo
+ *     Jeffrey Knight
  */
 package org.apache.chemistry.xml.stax;
 
@@ -39,6 +40,11 @@ public class TestXMLWriter extends TestCase {
 
     public static final QName OBJECT = new QName(CMIS.CMIS_NS, "object",
             CMIS.CMIS_PREFIX);
+
+    // cleanup whitespace and lines that may have been read on Windows
+    protected static String cleanup(String s) {
+        return s.replace("\r", "").trim();
+    }
 
     public void testXMLWriter() throws Exception {
         Writer w = new StringWriter();
@@ -74,15 +80,16 @@ public class TestXMLWriter extends TestCase {
         String expected = toString(new InputStreamReader(stream, "UTF-8"));
         stream.close();
 
-        assertEquals(expected.trim(), actual.trim());
+        assertEquals(cleanup(expected), cleanup(actual));
     }
 
     // Regression test: test corner case when stream length = 3*19.
     public void testEncodeBase64CornerCase() throws Exception {
         Writer w = new StringWriter();
         XMLWriter x = new XMLWriter(w, 2);
-        String s = "abcdefghij" + "abcdefghij" + "abcdefghij" + "abcdefghij" + "abcdefghij" + "abcdefg";
-        assertEquals(3*19, s.length());
+        String s = "abcdefghij" + "abcdefghij" + "abcdefghij" + "abcdefghij"
+                + "abcdefghij" + "abcdefg";
+        assertEquals(3 * 19, s.length());
 
         InputStream in = new ByteArrayInputStream(s.getBytes("UTF-8"));
         x.start();
