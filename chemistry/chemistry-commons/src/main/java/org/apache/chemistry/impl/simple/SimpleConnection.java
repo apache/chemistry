@@ -13,6 +13,7 @@
  *
  * Authors:
  *     Florent Guillaume, Nuxeo
+ *     Michael Durig, Day
  */
 package org.apache.chemistry.impl.simple;
 
@@ -469,8 +470,12 @@ public class SimpleConnection implements Connection, SPI {
                     throw new IllegalArgumentException(
                             "Path must not contain // : " + path);
                 }
+                Set<String> children = repository.children.get(id);
+                if (children == null) {
+                    return null;
+                }
                 String foundId = null;
-                for (String childId : repository.children.get(id)) {
+                for (String childId : children) {
                     SimpleData data = repository.datas.get(childId);
                     String name = (String) data.get(Property.NAME);
                     if (segment.equals(name)) {
