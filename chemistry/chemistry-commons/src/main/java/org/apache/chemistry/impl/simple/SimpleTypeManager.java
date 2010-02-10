@@ -25,6 +25,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ListPage;
@@ -46,6 +48,16 @@ public class SimpleTypeManager implements TypeManager {
 
     protected final Map<String, Collection<Type>> typesChildren;
 
+    /**
+     * Read-write lock protecting access to {@link #types},
+     * {@link #propertyDefinitions} and {@link #typesChildren}.
+     */
+    private final ReentrantReadWriteLock rwlock = new ReentrantReadWriteLock();
+
+    private final Lock rlock = rwlock.readLock();
+
+    private final Lock wlock = rwlock.writeLock();
+
     public SimpleTypeManager() {
         typesChildren = new HashMap<String, Collection<Type>>();
         // make sure base types are there
@@ -55,32 +67,37 @@ public class SimpleTypeManager implements TypeManager {
     }
 
     public void addType(Type type) {
-        String typeId = type.getId();
-        if (types.containsKey(typeId)) {
-            throw new RuntimeException("Type already defined: " + typeId);
-        }
-        types.put(typeId, type);
-        for (PropertyDefinition pdef : type.getPropertyDefinitions()) {
-            addPropertyDefinition(pdef);
-        }
-        typesChildren.put(typeId, new LinkedList<Type>());
-        String parentId = type.getParentId();
-        if (parentId == null) {
-            // check it's a base type
-            try {
-                BaseType.get(typeId);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Type: " + typeId
-                        + " must have a parent type");
+        wlock.lock();
+        try {
+            String typeId = type.getId();
+            if (types.containsKey(typeId)) {
+                throw new RuntimeException("Type already defined: " + typeId);
             }
-        } else {
-            Collection<Type> siblings = typesChildren.get(parentId);
-            if (siblings == null) {
-                throw new IllegalArgumentException("Type: " + typeId
-                        + " refers to unknown parent: " + parentId);
+            types.put(typeId, type);
+            for (PropertyDefinition pdef : type.getPropertyDefinitions()) {
+                addPropertyDefinition(pdef);
             }
-            siblings.add(type);
-            // TODO check no cycle
+            typesChildren.put(typeId, new LinkedList<Type>());
+            String parentId = type.getParentId();
+            if (parentId == null) {
+                // check it's a base type
+                try {
+                    BaseType.get(typeId);
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException("Type: " + typeId
+                            + " must have a parent type");
+                }
+            } else {
+                Collection<Type> siblings = typesChildren.get(parentId);
+                if (siblings == null) {
+                    throw new IllegalArgumentException("Type: " + typeId
+                            + " refers to unknown parent: " + parentId);
+                }
+                siblings.add(type);
+                // TODO check no cycle
+            }
+        } finally {
+            wlock.unlock();
         }
     }
 
@@ -105,15 +122,30 @@ public class SimpleTypeManager implements TypeManager {
     }
 
     public Type getType(String typeId) {
-        return types.get(typeId);
+        rlock.lock();
+        try {
+            return types.get(typeId);
+        } finally {
+            rlock.unlock();
+        }
     }
 
     public PropertyDefinition getPropertyDefinition(String id) {
-        return propertyDefinitions.get(id);
+        rlock.lock();
+        try {
+            return propertyDefinitions.get(id);
+        } finally {
+            rlock.unlock();
+        }
     }
 
     public Collection<Type> getTypes() {
-        return new ArrayList<Type>(types.values());
+        rlock.lock();
+        try {
+            return new ArrayList<Type>(types.values());
+        } finally {
+            rlock.unlock();
+        }
     }
 
     public Collection<Type> getTypeDescendants(String typeId) {
@@ -129,23 +161,29 @@ public class SimpleTypeManager implements TypeManager {
     public ListPage<Type> getTypeChildren(String typeId,
             boolean includePropertyDefinitions, Paging paging) {
         // TODO includePropertyDefinitions, paging
-        List<Type> list;
-        if (typeId == null) {
-            list = new ArrayList<Type>(4);
-            for (String id : BaseType.ALL_IDS) {
-                Type type = types.get(id);
-                if (type != null) {
-                    list.add(type);
+        rlock.lock();
+        try {
+            List<Type> list;
+            if (typeId == null) {
+                list = new ArrayList<Type>(4);
+                for (String id : BaseType.ALL_IDS) {
+                    Type type = types.get(id);
+                    if (type != null) {
+                        list.add(type);
+                    }
                 }
+            } else {
+                Collection<Type> children = typesChildren.get(typeId);
+                if (children == null) {
+                    throw new IllegalArgumentException("No such type: "
+                            + typeId);
+                }
+                list = new ArrayList<Type>(children);
             }
-        } else {
-            Collection<Type> children = typesChildren.get(typeId);
-            if (children == null) {
-                throw new IllegalArgumentException("No such type: " + typeId);
-            }
-            list = new ArrayList<Type>(children);
+            return new SimpleListPage<Type>(list);
+        } finally {
+            rlock.unlock();
         }
-        return new SimpleListPage<Type>(list);
     }
 
     /*
@@ -153,32 +191,40 @@ public class SimpleTypeManager implements TypeManager {
      */
     public Collection<Type> getTypeDescendants(String typeId, int depth,
             boolean returnPropertyDefinitions) {
-        if (depth == 0) {
-            throw new IllegalArgumentException("Depth 0 invalid");
-        }
-        List<Type> list = new LinkedList<Type>();
-        Set<String> done = new HashSet<String>();
-        if (typeId == null) {
-            // return all types
-            for (String tid : BaseType.ALL_IDS) {
-                Type type = types.get(tid);
-                if (type == null) {
-                    // some optional base types may be absent
-                    continue;
+        rlock.lock();
+        try {
+            if (depth == 0) {
+                throw new IllegalArgumentException("Depth 0 invalid");
+            }
+            List<Type> list = new LinkedList<Type>();
+            Set<String> done = new HashSet<String>();
+            if (typeId == null) {
+                // return all types
+                for (String tid : BaseType.ALL_IDS) {
+                    Type type = types.get(tid);
+                    if (type == null) {
+                        // some optional base types may be absent
+                        continue;
+                    }
+                    list.add(type);
+                    collectSubTypes(tid, -1, returnPropertyDefinitions, list,
+                            done);
                 }
-                list.add(type);
-                collectSubTypes(tid, -1, returnPropertyDefinitions, list, done);
+            } else {
+                if (!types.containsKey(typeId)) {
+                    throw new IllegalArgumentException("No such type: "
+                            + typeId);
+                }
+                collectSubTypes(typeId, depth, returnPropertyDefinitions, list,
+                        done);
             }
-        } else {
-            if (!types.containsKey(typeId)) {
-                throw new IllegalArgumentException("No such type: " + typeId);
-            }
-            collectSubTypes(typeId, depth, returnPropertyDefinitions, list,
-                    done);
+            return list;
+        } finally {
+            rlock.unlock();
         }
-        return list;
     }
 
+    // rlock already held by caller
     protected void collectSubTypes(String typeId, int depth,
             boolean returnPropertyDefinitions, List<Type> list, Set<String> done) {
         // TODO returnPropertyDefinitions

@@ -14,6 +14,7 @@
  * Authors:
  *     Bogdan Stefanescu, Nuxeo
  *     Florent Guillaume, Nuxeo
+ *     Chris Hubick
  */
 package org.apache.chemistry.atompub.client;
 
@@ -21,8 +22,10 @@ import org.apache.chemistry.Repository;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScheme;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 
 /**
@@ -41,8 +44,7 @@ public class APPContentManager implements ContentManager {
     public APPContentManager(String url) {
         this.baseUrl = url;
         client = new HttpClient();
-        // client.setHttpConnectionManager(new
-        // MultiThreadedHttpConnectionManager());
+        client.setHttpConnectionManager(new MultiThreadedHttpConnectionManager());
     }
 
     public String getBaseUrl() {
@@ -87,16 +89,19 @@ public class APPContentManager implements ContentManager {
     // TODO have another login method with more generic Credentials
     public void login(String username, String password) {
         this.username = username;
-        CredentialsProvider cp = new UsernamePasswordCredentialsProvider(
-                username, password);
-        client.getParams().setAuthenticationPreemptive(true);
+        Credentials credentials = new UsernamePasswordCredentials(username,
+                password);
+        CredentialsProvider cp = new FixedCredentialsProvider(credentials);
+        client.getState().setCredentials(AuthScope.ANY, credentials);
         client.getParams().setParameter(CredentialsProvider.PROVIDER, cp);
+        client.getParams().setAuthenticationPreemptive(true);
     }
 
     public void logout() {
         username = null;
-        client.getParams().setAuthenticationPreemptive(true);
+        client.getState().setCredentials(AuthScope.ANY, null);
         client.getParams().setParameter(CredentialsProvider.PROVIDER, null);
+        client.getParams().setAuthenticationPreemptive(false);
     }
 
     public String getCurrentLogin() {
@@ -104,18 +109,15 @@ public class APPContentManager implements ContentManager {
     }
 
     /**
-     * Simple credentials provider using fixed username/password credentials.
-     * Other implementations could query the user through a GUI.
+     * Simple credentials provider using fixed credentials. Other
+     * implementations could query the user through a GUI.
      */
-    public static class UsernamePasswordCredentialsProvider implements
-            CredentialsProvider {
+    public static class FixedCredentialsProvider implements CredentialsProvider {
 
         protected final Credentials credentials;
 
-        public UsernamePasswordCredentialsProvider(String username,
-                String password) {
-            this.credentials = new UsernamePasswordCredentials(username,
-                    password);
+        public FixedCredentialsProvider(Credentials credentials) {
+            this.credentials = credentials;
         }
 
         public Credentials getCredentials(AuthScheme scheme, String host,

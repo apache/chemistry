@@ -174,7 +174,7 @@ public class APPRepository implements Repository {
         typeManager.addType(type);
     }
 
-    protected void loadTypes() {
+    protected synchronized void loadTypes() {
         if (typeManager != null) {
             return;
         }
