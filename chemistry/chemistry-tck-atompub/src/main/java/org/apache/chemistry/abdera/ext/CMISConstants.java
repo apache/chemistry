@@ -62,6 +62,8 @@ public interface CMISConstants {
     public static final QName VERSION_SUPPORTED = new QName(CMIS_NS, "cmisVersionSupported");
     public static final QName PRINCIPAL_ANONYMOUS = new QName(CMIS_NS, "principalAnonymous");
     public static final QName PRINCIPAL_ANYONE = new QName(CMIS_NS, "principalAnyone");
+    public static final QName LATEST_CHANGE_LOG_TOKEN = new QName(CMIS_NS, "latestChangeLogToken");
+    public static final QName CHANGES_ON_TYPE = new QName(CMIS_NS, "changesOnType");
 
     // CMIS URI Templates
     public static final QName URI_TEMPLATE = new QName(CMISRA_NS, "uritemplate");
@@ -86,6 +88,7 @@ public interface CMISConstants {
     public static final QName CAPABILITY_JOIN = new QName(CMIS_NS, "capabilityJoin");
     public static final QName CAPABILITY_RENDITIONS = new QName(CMIS_NS, "capabilityRenditions");
     public static final QName CAPABILITY_ACL = new QName(CMIS_NS, "capabilityACL");
+    public static final QName CAPABILITY_CHANGES = new QName(CMIS_NS, "capabilityChanges");
 
     // ACL Capabilities
     public static final QName ACL_CAPABILITY = new QName(CMIS_NS, "aclCapability");
@@ -179,6 +182,7 @@ public interface CMISConstants {
     public static final String REL_SERVICE = "service";
     public static final String REL_UP = "up";
     public static final String REL_DOWN = "down";
+    public static final String REL_NEXT = "next";
     public static final String REL_DESCRIBED_BY = "describedby";
     public static final String REL_VERSION_HISTORY = "version-history";
     public static final String REL_CURRENT_VERSION = "current-version";
@@ -191,6 +195,7 @@ public interface CMISConstants {
     public static final String REL_POLICIES = CMISLINK_NS + "policies";
     public static final String REL_RELATIONSHIPS = CMISLINK_NS + "relationships";
     public static final String REL_ACL = CMISLINK_NS + "acl";
+    public static final String REL_CHANGES = CMISLINK_NS + "changes";
     public static final String REL_ASSOC_SOURCE = CMISLINK_NS + "source";
     public static final String REL_ASSOC_TARGET = CMISLINK_NS + "target";
 
@@ -246,6 +251,16 @@ public interface CMISConstants {
     public static final QName PERMISSION = new QName(CMIS_NS, "permission");
     public static final QName DIRECT = new QName(CMIS_NS, "direct");
 
+    // CMIS Change Event Info
+    public static final QName CHANGE_EVENT_INFO = new QName(CMIS_NS, "changeEventInfo");
+    public static final QName CHANGE_TYPE = new QName(CMIS_NS, "changeType");
+
+    // CMIS Change Types
+    public static final String CHANGE_TYPE_CREATED = "created";
+    public static final String CHANGE_TYPE_UPDATED = "updated";
+    public static final String CHANGE_TYPE_DELETED = "deleted";
+    public static final String CHANGE_TYPE_SECURITY = "security";
+    
     // CMIS Type Names
     public static final String TYPE_DOCUMENT = "cmis:document";
     public static final String TYPE_FOLDER = "cmis:folder";

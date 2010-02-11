@@ -60,6 +60,7 @@ public class CMISExtensionFactory extends AbstractExtensionFactory implements CM
         addImpl(HTML_PROPERTY, CMISPropertyHtml.class);
         addImpl(PROPERTY_VALUE, CMISValue.class);
         addImpl(ALLOWABLE_ACTIONS, CMISAllowableActions.class);
+        addImpl(CHANGE_EVENT_INFO, CMISChangeEventInfo.class);
         addImpl(ACCESS_CONTROL_LIST, CMISAccessControlList.class);
         addImpl(PERMISSION, CMISAccessControlEntry.class);
         addImpl(TYPE_DEFINITION, CMISTypeDefinition.class);

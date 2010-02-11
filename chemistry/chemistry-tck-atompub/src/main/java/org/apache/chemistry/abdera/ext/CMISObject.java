@@ -67,6 +67,28 @@ public class CMISObject extends ExtensibleElementWrapper {
     }
 
     /**
+     * Gets the change event information for this CMIS Object if it is in a
+     * change log.
+     * 
+     * @return change event information for this CMIS Object
+     */
+    public CMISChangeEventInfo getChangeEventInfo() {
+        Element child = getFirstChild(CMISConstants.CHANGE_EVENT_INFO);
+        return (CMISChangeEventInfo) child;
+    }
+
+    /**
+     * Gets the access control list for this CMIS Object if it is in a change
+     * log.
+     * 
+     * @return access control list for this CMIS Object
+     */
+    public CMISAccessControlList getAccessControlList() {
+        Element child = getFirstChild(CMISConstants.ACCESS_CONTROL_LIST);
+        return (CMISAccessControlList) child;
+    }
+
+    /**
      * Gets name
      * 
      * @return name property

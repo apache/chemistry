@@ -22,6 +22,7 @@ import junit.framework.TestSuite;
 
 import org.apache.chemistry.tck.atompub.test.spec.AccessControlListTest;
 import org.apache.chemistry.tck.atompub.test.spec.AllowableActionsTest;
+import org.apache.chemistry.tck.atompub.test.spec.ChangeLogTest;
 import org.apache.chemistry.tck.atompub.test.spec.ContentStreamTest;
 import org.apache.chemistry.tck.atompub.test.spec.CreateTest;
 import org.apache.chemistry.tck.atompub.test.spec.DeleteTest;
@@ -61,6 +62,7 @@ public class TCKTestSuite extends TestCase {
         suite.addTestSuite(AllowableActionsTest.class);
         suite.addTestSuite(VersionsTest.class);
         suite.addTestSuite(AccessControlListTest.class);
+        suite.addTestSuite(ChangeLogTest.class);
         
         // custom type tests
         // TODO: when mechanism for registering custom types is done

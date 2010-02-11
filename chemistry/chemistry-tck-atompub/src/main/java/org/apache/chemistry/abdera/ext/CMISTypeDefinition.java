@@ -54,6 +54,17 @@ public class CMISTypeDefinition extends ExtensibleElementWrapper {
     }
 
     /**
+     * Gets a value that indicates whether the base type for this Object-Type is
+     * the Document, Folder, Relationship, or Policy base type.
+     * 
+     * @return "cmis:document", "cmis:folder", "cmis:relationship" or
+     *         "cmis:policy"
+     */
+    public String getBaseId() {
+        return getFirstChild(CMISConstants.TYPE_BASE_ID).getText();
+    }
+
+    /**
      * Gets all Property Definitions for this CMIS Type
      * 
      * @return property definitions

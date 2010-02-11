@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Link;
 import org.apache.abdera.model.Service;
 import org.apache.abdera.model.Workspace;
+import org.apache.abdera.util.Constants;
 import org.apache.chemistry.abdera.ext.CMISACLCapability;
 import org.apache.chemistry.abdera.ext.CMISCapabilities;
 import org.apache.chemistry.abdera.ext.CMISConstants;
@@ -109,7 +111,11 @@ public class CMISClient {
     }
 
     public Service getRepository() throws Exception {
-        if (cmisService == null) {
+        return getRepository(false);
+    }
+
+    public Service getRepository(boolean refresh) throws Exception {
+        if (refresh || cmisService == null) {
             Request req = new GetRequest(serviceUrl);
             Response res = executeRequest(req, 200);
             String xml = res.getContentAsString();
@@ -121,10 +127,14 @@ public class CMISClient {
         return cmisService;
     }
 
+
     public CMISRepositoryInfo getRepositoryInfo() throws Exception {
-        if (cmisRepositoryInfo == null) {
-            // TODO: latestChangeLogToken can't be cached
-            Service repo = getRepository();
+        return getRepositoryInfo(false);
+    }
+
+    public CMISRepositoryInfo getRepositoryInfo(boolean refresh) throws Exception {
+        if (refresh || cmisRepositoryInfo == null) {
+            Service repo = getRepository(refresh);
             Workspace workspace = getWorkspace(repo);
             cmisRepositoryInfo = workspace.getExtension(CMISConstants.REPOSITORY_INFO);
             Assert.assertNotNull(cmisRepositoryInfo);
@@ -141,7 +151,7 @@ public class CMISClient {
     }
 
     public Workspace getWorkspace() throws Exception {
-        return getRepository().getWorkspaces().get(0);
+        return getRepository(false).getWorkspaces().get(0);
     }
 
     public Workspace getWorkspace(Service service) {
@@ -217,9 +227,22 @@ public class CMISClient {
     public CMISUriTemplate getTypeByIdUriTemplate(Workspace workspace) {
         return getUriTemplate(workspace, CMISConstants.URI_TYPE_BY_ID);
     }
+    
+    public Link getLink(Workspace workspace, String rel, String... matchesMimetypes)
+    {
+        List<Link> links = workspace.getExtensions(Constants.LINK);
+        List<Link> filteredLinks = new ArrayList<Link>(links.size());
+        for (Link link : links)
+        {
+            if (link.getRel().equals(rel))
+            {
+                filteredLinks.add(link);
+            }
+        }
+        return getLink(filteredLinks, matchesMimetypes);
+    }
 
-    public Link getLink(Entry entry, String rel, String... matchesMimetypes) {
-        List<Link> links = entry.getLinks(rel);
+    private Link getLink(List<Link> links, String... matchesMimetypes) {
         if (links != null) {
             for (Link link : links) {
                 MimeType mimetype = link.getMimeType();
@@ -257,6 +280,10 @@ public class CMISClient {
         }
         return null;
     }
+    
+    public Link getLink(Entry entry, String rel, String... matchesMimetypes) {
+        return getLink(entry.getLinks(rel), matchesMimetypes);
+    }
 
     public Link getChildrenLink(Entry entry) {
         return getLink(entry, CMISConstants.REL_DOWN, CMISConstants.MIMETYPE_FEED);
@@ -281,6 +308,10 @@ public class CMISClient {
     public List<Link> getRenditionLinks(Entry entry) {
         return entry.getLinks(CMISConstants.REL_ALTERNATE);
     }
+    
+    public Link getChangesLink(Workspace workspace) {
+        return getLink(workspace, CMISConstants.REL_CHANGES, CMISConstants.MIMETYPE_FEED);
+    }    
 
     public Entry getEntry(IRI href) throws Exception {
         return getEntry(href, null);

@@ -16,6 +16,9 @@
  */
 package org.apache.chemistry.abdera.ext;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.ElementWrapper;
@@ -139,5 +142,22 @@ public class CMISRepositoryInfo extends ElementWrapper {
             return child.getText();
         }
         return null;
+    }
+
+    public String getLatestChangeLogToken() {
+        Element child = getFirstChild(CMISConstants.LATEST_CHANGE_LOG_TOKEN);
+        if (child != null) {
+            return child.getText();
+        }
+        return null;
+    }
+
+    public Set<String> getChangesOnType() {
+        Set<String> changesOnType = new HashSet<String>(5);
+        for (Element type = getFirstChild(CMISConstants.CHANGES_ON_TYPE); type != null; type = type
+                .getNextSibling(CMISConstants.CHANGES_ON_TYPE)) {
+            changesOnType.add(type.getText());
+        }
+        return changesOnType;
     }
 }
