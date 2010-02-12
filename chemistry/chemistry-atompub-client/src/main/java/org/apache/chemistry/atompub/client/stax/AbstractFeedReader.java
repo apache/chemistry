@@ -49,14 +49,6 @@ public abstract class AbstractFeedReader<T, E> implements FeedReader<T> {
         this.entryBuilder = entryBuilder;
     }
 
-    public EntryReader<E> getEntryBuilder() {
-        return entryBuilder;
-    }
-
-    public void setEntryBuilder(EntryReader<E> entryBuilder) {
-        this.entryBuilder = entryBuilder;
-    }
-
     public T read(ReadContext ctx, File file) throws XMLStreamException,
             IOException {
         InputStream in = new FileInputStream(file);

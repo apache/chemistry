@@ -79,6 +79,7 @@ import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.abdera.ObjectElement;
+import org.apache.chemistry.atompub.abdera.PathSegmentElement;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.util.GregorianCalendar;
 import org.apache.commons.codec.binary.Base64;
@@ -299,6 +300,11 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
 
         Type objectType = repository.getType(typeId);
         entry.addExtension(new ObjectElement(factory, object, objectType));
+
+        String pathSegment = object.getPathSegment();
+        if (pathSegment != null) {
+            entry.addExtension(new PathSegmentElement(factory, pathSegment));
+        }
 
         return link;
     }

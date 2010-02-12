@@ -53,6 +53,7 @@ import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Rendition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
+import org.apache.chemistry.Tree;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
@@ -178,7 +179,7 @@ public class APPConnection implements Connection, SPI {
     // TODO check capabilityGetDescendants / capabilityGetFolderTree
     // and folder fall back on recursion based on getChildren
 
-    public List<ObjectEntry> getFolderTree(ObjectId folder, int depth,
+    public Tree<ObjectEntry> getFolderTree(ObjectId folder, int depth,
             Inclusion inclusion) {
         String href = getFolderEntry(folder).getLink(
                 AtomPubCMIS.LINK_FOLDER_TREE, AtomPub.MEDIA_TYPE_ATOM_FEED);
@@ -203,10 +204,10 @@ public class APPConnection implements Connection, SPI {
             params.add(AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS,
                     Boolean.toString(inclusion.allowableActions));
         }
-        return connector.getEntryFeed(href, params);
+        return connector.getEntryFeedTree(href, params);
     }
 
-    public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
+    public Tree<ObjectEntry> getDescendants(ObjectId folder, int depth,
             String orderBy, Inclusion inclusion) {
         String href = getFolderEntry(folder).getLink(AtomPub.LINK_DOWN,
                 AtomPubCMIS.MEDIA_TYPE_CMIS_TREE);
@@ -238,7 +239,7 @@ public class APPConnection implements Connection, SPI {
             params.add(AtomPubCMIS.PARAM_INCLUDE_ACL,
                     Boolean.toString(inclusion.acls));
         }
-        return connector.getEntryFeed(href, params);
+        return connector.getEntryFeedTree(href, params);
     }
 
     public ListPage<ObjectEntry> getChildren(ObjectId folder,

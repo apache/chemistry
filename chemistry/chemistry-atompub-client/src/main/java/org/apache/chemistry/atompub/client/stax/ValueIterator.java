@@ -33,8 +33,7 @@ public class ValueIterator extends ChildrenIterator<String> {
 
     @Override
     protected boolean accept() {
-        return (reader.getLocalName().equals(CMIS.VALUE.getLocalPart()) && reader.getNamespaceURI().equals(
-                CMIS.VALUE.getNamespaceURI()));
+        return reader.getName().equals(CMIS.VALUE);
     }
 
     @Override

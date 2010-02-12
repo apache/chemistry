@@ -71,6 +71,10 @@ public class AtomPubCMIS {
 
     public static final QName BASE64 = CMISRAName("base64");
 
+    public static final QName PATH_SEGMENT = CMISRAName("pathSegment");
+
+    public static final QName RELATIVE_PATH_SEGMENT = CMISRAName("relativePathSegment");
+
     /*
      * ----- AtomPub Collection Types -----
      */

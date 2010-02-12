@@ -68,19 +68,20 @@ public interface SPI {
      */
 
     /**
-     * Gets the set of descendant folders contained in the specified folder.
+     * Gets the tree of descendant folders contained in the specified folder.
      *
      * @param folder the folder
      * @param depth the depth, or {@code -1} for all levels
      * @param inclusion the {@link Inclusion#properties properties} and
      *            {@link Inclusion#allowableActions allowable actions} to
      *            include in the result
+     * @return a tree of folder entries (a forest)
      *
      * @throws FilterNotValidException if the filter is not valid
      * @throws IllegalArgumentException if the object is not a folder or the
      *             depth is invalid
      */
-    List<ObjectEntry> getFolderTree(ObjectId folder, int depth,
+    Tree<ObjectEntry> getFolderTree(ObjectId folder, int depth,
             Inclusion inclusion);
 
     /**
@@ -104,8 +105,6 @@ public interface SPI {
      * {@link Inclusion#relationships} is {@code true} then relationships are
      * also returned for each returned object, according to the value of the
      * parameter.
-     * <p>
-     * When returning more than one level, the objects are nested.
      *
      * @param folder the folder
      * @param depth the depth, or {@code -1} for all levels
@@ -115,12 +114,13 @@ public interface SPI {
      *            {@link Inclusion#relationships relationships} and
      *            {@link Inclusion#renditions renditions} to include in the
      *            result
+     * @return a tree of folder entries (a forest)
+     *
      * @throws FilterNotValidException if the filter is not valid
      * @throws IllegalArgumentException if the object is not a folder or the
      *             depth is invalid
      */
-    // TODO return type for a tree
-    List<ObjectEntry> getDescendants(ObjectId folder, int depth,
+    Tree<ObjectEntry> getDescendants(ObjectId folder, int depth,
             String orderBy, Inclusion inclusion);
 
     /**

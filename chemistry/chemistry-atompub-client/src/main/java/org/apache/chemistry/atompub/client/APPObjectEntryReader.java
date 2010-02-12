@@ -19,11 +19,14 @@ package org.apache.chemistry.atompub.client;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.Tree;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.client.stax.AbstractObjectReader;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
@@ -43,15 +46,25 @@ public class APPObjectEntryReader extends AbstractObjectReader<APPObjectEntry> {
     }
 
     @Override
-    protected void readProperty(ReadContext ctx, StaxReader reader,
-            APPObjectEntry object, XmlProperty p) {
+    protected void setProperty(APPObjectEntry object, XmlProperty p) {
         object.properties.put(p.getId(), p);
     }
 
     @Override
-    protected void readAllowableActions(ReadContext ctx, StaxReader reader,
-            APPObjectEntry object, Map<QName, Boolean> allowableActions) {
+    protected void setAllowableActions(APPObjectEntry object,
+            Map<QName, Boolean> allowableActions) {
         object.allowableActions = Collections.unmodifiableMap(allowableActions);
+    }
+
+    @Override
+    protected void setPathSegment(APPObjectEntry object, String pathSegment) {
+        object.pathSegment = pathSegment;
+    }
+
+    @Override
+    protected void setChildren(APPObjectEntry object,
+            List<Tree<ObjectEntry>> list) {
+        object.children = list;
     }
 
     @Override

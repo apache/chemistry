@@ -36,7 +36,7 @@ import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.ServiceDocumentReader;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
 
-public class ServiceDocumentReaderTest extends TestCase {
+public class TestServiceDocumentReader extends TestCase {
 
     public void testReadServiceDocument() throws Exception {
         InputStream is = getClass().getResourceAsStream("/service-document.xml");

@@ -47,9 +47,11 @@ import org.apache.chemistry.Property;
 import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
+import org.apache.chemistry.Tree;
 import org.apache.chemistry.UpdateConflictException;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
+import org.apache.chemistry.atompub.abdera.ChildrenElement;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.impl.simple.SimpleListPage;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
@@ -74,15 +76,31 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
     public ResponseContext getFeed(RequestContext request) {
         SPI spi = repository.getSPI();
         try {
-            ListPage<ObjectEntry> entries = getEntries(request, spi);
-            Feed feed = createFeedBase(entries, request, spi);
-            addFeedDetails(feed, entries, request);
+            Feed feed;
+            if (COLTYPE_DESCENDANTS.equals(getType())
+                    || COLTYPE_FOLDER_TREE.equals(getType())) {
+                Tree<ObjectEntry> tree = getEntriesTree(request, spi);
+                feed = getFeedTree(tree, request, spi);
+            } else {
+                ListPage<ObjectEntry> entries = getEntries(request, spi);
+                feed = createFeedBase(entries, request, spi);
+                addFeedDetails(feed, entries, request, spi);
+            }
             return buildGetFeedResponse(feed);
         } catch (ResponseContextException e) {
             return createErrorResponse(e);
         } finally {
             spi.close();
         }
+    }
+
+    public Feed getFeedTree(Tree<ObjectEntry> tree, RequestContext request,
+            SPI spi) throws ResponseContextException {
+        // no paging
+        SimpleListPage<ObjectEntry> page = new SimpleListPage<ObjectEntry>();
+        Feed feed = createFeedBase(page, request, spi);
+        addFeedDetails(feed, tree.getChildren(), request, spi);
+        return feed;
     }
 
     protected Feed createFeedBase(ListPage<ObjectEntry> entries,
@@ -92,6 +110,7 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
         feed.addLink(getChildrenLink(id, request), AtomPub.LINK_SELF,
                 AtomPub.MEDIA_TYPE_ATOM_FEED, null, null, -1);
 
+        // TODO passe known parent id when for a tree, avoid SPI use
         // link to parent children feed, needs parent id
         ObjectEntry entry;
         entry = spi.getProperties(spi.newObjectId(id), null);
@@ -103,6 +122,7 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
             feed.addLink(getChildrenLink(pid, request), AtomPub.LINK_UP,
                     AtomPub.MEDIA_TYPE_ATOM_FEED, null, null, -1);
         }
+
         // TODO don't add descendants links if no children
         feed.addLink(getDescendantsLink(pid, request), AtomPub.LINK_DOWN,
                 AtomPubCMIS.MEDIA_TYPE_CMIS_TREE, null, null, -1);
@@ -145,33 +165,52 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
         return feed;
     }
 
-    protected void addFeedDetails(Feed feed, ListPage<ObjectEntry> entries,
-            RequestContext request) throws ResponseContextException {
+    // called either with a List of ObjectEntry or a List of Tree<ObjectEntry>
+    @SuppressWarnings("unchecked")
+    protected void addFeedDetails(Feed feed, List<?> entries,
+            RequestContext request, SPI spi) throws ResponseContextException {
         feed.setUpdated(new Date()); // TODO
-        if (entries != null) {
-            for (ObjectEntry entryObj : entries) {
-                Entry e = feed.addEntry();
-                IRI feedIri = new IRI(getFeedIriForEntry(entryObj, request));
-                addEntryDetails(request, e, feedIri, entryObj);
+        if (entries == null) {
+            return;
+        }
+        for (Object ob : entries) {
+            ObjectEntry entryObj;
+            Tree<ObjectEntry> tree;
+            if (ob instanceof ObjectEntry) {
+                tree = null;
+                entryObj = (ObjectEntry) ob;
+            } else {
+                tree = (Tree<ObjectEntry>) ob;
+                entryObj = tree.getNode();
+            }
 
-                if (isMediaEntry(entryObj)) {
-                    addMediaContent(feedIri, e, entryObj, request);
-                } else {
-                    addContent(e, entryObj, request);
+            Entry e = feed.addEntry();
+            IRI feedIri = new IRI(getFeedIriForEntry(entryObj, request));
+            addEntryDetails(request, e, feedIri, entryObj);
+
+            if (tree != null) {
+                List<Tree<ObjectEntry>> children = tree.getChildren();
+                if (children != null && !children.isEmpty()) {
+                    CMISChildrenCollection adapter = new CMISChildrenCollection(
+                            getType(), entryObj.getId(), repository);
+                    Feed subFeed = adapter.getFeedTree(tree, request, spi);
+                    e.addExtension(new ChildrenElement(
+                            request.getAbdera().getFactory(), subFeed));
                 }
+            }
+
+            if (isMediaEntry(entryObj)) {
+                addMediaContent(feedIri, e, entryObj, request);
+            } else {
+                addContent(e, entryObj, request);
             }
         }
     }
 
     @Override
-    public ListPage<ObjectEntry> getEntries(RequestContext request)
-            throws ResponseContextException {
-        SPI spi = repository.getSPI();
-        try {
-            return getEntries(request, spi);
-        } finally {
-            spi.close();
-        }
+    // unused but abstract
+    public ListPage<ObjectEntry> getEntries(RequestContext request) {
+        throw new UnsupportedOperationException();
     }
 
     public ListPage<ObjectEntry> getEntries(RequestContext request, SPI spi)
@@ -190,34 +229,38 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
                 false);
         Inclusion inclusion = new Inclusion(properties, renditions,
                 relationships, allowableActions, policies, acls);
+        String orderBy = target.getParameter(AtomPubCMIS.PARAM_ORDER_BY);
+        int maxItems = getParameter(request, AtomPubCMIS.PARAM_MAX_ITEMS, 0);
+        int skipCount = getParameter(request, AtomPubCMIS.PARAM_SKIP_COUNT, 0);
+        Paging paging = new Paging(maxItems, skipCount);
+        return spi.getChildren(objectId, inclusion, orderBy, paging);
+    }
+
+    public Tree<ObjectEntry> getEntriesTree(RequestContext request, SPI spi)
+            throws ResponseContextException {
+        ObjectId objectId = spi.newObjectId(id);
+        Target target = request.getTarget();
+        String properties = target.getParameter(AtomPubCMIS.PARAM_FILTER);
+        String renditions = target.getParameter(AtomPubCMIS.PARAM_RENDITION_FILTER);
+        String rel = target.getParameter(AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS);
+        RelationshipDirection relationships = RelationshipDirection.fromInclusion(rel);
+        boolean allowableActions = getParameter(request,
+                AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, false);
+        boolean policies = getParameter(request,
+                AtomPubCMIS.PARAM_INCLUDE_POLICY_IDS, false);
+        boolean acls = getParameter(request, AtomPubCMIS.PARAM_INCLUDE_ACL,
+                false);
+        Inclusion inclusion = new Inclusion(properties, renditions,
+                relationships, allowableActions, policies, acls);
+        int depth = getParameter(request, AtomPubCMIS.PARAM_DEPTH, -1);
+        Tree<ObjectEntry> tree;
         if (COLTYPE_DESCENDANTS.equals(getType())) {
-            int depth = getParameter(request, AtomPubCMIS.PARAM_DEPTH, -1);
             String orderBy = target.getParameter(AtomPubCMIS.PARAM_ORDER_BY);
-            List<ObjectEntry> descendants = spi.getDescendants(objectId, depth,
-                    orderBy, inclusion);
-            SimpleListPage<ObjectEntry> page = new SimpleListPage<ObjectEntry>(
-                    descendants);
-            page.setHasMoreItems(false);
-            page.setNumItems(page.size());
-            return page;
-        } else if (COLTYPE_FOLDER_TREE.equals(getType())) {
-            int depth = getParameter(request, AtomPubCMIS.PARAM_DEPTH, -1);
-            List<ObjectEntry> folderTree = spi.getFolderTree(objectId, depth,
-                    inclusion);
-            SimpleListPage<ObjectEntry> page = new SimpleListPage<ObjectEntry>(
-                    folderTree);
-            page.setHasMoreItems(false);
-            page.setNumItems(page.size());
-            return page;
-        } else {
-            String orderBy = target.getParameter(AtomPubCMIS.PARAM_ORDER_BY);
-            int maxItems = getParameter(request, AtomPubCMIS.PARAM_MAX_ITEMS, 0);
-            int skipCount = getParameter(request, AtomPubCMIS.PARAM_SKIP_COUNT,
-                    0);
-            ListPage<ObjectEntry> children = spi.getChildren(objectId,
-                    inclusion, orderBy, new Paging(maxItems, skipCount));
-            return children;
+            tree = spi.getDescendants(objectId, depth, orderBy, inclusion);
+        } else { // COLTYPE_FOLDER_TREE
+            tree = spi.getFolderTree(objectId, depth, inclusion);
         }
+        return tree;
     }
 
     @Override

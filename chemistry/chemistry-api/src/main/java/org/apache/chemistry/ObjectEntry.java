@@ -56,6 +56,24 @@ public interface ObjectEntry extends ObjectId {
     ChangeInfo getChangeInfo();
 
     /**
+     * The path segment of the object relative to the (implicit) containing
+     * folder.
+     * <p>
+     * If this is the result of a call to {@link SPI#getChildren}, then the path
+     * segment is relative to the folder argument of the method.
+     * <p>
+     * If this is a tree node from the result of a call to
+     * {@link SPI#getFolderTree} or {@link SPI#getDescendants}, then the path
+     * segment of the tree root node is relative to the folder argument of the
+     * method, and the segment of other nodes is relative to the parent node.
+     * <p>
+     * If this is the result of a call to {@link SPI#getObjectParents}, then the
+     * path segment is <em>inverted</em>, it is the relative path segment of the
+     * object argument of the method inside this {@link ObjectEntry}.
+     */
+    String getPathSegment();
+
+    /**
      * Gets a property value.
      * <p>
      * Returns {@code null} is the property is not set, not fetched or unknown.

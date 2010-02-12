@@ -13,6 +13,7 @@
  *
  * Authors:
  *     Bogdan Stefanescu, Nuxeo
+ *     Florent Guillaume, Nuxeo
  */
 package org.apache.chemistry.atompub.client.stax;
 
@@ -73,22 +74,22 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                 ChildrenNavigator children = reader.getChildren();
                 while (children.next()) {
                     QName name = reader.getName();
-                    if (name.equals(AtomPub.APP_COLLECTION)) {
+                    if (AtomPub.APP_COLLECTION.equals(name)) {
                         String href = reader.getAttributeValue("href");
                         String type = "";
                         ChildrenNavigator nav = reader.getChildren();
                         while (nav.next()) {
                             QName n = reader.getName();
-                            if (n.equals(AtomPubCMIS.COLLECTION_TYPE)) {
+                            if (AtomPubCMIS.COLLECTION_TYPE.equals(n)) {
                                 type = reader.getElementText();
                             }
                         }
                         addCollection(repo, href, type);
-                    } else if (name.equals(AtomPubCMIS.REPOSITORY_INFO)) {
+                    } else if (AtomPubCMIS.REPOSITORY_INFO.equals(name)) {
                         RepositoryInfo info = readRepositoryInfo(context,
                                 reader);
                         setInfo(repo, info);
-                    } else if (name.equals(AtomPubCMIS.URI_TEMPLATE)) {
+                    } else if (AtomPubCMIS.URI_TEMPLATE.equals(name)) {
                         URITemplate uriTemplate = readURITemplate(context,
                                 reader);
                         addURITemplate(repo, uriTemplate);
@@ -111,54 +112,54 @@ public abstract class ServiceDocumentReader<T extends Repository> {
         Set<BaseType> changeLogBaseTypes = new HashSet<BaseType>();
         ChildrenNavigator nav = reader.getChildren();
         while (nav.next()) {
-            String localName = reader.getLocalName();
-            if (localName.equals(CMIS.CAPABILITIES.getLocalPart())) {
+            QName name = reader.getName();
+            if (CMIS.CAPABILITIES.equals(name)) {
                 caps = new APPRepositoryCapabilities();
                 ChildrenNavigator capElems = reader.getChildren();
                 while (capElems.next()) {
-                    localName = reader.getLocalName();
-                    if (localName.equals(CMIS.CAPABILITY_ALL_VERSIONS_SEARCHABLE.getLocalPart())) {
+                    name = reader.getName();
+                    if (CMIS.CAPABILITY_ALL_VERSIONS_SEARCHABLE.equals(name)) {
                         caps.setAllVersionsSearchable(Boolean.parseBoolean(reader.getElementText()));
-                    } else if (localName.equals(CMIS.CAPABILITY_CAN_GET_DESCENDANTS.getLocalPart())) {
+                    } else if (CMIS.CAPABILITY_CAN_GET_DESCENDANTS.equals(name)) {
                         caps.setHasGetDescendants(Boolean.parseBoolean(reader.getElementText()));
-                    } else if (localName.equals(CMIS.CAPABILITY_CAN_GET_FOLDER_TREE.getLocalPart())) {
+                    } else if (CMIS.CAPABILITY_CAN_GET_FOLDER_TREE.equals(name)) {
                         caps.setHasGetFolderTree(Boolean.parseBoolean(reader.getElementText()));
-                    } else if (localName.equals(CMIS.CAPABILITY_CONTENT_STREAM_UPDATABILITY.getLocalPart())) {
+                    } else if (CMIS.CAPABILITY_CONTENT_STREAM_UPDATABILITY.equals(name)) {
                         caps.setContentStreamUpdatableAnytime("anytime".equals(reader.getElementText()));
-                    } else if (localName.equals(CMIS.CAPABILITY_MULTIFILING.getLocalPart())) {
+                    } else if (CMIS.CAPABILITY_MULTIFILING.equals(name)) {
                         caps.setHasMultifiling(Boolean.parseBoolean(reader.getElementText()));
-                    } else if (localName.equals(CMIS.CAPABILITY_PWC_SEARCHABLE.getLocalPart())) {
+                    } else if (CMIS.CAPABILITY_PWC_SEARCHABLE.equals(name)) {
                         caps.setPWCSearchable(Boolean.parseBoolean(reader.getElementText()));
-                    } else if (localName.equals(CMIS.CAPABILITY_PWC_UPDATABLE.getLocalPart())) {
+                    } else if (CMIS.CAPABILITY_PWC_UPDATABLE.equals(name)) {
                         caps.setPWCUpdatable(Boolean.parseBoolean(reader.getElementText()));
-                    } else if (localName.equals(CMIS.CAPABILITY_UNFILING.getLocalPart())) {
+                    } else if (CMIS.CAPABILITY_UNFILING.equals(name)) {
                         caps.setHasUnfiling(Boolean.parseBoolean(reader.getElementText()));
-                    } else if (localName.equals(CMIS.CAPABILITY_VERSION_SPECIFIC_FILING.getLocalPart())) {
+                    } else if (CMIS.CAPABILITY_VERSION_SPECIFIC_FILING.equals(name)) {
                         caps.setHasVersionSpecificFiling(Boolean.parseBoolean(reader.getElementText()));
-                    } else if (localName.equals(CMIS.CAPABILITY_QUERY.getLocalPart())) {
+                    } else if (CMIS.CAPABILITY_QUERY.equals(name)) {
                         caps.setQueryCapability(CapabilityQuery.get(
                                 reader.getElementText(), CapabilityQuery.NONE));
-                    } else if (localName.equals(CMIS.CAPABILITY_JOIN.getLocalPart())) {
+                    } else if (CMIS.CAPABILITY_JOIN.equals(name)) {
                         caps.setJoinCapability(CapabilityJoin.get(
                                 reader.getElementText(), CapabilityJoin.NONE));
-                    } else if (localName.equals(CMIS.CAPABILITY_RENDITIONS.getLocalPart())) {
+                    } else if (CMIS.CAPABILITY_RENDITIONS.equals(name)) {
                         caps.setRenditionCapability(CapabilityRendition.get(
                                 reader.getElementText(),
                                 CapabilityRendition.NONE));
-                    } else if (localName.equals(CMIS.CAPABILITY_CHANGES.getLocalPart())) {
+                    } else if (CMIS.CAPABILITY_CHANGES.equals(name)) {
                         caps.setChangeCapability(CapabilityChange.get(
                                 reader.getElementText(), CapabilityChange.NONE));
-                    } else if (localName.equals(CMIS.CAPABILITY_ACL.getLocalPart())) {
+                    } else if (CMIS.CAPABILITY_ACL.equals(name)) {
                         caps.setACLCapability(CapabilityACL.get(
                                 reader.getElementText(), CapabilityACL.NONE));
                     }
                 }
-            } else if (localName.equals(CMIS.REPOSITORY_SPECIFIC_INFORMATION.getLocalPart())) {
+            } else if (CMIS.REPOSITORY_SPECIFIC_INFORMATION.equals(name)) {
                 readRepositorySpecificInformation(context, reader);
-            } else if (localName.equals(CMIS.CHANGES_ON_TYPE.getLocalPart())) {
+            } else if (CMIS.CHANGES_ON_TYPE.equals(name)) {
                 changeLogBaseTypes.add(BaseType.get(reader.getElementText()));
             } else {
-                map.put(localName, reader.getElementText());
+                map.put(name.getLocalPart(), reader.getElementText());
             }
         }
         if (changeLogBaseTypes.isEmpty()) {
@@ -178,12 +179,12 @@ public abstract class ServiceDocumentReader<T extends Repository> {
         String template = null;
         ChildrenNavigator nav = reader.getChildren();
         while (nav.next()) {
-            String localName = reader.getLocalName();
-            if (localName.equals(AtomPubCMIS.TYPE.getLocalPart())) {
+            QName name = reader.getName();
+            if (AtomPubCMIS.TYPE.equals(name)) {
                 type = reader.getElementText();
-            } else if (localName.equals(AtomPubCMIS.MEDIA_TYPE.getLocalPart())) {
+            } else if (AtomPubCMIS.MEDIA_TYPE.equals(name)) {
                 mediaType = reader.getElementText();
-            } else if (localName.equals(AtomPubCMIS.TEMPLATE.getLocalPart())) {
+            } else if (AtomPubCMIS.TEMPLATE.equals(name)) {
                 template = reader.getElementText();
             }
         }

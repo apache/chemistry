@@ -58,8 +58,7 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
     @Override
     protected void readAtomElement(ReadContext ctx, StaxReader reader,
             APPType object) throws XMLStreamException {
-        // read only links - optimization to avoid useless operations
-        if ("link".equals(reader.getLocalName())) {
+        if (AtomPub.ATOM_LINK.equals(reader.getName())) {
             String rel = reader.getAttributeValue(AtomPub.ATOM_NS, "rel");
             String href = reader.getAttributeValue(AtomPub.ATOM_NS, "href");
             String type = reader.getAttributeValue(AtomPub.ATOM_NS, "type");
@@ -70,7 +69,7 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
     @Override
     protected void readCmisElement(ReadContext context, StaxReader reader,
             APPType entry) throws XMLStreamException {
-        if (AtomPubCMIS.TYPE.getLocalPart().equals(reader.getLocalName())) {
+        if (AtomPubCMIS.TYPE.equals(reader.getName())) {
             ChildrenNavigator children = reader.getChildren();
             Map<String, String> map = new HashMap<String, String>();
             Map<String, PropertyDefinition> pdefs = new HashMap<String, PropertyDefinition>();

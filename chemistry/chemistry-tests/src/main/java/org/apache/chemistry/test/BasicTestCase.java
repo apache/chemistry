@@ -53,6 +53,7 @@ import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.SPI;
+import org.apache.chemistry.Tree;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
@@ -313,7 +314,8 @@ public abstract class BasicTestCase extends TestCase {
         assertEquals(1, res.size());
 
         // SCORE
-        res = conn.query("SELECT cmis:name, SCORE() FROM cmis:document WHERE CONTAINS('small')",
+        res = conn.query(
+                "SELECT cmis:name, SCORE() FROM cmis:document WHERE CONTAINS('small')",
                 false);
         assertEquals(1, res.size());
     }
@@ -398,7 +400,7 @@ public abstract class BasicTestCase extends TestCase {
 
     public void testGetFolderTree() {
         Folder root = conn.getRootFolder();
-        List<ObjectEntry> desc = spi.getFolderTree(root, 4, null);
+        Tree<ObjectEntry> desc = spi.getFolderTree(root, 4, null);
         assertEquals(2, desc.size());
 
         ObjectEntry doc1 = spi.getObjectByPath("/folder 1/doc 1", null);
@@ -418,7 +420,7 @@ public abstract class BasicTestCase extends TestCase {
 
     public void testGetDescendants() {
         Folder root = conn.getRootFolder();
-        List<ObjectEntry> desc = spi.getDescendants(root, 4, null, null);
+        Tree<ObjectEntry> desc = spi.getDescendants(root, 4, null, null);
         assertEquals(6, desc.size());
 
         ObjectEntry doc1 = spi.getObjectByPath("/folder 1/doc 1", null);
@@ -437,29 +439,29 @@ public abstract class BasicTestCase extends TestCase {
     }
 
     public void testTrees() throws Exception {
-        List<ObjectEntry> list;
+        Tree<ObjectEntry> desc;
 
         Folder root = conn.getRootFolder();
-        list = spi.getDescendants(root, -1, null, null);
-        assertEquals(6, list.size());
-        list = spi.getDescendants(root, 1, null, null);
-        assertEquals(1, list.size());
-        list = spi.getDescendants(root, 2, null, null);
-        assertEquals(3, list.size());
-        list = spi.getDescendants(root, 3, null, null);
-        assertEquals(6, list.size());
-        list = spi.getDescendants(root, 4, null, null);
-        assertEquals(6, list.size());
+        desc = spi.getDescendants(root, -1, null, null);
+        assertEquals(6, desc.size());
+        desc = spi.getDescendants(root, 1, null, null);
+        assertEquals(1, desc.size());
+        desc = spi.getDescendants(root, 2, null, null);
+        assertEquals(3, desc.size());
+        desc = spi.getDescendants(root, 3, null, null);
+        assertEquals(6, desc.size());
+        desc = spi.getDescendants(root, 4, null, null);
+        assertEquals(6, desc.size());
 
         ObjectEntry fold1 = spi.getObjectByPath("/folder 1", null);
-        list = spi.getDescendants(fold1, -1, null, null);
-        assertEquals(5, list.size());
-        list = spi.getDescendants(fold1, 1, null, null);
-        assertEquals(2, list.size());
-        list = spi.getDescendants(fold1, 2, null, null);
-        assertEquals(5, list.size());
-        list = spi.getDescendants(fold1, 3, null, null);
-        assertEquals(5, list.size());
+        desc = spi.getDescendants(fold1, -1, null, null);
+        assertEquals(5, desc.size());
+        desc = spi.getDescendants(fold1, 1, null, null);
+        assertEquals(2, desc.size());
+        desc = spi.getDescendants(fold1, 2, null, null);
+        assertEquals(5, desc.size());
+        desc = spi.getDescendants(fold1, 3, null, null);
+        assertEquals(5, desc.size());
     }
 
     public void testGetFolderParent() {

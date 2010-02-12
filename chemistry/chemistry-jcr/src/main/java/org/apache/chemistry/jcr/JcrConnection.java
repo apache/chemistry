@@ -55,6 +55,7 @@ import org.apache.chemistry.Relationship;
 import org.apache.chemistry.Rendition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
+import org.apache.chemistry.Tree;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.impl.simple.SimpleListPage;
@@ -335,13 +336,13 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
-    public List<ObjectEntry> getFolderTree(ObjectId folderId, int depth,
+    public Tree<ObjectEntry> getFolderTree(ObjectId folderId, int depth,
             Inclusion inclusion) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public List<ObjectEntry> getDescendants(ObjectId folderId, int depth,
+    public Tree<ObjectEntry> getDescendants(ObjectId folderId, int depth,
             String orderBy, Inclusion inclusion) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();

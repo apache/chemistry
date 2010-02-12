@@ -42,6 +42,8 @@ public class SimpleObjectEntry implements ObjectEntry {
 
     protected ChangeInfo changeInfo;
 
+    protected String pathSegment;
+
     public SimpleObjectEntry(SimpleData data, Connection connection) {
         this.data = data;
         this.connection = connection;
@@ -66,6 +68,14 @@ public class SimpleObjectEntry implements ObjectEntry {
 
     public void setChangeInfo(ChangeInfo changeInfo) {
         this.changeInfo = changeInfo;
+    }
+
+    public String getPathSegment() {
+        return pathSegment;
+    }
+
+    public void setPathSegment(String pathSegment) {
+        this.pathSegment = pathSegment;
     }
 
     public Map<String, Serializable> getValues() {

@@ -12,26 +12,20 @@
  * limitations under the License.
  *
  * Authors:
- *     Ugo Cei, Sourcesense
  *     Florent Guillaume, Nuxeo
  */
 package org.apache.chemistry.atompub.client;
 
-import java.io.InputStream;
-
 import junit.framework.TestCase;
 
-import org.apache.chemistry.Repository;
-import org.apache.chemistry.TypeManager;
-import org.apache.chemistry.atompub.client.stax.ReadContext;
+import org.apache.chemistry.atompub.client.APPObjectEntry.Link;
 
-public class TypeFeedReaderTest extends TestCase {
+public class TestLink extends TestCase {
 
-    public void testReadTypesFeed() throws Exception {
-        InputStream is = getClass().getResourceAsStream("/types-feed.xml");
-        TypeManager typeManager = new TypeFeedReader(true).read(
-                new ReadContext((Repository) null), is);
-        assertEquals(5, typeManager.getTypes().size());
+    public void testLink() throws Exception {
+        assertNull(Link.canonicalType(null));
+        assertEquals("foo/bar", Link.canonicalType("foo/bar"));
+        assertEquals("foo/bar;type=gee", Link.canonicalType("foo/bar; TYPE = \"gee\""));
     }
 
 }

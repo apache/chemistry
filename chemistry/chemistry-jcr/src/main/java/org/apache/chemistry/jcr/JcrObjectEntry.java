@@ -76,6 +76,10 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         throw new UnsupportedOperationException();
     }
 
+    public String getPathSegment() {
+        return null;
+    }
+
     public Boolean getBoolean(String id) {
         try {
             return Boolean.valueOf(node.getProperty(JcrCmisMap.cmisToJcr(id)).getBoolean());

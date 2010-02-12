@@ -38,6 +38,7 @@ import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
+import org.apache.chemistry.Tree;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.ValueAdapter;
 import org.apache.chemistry.atompub.client.stax.XmlProperty;
@@ -68,6 +69,11 @@ public class APPObjectEntry implements ObjectEntry {
     protected String remoteContentType;
 
     protected final List<Link> links;
+
+    protected String pathSegment;
+
+    /** Children while reading the object from a feed, not used otherwise. */
+    protected List<Tree<ObjectEntry>> children;
 
     public static class Link {
         public final String rel;
@@ -104,8 +110,8 @@ public class APPObjectEntry implements ObjectEntry {
         }
     }
 
-    protected APPObjectEntry(APPRepository repository, APPConnection connection,
-            Map<String, XmlProperty> properties,
+    protected APPObjectEntry(APPRepository repository,
+            APPConnection connection, Map<String, XmlProperty> properties,
             Map<QName, Boolean> allowableActions) {
         this.repository = repository;
         this.connection = connection;
@@ -143,8 +149,8 @@ public class APPObjectEntry implements ObjectEntry {
         links.add(new Link(rel, href, type));
     }
 
-    public String[] getLinks() {
-        return links.toArray(new String[links.size()]);
+    public Link[] getLinks() {
+        return links.toArray(new Link[links.size()]);
     }
 
     public String getLink(String rel) {
@@ -173,6 +179,10 @@ public class APPObjectEntry implements ObjectEntry {
 
     public ChangeInfo getChangeInfo() {
         return null;
+    }
+
+    public String getPathSegment() {
+        return pathSegment;
     }
 
     // -----

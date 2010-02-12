@@ -383,10 +383,18 @@ public abstract class AtomPubServerTestCase extends TestCase {
 
     public void testFolderTree() {
         ClientResponse resp = client.get(base + "/descendants/" + rootFolderId
-                + "?" + AtomPubCMIS.PARAM_DEPTH + "=1");
+                + "?" + AtomPubCMIS.PARAM_DEPTH + "=-1");
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
-        Element ch = resp.getDocument().getRoot();
+        Element f = resp.getDocument().getRoot();
+        Element e = f.getFirstChild(AtomPub.ATOM_ENTRY);
+        assertNotNull(e);
+        Element ch = e.getFirstChild(AtomPubCMIS.CHILDREN);
         assertNotNull(ch);
+        f = ch.getFirstChild(AtomPub.ATOM_FEED);
+        e = f.getFirstChild(AtomPub.ATOM_ENTRY);
+        assertNotNull(e);
+        e = e.getNextSibling(AtomPub.ATOM_ENTRY);
+        assertNotNull(e);
         resp.release();
 
         resp = client.delete(base + "/foldertree/" + folder1id);

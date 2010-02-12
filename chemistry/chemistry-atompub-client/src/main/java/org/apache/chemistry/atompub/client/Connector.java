@@ -21,6 +21,7 @@ package org.apache.chemistry.atompub.client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -31,6 +32,7 @@ import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectNotFoundException;
 import org.apache.chemistry.Paging;
+import org.apache.chemistry.Tree;
 import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.client.APPObjectEntry;
@@ -49,6 +51,7 @@ import org.apache.chemistry.atompub.client.stax.QueryWriter;
 import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.XmlObjectWriter;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
+import org.apache.chemistry.impl.simple.SimpleTree;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -123,6 +126,12 @@ public class Connector {
         } finally {
             method.releaseConnection();
         }
+    }
+
+    public Tree<ObjectEntry> getEntryFeedTree(String href, NameValuePairs params) {
+        List<Tree<ObjectEntry>> list = getObjectFeed(href, params,
+                new APPObjectFeedTreeReader());
+        return new SimpleTree<ObjectEntry>(null, list);
     }
 
     public APPObjectEntry getEntry(String href, String msg) {

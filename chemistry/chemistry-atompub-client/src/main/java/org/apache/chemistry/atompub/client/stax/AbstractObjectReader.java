@@ -19,14 +19,18 @@
 package org.apache.chemistry.atompub.client.stax;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.chemistry.CMIS;
+import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.PropertyDefinition;
+import org.apache.chemistry.Tree;
 import org.apache.chemistry.atompub.AtomPubCMIS;
+import org.apache.chemistry.atompub.client.APPObjectFeedTreeReader;
 import org.apache.chemistry.xml.stax.ChildrenNavigator;
 import org.apache.chemistry.xml.stax.ParseException;
 import org.apache.chemistry.xml.stax.StaxReader;
@@ -36,17 +40,29 @@ import org.apache.chemistry.xml.stax.StaxReader;
  */
 public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
 
-    protected abstract void readProperty(ReadContext ctx, StaxReader reader,
-            T object, XmlProperty p);
+    protected abstract void setProperty(T object, XmlProperty p);
 
-    protected abstract void readAllowableActions(ReadContext ctx,
-            StaxReader reader, T object, Map<QName, Boolean> allowableActions);
+    protected abstract void setAllowableActions(T object,
+            Map<QName, Boolean> allowableActions);
+
+    protected abstract void setPathSegment(T object, String pathSegment);
+
+    // TODO better use of generics
+    protected abstract void setChildren(T object, List<Tree<ObjectEntry>> tree);
 
     @Override
     protected void readCmisElement(ReadContext ctx, StaxReader reader, T object)
             throws XMLStreamException {
-        if (reader.getLocalName().equals(AtomPubCMIS.OBJECT.getLocalPart())) {
+        QName name = reader.getName();
+        if (AtomPubCMIS.OBJECT.equals(name)) {
             readCmisObject(ctx, reader, object);
+        } else if (AtomPubCMIS.PATH_SEGMENT.equals(name)) {
+            readPathSegment(ctx, reader, object);
+        } else if (AtomPubCMIS.RELATIVE_PATH_SEGMENT.equals(name)) {
+            // stored in the same property as PATH_SEGMENT
+            readPathSegment(ctx, reader, object);
+        } else if (AtomPubCMIS.CHILDREN.equals(name)) {
+            readChildren(ctx, reader, object);
         }
     }
 
@@ -61,12 +77,12 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
     protected void readObjectChildElement(ReadContext ctx, StaxReader reader,
             T object) throws XMLStreamException {
         if (reader.getNamespaceURI().equals(CMIS.CMIS_NS)) {
-            String localName = reader.getLocalName();
-            if (localName.equals(CMIS.PROPERTIES.getLocalPart())) {
+            QName name = reader.getName();
+            if (CMIS.PROPERTIES.equals(name)) {
                 readProperties(ctx, reader, object);
-            } else if (localName.equals(CMIS.ALLOWABLE_ACTIONS.getLocalPart())) {
+            } else if (CMIS.ALLOWABLE_ACTIONS.equals(name)) {
                 readAllowableActions(ctx, reader, object);
-            } else if (localName.equals(CMIS.CHANGE_EVENT_INFO.getLocalPart())) {
+            } else if (CMIS.CHANGE_EVENT_INFO.equals(name)) {
                 readChangeEventInfo(ctx, reader, object);
             } else { // unknown tag
                 readOtherCmisElement(ctx, reader, object);
@@ -92,7 +108,7 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
             throw new ParseException("No such property definition: " + id);
         }
         p.setDefinition(def);
-        readProperty(ctx, reader, object, p);
+        setProperty(object, p);
     }
 
     protected void readAllowableActions(ReadContext ctx, StaxReader reader,
@@ -104,7 +120,7 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
             Boolean bool = Boolean.valueOf(reader.getElementText());
             allowableActions.put(qname, bool);
         }
-        readAllowableActions(ctx, reader, object, allowableActions);
+        setAllowableActions(object, allowableActions);
     }
 
     protected void readChangeEventInfo(ReadContext ctx, StaxReader reader,
@@ -115,6 +131,18 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
     protected void readOtherCmisElement(ReadContext ctx, StaxReader reader,
             T object) throws XMLStreamException {
         // do nothing
+    }
+
+    protected void readPathSegment(ReadContext ctx, StaxReader reader, T object)
+            throws XMLStreamException {
+        setPathSegment(object, reader.getElementText());
+    }
+
+    protected void readChildren(ReadContext ctx, StaxReader reader, T object)
+            throws XMLStreamException {
+        // TODO better use of generics
+        List<Tree<ObjectEntry>> list = new APPObjectFeedTreeReader().read(ctx, reader);
+        setChildren(object, list);
     }
 
 }
