@@ -29,8 +29,8 @@
             <atom:title type="text">changes collection</atom:title>
             <cmisra:collectionType>changes</cmisra:collectionType>
         </app:collection>
-        <atom:link title="Types Descendants feed" type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/typedescendants" href="http://cmisexample.oasis-open.org/rep1//typesdescendants"/>
-        <atom:link title="Folder Tree feed for root folder" type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/foldertree" href="http://cmisexample.oasis-open.org/rep1//foldertree"/>
+        <atom:link title="Types Descendants feed" type="application/cmistree+xml" rel="http://docs.oasis-open.org/ns/cmis/link/200908/typedescendants" href="http://cmisexample.oasis-open.org/rep1//typesdescendants"/>
+        <atom:link title="Folder Tree feed for root folder" type="application/cmistree+xml" rel="http://docs.oasis-open.org/ns/cmis/link/200908/foldertree" href="http://cmisexample.oasis-open.org/rep1//foldertree"/>
         <cmisra:repositoryInfo>
             <cmis:repositoryId>repid1</cmis:repositoryId>
             <cmis:repositoryName>Repository1</cmis:repositoryName>
@@ -39,7 +39,7 @@
             <cmis:productName>CMIS Prototype for VendorX</cmis:productName>
             <cmis:productVersion>1.0</cmis:productVersion>
             <cmis:rootFolderId>rootfolder</cmis:rootFolderId>
-            <cmis:latestChangeLogToken>token-Mon Jan 11 14:54:55 PST 2010</cmis:latestChangeLogToken>
+            <cmis:latestChangeLogToken>token-Mon Jan 25 10:20:56 PST 2010</cmis:latestChangeLogToken>
             <cmis:capabilities>
                 <cmis:capabilityACL>manage</cmis:capabilityACL>
                 <cmis:capabilityAllVersionsSearchable>true</cmis:capabilityAllVersionsSearchable>

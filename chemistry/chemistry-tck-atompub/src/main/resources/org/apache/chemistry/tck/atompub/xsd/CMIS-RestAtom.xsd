@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 	<!--
-		$Revision: 161 $ $Date: 2010-01-11 16:40:26 -0800 (Mon, 11 Jan 2010) $
+		$Revision: 172 $ $Date: 2010-02-11 19:32:39 -0800 (Thu, 11 Feb 2010) $
 		$Author: albertcbrown $ $HeadURL:
 		http://tools.oasis-open.org/version-control/svn/cmis/trunk/SchemaProject/schema/CMIS-RestAtom.xsd
 		$
@@ -411,7 +411,7 @@
 			<xs:enumeration value="typeId" />
 			<xs:enumeration value="types" />
 			<xs:enumeration value="unfileObjects" />
-			<xs:enumeration value="versioningSstate" />
+			<xs:enumeration value="versioningState" />
 		</xs:restriction>
 	</xs:simpleType>
 

@@ -6,42 +6,42 @@
         <atom:uri>http://www.ibm.com/</atom:uri>
         <atom:email>albertcbrown@us.ibm.com</atom:email>
     </atom:author>
-    <atom:updated>2010-01-11T14:54:55.123-08:00</atom:updated>
-    <atom:id>urn:uuid:453c5b76-0b1e-475d-9c7d-086217b64c92</atom:id>
-    <atom:link type="application/atom+xml;type=feed" rel="self" href="http://cmisexample.oasis-open.org/rep1/6bde15de-28b7-475d-a533-45961f22de68/3"/>
+    <atom:updated>2010-01-25T10:20:54.989-08:00</atom:updated>
+    <atom:id>urn:uuid:d0d5c515-8e10-43ab-95ab-1b280c136131</atom:id>
+    <atom:link type="application/atom+xml;type=feed" rel="self" href="http://cmisexample.oasis-open.org/rep1/b8e4b224-45a8-480e-b42a-4c553ea5c59d/3"/>
     <atom:link type="application/atomsvc+xml" rel="service" href="http://cmisexample.oasis-open.org/rep1//service"/>
-    <atom:link type="application/atom+xml;type=entry" rel="via" href="http://cmisexample.oasis-open.org/rep1/6bde15de-28b7-475d-a533-45961f22de68"/>
-    <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/foldertree" href="http://cmisexample.oasis-open.org/rep1/6bde15de-28b7-475d-a533-45961f22de68/foldertree"/>
-    <atom:link type="application/atom+xml;type=feed" rel="down" href="http://cmisexample.oasis-open.org/rep1/6bde15de-28b7-475d-a533-45961f22de68/children"/>
-    <atom:link type="application/atom+xml;type=entry" rel="up" href="http://cmisexample.oasis-open.org/rep1/c335ee52-f829-4203-bd61-c2d00feb424d"/>
+    <atom:link type="application/atom+xml;type=entry" rel="via" href="http://cmisexample.oasis-open.org/rep1/b8e4b224-45a8-480e-b42a-4c553ea5c59d"/>
+    <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/foldertree" href="http://cmisexample.oasis-open.org/rep1/b8e4b224-45a8-480e-b42a-4c553ea5c59d/foldertree"/>
+    <atom:link type="application/atom+xml;type=feed" rel="down" href="http://cmisexample.oasis-open.org/rep1/b8e4b224-45a8-480e-b42a-4c553ea5c59d/children"/>
+    <atom:link type="application/atom+xml;type=entry" rel="up" href="http://cmisexample.oasis-open.org/rep1/c5819b2d-8a77-483c-bd82-4aa482a45238"/>
     <atom:entry>
         <atom:author>
             <atom:name>Al Brown</atom:name>
             <atom:uri>http://www.ibm.com/</atom:uri>
             <atom:email>albertcbrown@us.ibm.com</atom:email>
         </atom:author>
-        <atom:content src="http://cmisexample.oasis-open.org/rep1/b8fb642d-eb5b-4f43-bddc-9e6587ed9a97"/>
-        <atom:id>urn:uuid:b8fb642d-eb5b-4f43-bddc-9e6587ed9a97</atom:id>
+        <atom:content src="http://cmisexample.oasis-open.org/rep1/2be61c89-1b38-49fc-b33d-99fef116360f"/>
+        <atom:id>urn:uuid:2be61c89-1b38-49fc-b33d-99fef116360f</atom:id>
         <atom:title type="text">CMIS Example Folder as Customer type</atom:title>
-        <atom:updated>2010-01-11T14:54:55.123-08:00</atom:updated>
-        <atom:link rel="self" href="http://cmisexample.oasis-open.org/rep1/b8fb642d-eb5b-4f43-bddc-9e6587ed9a97"/>
-        <atom:link rel="edit" href="http://cmisexample.oasis-open.org/rep1/b8fb642d-eb5b-4f43-bddc-9e6587ed9a97"/>
-        <atom:link type="application/cmis+xml;type=allowableActions" rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://cmisexample.oasis-open.org/rep1/b8fb642d-eb5b-4f43-bddc-9e6587ed9a97/allowableactions"/>
-        <atom:link type="application/atom+xml;type=entry" rel="describedby" href="http://cmisexample.oasis-open.org/rep1/b8fb642d-eb5b-4f43-bddc-9e6587ed9a97/type"/>
+        <atom:updated>2010-01-25T10:20:55.005-08:00</atom:updated>
+        <atom:link rel="self" href="http://cmisexample.oasis-open.org/rep1/2be61c89-1b38-49fc-b33d-99fef116360f"/>
+        <atom:link rel="edit" href="http://cmisexample.oasis-open.org/rep1/2be61c89-1b38-49fc-b33d-99fef116360f"/>
+        <atom:link type="application/cmis+xml;type=allowableActions" rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://cmisexample.oasis-open.org/rep1/2be61c89-1b38-49fc-b33d-99fef116360f/allowableactions"/>
+        <atom:link type="application/atom+xml;type=entry" rel="describedby" href="http://cmisexample.oasis-open.org/rep1/2be61c89-1b38-49fc-b33d-99fef116360f/type"/>
         <atom:link type="application/atomsvc+xml" rel="service" href="http://cmisexample.oasis-open.org/rep1//service"/>
-        <atom:published>2010-01-11T14:54:55.139-08:00</atom:published>
-        <atom:summary type="html">HTML summary of Entry  b8fb642d-eb5b-4f43-bddc-9e6587ed9a97</atom:summary>
-        <atom:link type="application/atom+xml;type=entry" rel="up" href="http://cmisexample.oasis-open.org/rep1/b8fb642d-eb5b-4f43-bddc-9e6587ed9a97/up"/>
-        <atom:link type="application/atom+xml;type=feed" rel="down" href="http://cmisexample.oasis-open.org/rep1/b8fb642d-eb5b-4f43-bddc-9e6587ed9a97/children"/>
-        <atom:link type="application/cmistree+xml" rel="down" href="http://cmisexample.oasis-open.org/rep1/b8fb642d-eb5b-4f43-bddc-9e6587ed9a97/tree"/>
-        <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/foldertree" href="http://cmisexample.oasis-open.org/rep1/b8fb642d-eb5b-4f43-bddc-9e6587ed9a97/foldertree"/>
-        <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/relationships" href="http://cmisexample.oasis-open.org/rep1/b8fb642d-eb5b-4f43-bddc-9e6587ed9a97/relationships"/>
-        <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/policies" href="http://cmisexample.oasis-open.org/rep1/b8fb642d-eb5b-4f43-bddc-9e6587ed9a97/policies"/>
-        <atom:link type="application/cmisacl+xml" rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://cmisexample.oasis-open.org/rep1/b8fb642d-eb5b-4f43-bddc-9e6587ed9a97/acl"/>
+        <atom:published>2010-01-25T10:20:55.005-08:00</atom:published>
+        <atom:summary type="html">HTML summary of Entry  2be61c89-1b38-49fc-b33d-99fef116360f</atom:summary>
+        <atom:link type="application/atom+xml;type=entry" rel="up" href="http://cmisexample.oasis-open.org/rep1/2be61c89-1b38-49fc-b33d-99fef116360f/up"/>
+        <atom:link type="application/atom+xml;type=feed" rel="down" href="http://cmisexample.oasis-open.org/rep1/2be61c89-1b38-49fc-b33d-99fef116360f/children"/>
+        <atom:link type="application/cmistree+xml" rel="down" href="http://cmisexample.oasis-open.org/rep1/2be61c89-1b38-49fc-b33d-99fef116360f/tree"/>
+        <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/foldertree" href="http://cmisexample.oasis-open.org/rep1/2be61c89-1b38-49fc-b33d-99fef116360f/foldertree"/>
+        <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/relationships" href="http://cmisexample.oasis-open.org/rep1/2be61c89-1b38-49fc-b33d-99fef116360f/relationships"/>
+        <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/policies" href="http://cmisexample.oasis-open.org/rep1/2be61c89-1b38-49fc-b33d-99fef116360f/policies"/>
+        <atom:link type="application/cmisacl+xml" rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://cmisexample.oasis-open.org/rep1/2be61c89-1b38-49fc-b33d-99fef116360f/acl"/>
         <cmisra:object>
             <cmis:properties>
                 <cmis:propertyId localName="rep-cmis:objectId" propertyDefinitionId="cmis:objectId">
-                    <cmis:value>b8fb642d-eb5b-4f43-bddc-9e6587ed9a97</cmis:value>
+                    <cmis:value>2be61c89-1b38-49fc-b33d-99fef116360f</cmis:value>
                 </cmis:propertyId>
                 <cmis:propertyId localName="rep-cmis:objectTypeId" propertyDefinitionId="cmis:objectTypeId">
                     <cmis:value>customer</cmis:value>
@@ -50,10 +50,10 @@
                     <cmis:value>CMIS Example Folder as Customer type</cmis:value>
                 </cmis:propertyString>
                 <cmis:propertyDateTime localName="rep-cmis:creationDate" propertyDefinitionId="cmis:creationDate">
-                    <cmis:value>2010-01-11T14:54:55.139-08:00</cmis:value>
+                    <cmis:value>2010-01-25T10:20:55.005-08:00</cmis:value>
                 </cmis:propertyDateTime>
                 <cmis:propertyDateTime localName="rep-cmis:lastModificationDate" propertyDefinitionId="cmis:lastModificationDate">
-                    <cmis:value>2010-01-11T14:54:55.139-08:00</cmis:value>
+                    <cmis:value>2010-01-25T10:20:55.005-08:00</cmis:value>
                 </cmis:propertyDateTime>
                 <cmis:propertyId localName="rep-cmis:baseTypeId" propertyDefinitionId="cmis:baseTypeId">
                     <cmis:value>cmis:folder</cmis:value>
@@ -65,7 +65,7 @@
                     <cmis:value>Al Brown</cmis:value>
                 </cmis:propertyString>
                 <cmis:propertyId localName="rep-cmis:parentId" propertyDefinitionId="cmis:parentId">
-                    <cmis:value>b8fb642d-eb5b-4f43-bddc-9e6587ed9a97up</cmis:value>
+                    <cmis:value>2be61c89-1b38-49fc-b33d-99fef116360fup</cmis:value>
                 </cmis:propertyId>
             </cmis:properties>
             <cmis:allowableActions>
@@ -95,43 +95,43 @@
                     <atom:uri>http://www.ibm.com/</atom:uri>
                     <atom:email>albertcbrown@us.ibm.com</atom:email>
                 </atom:author>
-                <atom:updated>2010-01-11T14:54:55.139-08:00</atom:updated>
-                <atom:id>urn:uuid:94c2f0e6-e372-476a-8a79-84a6d9cbabc1</atom:id>
-                <atom:link type="application/atom+xml;type=feed" rel="self" href="http://cmisexample.oasis-open.org/rep1/b8fb642d-eb5b-4f43-bddc-9e6587ed9a97/3"/>
+                <atom:updated>2010-01-25T10:20:55.005-08:00</atom:updated>
+                <atom:id>urn:uuid:deb3d10f-d4f8-4e99-af54-6eee85a235b0</atom:id>
+                <atom:link type="application/atom+xml;type=feed" rel="self" href="http://cmisexample.oasis-open.org/rep1/2be61c89-1b38-49fc-b33d-99fef116360f/3"/>
                 <atom:link type="application/atomsvc+xml" rel="service" href="http://cmisexample.oasis-open.org/rep1//service"/>
-                <atom:link type="application/atom+xml;type=entry" rel="via" href="http://cmisexample.oasis-open.org/rep1/b8fb642d-eb5b-4f43-bddc-9e6587ed9a97"/>
-                <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/foldertree" href="http://cmisexample.oasis-open.org/rep1/b8fb642d-eb5b-4f43-bddc-9e6587ed9a97/foldertree"/>
-                <atom:link type="application/atom+xml;type=feed" rel="down" href="http://cmisexample.oasis-open.org/rep1/b8fb642d-eb5b-4f43-bddc-9e6587ed9a97/children"/>
-                <atom:link type="application/atom+xml;type=entry" rel="up" href="http://cmisexample.oasis-open.org/rep1/6bde15de-28b7-475d-a533-45961f22de68"/>
+                <atom:link type="application/atom+xml;type=entry" rel="via" href="http://cmisexample.oasis-open.org/rep1/2be61c89-1b38-49fc-b33d-99fef116360f"/>
+                <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/foldertree" href="http://cmisexample.oasis-open.org/rep1/2be61c89-1b38-49fc-b33d-99fef116360f/foldertree"/>
+                <atom:link type="application/atom+xml;type=feed" rel="down" href="http://cmisexample.oasis-open.org/rep1/2be61c89-1b38-49fc-b33d-99fef116360f/children"/>
+                <atom:link type="application/atom+xml;type=entry" rel="up" href="http://cmisexample.oasis-open.org/rep1/b8e4b224-45a8-480e-b42a-4c553ea5c59d"/>
                 <atom:entry>
                     <atom:author>
                         <atom:name>Al Brown</atom:name>
                         <atom:uri>http://www.ibm.com/</atom:uri>
                         <atom:email>albertcbrown@us.ibm.com</atom:email>
                     </atom:author>
-                    <atom:content src="http://cmisexample.oasis-open.org/rep1/be883b86-c50a-408f-9b54-d88531ed7236"/>
-                    <atom:id>urn:uuid:be883b86-c50a-408f-9b54-d88531ed7236</atom:id>
+                    <atom:content src="http://cmisexample.oasis-open.org/rep1/ab301498-6627-4107-8a16-2d53768d80c0"/>
+                    <atom:id>urn:uuid:ab301498-6627-4107-8a16-2d53768d80c0</atom:id>
                     <atom:title type="text">CMIS Example Doc as Invoice type</atom:title>
-                    <atom:updated>2010-01-11T14:54:55.139-08:00</atom:updated>
-                    <atom:link rel="self" href="http://cmisexample.oasis-open.org/rep1/be883b86-c50a-408f-9b54-d88531ed7236"/>
-                    <atom:link rel="edit" href="http://cmisexample.oasis-open.org/rep1/be883b86-c50a-408f-9b54-d88531ed7236"/>
-                    <atom:link type="application/cmis+xml;type=allowableActions" rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://cmisexample.oasis-open.org/rep1/be883b86-c50a-408f-9b54-d88531ed7236/allowableactions"/>
-                    <atom:link type="application/atom+xml;type=entry" rel="describedby" href="http://cmisexample.oasis-open.org/rep1/be883b86-c50a-408f-9b54-d88531ed7236/type"/>
+                    <atom:updated>2010-01-25T10:20:55.005-08:00</atom:updated>
+                    <atom:link rel="self" href="http://cmisexample.oasis-open.org/rep1/ab301498-6627-4107-8a16-2d53768d80c0"/>
+                    <atom:link rel="edit" href="http://cmisexample.oasis-open.org/rep1/ab301498-6627-4107-8a16-2d53768d80c0"/>
+                    <atom:link type="application/cmis+xml;type=allowableActions" rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://cmisexample.oasis-open.org/rep1/ab301498-6627-4107-8a16-2d53768d80c0/allowableactions"/>
+                    <atom:link type="application/atom+xml;type=entry" rel="describedby" href="http://cmisexample.oasis-open.org/rep1/ab301498-6627-4107-8a16-2d53768d80c0/type"/>
                     <atom:link type="application/atomsvc+xml" rel="service" href="http://cmisexample.oasis-open.org/rep1//service"/>
-                    <atom:published>2010-01-11T14:54:55.139-08:00</atom:published>
-                    <atom:summary type="html">HTML summary of Entry  be883b86-c50a-408f-9b54-d88531ed7236</atom:summary>
-                    <atom:link rel="edit-media" href="http://cmisexample.oasis-open.org/rep1/be883b86-c50a-408f-9b54-d88531ed7236/edit-media"/>
-                    <atom:link rel="alternate" href="http://cmisexample.oasis-open.org/rep1/be883b86-c50a-408f-9b54-d88531ed7236/alternate"/>
-                    <atom:link type="application/atom+xml;type=feed" rel="up" href="http://cmisexample.oasis-open.org/rep1/be883b86-c50a-408f-9b54-d88531ed7236/parents"/>
-                    <atom:link type="application/atom+xml;type=feed" rel="version-history" href="http://cmisexample.oasis-open.org/rep1/be883b86-c50a-408f-9b54-d88531ed7236/allversions"/>
-                    <atom:link type="application/atom+xml;type=entry" rel="current-version" href="http://cmisexample.oasis-open.org/rep1/be883b86-c50a-408f-9b54-d88531ed7236/latest"/>
-                    <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/relationships" href="http://cmisexample.oasis-open.org/rep1/be883b86-c50a-408f-9b54-d88531ed7236/relationships"/>
-                    <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/policies" href="http://cmisexample.oasis-open.org/rep1/be883b86-c50a-408f-9b54-d88531ed7236/policies"/>
-                    <atom:link type="application/cmisacl+xml" rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://cmisexample.oasis-open.org/rep1/be883b86-c50a-408f-9b54-d88531ed7236/acl"/>
+                    <atom:published>2010-01-25T10:20:55.005-08:00</atom:published>
+                    <atom:summary type="html">HTML summary of Entry  ab301498-6627-4107-8a16-2d53768d80c0</atom:summary>
+                    <atom:link rel="edit-media" href="http://cmisexample.oasis-open.org/rep1/ab301498-6627-4107-8a16-2d53768d80c0/edit-media"/>
+                    <atom:link rel="alternate" href="http://cmisexample.oasis-open.org/rep1/ab301498-6627-4107-8a16-2d53768d80c0/alternate"/>
+                    <atom:link type="application/atom+xml;type=feed" rel="up" href="http://cmisexample.oasis-open.org/rep1/ab301498-6627-4107-8a16-2d53768d80c0/parents"/>
+                    <atom:link type="application/atom+xml;type=feed" rel="version-history" href="http://cmisexample.oasis-open.org/rep1/ab301498-6627-4107-8a16-2d53768d80c0/allversions"/>
+                    <atom:link type="application/atom+xml;type=entry" rel="current-version" href="http://cmisexample.oasis-open.org/rep1/ab301498-6627-4107-8a16-2d53768d80c0/latest"/>
+                    <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/relationships" href="http://cmisexample.oasis-open.org/rep1/ab301498-6627-4107-8a16-2d53768d80c0/relationships"/>
+                    <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/policies" href="http://cmisexample.oasis-open.org/rep1/ab301498-6627-4107-8a16-2d53768d80c0/policies"/>
+                    <atom:link type="application/cmisacl+xml" rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://cmisexample.oasis-open.org/rep1/ab301498-6627-4107-8a16-2d53768d80c0/acl"/>
                     <cmisra:object>
                         <cmis:properties>
                             <cmis:propertyId localName="rep-cmis:objectId" propertyDefinitionId="cmis:objectId">
-<cmis:value>be883b86-c50a-408f-9b54-d88531ed7236</cmis:value>
+<cmis:value>ab301498-6627-4107-8a16-2d53768d80c0</cmis:value>
                             </cmis:propertyId>
                             <cmis:propertyId localName="rep-cmis:objectTypeId" propertyDefinitionId="cmis:objectTypeId">
 <cmis:value>invoice</cmis:value>
@@ -140,10 +140,10 @@
 <cmis:value>CMIS Example Doc as Invoice type</cmis:value>
                             </cmis:propertyString>
                             <cmis:propertyDateTime localName="rep-cmis:creationDate" propertyDefinitionId="cmis:creationDate">
-<cmis:value>2010-01-11T14:54:55.139-08:00</cmis:value>
+<cmis:value>2010-01-25T10:20:55.005-08:00</cmis:value>
                             </cmis:propertyDateTime>
                             <cmis:propertyDateTime localName="rep-cmis:lastModificationDate" propertyDefinitionId="cmis:lastModificationDate">
-<cmis:value>2010-01-11T14:54:55.139-08:00</cmis:value>
+<cmis:value>2010-01-25T10:20:55.005-08:00</cmis:value>
                             </cmis:propertyDateTime>
                             <cmis:propertyId localName="rep-cmis:baseTypeId" propertyDefinitionId="cmis:baseTypeId">
 <cmis:value>cmis:document</cmis:value>
@@ -221,29 +221,29 @@
                         <atom:uri>http://www.ibm.com/</atom:uri>
                         <atom:email>albertcbrown@us.ibm.com</atom:email>
                     </atom:author>
-                    <atom:content src="http://cmisexample.oasis-open.org/rep1/2bd7bf3a-707f-4692-a0df-0dd875257f60"/>
-                    <atom:id>urn:uuid:2bd7bf3a-707f-4692-a0df-0dd875257f60</atom:id>
+                    <atom:content src="http://cmisexample.oasis-open.org/rep1/1518059d-6b88-4e90-90e1-2eca94db6698"/>
+                    <atom:id>urn:uuid:1518059d-6b88-4e90-90e1-2eca94db6698</atom:id>
                     <atom:title type="text">CMIS Example Doc as Invoice type</atom:title>
-                    <atom:updated>2010-01-11T14:54:55.139-08:00</atom:updated>
-                    <atom:link rel="self" href="http://cmisexample.oasis-open.org/rep1/2bd7bf3a-707f-4692-a0df-0dd875257f60"/>
-                    <atom:link rel="edit" href="http://cmisexample.oasis-open.org/rep1/2bd7bf3a-707f-4692-a0df-0dd875257f60"/>
-                    <atom:link type="application/cmis+xml;type=allowableActions" rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://cmisexample.oasis-open.org/rep1/2bd7bf3a-707f-4692-a0df-0dd875257f60/allowableactions"/>
-                    <atom:link type="application/atom+xml;type=entry" rel="describedby" href="http://cmisexample.oasis-open.org/rep1/2bd7bf3a-707f-4692-a0df-0dd875257f60/type"/>
+                    <atom:updated>2010-01-25T10:20:55.021-08:00</atom:updated>
+                    <atom:link rel="self" href="http://cmisexample.oasis-open.org/rep1/1518059d-6b88-4e90-90e1-2eca94db6698"/>
+                    <atom:link rel="edit" href="http://cmisexample.oasis-open.org/rep1/1518059d-6b88-4e90-90e1-2eca94db6698"/>
+                    <atom:link type="application/cmis+xml;type=allowableActions" rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://cmisexample.oasis-open.org/rep1/1518059d-6b88-4e90-90e1-2eca94db6698/allowableactions"/>
+                    <atom:link type="application/atom+xml;type=entry" rel="describedby" href="http://cmisexample.oasis-open.org/rep1/1518059d-6b88-4e90-90e1-2eca94db6698/type"/>
                     <atom:link type="application/atomsvc+xml" rel="service" href="http://cmisexample.oasis-open.org/rep1//service"/>
-                    <atom:published>2010-01-11T14:54:55.139-08:00</atom:published>
-                    <atom:summary type="html">HTML summary of Entry  2bd7bf3a-707f-4692-a0df-0dd875257f60</atom:summary>
-                    <atom:link rel="edit-media" href="http://cmisexample.oasis-open.org/rep1/2bd7bf3a-707f-4692-a0df-0dd875257f60/edit-media"/>
-                    <atom:link rel="alternate" href="http://cmisexample.oasis-open.org/rep1/2bd7bf3a-707f-4692-a0df-0dd875257f60/alternate"/>
-                    <atom:link type="application/atom+xml;type=feed" rel="up" href="http://cmisexample.oasis-open.org/rep1/2bd7bf3a-707f-4692-a0df-0dd875257f60/parents"/>
-                    <atom:link type="application/atom+xml;type=feed" rel="version-history" href="http://cmisexample.oasis-open.org/rep1/2bd7bf3a-707f-4692-a0df-0dd875257f60/allversions"/>
-                    <atom:link type="application/atom+xml;type=entry" rel="current-version" href="http://cmisexample.oasis-open.org/rep1/2bd7bf3a-707f-4692-a0df-0dd875257f60/latest"/>
-                    <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/relationships" href="http://cmisexample.oasis-open.org/rep1/2bd7bf3a-707f-4692-a0df-0dd875257f60/relationships"/>
-                    <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/policies" href="http://cmisexample.oasis-open.org/rep1/2bd7bf3a-707f-4692-a0df-0dd875257f60/policies"/>
-                    <atom:link type="application/cmisacl+xml" rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://cmisexample.oasis-open.org/rep1/2bd7bf3a-707f-4692-a0df-0dd875257f60/acl"/>
+                    <atom:published>2010-01-25T10:20:55.021-08:00</atom:published>
+                    <atom:summary type="html">HTML summary of Entry  1518059d-6b88-4e90-90e1-2eca94db6698</atom:summary>
+                    <atom:link rel="edit-media" href="http://cmisexample.oasis-open.org/rep1/1518059d-6b88-4e90-90e1-2eca94db6698/edit-media"/>
+                    <atom:link rel="alternate" href="http://cmisexample.oasis-open.org/rep1/1518059d-6b88-4e90-90e1-2eca94db6698/alternate"/>
+                    <atom:link type="application/atom+xml;type=feed" rel="up" href="http://cmisexample.oasis-open.org/rep1/1518059d-6b88-4e90-90e1-2eca94db6698/parents"/>
+                    <atom:link type="application/atom+xml;type=feed" rel="version-history" href="http://cmisexample.oasis-open.org/rep1/1518059d-6b88-4e90-90e1-2eca94db6698/allversions"/>
+                    <atom:link type="application/atom+xml;type=entry" rel="current-version" href="http://cmisexample.oasis-open.org/rep1/1518059d-6b88-4e90-90e1-2eca94db6698/latest"/>
+                    <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/relationships" href="http://cmisexample.oasis-open.org/rep1/1518059d-6b88-4e90-90e1-2eca94db6698/relationships"/>
+                    <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/policies" href="http://cmisexample.oasis-open.org/rep1/1518059d-6b88-4e90-90e1-2eca94db6698/policies"/>
+                    <atom:link type="application/cmisacl+xml" rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://cmisexample.oasis-open.org/rep1/1518059d-6b88-4e90-90e1-2eca94db6698/acl"/>
                     <cmisra:object>
                         <cmis:properties>
                             <cmis:propertyId localName="rep-cmis:objectId" propertyDefinitionId="cmis:objectId">
-<cmis:value>2bd7bf3a-707f-4692-a0df-0dd875257f60</cmis:value>
+<cmis:value>1518059d-6b88-4e90-90e1-2eca94db6698</cmis:value>
                             </cmis:propertyId>
                             <cmis:propertyId localName="rep-cmis:objectTypeId" propertyDefinitionId="cmis:objectTypeId">
 <cmis:value>invoice</cmis:value>
@@ -252,10 +252,10 @@
 <cmis:value>CMIS Example Doc as Invoice type</cmis:value>
                             </cmis:propertyString>
                             <cmis:propertyDateTime localName="rep-cmis:creationDate" propertyDefinitionId="cmis:creationDate">
-<cmis:value>2010-01-11T14:54:55.139-08:00</cmis:value>
+<cmis:value>2010-01-25T10:20:55.021-08:00</cmis:value>
                             </cmis:propertyDateTime>
                             <cmis:propertyDateTime localName="rep-cmis:lastModificationDate" propertyDefinitionId="cmis:lastModificationDate">
-<cmis:value>2010-01-11T14:54:55.139-08:00</cmis:value>
+<cmis:value>2010-01-25T10:20:55.021-08:00</cmis:value>
                             </cmis:propertyDateTime>
                             <cmis:propertyId localName="rep-cmis:baseTypeId" propertyDefinitionId="cmis:baseTypeId">
 <cmis:value>cmis:document</cmis:value>
@@ -336,28 +336,28 @@
             <atom:uri>http://www.ibm.com/</atom:uri>
             <atom:email>albertcbrown@us.ibm.com</atom:email>
         </atom:author>
-        <atom:content src="http://cmisexample.oasis-open.org/rep1/ab5b377e-368c-4f68-8143-997279a4e5a3"/>
-        <atom:id>urn:uuid:ab5b377e-368c-4f68-8143-997279a4e5a3</atom:id>
+        <atom:content src="http://cmisexample.oasis-open.org/rep1/95d7ab89-f7de-4ea5-81fc-1c3b0a93f593"/>
+        <atom:id>urn:uuid:95d7ab89-f7de-4ea5-81fc-1c3b0a93f593</atom:id>
         <atom:title type="text">CMIS Example Folder as Customer type</atom:title>
-        <atom:updated>2010-01-11T14:54:55.154-08:00</atom:updated>
-        <atom:link rel="self" href="http://cmisexample.oasis-open.org/rep1/ab5b377e-368c-4f68-8143-997279a4e5a3"/>
-        <atom:link rel="edit" href="http://cmisexample.oasis-open.org/rep1/ab5b377e-368c-4f68-8143-997279a4e5a3"/>
-        <atom:link type="application/cmis+xml;type=allowableActions" rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://cmisexample.oasis-open.org/rep1/ab5b377e-368c-4f68-8143-997279a4e5a3/allowableactions"/>
-        <atom:link type="application/atom+xml;type=entry" rel="describedby" href="http://cmisexample.oasis-open.org/rep1/ab5b377e-368c-4f68-8143-997279a4e5a3/type"/>
+        <atom:updated>2010-01-25T10:20:55.021-08:00</atom:updated>
+        <atom:link rel="self" href="http://cmisexample.oasis-open.org/rep1/95d7ab89-f7de-4ea5-81fc-1c3b0a93f593"/>
+        <atom:link rel="edit" href="http://cmisexample.oasis-open.org/rep1/95d7ab89-f7de-4ea5-81fc-1c3b0a93f593"/>
+        <atom:link type="application/cmis+xml;type=allowableActions" rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://cmisexample.oasis-open.org/rep1/95d7ab89-f7de-4ea5-81fc-1c3b0a93f593/allowableactions"/>
+        <atom:link type="application/atom+xml;type=entry" rel="describedby" href="http://cmisexample.oasis-open.org/rep1/95d7ab89-f7de-4ea5-81fc-1c3b0a93f593/type"/>
         <atom:link type="application/atomsvc+xml" rel="service" href="http://cmisexample.oasis-open.org/rep1//service"/>
-        <atom:published>2010-01-11T14:54:55.154-08:00</atom:published>
-        <atom:summary type="html">HTML summary of Entry  ab5b377e-368c-4f68-8143-997279a4e5a3</atom:summary>
-        <atom:link type="application/atom+xml;type=entry" rel="up" href="http://cmisexample.oasis-open.org/rep1/ab5b377e-368c-4f68-8143-997279a4e5a3/up"/>
-        <atom:link type="application/atom+xml;type=feed" rel="down" href="http://cmisexample.oasis-open.org/rep1/ab5b377e-368c-4f68-8143-997279a4e5a3/children"/>
-        <atom:link type="application/cmistree+xml" rel="down" href="http://cmisexample.oasis-open.org/rep1/ab5b377e-368c-4f68-8143-997279a4e5a3/tree"/>
-        <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/foldertree" href="http://cmisexample.oasis-open.org/rep1/ab5b377e-368c-4f68-8143-997279a4e5a3/foldertree"/>
-        <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/relationships" href="http://cmisexample.oasis-open.org/rep1/ab5b377e-368c-4f68-8143-997279a4e5a3/relationships"/>
-        <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/policies" href="http://cmisexample.oasis-open.org/rep1/ab5b377e-368c-4f68-8143-997279a4e5a3/policies"/>
-        <atom:link type="application/cmisacl+xml" rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://cmisexample.oasis-open.org/rep1/ab5b377e-368c-4f68-8143-997279a4e5a3/acl"/>
+        <atom:published>2010-01-25T10:20:55.021-08:00</atom:published>
+        <atom:summary type="html">HTML summary of Entry  95d7ab89-f7de-4ea5-81fc-1c3b0a93f593</atom:summary>
+        <atom:link type="application/atom+xml;type=entry" rel="up" href="http://cmisexample.oasis-open.org/rep1/95d7ab89-f7de-4ea5-81fc-1c3b0a93f593/up"/>
+        <atom:link type="application/atom+xml;type=feed" rel="down" href="http://cmisexample.oasis-open.org/rep1/95d7ab89-f7de-4ea5-81fc-1c3b0a93f593/children"/>
+        <atom:link type="application/cmistree+xml" rel="down" href="http://cmisexample.oasis-open.org/rep1/95d7ab89-f7de-4ea5-81fc-1c3b0a93f593/tree"/>
+        <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/foldertree" href="http://cmisexample.oasis-open.org/rep1/95d7ab89-f7de-4ea5-81fc-1c3b0a93f593/foldertree"/>
+        <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/relationships" href="http://cmisexample.oasis-open.org/rep1/95d7ab89-f7de-4ea5-81fc-1c3b0a93f593/relationships"/>
+        <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/policies" href="http://cmisexample.oasis-open.org/rep1/95d7ab89-f7de-4ea5-81fc-1c3b0a93f593/policies"/>
+        <atom:link type="application/cmisacl+xml" rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://cmisexample.oasis-open.org/rep1/95d7ab89-f7de-4ea5-81fc-1c3b0a93f593/acl"/>
         <cmisra:object>
             <cmis:properties>
                 <cmis:propertyId localName="rep-cmis:objectId" propertyDefinitionId="cmis:objectId">
-                    <cmis:value>ab5b377e-368c-4f68-8143-997279a4e5a3</cmis:value>
+                    <cmis:value>95d7ab89-f7de-4ea5-81fc-1c3b0a93f593</cmis:value>
                 </cmis:propertyId>
                 <cmis:propertyId localName="rep-cmis:objectTypeId" propertyDefinitionId="cmis:objectTypeId">
                     <cmis:value>customer</cmis:value>
@@ -366,10 +366,10 @@
                     <cmis:value>CMIS Example Folder as Customer type</cmis:value>
                 </cmis:propertyString>
                 <cmis:propertyDateTime localName="rep-cmis:creationDate" propertyDefinitionId="cmis:creationDate">
-                    <cmis:value>2010-01-11T14:54:55.154-08:00</cmis:value>
+                    <cmis:value>2010-01-25T10:20:55.021-08:00</cmis:value>
                 </cmis:propertyDateTime>
                 <cmis:propertyDateTime localName="rep-cmis:lastModificationDate" propertyDefinitionId="cmis:lastModificationDate">
-                    <cmis:value>2010-01-11T14:54:55.154-08:00</cmis:value>
+                    <cmis:value>2010-01-25T10:20:55.021-08:00</cmis:value>
                 </cmis:propertyDateTime>
                 <cmis:propertyId localName="rep-cmis:baseTypeId" propertyDefinitionId="cmis:baseTypeId">
                     <cmis:value>cmis:folder</cmis:value>
@@ -381,7 +381,7 @@
                     <cmis:value>Al Brown</cmis:value>
                 </cmis:propertyString>
                 <cmis:propertyId localName="rep-cmis:parentId" propertyDefinitionId="cmis:parentId">
-                    <cmis:value>ab5b377e-368c-4f68-8143-997279a4e5a3up</cmis:value>
+                    <cmis:value>95d7ab89-f7de-4ea5-81fc-1c3b0a93f593up</cmis:value>
                 </cmis:propertyId>
             </cmis:properties>
             <cmis:allowableActions>
@@ -410,29 +410,29 @@
             <atom:uri>http://www.ibm.com/</atom:uri>
             <atom:email>albertcbrown@us.ibm.com</atom:email>
         </atom:author>
-        <atom:content src="http://cmisexample.oasis-open.org/rep1/e053aee7-d29c-46c2-9161-c3c3a434c8f6"/>
-        <atom:id>urn:uuid:e053aee7-d29c-46c2-9161-c3c3a434c8f6</atom:id>
+        <atom:content src="http://cmisexample.oasis-open.org/rep1/64259eb9-b503-4efe-9cad-362c4db34176"/>
+        <atom:id>urn:uuid:64259eb9-b503-4efe-9cad-362c4db34176</atom:id>
         <atom:title type="text">CMIS Example Doc as Invoice type</atom:title>
-        <atom:updated>2010-01-11T14:54:55.154-08:00</atom:updated>
-        <atom:link rel="self" href="http://cmisexample.oasis-open.org/rep1/e053aee7-d29c-46c2-9161-c3c3a434c8f6"/>
-        <atom:link rel="edit" href="http://cmisexample.oasis-open.org/rep1/e053aee7-d29c-46c2-9161-c3c3a434c8f6"/>
-        <atom:link type="application/cmis+xml;type=allowableActions" rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://cmisexample.oasis-open.org/rep1/e053aee7-d29c-46c2-9161-c3c3a434c8f6/allowableactions"/>
-        <atom:link type="application/atom+xml;type=entry" rel="describedby" href="http://cmisexample.oasis-open.org/rep1/e053aee7-d29c-46c2-9161-c3c3a434c8f6/type"/>
+        <atom:updated>2010-01-25T10:20:55.021-08:00</atom:updated>
+        <atom:link rel="self" href="http://cmisexample.oasis-open.org/rep1/64259eb9-b503-4efe-9cad-362c4db34176"/>
+        <atom:link rel="edit" href="http://cmisexample.oasis-open.org/rep1/64259eb9-b503-4efe-9cad-362c4db34176"/>
+        <atom:link type="application/cmis+xml;type=allowableActions" rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://cmisexample.oasis-open.org/rep1/64259eb9-b503-4efe-9cad-362c4db34176/allowableactions"/>
+        <atom:link type="application/atom+xml;type=entry" rel="describedby" href="http://cmisexample.oasis-open.org/rep1/64259eb9-b503-4efe-9cad-362c4db34176/type"/>
         <atom:link type="application/atomsvc+xml" rel="service" href="http://cmisexample.oasis-open.org/rep1//service"/>
-        <atom:published>2010-01-11T14:54:55.154-08:00</atom:published>
-        <atom:summary type="html">HTML summary of Entry  e053aee7-d29c-46c2-9161-c3c3a434c8f6</atom:summary>
-        <atom:link rel="edit-media" href="http://cmisexample.oasis-open.org/rep1/e053aee7-d29c-46c2-9161-c3c3a434c8f6/edit-media"/>
-        <atom:link rel="alternate" href="http://cmisexample.oasis-open.org/rep1/e053aee7-d29c-46c2-9161-c3c3a434c8f6/alternate"/>
-        <atom:link type="application/atom+xml;type=feed" rel="up" href="http://cmisexample.oasis-open.org/rep1/e053aee7-d29c-46c2-9161-c3c3a434c8f6/parents"/>
-        <atom:link type="application/atom+xml;type=feed" rel="version-history" href="http://cmisexample.oasis-open.org/rep1/e053aee7-d29c-46c2-9161-c3c3a434c8f6/allversions"/>
-        <atom:link type="application/atom+xml;type=entry" rel="current-version" href="http://cmisexample.oasis-open.org/rep1/e053aee7-d29c-46c2-9161-c3c3a434c8f6/latest"/>
-        <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/relationships" href="http://cmisexample.oasis-open.org/rep1/e053aee7-d29c-46c2-9161-c3c3a434c8f6/relationships"/>
-        <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/policies" href="http://cmisexample.oasis-open.org/rep1/e053aee7-d29c-46c2-9161-c3c3a434c8f6/policies"/>
-        <atom:link type="application/cmisacl+xml" rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://cmisexample.oasis-open.org/rep1/e053aee7-d29c-46c2-9161-c3c3a434c8f6/acl"/>
+        <atom:published>2010-01-25T10:20:55.021-08:00</atom:published>
+        <atom:summary type="html">HTML summary of Entry  64259eb9-b503-4efe-9cad-362c4db34176</atom:summary>
+        <atom:link rel="edit-media" href="http://cmisexample.oasis-open.org/rep1/64259eb9-b503-4efe-9cad-362c4db34176/edit-media"/>
+        <atom:link rel="alternate" href="http://cmisexample.oasis-open.org/rep1/64259eb9-b503-4efe-9cad-362c4db34176/alternate"/>
+        <atom:link type="application/atom+xml;type=feed" rel="up" href="http://cmisexample.oasis-open.org/rep1/64259eb9-b503-4efe-9cad-362c4db34176/parents"/>
+        <atom:link type="application/atom+xml;type=feed" rel="version-history" href="http://cmisexample.oasis-open.org/rep1/64259eb9-b503-4efe-9cad-362c4db34176/allversions"/>
+        <atom:link type="application/atom+xml;type=entry" rel="current-version" href="http://cmisexample.oasis-open.org/rep1/64259eb9-b503-4efe-9cad-362c4db34176/latest"/>
+        <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/relationships" href="http://cmisexample.oasis-open.org/rep1/64259eb9-b503-4efe-9cad-362c4db34176/relationships"/>
+        <atom:link type="application/atom+xml;type=feed" rel="http://docs.oasis-open.org/ns/cmis/link/200908/policies" href="http://cmisexample.oasis-open.org/rep1/64259eb9-b503-4efe-9cad-362c4db34176/policies"/>
+        <atom:link type="application/cmisacl+xml" rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://cmisexample.oasis-open.org/rep1/64259eb9-b503-4efe-9cad-362c4db34176/acl"/>
         <cmisra:object>
             <cmis:properties>
                 <cmis:propertyId localName="rep-cmis:objectId" propertyDefinitionId="cmis:objectId">
-                    <cmis:value>e053aee7-d29c-46c2-9161-c3c3a434c8f6</cmis:value>
+                    <cmis:value>64259eb9-b503-4efe-9cad-362c4db34176</cmis:value>
                 </cmis:propertyId>
                 <cmis:propertyId localName="rep-cmis:objectTypeId" propertyDefinitionId="cmis:objectTypeId">
                     <cmis:value>invoice</cmis:value>
@@ -441,10 +441,10 @@
                     <cmis:value>CMIS Example Doc as Invoice type</cmis:value>
                 </cmis:propertyString>
                 <cmis:propertyDateTime localName="rep-cmis:creationDate" propertyDefinitionId="cmis:creationDate">
-                    <cmis:value>2010-01-11T14:54:55.154-08:00</cmis:value>
+                    <cmis:value>2010-01-25T10:20:55.021-08:00</cmis:value>
                 </cmis:propertyDateTime>
                 <cmis:propertyDateTime localName="rep-cmis:lastModificationDate" propertyDefinitionId="cmis:lastModificationDate">
-                    <cmis:value>2010-01-11T14:54:55.154-08:00</cmis:value>
+                    <cmis:value>2010-01-25T10:20:55.021-08:00</cmis:value>
                 </cmis:propertyDateTime>
                 <cmis:propertyId localName="rep-cmis:baseTypeId" propertyDefinitionId="cmis:baseTypeId">
                     <cmis:value>cmis:document</cmis:value>
