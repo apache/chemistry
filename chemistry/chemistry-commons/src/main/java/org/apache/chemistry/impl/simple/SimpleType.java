@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -250,7 +251,19 @@ public class SimpleType implements Type {
             PROP_TARGET_ID);
 
     public static final List<PropertyDefinition> PROPS_POLICY_BASE = commonPlus( //
-            PROP_POLICY_TEXT);
+    PROP_POLICY_TEXT);
+
+    public static final Map<String, PropertyDefinition> PROPS_MAP;
+    static {
+        Map<String, PropertyDefinition> map = new HashMap<String, PropertyDefinition>();
+        for (List<PropertyDefinition> lpd : Arrays.asList(PROPS_DOCUMENT_BASE,
+                PROPS_FOLDER_BASE, PROPS_RELATIONSHIP_BASE, PROPS_POLICY_BASE)) {
+            for (PropertyDefinition pd : lpd) {
+                map.put(pd.getId(), pd);
+            }
+        }
+        PROPS_MAP = Collections.unmodifiableMap(map);
+    }
 
     protected final String id;
 
@@ -337,7 +350,7 @@ public class SimpleType implements Type {
         this.contentStreamAllowed = contentStreamAllowed;
         this.allowedSourceTypes = allowedSourceTypes;
         this.allowedTargetTypes = allowedTargetTypes;
-        propertyDefinitions = new HashMap<String, PropertyDefinition>();
+        propertyDefinitions = new LinkedHashMap<String, PropertyDefinition>();
     }
 
     protected void addPropertyDefinitions(Collection<PropertyDefinition> defs) {
