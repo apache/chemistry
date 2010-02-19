@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.Connection;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectId;
@@ -30,8 +31,8 @@ import org.apache.chemistry.UpdateConflictException;
 
 public class SimpleFolder extends SimpleObject implements Folder {
 
-    public SimpleFolder(SimpleObjectEntry entry) {
-        super(entry);
+    public SimpleFolder(SimpleObjectEntry entry, Connection connection) {
+        super(entry, connection);
     }
 
     public void add(CMISObject object) {
@@ -46,27 +47,27 @@ public class SimpleFolder extends SimpleObject implements Folder {
 
     public Collection<ObjectId> deleteTree(Unfiling unfiling)
             throws UpdateConflictException {
-        return entry.connection.getSPI().deleteTree(this, unfiling, true);
+        return connection.getSPI().deleteTree(this, unfiling, true);
     }
 
     public List<CMISObject> getChildren() {
-        SimpleRepository repository = (SimpleRepository) entry.connection.getRepository();
+        SimpleRepository repository = (SimpleRepository) connection.getRepository();
         Set<String> ids = repository.children.get(getId());
         List<CMISObject> children = new ArrayList<CMISObject>(ids.size());
         for (String id : ids) {
             SimpleData d = repository.datas.get(id);
             children.add(SimpleObject.construct(new SimpleObjectEntry(d,
-                    entry.connection)));
+                    connection), connection));
         }
         return children;
     }
 
     public Document newDocument(String typeId) {
-        return entry.connection.newDocument(typeId, this);
+        return connection.newDocument(typeId, this);
     }
 
     public Folder newFolder(String typeId) {
-        return entry.connection.newFolder(typeId, this);
+        return connection.newFolder(typeId, this);
     }
 
 }

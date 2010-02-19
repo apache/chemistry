@@ -19,6 +19,7 @@ package org.apache.chemistry.impl.simple;
 import java.io.IOException;
 import java.util.Collection;
 
+import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.Document;
@@ -26,8 +27,8 @@ import org.apache.chemistry.Property;
 
 public class SimpleDocument extends SimpleObject implements Document {
 
-    public SimpleDocument(SimpleObjectEntry entry) {
-        super(entry);
+    public SimpleDocument(SimpleObjectEntry entry, Connection connection) {
+        super(entry, connection);
     }
 
     protected byte[] getContentBytes() {

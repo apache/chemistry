@@ -16,12 +16,13 @@
  */
 package org.apache.chemistry.impl.simple;
 
+import org.apache.chemistry.Connection;
 import org.apache.chemistry.Policy;
 
 public class SimplePolicy extends SimpleObject implements Policy {
 
-    public SimplePolicy(SimpleObjectEntry entry) {
-        super(entry);
+    public SimplePolicy(SimpleObjectEntry entry, Connection connection) {
+        super(entry, connection);
     }
 
 }

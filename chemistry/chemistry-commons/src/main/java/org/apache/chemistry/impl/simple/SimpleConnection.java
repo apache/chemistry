@@ -126,7 +126,7 @@ public class SimpleConnection implements Connection, SPI {
         if (folder != null) {
             entry.setValue(Property.PARENT_ID, folder.getId());
         }
-        return new SimpleDocument(entry);
+        return new SimpleDocument(entry, this);
     }
 
     public Folder newFolder(String typeId, Folder folder) {
@@ -138,7 +138,7 @@ public class SimpleConnection implements Connection, SPI {
         if (folder != null) {
             entry.setValue(Property.PARENT_ID, folder.getId());
         }
-        return new SimpleFolder(entry);
+        return new SimpleFolder(entry, this);
     }
 
     public Relationship newRelationship(String typeId) {
@@ -146,7 +146,7 @@ public class SimpleConnection implements Connection, SPI {
         if (type == null || type.getBaseType() != BaseType.RELATIONSHIP) {
             throw new IllegalArgumentException(typeId);
         }
-        return new SimpleRelationship(newObjectEntry(typeId));
+        return new SimpleRelationship(newObjectEntry(typeId), this);
     }
 
     public Policy newPolicy(String typeId, Folder folder) {
@@ -158,7 +158,7 @@ public class SimpleConnection implements Connection, SPI {
         if (folder != null) {
             entry.setValue(Property.PARENT_ID, folder.getId());
         }
-        return new SimplePolicy(entry);
+        return new SimplePolicy(entry, this);
     }
 
     /*
@@ -252,7 +252,11 @@ public class SimpleConnection implements Connection, SPI {
     public Collection<ObjectEntry> getObjectParents(ObjectId object,
             String filter) {
         // TODO filter
-        Set<String> ids = repository.parents.get(object.getId());
+        String objectId = object.getId();
+        if (objectId == null) {
+            return Collections.emptyList();
+        }
+        Set<String> ids = repository.parents.get(objectId);
         List<ObjectEntry> parents = new ArrayList<ObjectEntry>(ids.size());
         for (String id : ids) {
             SimpleData data = repository.datas.get(id);
@@ -502,7 +506,7 @@ public class SimpleConnection implements Connection, SPI {
         if (entry.getBaseType() != BaseType.FOLDER) {
             throw new IllegalArgumentException("Not a folder: " + path);
         }
-        return new SimpleFolder(entry);
+        return new SimpleFolder(entry, this);
     }
 
     public CMISObject getObject(ObjectId object) {
@@ -513,13 +517,14 @@ public class SimpleConnection implements Connection, SPI {
         String typeId = (String) data.get(Property.TYPE_ID);
         switch (repository.getType(typeId).getBaseType()) {
         case DOCUMENT:
-            return new SimpleDocument(new SimpleObjectEntry(data, this));
+            return new SimpleDocument(new SimpleObjectEntry(data, this), this);
         case FOLDER:
-            return new SimpleFolder(new SimpleObjectEntry(data, this));
+            return new SimpleFolder(new SimpleObjectEntry(data, this), this);
         case RELATIONSHIP:
-            return new SimpleRelationship(new SimpleObjectEntry(data, this));
+            return new SimpleRelationship(new SimpleObjectEntry(data, this),
+                    this);
         case POLICY:
-            return new SimplePolicy(new SimpleObjectEntry(data, this));
+            return new SimplePolicy(new SimpleObjectEntry(data, this), this);
         default:
             throw new AssertionError(typeId);
         }
@@ -866,7 +871,7 @@ public class SimpleConnection implements Connection, SPI {
                 null);
         List<CMISObject> objects = new ArrayList<CMISObject>(res.size());
         for (ObjectEntry e : res) {
-            objects.add(SimpleObject.construct((SimpleObjectEntry) e));
+            objects.add(SimpleObject.construct((SimpleObjectEntry) e, this));
         }
         return objects;
     }

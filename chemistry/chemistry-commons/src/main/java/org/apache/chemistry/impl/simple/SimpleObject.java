@@ -45,41 +45,45 @@ public class SimpleObject extends BaseObject {
 
     protected final SimpleObjectEntry entry;
 
+    protected final Connection connection;
+
     private final Type type;
 
-    protected SimpleObject(SimpleObjectEntry entry) {
+    protected SimpleObject(SimpleObjectEntry entry, Connection connection) {
         this.entry = entry;
-        type = entry.connection.getRepository().getType(entry.getTypeId());
+        this.connection = connection;
+        type = connection.getRepository().getType(entry.getTypeId());
     }
 
-    protected static SimpleObject construct(SimpleObjectEntry entry) {
-        BaseType baseType = entry.connection.getRepository().getType(
+    protected static SimpleObject construct(SimpleObjectEntry entry,
+            Connection connection) {
+        BaseType baseType = connection.getRepository().getType(
                 entry.getTypeId()).getBaseType();
         switch (baseType) {
         case DOCUMENT:
-            return new SimpleDocument(entry);
+            return new SimpleDocument(entry, connection);
         case FOLDER:
-            return new SimpleFolder(entry);
+            return new SimpleFolder(entry, connection);
         case POLICY:
-            return new SimplePolicy(entry);
+            return new SimplePolicy(entry, connection);
         case RELATIONSHIP:
-            return new SimpleRelationship(entry);
+            return new SimpleRelationship(entry, connection);
         default:
             throw new AssertionError();
         }
     }
 
     public Connection getConnection() {
-        return entry.connection;
+        return connection;
     }
 
     public void move(Folder targetFolder, Folder sourceFolder)
             throws NameConstraintViolationException, UpdateConflictException {
-        entry.connection.getSPI().moveObject(this, targetFolder, sourceFolder);
+        connection.getSPI().moveObject(this, targetFolder, sourceFolder);
     }
 
     public void delete() throws UpdateConflictException {
-        entry.connection.getSPI().deleteObject(this, false);
+        connection.getSPI().deleteObject(this, false);
     }
 
     public void unfile() {
@@ -88,7 +92,7 @@ public class SimpleObject extends BaseObject {
     }
 
     public Folder getParent() {
-        SimpleConnection connection = (SimpleConnection) entry.connection;
+        SimpleConnection connection = (SimpleConnection) this.connection;
         Set<String> parents = connection.repository.parents.get(getId());
         if (parents == SimpleRepository.NO_PARENT) {
             return null;
@@ -98,11 +102,12 @@ public class SimpleObject extends BaseObject {
         }
         String pid = parents.iterator().next();
         SimpleData data = connection.repository.datas.get(pid);
-        return new SimpleFolder(new SimpleObjectEntry(data, connection));
+        return new SimpleFolder(new SimpleObjectEntry(data, connection),
+                connection);
     }
 
     public Collection<Folder> getParents() {
-        SimpleConnection connection = (SimpleConnection) entry.connection;
+        SimpleConnection connection = (SimpleConnection) this.connection;
         Set<String> parents = connection.repository.parents.get(getId());
         if (parents == SimpleRepository.NO_PARENT) {
             return Collections.emptyList();
@@ -110,7 +115,8 @@ public class SimpleObject extends BaseObject {
         List<Folder> list = new ArrayList<Folder>(parents.size());
         for (String pid : parents) {
             SimpleData data = connection.repository.datas.get(pid);
-            list.add(new SimpleFolder(new SimpleObjectEntry(data, connection)));
+            list.add(new SimpleFolder(new SimpleObjectEntry(data, connection),
+                    connection));
         }
         return list;
     }
@@ -172,7 +178,7 @@ public class SimpleObject extends BaseObject {
 
     public void save() {
         if (getId() == null) {
-            ((SimpleConnection) entry.connection).saveObject(this);
+            ((SimpleConnection) connection).saveObject(this);
         }
     }
 

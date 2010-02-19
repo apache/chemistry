@@ -16,12 +16,13 @@
  */
 package org.apache.chemistry.impl.simple;
 
+import org.apache.chemistry.Connection;
 import org.apache.chemistry.Relationship;
 
 public class SimpleRelationship extends SimpleObject implements Relationship {
 
-    public SimpleRelationship(SimpleObjectEntry entry) {
-        super(entry);
+    public SimpleRelationship(SimpleObjectEntry entry, Connection connection) {
+        super(entry, connection);
     }
 
 }

@@ -38,15 +38,15 @@ public class SimpleObjectEntry implements ObjectEntry {
 
     protected final SimpleData data;
 
-    protected final Connection connection;
-
     protected ChangeInfo changeInfo;
+
+    protected String path;
 
     protected String pathSegment;
 
     public SimpleObjectEntry(SimpleData data, Connection connection) {
         this.data = data;
-        this.connection = connection;
+        path = getPath(connection);
     }
 
     public String getId() {
@@ -89,16 +89,18 @@ public class SimpleObjectEntry implements ObjectEntry {
 
     public Serializable getValue(String id) {
         if (id.equals(Property.PATH)) {
-            // non-local value
-            return getPath();
+            return path;
         }
         return data.get(id);
     }
 
     // TODO add a getPath method to the SPI
-    protected String getPath() {
+    protected String getPath(Connection connection) {
         ObjectEntry parent;
         if (getBaseType() == BaseType.FOLDER) {
+            if (getId() == null) {
+                return null;
+            }
             parent = connection.getSPI().getFolderParent(this, null);
         } else {
             Collection<ObjectEntry> parents = connection.getSPI().getObjectParents(
