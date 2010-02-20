@@ -5,7 +5,7 @@ The goal of this project is to create a CMIS client for Python that can be used 
 The library is being developed with the following guidelines:
  * Developers using this API should be able to work with CMIS domain objects without having to worry about the underlying implementation details.
  * The library will use the Resftul AtomPub Binding.
- * The library will conform to the `CMIS spec <http://docs.oasisopen.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.pdf>`_ as closely as possible. Several public CMIS repositories are being used to test the API. 
+ * The library will conform to the `CMIS spec <http://docs.oasisopen.org/cmis/CMIS/v1.0/cd06/cmis-spec-v1.0.pdf>`_ as closely as possible. Several public CMIS repositories are being used to test the API. 
  * The library should have no hard-coded URL's. It should be able to get everything it needs regarding how to work with the CMIS service from the CMIS service URL response and subsequent calls.
  * There shouldn't have to be a vendor-specific version of this library. The goal is for it to be interoperable with CMIS-compliant providers.
 
@@ -25,15 +25,13 @@ To-Do's
 Miscellaneous
  * createDocumentFromSource
  * getProperties filter
- * refactor property name hack
  * getContentStream stream id
- * Document.move
+ * Document.move (WIP)
 
 Renditions
  * getRenditions
 
 Change history
- * getContentChanges
  * change token
 
 Unfiling/multifiling support
@@ -42,22 +40,9 @@ Unfiling/multifiling support
  * createDocument without a parent folder (unfiled) (WIP)
  * getObjectParents (WIP)
 
-Relationships
- * Relationship object (WIP)
- * createRelationship (WIP)
- * getRelationships (WIP)
-
 Policies
  * Policy object
  * createPolicy
  * applyPolicy
  * removePolicy
  * getAppliedPolicies
-
-Object Types
- * ObjectType methods
-
-ACLs
- * ACL object
- * getACL
- * applyACL

@@ -22,11 +22,14 @@ from cmislib.exceptions import CmisException, RuntimeException, \
     ObjectNotFoundException, InvalidArgumentException, \
     PermissionDeniedException, NotSupportedException, \
     UpdateConflictException
+from cmislib import messages
 from urllib import quote_plus
 from urllib2 import HTTPError
 import re
 import mimetypes
 from xml.parsers.expat import ExpatError
+import datetime
+import time
 
 # would kind of like to not have any parsing logic in this module,
 # but for now I'm going to put the serial/deserialization in methods
@@ -50,6 +53,7 @@ ATOM_XML_FEED_TYPE_P = re.compile('^application/atom\+xml.*type.*feed')
 CMIS_TREE_TYPE = 'application/cmistree+xml'
 CMIS_TREE_TYPE_P = re.compile('^application/cmistree\+xml')
 CMIS_QUERY_TYPE = 'application/cmisquery+xml'
+CMIS_ACL_TYPE = 'application/cmisacl+xml'
 
 # Standard rels
 DOWN_REL = 'down'
@@ -63,6 +67,8 @@ TYPE_DESCENDANTS_REL = 'http://docs.oasis-open.org/ns/cmis/link/200908/typedesce
 VERSION_HISTORY_REL = 'version-history'
 FOLDER_TREE_REL = 'http://docs.oasis-open.org/ns/cmis/link/200908/foldertree'
 RELATIONSHIPS_REL = 'http://docs.oasis-open.org/ns/cmis/link/200908/relationships'
+ACL_REL = 'http://docs.oasis-open.org/ns/cmis/link/200908/acl'
+CHANGE_LOG_REL = 'http://docs.oasis-open.org/ns/cmis/link/200908/changes'
 
 # Collection types
 QUERY_COLL = 'query'
@@ -70,6 +76,10 @@ TYPES_COLL = 'types'
 CHECKED_OUT_COLL = 'checkedout'
 UNFILED_COLL = 'unfiled'
 ROOT_COLL = 'root'
+
+# This seems to be the common pattern across known CMIS servers
+# It is essentially ISO 8601 without the microseconds or time zone offset
+timeStampPattern = re.compile('^(\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2})?')
 
 
 class CmisClient(object):
@@ -310,6 +320,10 @@ class Repository(object):
         self._repositoryInfo = {}
         self._capabilities = {}
         self._uriTemplates = {}
+        self._permDefs = {}
+        self._permMap = {}
+        self._permissions = None
+        self._propagation = None
 
     def __str__(self):
         """To string"""
@@ -333,6 +347,159 @@ class Repository(object):
         self._repositoryInfo = {}
         self._capabilities = {}
         self._uriTemplates = {}
+        self._permDefs = {}
+        self._permMap = {}
+        self._permissions = None
+        self._propagation = None
+
+    def getSupportedPermissions(self):
+
+        """
+        Returns the value of the cmis:supportedPermissions element. Valid
+        values are:
+          basic: indicates that the CMIS Basic permissions are supported
+          repository: indicates that repository specific permissions are supported
+          both: indicates that both CMIS basic permissions and repository specific permissions are supported
+
+        >>> repo.supportedPermissions
+        u'both'
+        """
+
+        if not self.getCapabilities()['ACL']:
+            raise NotSupportedException(messages.NO_ACL_SUPPORT)
+
+        if not self._permissions:
+            if self.xmlDoc == None:
+                self.reload()
+            suppEls = self.xmlDoc.getElementsByTagNameNS(CMIS_NS, 'supportedPermissions')
+            assert len(suppEls) == 1, 'Expected the repository service document to have one element named supportedPermissions'
+            self._permissions = suppEls[0].childNodes[0].data
+
+        return self._permissions
+
+    def getPermissionDefinitions(self):
+
+        """
+        Returns a dictionary of permission definitions for this repository. The
+        key is the permission string or technical name of the permission
+        and the value is the permission description.
+
+        >>> for permDef in repo.permissionDefinitions:
+        ...     print permDef
+        ...
+        cmis:all
+        {http://www.alfresco.org/model/system/1.0}base.LinkChildren
+        {http://www.alfresco.org/model/content/1.0}folder.Consumer
+        {http://www.alfresco.org/model/security/1.0}All.All
+        {http://www.alfresco.org/model/system/1.0}base.CreateAssociations
+        {http://www.alfresco.org/model/system/1.0}base.FullControl
+        {http://www.alfresco.org/model/system/1.0}base.AddChildren
+        {http://www.alfresco.org/model/system/1.0}base.ReadAssociations
+        {http://www.alfresco.org/model/content/1.0}folder.Editor
+        {http://www.alfresco.org/model/content/1.0}cmobject.Editor
+        {http://www.alfresco.org/model/system/1.0}base.DeleteAssociations
+        cmis:read
+        cmis:write
+        """
+
+        if not self.getCapabilities()['ACL']:
+            raise NotSupportedException(messages.NO_ACL_SUPPORT)
+
+        if self._permDefs == {}:
+            if self.xmlDoc == None:
+                self.reload()
+            aclEls = self.xmlDoc.getElementsByTagNameNS(CMIS_NS, 'aclCapability')
+            assert len(aclEls) == 1, 'Expected the repository service document to have one element named aclCapability'
+            aclEl = aclEls[0]
+            perms = {}
+            for e in aclEl.childNodes:
+                if e.localName == 'permissions':
+                    permEls = e.getElementsByTagNameNS(CMIS_NS, 'permission')
+                    assert len(permEls) == 1, 'Expected permissions element to have a child named permission'
+                    descEls = e.getElementsByTagNameNS(CMIS_NS, 'description')
+                    assert len(descEls) == 1, 'Expected permissions element to have a child named description'
+                    perm = permEls[0].childNodes[0].data
+                    desc = descEls[0].childNodes[0].data
+                    perms[perm] = desc
+            self._permDefs = perms
+
+        return self._permDefs
+
+    def getPermissionMap(self):
+
+        """
+        Returns a dictionary representing the permission mapping table where
+        each key is a permission key string and each value is a list of one or
+        more permissions the principal must have to perform the operation.
+
+        >>> for (k,v) in repo.permissionMap.items():
+        ...     print 'To do this: %s, you must have these perms:' % k
+        ...     for perm in v:
+        ...             print perm
+        ...
+        To do this: canCreateFolder.Folder, you must have these perms:
+        cmis:all
+        {http://www.alfresco.org/model/system/1.0}base.CreateChildren
+        To do this: canAddToFolder.Folder, you must have these perms:
+        cmis:all
+        {http://www.alfresco.org/model/system/1.0}base.CreateChildren
+        To do this: canDelete.Object, you must have these perms:
+        cmis:all
+        {http://www.alfresco.org/model/system/1.0}base.DeleteNode
+        To do this: canCheckin.Document, you must have these perms:
+        cmis:all
+        {http://www.alfresco.org/model/content/1.0}lockable.CheckIn
+        """
+
+        if not self.getCapabilities()['ACL']:
+            raise NotSupportedException(messages.NO_ACL_SUPPORT)
+
+        if self._permMap == {}:
+            if self.xmlDoc == None:
+                self.reload()
+            aclEls = self.xmlDoc.getElementsByTagNameNS(CMIS_NS, 'aclCapability')
+            assert len(aclEls) == 1, 'Expected the repository service document to have one element named aclCapability'
+            aclEl = aclEls[0]
+            permMap = {}
+            for e in aclEl.childNodes:
+                permList = []
+                if e.localName == 'mapping':
+                    keyEls = e.getElementsByTagNameNS(CMIS_NS, 'key')
+                    assert len(keyEls) == 1, 'Expected mapping element to have a child named key'
+                    permEls = e.getElementsByTagNameNS(CMIS_NS, 'permission')
+                    assert len(permEls) >= 1, 'Expected mapping element to have at least one permission element'
+                    key = keyEls[0].childNodes[0].data
+                    for permEl in permEls:
+                        permList.append(permEl.childNodes[0].data)
+                    permMap[key] = permList
+            self._permMap = permMap
+
+        return self._permMap
+
+    def getPropagation(self):
+
+        """
+        Returns the value of the cmis:propagation element. Valid values are:
+          objectonly: indicates that the repository is able to apply ACEs
+            without changing the ACLs of other objects
+          propagate: indicates that the repository is able to apply ACEs to a
+            given object and propagate this change to all inheriting objects
+
+        >>> repo.propagation
+        u'propagate'
+        """
+
+        if not self.getCapabilities()['ACL']:
+            raise NotSupportedException(messages.NO_ACL_SUPPORT)
+
+        if not self._propagation:
+            if self.xmlDoc == None:
+                self.reload()
+            propEls = self.xmlDoc.getElementsByTagNameNS(CMIS_NS, 'propagation')
+            assert len(propEls) == 1, 'Expected the repository service document to have one element named propagation'
+            self._propagation = propEls[0].childNodes[0].data
+
+        return self._propagation
 
     def getRepositoryId(self):
 
@@ -434,7 +601,7 @@ class Repository(object):
             capabilitiesElement = self.xmlDoc.getElementsByTagNameNS(CMIS_NS, 'capabilities')[0]
             for node in [e for e in capabilitiesElement.childNodes if e.nodeType == e.ELEMENT_NODE]:
                 key = node.localName.replace('capability', '')
-                value = parseValue(node.childNodes[0].data)
+                value = parseBoolValue(node.childNodes[0].data)
                 self._capabilities[key] = value
         return self._capabilities
 
@@ -501,7 +668,7 @@ class Repository(object):
         # if a typeId is specified, get it, then get its "down" link
         if typeId:
             targetType = self.getTypeDefinition(typeId)
-            childrenUrl = targetType.getLink('down', ATOM_XML_FEED_TYPE_P)
+            childrenUrl = targetType.getLink(DOWN_REL, ATOM_XML_FEED_TYPE_P)
             typesXmlDoc = self._cmisClient.get(childrenUrl)
             entryElements = typesXmlDoc.getElementsByTagNameNS(ATOM_NS, 'entry')
             types = []
@@ -565,7 +732,7 @@ class Repository(object):
         # links.
         if typeId:
             targetType = self.getTypeDefinition(typeId)
-            descendUrl = targetType.getLink('down', CMIS_TREE_TYPE_P)
+            descendUrl = targetType.getLink(DOWN_REL, CMIS_TREE_TYPE_P)
 
         else:
             descendUrl = self.getLink(TYPE_DESCENDANTS_REL)
@@ -831,23 +998,64 @@ class Repository(object):
         # return the result set
         return ResultSet(self._cmisClient, self, result)
 
-    def getContentChanges(self):
+    def getContentChanges(self, **kwargs):
 
         """
+        Returns a :class:`ResultSet` containing :class:`ChangeEntry` objects.
+
+        >>> for changeEntry in rs:
+        ...     changeEntry.objectId
+        ...     changeEntry.id
+        ...     changeEntry.changeType
+        ...     changeEntry.changeTime
+        ...
+        'workspace://SpacesStore/0e2dc775-16b7-4634-9e54-2417a196829b'
+        u'urn:uuid:0e2dc775-16b7-4634-9e54-2417a196829b'
+        u'created'
+        datetime.datetime(2010, 2, 11, 12, 55, 14)
+        'workspace://SpacesStore/bd768f9f-99a7-4033-828d-5b13f96c6923'
+        u'urn:uuid:bd768f9f-99a7-4033-828d-5b13f96c6923'
+        u'updated'
+        datetime.datetime(2010, 2, 11, 12, 55, 13)
+        'workspace://SpacesStore/572c2cac-6b26-4cd8-91ad-b2931fe5b3fb'
+        u'urn:uuid:572c2cac-6b26-4cd8-91ad-b2931fe5b3fb'
+        u'updated'
+
         See CMIS specification document 2.2.6.2 getContentChanges
 
-        The following optional arguments are not yet supported:
+        The following optional arguments are supported:
          - changeLogToken
          - includeProperties
          - includePolicyIDs
          - includeACL
          - maxItems
+
+        You can get the latest change log token by inspecting the repository
+        info via :meth:`Repository.getRepositoryInfo`.
+
+        >>> repo.info['latestChangeLogToken']
+        u'2692'
+        >>> rs = repo.getContentChanges(changeLogToken='2692')
+        >>> len(rs)
+        1
+        >>> rs[0].id
+        u'urn:uuid:8e88f694-93ef-44c5-9f70-f12fff824be9'
+        >>> rs[0].changeType
+        u'updated'
+        >>> rs[0].changeTime
+        datetime.datetime(2010, 2, 16, 20, 6, 37)
         """
 
         if self.getCapabilities()['Changes'] == None:
-            raise NotSupportedException
-        else:
-            raise NotImplementedError
+            raise NotSupportedException(messages.NO_CHANGE_LOG_SUPPORT)
+
+        changesUrl = self.getLink(CHANGE_LOG_REL)
+        result = self._cmisClient.get(changesUrl, **kwargs)
+        if type(result) == HTTPError:
+            raise CmisException(result.code)
+
+        # return the result set
+        return ChangeEntryResultSet(self._cmisClient, self, result)
 
     def createDocument(self,
                        name,
@@ -942,7 +1150,7 @@ class Repository(object):
     def createRelationship(self, sourceObj, targetObj, relType):
         """
         Creates a relationship of the specific type between a source object
-        and a target object.
+        and a target object and returns the new :class:`Relationship` object.
 
         See CMIS specification document 2.2.4.4 createRelationship
 
@@ -1095,6 +1303,10 @@ class Repository(object):
     info = property(getRepositoryInfo)
     name = property(getRepositoryName)
     rootFolder = property(getRootFolder)
+    permissionDefinitions = property(getPermissionDefinitions)
+    permissionMap = property(getPermissionMap)
+    propagation = property(getPropagation)
+    supportedPermissions = property(getSupportedPermissions)
 
 
 class ResultSet():
@@ -1111,12 +1323,15 @@ class ResultSet():
         self._results = []
 
     def __iter__(self):
+        ''' Iterator for the result set '''
         return self.getResults().itervalues()
 
     def __getitem__(self, index):
+        ''' Getter for the result set '''
         return self.getResults().values()[index]
 
     def __len__(self):
+        ''' Len method for the result set '''
         return len(self.getResults())
 
     def _getLink(self, rel):
@@ -1429,7 +1644,7 @@ class CmisObject(object):
             if self.xmlDoc == None:
                 self.reload()
             props = self.getProperties()
-            self._objectId = props['cmis:objectId']
+            self._objectId = CmisId(props['cmis:objectId'])
         return self._objectId
 
     def getObjectParents(self):
@@ -1478,7 +1693,7 @@ class CmisObject(object):
             allowElement = allowElements[0]
             for node in [e for e in allowElement.childNodes if e.nodeType == e.ELEMENT_NODE]:
                 actionName = node.localName
-                actionValue = parseValue(node.childNodes[0].data)
+                actionValue = parseBoolValue(node.childNodes[0].data)
                 self._allowableActions[actionName] = actionValue
 
         return self._allowableActions
@@ -1534,7 +1749,9 @@ class CmisObject(object):
                 if node.childNodes and \
                    node.getElementsByTagNameNS(CMIS_NS, 'value')[0] and \
                    node.getElementsByTagNameNS(CMIS_NS, 'value')[0].childNodes:
-                    propertyValue = node.getElementsByTagNameNS(CMIS_NS, 'value')[0].childNodes[0].data
+                    propertyValue = parsePropValue(
+                       node.getElementsByTagNameNS(CMIS_NS, 'value')[0].childNodes[0].data,
+                       node.localName)
                 else:
                     propertyValue = None
                 self._properties[propertyName] = propertyValue
@@ -1604,6 +1821,12 @@ class CmisObject(object):
         See CMIS specification document 2.2.4.13 move
         """
 
+        #TODO to be implemented
+#        From looking at Alfresco, it seems as if you can post an atom entry
+#        with an object ID to a new folder and pass the existing folder in the
+#        sourceFolderId argument and that will trigger a move.
+#
+#        See the notes on Folder.addObject
         raise NotImplementedError
 
     def delete(self, **kwargs):
@@ -1642,7 +1865,7 @@ class CmisObject(object):
         else:
             raise CmisException('This object has canApplyPolicy set to false')
 
-    def createRelationship(self, targetObj, relType):
+    def createRelationship(self, targetObj, relTypeId):
 
         """
         Creates a relationship between this object and a specified target
@@ -1655,10 +1878,13 @@ class CmisObject(object):
 
         """
 
+        if isinstance(relTypeId, str):
+            relTypeId = CmisId(relTypeId)
+
         props = {}
         props['cmis:sourceId'] = self.getObjectId()
         props['cmis:targetId'] = targetObj.getObjectId()
-        props['cmis:objectTypeId'] = relType
+        props['cmis:objectTypeId'] = relTypeId
         xmlDoc = self._getEntryXmlDoc(props)
 
         url = self._getLink(RELATIONSHIPS_REL)
@@ -1745,6 +1971,10 @@ class CmisObject(object):
         """
         Repository.getCapabilities['ACL'] must return manage or discover.
 
+        >>> acl = folder.getACL()
+        >>> acl.getEntries()
+        {u'GROUP_EVERYONE': <cmislib.model.ACE object at 0x10071a8d0>, 'jdoe': <cmislib.model.ACE object at 0x10071a590>}
+
         See CMIS specification document 2.2.10.1 getACL
 
         The optional onlyBasicPermissions argument is currently not supported.
@@ -1753,21 +1983,27 @@ class CmisObject(object):
         if self._repository.getCapabilities()['ACL']:
             # if the ACL capability is discover or manage, this must be
             # supported
-            raise NotImplementedError
+            aclUrl = self._getLink(ACL_REL)
+            result = self._cmisClient.get(aclUrl)
+            if type(result) == HTTPError:
+                raise CmisException(result.code)
+            return ACL(xmlDoc=result)
         else:
             raise NotSupportedException
 
-    def applyACL(self):
+    def applyACL(self, acl):
 
         """
-        Repository.getCapabilities['ACL'] must return manage.
+        Updates the object with the provided :class:`ACL`.
+        Repository.getCapabilities['ACL'] must return manage to invoke this
+        call.
+
+        >>> acl = folder.getACL()
+        >>> acl.addEntry(ACE('jdoe', 'cmis:write', 'true'))
+        >>> acl.getEntries()
+        {u'GROUP_EVERYONE': <cmislib.model.ACE object at 0x10071a8d0>, 'jdoe': <cmislib.model.ACE object at 0x10071a590>}
 
         See CMIS specification document 2.2.10.2 applyACL
-
-        The following optional arguments are currently not supported:
-         - addACEs
-         - removeACEs
-         - ACLPropagation
         """
 
         if self._repository.getCapabilities()['ACL'] == 'manage':
@@ -1775,7 +2011,14 @@ class CmisObject(object):
             # supported
             # but it also depends on the canApplyACL allowable action
             # for this object
-            raise NotImplementedError
+            if not isinstance(acl, ACL):
+                raise CmisException('The ACL to apply must be an instance of the ACL class.')
+            aclUrl = self._getLink(ACL_REL)
+            assert aclUrl, "Could not determine the object's ACL URL."
+            result = self._cmisClient.put(aclUrl, acl.getXmlDoc().toxml(), CMIS_ACL_TYPE)
+            if type(result) == HTTPError:
+                raise CmisException(result.code)
+            return ACL(xmlDoc=result)
         else:
             raise NotSupportedException
 
@@ -1785,7 +2028,7 @@ class CmisObject(object):
         Returns the URL used to retrieve this object.
         """
 
-        url = self._getLink('self')
+        url = self._getLink(SELF_REL)
 
         assert len(url) > 0, "Could not determine the self link."
 
@@ -1853,9 +2096,9 @@ class CmisObject(object):
             encoding = contentEncoding
 
             # need to determine the mime type
-            if not mimetype and hasattr(contentFile, 'name'): 
+            if not mimetype and hasattr(contentFile, 'name'):
                 mimetype, encoding = mimetypes.guess_type(contentFile.name)
- 
+
             if not mimetype:
                 mimetype = 'application/binary'
 
@@ -1899,30 +2142,39 @@ class CmisObject(object):
 
             for propName, propValue in properties.items():
                 """
-                the name of the element here is significant. maybe rather
-                than a simple string, I should be passing around property
-                objects because I kind of need to know the type.
-                It may be possible to guess a date time from a string,
-                but an ID will be harder.
+                the name of the element here is significant: it includes the
+                data type. I should be able to figure out the right type based
+                on the actual type of the object passed in.
 
-                for now I'll just guess the type based on the property name.
+                I could do a lookup to the type definition, but that doesn't
+                seem worth the performance hit
                 """
-                # TODO: Need to support property types other than String, Id,
-                # and DateTime see 2.1.2.1 Property
-                # TODO: Need a less hackish way to determine property type
-                if propName.endswith('String'):
+                if isinstance(propValue, str):
                     propElementName = 'cmis:propertyString'
-                elif propName.endswith('Id'):
+                    propValueStr = propValue
+                elif isinstance(propValue, CmisId):
                     propElementName = 'cmis:propertyId'
-                elif propName.endswith('Date') or propName.endswith('DateTime'):
+                    propValueStr = propValue
+                elif isinstance(propValue, datetime.datetime):
                     propElementName = 'cmis:propertyDateTime'
+                    propValueStr = propValue.isoformat()
+                elif isinstance(propValue, bool):
+                    propElementName = 'cmis:propertyBoolean'
+                    propValueStr = str(propValue).lower()
+                elif isinstance(propValue, int):
+                    propElementName = 'cmis:propertyInteger'
+                    propValueStr = str(propValue)
+                elif isinstance(propValue, float):
+                    propElementName = 'cmis:propertyDecimal'
+                    propValueStr = str(propValue)
                 else:
                     propElementName = 'cmis:propertyString'
+                    propValueStr = str(propValue)
 
                 propElement = entryXmlDoc.createElementNS(CMIS_NS, propElementName)
                 propElement.setAttribute('propertyDefinitionId', propName)
                 valElement = entryXmlDoc.createElementNS(CMIS_NS, 'cmis:value')
-                val = entryXmlDoc.createTextNode(propValue)
+                val = entryXmlDoc.createTextNode(propValueStr)
                 valElement.appendChild(val)
                 propElement.appendChild(valElement)
                 propsElement.appendChild(propElement)
@@ -1934,6 +2186,7 @@ class CmisObject(object):
     id = property(getObjectId)
     properties = property(getProperties)
     title = property(getTitle)
+    ACL = property(getACL)
 
 
 class Document(CmisObject):
@@ -2041,7 +2294,7 @@ class Document(CmisObject):
         # reloading the document just to make sure we've got the latest
         # and greatest checked out prop
         self.reload()
-        return parseValue(self.getProperties()['cmis:isVersionSeriesCheckedOut'])
+        return parseBoolValue(self.getProperties()['cmis:isVersionSeriesCheckedOut'])
 
     def getCheckedOutBy(self):
 
@@ -2335,7 +2588,10 @@ class Folder(CmisObject):
 
         # hardcoding to cmis:folder if it wasn't passed in via props
         if not properties.has_key('cmis:objectTypeId'):
-            properties['cmis:objectTypeId'] = 'cmis:folder'
+            properties['cmis:objectTypeId'] = CmisId('cmis:folder')
+        # and checking to make sure the object type ID is an instance of CmisId
+        elif not isinstance(properties['cmis:objectTypeId'], CmisId):
+            properties['cmis:objectTypeId'] = CmisId(properties['cmis:objectTypeId'])
 
         # build the Atom entry
         entryXml = self._getEntryXmlDoc(properties)
@@ -2361,11 +2617,11 @@ class Folder(CmisObject):
         Right now this is basically the same as createFolder,
         but this deals with contentStreams. The common logic should
         probably be moved to CmisObject.createObject.
- 
+
         The method will attempt to guess the appropriate content
         type and encoding based on the file. To specify it yourself, pass them
         in via the contentType and contentEncoding arguments.
-        
+
         >>> f = open('250px-Cmis_logo.png', 'rb')
         >>> subFolder.createDocument('logo.png', contentFile=f)
         <cmislib.model.Document object at 0x10410fa10>
@@ -2397,7 +2653,10 @@ class Folder(CmisObject):
         # hardcoding to cmis:document if it wasn't
         # passed in via props
         if not properties.has_key('cmis:objectTypeId'):
-            properties['cmis:objectTypeId'] = 'cmis:document'
+            properties['cmis:objectTypeId'] = CmisId('cmis:document')
+        # and if it was passed in, making sure it is a CmisId
+        elif not isinstance(properties['cmis:objectTypeId'], CmisId):
+            properties['cmis:objectTypeId'] = CmisId(properties['cmis:objectTypeId'])
 
         # build the Atom entry
         xmlDoc = self._getEntryXmlDoc(properties, contentFile,
@@ -2616,7 +2875,7 @@ class Folder(CmisObject):
             raise NotSupportedException('This repository does not support deleteTree')
 
         # Get the descendants link and do a DELETE against it
-        url = self._getLink('down', CMIS_TREE_TYPE_P)
+        url = self._getLink(DOWN_REL, CMIS_TREE_TYPE_P)
         result = self._cmisClient.delete(url, **kwargs)
 
         if type(result) == HTTPError:
@@ -2633,6 +2892,9 @@ class Folder(CmisObject):
         """
 
         # TODO: To be implemented.
+#        It looks as if all you need to do is take the object and post its entry
+#        XML to the target folder's children URL as if you were creating a new
+#        object.
         raise NotImplementedError
 
     def removeObject(self, cmisObject):
@@ -2653,7 +2915,52 @@ class Relationship(CmisObject):
     Defines a relationship object between two :class:`CmisObjects` objects
     """
 
-    pass
+    def getSourceId(self):
+
+        """
+        Returns the :class:`CmisId` on the source side of the relationship.
+        """
+
+        if self.xmlDoc == None:
+            self.reload()
+        props = self.getProperties()
+        return CmisId(props['cmis:sourceId'])
+
+    def getTargetId(self):
+
+        """
+        Returns the :class:`CmisId` on the target side of the relationship.
+        """
+
+        if self.xmlDoc == None:
+            self.reload()
+        props = self.getProperties()
+        return CmisId(props['cmis:targetId'])
+
+    def getSource(self):
+
+        """
+        Returns an instance of the appropriate child-type of :class:`CmisObject`
+        for the source side of the relationship.
+        """
+
+        sourceId = self.getSourceId()
+        return getSpecializedObject(self._repository.getObject(sourceId))
+
+    def getTarget(self):
+
+        """
+        Returns an instance of the appropriate child-type of :class:`CmisObject`
+        for the target side of the relationship.
+        """
+
+        targetId = self.getTargetId()
+        return getSpecializedObject(self._repository.getObject(targetId))
+
+    sourceId = property(getSourceId)
+    targetId = property(getTargetId)
+    source = property(getSource)
+    target = property(getTarget)
 
 
 class Policy(CmisObject):
@@ -2698,7 +3005,7 @@ class ObjectType(object):
         if self._typeId == None:
             if self.xmlDoc == None:
                 self.reload()
-            self._typeId = self._getElementValue(CMIS_NS, 'id')
+            self._typeId = CmisId(self._getElementValue(CMIS_NS, 'id'))
 
         return self._typeId
 
@@ -2748,35 +3055,35 @@ class ObjectType(object):
 
     def getBaseId(self):
         """Getter for cmis:baseId"""
-        return self._getElementValue(CMIS_NS, 'baseId')
+        return CmisId(self._getElementValue(CMIS_NS, 'baseId'))
 
     def isCreatable(self):
         """Getter for cmis:creatable"""
-        return parseValue(self._getElementValue(CMIS_NS, 'creatable'))
+        return parseBoolValue(self._getElementValue(CMIS_NS, 'creatable'))
 
     def isFileable(self):
         """Getter for cmis:fileable"""
-        return parseValue(self._getElementValue(CMIS_NS, 'fileable'))
+        return parseBoolValue(self._getElementValue(CMIS_NS, 'fileable'))
 
     def isQueryable(self):
         """Getter for cmis:queryable"""
-        return parseValue(self._getElementValue(CMIS_NS, 'queryable'))
+        return parseBoolValue(self._getElementValue(CMIS_NS, 'queryable'))
 
     def isFulltextIndexed(self):
         """Getter for cmis:fulltextIndexed"""
-        return parseValue(self._getElementValue(CMIS_NS, 'fulltextIndexed'))
+        return parseBoolValue(self._getElementValue(CMIS_NS, 'fulltextIndexed'))
 
     def isIncludedInSupertypeQuery(self):
         """Getter for cmis:includedInSupertypeQuery"""
-        return parseValue(self._getElementValue(CMIS_NS, 'includedInSupertypeQuery'))
+        return parseBoolValue(self._getElementValue(CMIS_NS, 'includedInSupertypeQuery'))
 
     def isControllablePolicy(self):
         """Getter for cmis:controllablePolicy"""
-        return parseValue(self._getElementValue(CMIS_NS, 'controllablePolicy'))
+        return parseBoolValue(self._getElementValue(CMIS_NS, 'controllablePolicy'))
 
     def isControllableACL(self):
         """Getter for cmis:controllableACL"""
-        return parseValue(self._getElementValue(CMIS_NS, 'controllableACL'))
+        return parseBoolValue(self._getElementValue(CMIS_NS, 'controllableACL'))
 
     def getLink(self, rel, linkType):
 
@@ -2852,7 +3159,14 @@ class ObjectType(object):
         template = templates['typebyid']['template']
         params = {'{id}': self._typeId}
         byTypeIdUrl = multiple_replace(params, template)
-        self.xmlDoc = self._cmisClient.get(byTypeIdUrl, **kwargs)
+        result = self._cmisClient.get(byTypeIdUrl, **kwargs)
+        if type(result) == HTTPError:
+            raise CmisException(result.code)
+
+        # instantiate CmisObject objects with the results and return the list
+        entryElements = result.getElementsByTagNameNS(ATOM_NS, 'entry')
+        assert(len(entryElements) == 1), "Expected entry element in result from calling %s" % byTypeIdUrl
+        self.xmlDoc = entryElements[0]
 
     id = property(getTypeId)
     localName = property(getLocalName)
@@ -2883,6 +3197,7 @@ class Property(object):
         self.xmlDoc = propNode
 
     def __str__(self):
+        """To string"""
         return self.getId()
 
     def _getElementValue(self, namespace, elementName):
@@ -2969,6 +3284,430 @@ class Property(object):
     openChoice = property(isOpenChoice)
 
 
+class ACL(object):
+
+    """
+    Represents the Access Control List for an object.
+    """
+
+    def __init__(self, aceList=None, xmlDoc=None):
+
+        """
+        Constructor. Pass in either a list of :class:`ACE` objects or the XML
+        representation of the ACL. If you have only one ACE, don't worry about
+        the list--the constructor will convert it to a list for you.
+        """
+
+        if aceList:
+            self._entries = aceList
+        else:
+            self._entries = {}
+        if xmlDoc:
+            self._xmlDoc = xmlDoc
+            self._entries = self._getEntriesFromXml()
+        else:
+            self._xmlDoc = None
+
+    def addEntry(self, ace):
+
+        """
+        Adds an :class:`ACE` entry to the ACL.
+
+        >>> acl = folder.getACL()
+        >>> acl.addEntry(ACE('jpotts', 'cmis:read', 'true'))
+        >>> acl.addEntry(ACE('jsmith', 'cmis:write', 'true'))
+        >>> acl.getEntries()
+        {u'GROUP_EVERYONE': <cmislib.model.ACE object at 0x100731410>, u'jdoe': <cmislib.model.ACE object at 0x100731150>, 'jpotts': <cmislib.model.ACE object at 0x1005a22d0>, 'jsmith': <cmislib.model.ACE object at 0x1005a2210>}
+        """
+
+        self._entries[ace.principalId] = ace
+
+    def removeEntry(self, principalId):
+
+        """
+        Removes the :class:`ACE` entry given a specific principalId.
+
+        >>> acl.getEntries()
+        {u'GROUP_EVERYONE': <cmislib.model.ACE object at 0x100731410>, u'jdoe': <cmislib.model.ACE object at 0x100731150>, 'jpotts': <cmislib.model.ACE object at 0x1005a22d0>, 'jsmith': <cmislib.model.ACE object at 0x1005a2210>}
+        >>> acl.removeEntry('jsmith')
+        >>> acl.getEntries()
+        {u'GROUP_EVERYONE': <cmislib.model.ACE object at 0x100731410>, u'jdoe': <cmislib.model.ACE object at 0x100731150>, 'jpotts': <cmislib.model.ACE object at 0x1005a22d0>}
+        """
+
+        if self._entries.has_key(principalId):
+            del(self._entries[principalId])
+
+    def clearEntries(self):
+
+        """
+        Clears all :class:`ACE` entries from the ACL and removes the internal
+        XML representation of the ACL.
+
+        >>> acl = ACL()
+        >>> acl.addEntry(ACE('jsmith', 'cmis:write', 'true'))
+        >>> acl.addEntry(ACE('jpotts', 'cmis:write', 'true'))
+        >>> acl.entries
+        {'jpotts': <cmislib.model.ACE object at 0x1012c7310>, 'jsmith': <cmislib.model.ACE object at 0x100528490>}
+        >>> acl.getXmlDoc()
+        <xml.dom.minidom.Document instance at 0x1012cbb90>
+        >>> acl.clearEntries()
+        >>> acl.entries
+        >>> acl.getXmlDoc()
+        """
+
+        self._entries.clear()
+        self._xmlDoc = None
+
+    def getEntries(self):
+
+        """
+        Returns a dictionary of :class:`ACE` objects for each Access Control
+        Entry in the ACL. The key value is the ACE principalid.
+
+        >>> acl = ACL()
+        >>> acl.addEntry(ACE('jsmith', 'cmis:write', 'true'))
+        >>> acl.addEntry(ACE('jpotts', 'cmis:write', 'true'))
+        >>> for ace in acl.entries.values():
+        ...     print 'principal:%s has the following permissions...' % ace.principalId
+        ...     for perm in ace.permissions:
+        ...             print perm
+        ...
+        principal:jpotts has the following permissions...
+        cmis:write
+        principal:jsmith has the following permissions...
+        cmis:write
+        """
+
+        if self._entries:
+            return self._entries
+        else:
+            if self._xmlDoc:
+                # parse XML doc and build entry list
+                self._entries = self._getEntriesFromXml()
+                # then return it
+                return self._entries
+
+    def _getEntriesFromXml(self):
+
+        """
+        Helper method for getting the :class:`ACE` entries from an XML
+        representation of the ACL.
+        """
+
+        if not self._xmlDoc:
+            return
+        result = {}
+        # first child is the root node, cmis:acl
+        for e in self._xmlDoc.childNodes[0].childNodes:
+            if e.localName == 'permission':
+                # grab the principal/principalId element value
+                prinEl = e.getElementsByTagNameNS(CMIS_NS, 'principal')[0]
+                if prinEl and prinEl.childNodes:
+                    prinIdEl = prinEl.getElementsByTagNameNS(CMIS_NS, 'principalId')[0]
+                    if prinIdEl and prinIdEl.childNodes:
+                        principalId = prinIdEl.childNodes[0].data
+                # grab the permission values
+                permEls = e.getElementsByTagNameNS(CMIS_NS, 'permission')
+                perms = []
+                for permEl in permEls:
+                    if permEl and permEl.childNodes:
+                        perms.append(permEl.childNodes[0].data)
+                # grab the direct value
+                dirEl = e.getElementsByTagNameNS(CMIS_NS, 'direct')[0]
+                if dirEl and dirEl.childNodes:
+                    direct = dirEl.childNodes[0].data
+                # create an ACE
+                ace = ACE(principalId, perms, direct)
+                # append it to the dictionary
+                result[principalId] = ace
+        return result
+
+    def getXmlDoc(self):
+
+        """
+        This method rebuilds the local XML representation of the ACL based on
+        the :class:`ACE` objects in the entries list and returns the resulting
+        XML Document.
+        """
+
+        if not self.getEntries():
+            return
+
+        xmlDoc = minidom.Document()
+        aclEl = xmlDoc.createElementNS(CMIS_NS, 'cmis:acl')
+        aclEl.setAttribute('xmlns:cmis', CMIS_NS)
+        for ace in self.getEntries().values():
+            permEl = xmlDoc.createElementNS(CMIS_NS, 'cmis:permission')
+            #principalId
+            prinEl = xmlDoc.createElementNS(CMIS_NS, 'cmis:principal')
+            prinIdEl = xmlDoc.createElementNS(CMIS_NS, 'cmis:principalId')
+            prinIdElText = xmlDoc.createTextNode(ace.principalId)
+            prinIdEl.appendChild(prinIdElText)
+            prinEl.appendChild(prinIdEl)
+            permEl.appendChild(prinEl)
+            #direct
+            directEl = xmlDoc.createElementNS(CMIS_NS, 'cmis:direct')
+            directElText = xmlDoc.createTextNode(ace.direct)
+            directEl.appendChild(directElText)
+            permEl.appendChild(directEl)
+            #permissions
+            for perm in ace.permissions:
+                permItemEl = xmlDoc.createElementNS(CMIS_NS, 'cmis:permission')
+                permItemElText = xmlDoc.createTextNode(perm)
+                permItemEl.appendChild(permItemElText)
+                permEl.appendChild(permItemEl)
+            aclEl.appendChild(permEl)
+        xmlDoc.appendChild(aclEl)
+        self._xmlDoc = xmlDoc
+        return self._xmlDoc
+
+    entries = property(getEntries)
+
+
+class ACE(object):
+
+    """
+    Represents an individual Access Control Entry.
+    """
+
+    def __init__(self, principalId=None, permissions=None, direct=None):
+        """Constructor"""
+        self._principalId = principalId
+        if permissions:
+            if isinstance(permissions, str):
+                self._permissions = [permissions]
+            else:
+                self._permissions = permissions
+        self._direct = direct
+
+    @property
+    def principalId(self):
+        """Getter for principalId"""
+        return self._principalId
+
+    @property
+    def direct(self):
+        """Getter for direct"""
+        return self._direct
+
+    @property
+    def permissions(self):
+        """Getter for permissions"""
+        return self._permissions
+
+
+class ChangeEntry(object):
+
+    """
+    Represents a change log entry. Retrieve a list of change entries via
+    :meth:`Repository.getContentChanges`.
+
+    >>> for changeEntry in rs:
+    ...     changeEntry.objectId
+    ...     changeEntry.id
+    ...     changeEntry.changeType
+    ...     changeEntry.changeTime
+    ...
+    'workspace://SpacesStore/0e2dc775-16b7-4634-9e54-2417a196829b'
+    u'urn:uuid:0e2dc775-16b7-4634-9e54-2417a196829b'
+    u'created'
+    datetime.datetime(2010, 2, 11, 12, 55, 14)
+    'workspace://SpacesStore/bd768f9f-99a7-4033-828d-5b13f96c6923'
+    u'urn:uuid:bd768f9f-99a7-4033-828d-5b13f96c6923'
+    u'updated'
+    datetime.datetime(2010, 2, 11, 12, 55, 13)
+    'workspace://SpacesStore/572c2cac-6b26-4cd8-91ad-b2931fe5b3fb'
+    u'urn:uuid:572c2cac-6b26-4cd8-91ad-b2931fe5b3fb'
+    u'updated'
+    """
+
+    def __init__(self, cmisClient, repository, xmlDoc):
+        """Constructor"""
+        self._cmisClient = cmisClient
+        self._repository = repository
+        self._xmlDoc = xmlDoc
+        self._properties = {}
+        self._objectId = None
+        self._changeEntryId = None
+        self._changeType = None
+        self._changeTime = None
+
+    def getId(self):
+        """
+        Returns the unique ID of the change entry.
+        """
+        if self._changeEntryId == None:
+            self._changeEntryId = self._xmlDoc.getElementsByTagNameNS(ATOM_NS, 'id')[0].firstChild.data
+        return self._changeEntryId
+
+    def getObjectId(self):
+        """
+        Returns the object ID of the object that changed.
+        """
+        if self._objectId == None:
+            props = self.getProperties()
+            self._objectId = CmisId(props['cmis:objectId'])
+        return self._objectId
+
+    def getChangeType(self):
+
+        """
+        Returns the type of change that occurred. The resulting value must be
+        one of:
+         - created
+         - updated
+         - deleted
+         - security
+         """
+
+        if self._changeType == None:
+            self._changeType = self._xmlDoc.getElementsByTagNameNS(CMIS_NS, 'changeType')[0].firstChild.data
+        return self._changeType
+
+    def getACL(self):
+
+        """
+        Gets the :class:`ACL` object that is included with this Change Entry.
+        """
+
+        # if you call getContentChanges with includeACL=true, you will get a
+        # cmis:ACL entry. change entries don't appear to have a self URL so
+        # instead of doing a reload with includeACL set to true, we'll either
+        # see if the XML already has an ACL element and instantiate an ACL with
+        # it, or we'll get the ACL_REL link, invoke that, and return the result
+        if not self._repository.getCapabilities()['ACL']:
+            return
+        aclEls = self._xmlDoc.getElementsByTagNameNS(CMIS_NS, 'acl')
+        aclUrl = self._getLink(ACL_REL)
+        if (len(aclEls) == 1):
+            return ACL(self._cmisClient, self._repository, aclEls[0])
+        elif aclUrl:
+            result = self._cmisClient.get(aclUrl)
+            if type(result) == HTTPError:
+                raise CmisException(result.code)
+            return ACL(xmlDoc=result)
+
+    def getChangeTime(self):
+
+        """
+        Returns a datetime object representing the time the change occurred.
+        """
+
+        if self._changeTime == None:
+            self._changeTime = self._xmlDoc.getElementsByTagNameNS(CMIS_NS, 'changeTime')[0].firstChild.data
+        return parseDateTimeValue(self._changeTime)
+
+    def getProperties(self):
+
+        """
+        Returns the properties of the change entry. Note that depending on the
+        capabilities of the repository ("capabilityChanges") the list may not
+        include the actual property values that changed.
+        """
+
+        if self._properties == {}:
+            propertiesElement = self._xmlDoc.getElementsByTagNameNS(CMIS_NS, 'properties')[0]
+            for node in [e for e in propertiesElement.childNodes if e.nodeType == e.ELEMENT_NODE]:
+                propertyName = node.attributes['propertyDefinitionId'].value
+                if node.childNodes and \
+                   node.getElementsByTagNameNS(CMIS_NS, 'value')[0] and \
+                   node.getElementsByTagNameNS(CMIS_NS, 'value')[0].childNodes:
+                    propertyValue = parsePropValue(
+                       node.getElementsByTagNameNS(CMIS_NS, 'value')[0].childNodes[0].data,
+                       node.localName)
+                else:
+                    propertyValue = None
+                self._properties[propertyName] = propertyValue
+        return self._properties
+
+    def _getLink(self, rel):
+
+        """
+        Returns the HREF attribute of an Atom link element for the
+        specified rel.
+        """
+
+        linkElements = self._xmlDoc.getElementsByTagNameNS(ATOM_NS, 'link')
+
+        for linkElement in linkElements:
+            if linkElement.attributes.has_key('rel'):
+                relAttr = linkElement.attributes['rel'].value
+
+                if relAttr == rel:
+                    return linkElement.attributes['href'].value
+
+    id = property(getId)
+    objectId = property(getObjectId)
+    changeTime = property(getChangeTime)
+    changeType = property(getChangeType)
+    properties = property(getProperties)
+
+
+class ChangeEntryResultSet(ResultSet):
+
+    """
+    A specialized type of :class:`ResultSet` that knows how to instantiate
+    :class:`ChangeEntry` objects. The parent class assumes children of
+    :class:`CmisObject` which doesn't work for ChangeEntries.
+    """
+
+    def __iter__(self):
+
+        """
+        Overriding to make it work with a list instead of a dict.
+        """
+
+        return self.getResults()
+
+    def __getitem__(self, index):
+
+        """
+        Overriding to make it work with a list instead of a dict.
+        """
+
+        return self.getResults()[index]
+
+    def __len__(self):
+
+        """
+        Overriding to make it work with a list instead of a dict.
+        """
+
+        return len(self.getResults())
+
+    def getResults(self):
+
+        """
+        Overriding to make it work with a list instead of a dict.
+        """
+
+        if self._results:
+            return self._results
+
+        if self._xmlDoc:
+            entryElements = self._xmlDoc.getElementsByTagNameNS(ATOM_NS, 'entry')
+            entries = []
+            for entryElement in entryElements:
+                changeEntry = ChangeEntry(self._cmisClient, self._repository, entryElement)
+                entries.append(changeEntry)
+
+            self._results = entries
+
+        return self._results
+
+
+class CmisId(str):
+    
+    """
+    This is a marker class to be used for Strings that are used as CMIS ID's.
+    Making the objects instances of this class makes it easier to create the
+    Atom entry XML with the appropriate type, ie, cmis:propertyId, instead of
+    cmis:propertyString.
+    """
+
+    pass
+
+
 class UriTemplate(dict):
 
     """
@@ -2977,14 +3716,57 @@ class UriTemplate(dict):
     """
 
     def __init__(self, template, templateType, mediaType):
-        """ Constructor """
+
+        """
+        Constructor
+        """
+
         dict.__init__(self)
         self['template'] = template
         self['type'] = templateType
         self['mediaType'] = mediaType
 
 
-def parseValue(value):
+def parsePropValue(value, nodeName):
+
+    """
+    Returns a properly-typed object based on the type as specified in the
+    node's element name.
+    """
+
+    if nodeName == 'propertyId':
+        return CmisId(value)
+    elif nodeName == 'propertyString':
+        return str(value)
+    elif nodeName == 'propertyBoolean':
+        bDict = {'false': False, 'true': True}
+        return bDict[value.lower()]
+    elif nodeName == 'propertyInteger':
+        return int(value)
+    elif nodeName == 'propertyDecimal':
+        return float(value)
+    elif nodeName == 'propertyDateTime':
+        #%z doesn't seem to work, so I'm going to trunc the offset
+        #not all servers return microseconds, so those go too
+        return parseDateTimeValue(value)
+    else:
+        return value
+
+
+def parseDateTimeValue(value):
+
+    """
+    Utility function to return a datetime from a string.
+    """
+    timeFormat = '%Y-%m-%dT%H:%M:%S'
+    match = timeStampPattern.match(value)
+    if match:
+        return datetime.datetime.fromtimestamp(time.mktime(time.strptime(
+            match.group(),
+            timeFormat)))
+
+
+def parseBoolValue(value):
 
     """
     Utility function to parse booleans and none from strings

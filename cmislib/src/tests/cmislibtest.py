@@ -18,11 +18,12 @@
 Unit tests for cmislib
 '''
 import unittest
-from cmislib.model import CmisClient
+from cmislib.model import CmisClient, ACE
 from cmislib.exceptions import \
                           ObjectNotFoundException, \
                           PermissionDeniedException, \
                           CmisException
+from cmislib import messages
 import os
 from time import sleep, time
 import settings
@@ -521,6 +522,87 @@ class FolderTest(CmisTestBase):
                           folderName)
 
 
+class ChangeEntryTest(CmisTestBase):
+
+    """ Tests for the :class:`ChangeEntry` class """
+
+    def testGetContentChanges(self):
+
+        """Get the content changes and inspect Change Entry props"""
+
+        # need to check changes capability
+        if not self._repo.capabilities['Changes']:
+            print messages.NO_CHANGE_LOG_SUPPORT
+            return
+
+        # at least one change should have been made due to the creation of the
+        # test documents
+        rs = self._repo.getContentChanges()
+        self.assertTrue(len(rs) > 0)
+        changeEntry = rs[0]
+        self.assertTrue(changeEntry.id)
+        self.assertTrue(changeEntry.changeType in ['created', 'updated', 'deleted'])
+        self.assertTrue(changeEntry.changeTime)
+
+    def testGetACL(self):
+
+        """Gets the ACL that is included with a Change Entry."""
+
+        # need to check changes capability
+        if not self._repo.capabilities['Changes']:
+            print messages.NO_CHANGE_LOG_SUPPORT
+            return
+
+        # need to check ACL capability
+        if not self._repo.capabilities['ACL']:
+            print messages.NO_ACL_SUPPORT
+            return
+
+        # need to test once with includeACL set to true
+        rs = self._repo.getContentChanges(includeACL='true')
+        self.assertTrue(len(rs) > 0)
+        changeEntry = rs[0]
+        acl = changeEntry.getACL()
+        self.assertTrue(acl)
+        for entry in acl.getEntries().values():
+            self.assertTrue(entry.principalId)
+            self.assertTrue(entry.permissions)
+
+        # need to test once without includeACL set
+        rs = self._repo.getContentChanges()
+        self.assertTrue(len(rs) > 0)
+        changeEntry = rs[0]
+        acl = changeEntry.getACL()
+        self.assertTrue(acl)
+        for entry in acl.getEntries().values():
+            self.assertTrue(entry.principalId)
+            self.assertTrue(entry.permissions)
+
+    def testGetProperties(self):
+
+        """Gets the properties of an object included with a Change Entry."""
+
+        # need to check changes capability
+        changeCap = self._repo.capabilities['Changes']
+        if not changeCap:
+            print messages.NO_CHANGE_LOG_SUPPORT
+            return
+
+        # need to test once without includeProperties set. the objectID should be there
+        rs = self._repo.getContentChanges()
+        self.assertTrue(len(rs) > 0)
+        changeEntry = rs[0]
+        self.assertTrue(changeEntry.properties['cmis:objectId'])
+
+        # need to test once with includeProperties set. the objectID should be there plus object props
+        if changeCap in ['properties', 'all']:
+            rs = self._repo.getContentChanges(includeProperties='true')
+            self.assertTrue(len(rs) > 0)
+            changeEntry = rs[0]
+            self.assertTrue(changeEntry.properties['cmis:objectId'])
+            self.assertTrue(changeEntry.properties['cmis:name'])
+
+
 class DocumentTest(CmisTestBase):
 
     """ Tests for the :class:`Document` class """
@@ -878,12 +960,13 @@ class TypeTest(unittest.TestCase):
         cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD)
         repo = cmisClient.getDefaultRepository()
         typeDefs = repo.getTypeDescendants()
-        found = False
+        folderDef = None
         for typeDef in typeDefs:
             if typeDef.getTypeId() == 'cmis:folder':
-                found = True
+                folderDef = typeDef
                 break
-        self.assertTrue(found)
+        self.assertTrue(folderDef)
+        self.assertTrue(folderDef.baseId)
 
     def testTypeChildren(self):
         '''Get the child types for this repository and make sure cmis:folder
@@ -895,12 +978,13 @@ class TypeTest(unittest.TestCase):
         cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD)
         repo = cmisClient.getDefaultRepository()
         typeDefs = repo.getTypeChildren()
-        found = False
+        folderDef = None
         for typeDef in typeDefs:
             if typeDef.getTypeId() == 'cmis:folder':
-                found = True
+                folderDef = typeDef
                 break
-        self.assertTrue(found)
+        self.assertTrue(folderDef)
+        self.assertTrue(folderDef.baseId)
 
     def testTypeDefinition(self):
         '''Get the cmis:document type and test a few props of the type.'''
@@ -922,6 +1006,73 @@ class TypeTest(unittest.TestCase):
             if prop.queryable:
                 self.assertTrue(prop.queryName)
             self.assertTrue(prop.propertyType)
+
+
+class ACLTest(CmisTestBase):
+
+    """
+    Tests related to :class:`ACL` and :class:`ACE`
+    """
+
+    def testSupportedPermissions(self):
+        '''Test the value of supported permissions enum'''
+        if not self._repo.getCapabilities()['ACL']:
+            print messages.NO_ACL_SUPPORT
+            return
+        self.assertTrue(self._repo.getSupportedPermissions() in ['basic', 'repository', 'both'])
+
+    def testPermissionDefinitions(self):
+        '''Test the list of permission definitions'''
+        if not self._repo.getCapabilities()['ACL']:
+            print messages.NO_ACL_SUPPORT
+            return
+        supportedPerms = self._repo.getPermissionDefinitions()
+        self.assertTrue(supportedPerms.has_key('cmis:write'))
+
+    def testPermissionMap(self):
+        '''Test the permission mapping'''
+        if not self._repo.getCapabilities()['ACL']:
+            print messages.NO_ACL_SUPPORT
+            return
+        permMap = self._repo.getPermissionMap()
+        self.assertTrue(permMap.has_key('canGetProperties.Object'))
+        self.assertTrue(len(permMap['canGetProperties.Object']) > 0)
+
+    def testPropagation(self):
+        '''Test the propagation setting'''
+        if not self._repo.getCapabilities()['ACL']:
+            print messages.NO_ACL_SUPPORT
+            return
+        self.assertTrue(self._repo.getPropagation() in ['objectonly', 'propagate', 'repositorydetermined'])
+
+    def testGetObjectACL(self):
+        '''Test getting an object's ACL'''
+        if not self._repo.getCapabilities()['ACL']:
+            print messages.NO_ACL_SUPPORT
+            return
+        acl = self._testFolder.getACL()
+        for entry in acl.getEntries().values():
+            self.assertTrue(entry.principalId)
+            self.assertTrue(entry.permissions)
+
+    def testApplyACL(self):
+        '''Test updating an object's ACL'''
+        if not self._repo.getCapabilities()['ACL']:
+            print messages.NO_ACL_SUPPORT
+            return
+        if not self._repo.getCapabilities()['ACL'] == 'manage':
+            print 'Repository does not support manage ACL'
+            return
+        if not self._repo.getSupportedPermissions() in ['both', 'basic']:
+            print 'Repository needs to support either both or basic permissions for this test'
+            return
+        acl = self._testFolder.getACL()
+        acl.addEntry(ACE('jpotts', 'cmis:write', 'true'))
+        acl = self._testFolder.applyACL(acl)
+        # would be good to check that the permission we get back is what we set
+        # but at least one server (Alf) appears to map the basic perm to a
+        # repository-specific perm
+        self.assertTrue(acl.getEntries().has_key('jpotts'))
 
 
 def isInCollection(collection, targetDoc):

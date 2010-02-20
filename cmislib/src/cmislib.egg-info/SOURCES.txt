@@ -7,12 +7,14 @@ setup.cfg
 setup.py
 src/cmislib/__init__.py
 src/cmislib/exceptions.py
+src/cmislib/messages.py
 src/cmislib/model.py
 src/cmislib/net.py
 src/cmislib.egg-info/PKG-INFO
 src/cmislib.egg-info/SOURCES.txt
 src/cmislib.egg-info/dependency_links.txt
 src/cmislib.egg-info/top_level.txt
+src/data/acl.alfresco.xml
 src/data/checkedout.alfresco.xml
 src/data/checkedout.filenet.xml
 src/data/checkedout2.filenet.xml
@@ -20,6 +22,7 @@ src/data/children.xml
 src/data/document.nuxeo.xml
 src/data/document.xml
 src/data/folder.xml
+src/data/repositoryInfo.alfresco.xml
 src/data/repositoryInfo.chemistry.xml
 src/data/repositoryInfo.filenet.xml
 src/data/repositoryInfo.nuxeo.xml

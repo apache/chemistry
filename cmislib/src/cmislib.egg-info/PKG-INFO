@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: cmislib
-Version: 0.2
+Version: 0.3dev
 Summary: CMIS client library for Python
 Home-page: http://code.google.com/p/cmislib/
 Author: Jeff Potts
