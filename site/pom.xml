@@ -31,7 +31,7 @@
 
   <groupId>org.apache.chemistry</groupId>
   <artifactId>chemistry-reactor</artifactId>
-  <name>Apache Chemistry</name>
+  <name>Apache Chemistry Site</name>
   <packaging>pom</packaging>
 
   <url>http://incubator.apache.org/chemistry/</url>
