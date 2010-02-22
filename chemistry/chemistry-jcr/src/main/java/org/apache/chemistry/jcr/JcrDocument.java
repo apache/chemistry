@@ -29,6 +29,7 @@ import org.apache.chemistry.ChangeInfo;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.NameConstraintViolationException;
 import org.apache.chemistry.Property;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -150,6 +151,11 @@ public class JcrDocument extends JcrObjectEntry implements Document {
 
     public ChangeInfo getChangeInfo() {
         return null;
+    }
+
+    public Document copy(Folder folder) throws NameConstraintViolationException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
 }

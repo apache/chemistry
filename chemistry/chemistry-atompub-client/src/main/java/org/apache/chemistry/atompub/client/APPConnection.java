@@ -42,6 +42,7 @@ import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ListPage;
+import org.apache.chemistry.NameConstraintViolationException;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.ObjectNotFoundException;
@@ -380,6 +381,15 @@ public class APPConnection implements Connection, SPI {
             entry.setContentStream(contentStream);
         }
         return connector.postEntry(href, null, entry);
+    }
+
+    public ObjectId createDocumentFromSource(ObjectId source, ObjectId folder,
+            Map<String, Serializable> properties,
+            VersioningState versioningState)
+            throws NameConstraintViolationException {
+        // TODO implement copy "by hand" or using extensions when available
+        throw new CMISRuntimeException(
+                "AtomPub bindings do not support createDocumentFromSource");
     }
 
     public ObjectId createDocument(Map<String, Serializable> properties,

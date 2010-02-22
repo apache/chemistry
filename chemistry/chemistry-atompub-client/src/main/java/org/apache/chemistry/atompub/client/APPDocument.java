@@ -21,8 +21,11 @@ package org.apache.chemistry.atompub.client;
 import java.io.IOException;
 import java.util.Collection;
 
+import org.apache.chemistry.CMISRuntimeException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
+import org.apache.chemistry.Folder;
+import org.apache.chemistry.NameConstraintViolationException;
 import org.apache.chemistry.Type;
 
 /**
@@ -71,6 +74,11 @@ public class APPDocument extends APPObject implements Document {
     public Document getLatestVersion(boolean major) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
+    }
+
+    public Document copy(Folder folder) throws NameConstraintViolationException {
+        // TODO implement copy "by hand" or using extensions when available
+        throw new CMISRuntimeException("AtomPub bindings do not support copy");
     }
 
 }

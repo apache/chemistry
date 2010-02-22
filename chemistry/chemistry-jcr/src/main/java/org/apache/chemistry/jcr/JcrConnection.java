@@ -182,14 +182,22 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId checkIn(ObjectId documentId, Map<String, Serializable> properties,
-            ContentStream contentStream, boolean major,
-            String comment) {
+    public ObjectId checkIn(ObjectId documentId,
+            Map<String, Serializable> properties, ContentStream contentStream,
+            boolean major, String comment) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public ObjectId checkOut(ObjectId documentId, boolean[] contentCopied) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public ObjectId createDocumentFromSource(ObjectId source, ObjectId folder,
+            Map<String, Serializable> properties,
+            VersioningState versioningState)
+            throws NameConstraintViolationException {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -479,8 +487,8 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId setContentStream(ObjectId documentId, ContentStream contentStream,
-            boolean overwrite) {
+    public ObjectId setContentStream(ObjectId documentId,
+            ContentStream contentStream, boolean overwrite) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

@@ -238,12 +238,42 @@ public interface SPI {
      *             document
      * @throws NameConstraintViolationException if the name is not legal
      */
+    // TODO policies, addACEs, removeACEs
     ObjectId createDocument(Map<String, Serializable> properties,
             ObjectId folder, ContentStream contentStream,
             VersioningState versioningState)
             throws NameConstraintViolationException;
 
-    // TODO 1.0 createDocumentFromSource
+    /**
+     * Copies a document.
+     * <p>
+     * Creates a document as a copy of the given source document.
+     * <p>
+     * A set of properties that have to be changed in the copy can be specified.
+     * This allows a "copy-and-update" operation.
+     * <p>
+     * The versioningState input is used to create a document in a
+     * {@link VersioningState#CHECKED_OUT CHECKED_OUT} state, or as a checked-in
+     * {@link VersioningState#MINOR MINOR} version, or as a checked-in
+     * {@link VersioningState#MAJOR MAJOR} version. If created in a
+     * {@link VersioningState#CHECKED_OUT CHECKED_OUT} state, the object is a
+     * private working copy and there is no corresponding checked out document.
+     *
+     * @param source the source document
+     * @param folder the parent folder for the newly created document, or
+     *            {@code null} for to create an unfiled document
+     * @param properties the properties to change
+     * @param versioningState the versioning state
+     * @return the ID of the created document
+     *
+     * @throws ConstraintViolationException if the properties are not legal
+     * @throws NameConstraintViolationException if the name is not legal
+     */
+    // TODO policies, addACEs, removeACEs
+    ObjectId createDocumentFromSource(ObjectId source, ObjectId folder,
+            Map<String, Serializable> properties,
+            VersioningState versioningState)
+            throws NameConstraintViolationException;
 
     /**
      * Creates a folder.
@@ -255,6 +285,7 @@ public interface SPI {
      * @throws ConstraintViolationException if the properties are not legal
      * @throws NameConstraintViolationException if the name is not legal
      */
+    // TODO policies, addACEs, removeACEs
     ObjectId createFolder(Map<String, Serializable> properties, ObjectId folder)
             throws NameConstraintViolationException;
 
@@ -266,6 +297,7 @@ public interface SPI {
      *
      * @throws ConstraintViolationException if the properties are not legal
      */
+    // TODO policies, addACEs, removeACEs
     ObjectId createRelationship(Map<String, Serializable> properties);
 
     /**
@@ -280,6 +312,7 @@ public interface SPI {
      *
      * @throws ConstraintViolationException if the properties are not legal
      */
+    // TODO policies, addACEs, removeACEs
     ObjectId createPolicy(Map<String, Serializable> properties, ObjectId folder);
 
     /**

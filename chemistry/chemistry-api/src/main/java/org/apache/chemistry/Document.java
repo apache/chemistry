@@ -25,6 +25,27 @@ import java.util.Collection;
 public interface Document extends CMISObject {
 
     /*
+     * ----- Object Services -----
+     */
+
+    /**
+     * Copies this document to another folder.
+     * <p>
+     * The target folder may be {@code null} to create an unfiled copy.
+     *
+     * @param folder the target folder, or {@code null}
+     * @return the document copy
+     *
+     * @throws ConstraintViolationException if the document's type isn't allowed
+     *             as a child object type in the folder
+     * @throws NameConstraintViolationException if the object name is not legal
+     *             in its new folder
+     * @throws VersioningException if the move cannot be done to a non-latest
+     *             version
+     */
+    Document copy(Folder folder) throws NameConstraintViolationException;
+
+    /*
      * ----- Versioning Services -----
      */
 

@@ -53,6 +53,7 @@ import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ListPage;
+import org.apache.chemistry.NameConstraintViolationException;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.ObjectNotFoundException;
@@ -369,10 +370,45 @@ public class SimpleConnection implements Connection, SPI {
         }
     }
 
+    public ObjectId createDocumentFromSource(ObjectId source, ObjectId folder,
+            Map<String, Serializable> properties,
+            VersioningState versioningState)
+            throws NameConstraintViolationException {
+        // TODO versioningState
+        String id = source.getId();
+        SimpleData sourceData = repository.datas.get(id);
+        if (sourceData == null) {
+            throw new ObjectNotFoundException(id);
+        }
+        String typeId = (String) sourceData.get(Property.TYPE_ID);
+        Type type = repository.getType(typeId);
+        if (type == null || type.getBaseType() != BaseType.DOCUMENT) {
+            throw new IllegalArgumentException(typeId);
+        }
+        SimpleData data = new SimpleData(null, null);
+        data.putAll(sourceData);
+        if (properties != null) {
+            data.putAll(properties);
+        }
+        data.remove(Property.CREATION_DATE);
+        data.remove(Property.CREATED_BY);
+        if (folder == null) {
+            data.remove(Property.PARENT_ID);
+        } else {
+            String folderId = folder.getId();
+            if (!repository.datas.containsKey(folderId)) {
+                throw new ObjectNotFoundException(folderId);
+            }
+            data.put(Property.PARENT_ID, folderId);
+        }
+        saveData(data, (String) data.get(Property.TYPE_ID));
+        return new SimpleObjectEntry(data, this);
+    }
+
     public ObjectId createDocument(Map<String, Serializable> properties,
             ObjectId folder, ContentStream contentStream,
             VersioningState versioningState) {
-        // TODO contentStream, versioningState
+        // TODO versioningState
         String typeId = (String) properties.get(Property.TYPE_ID);
         if (typeId == null) {
             // use a default type, useful for pure AtomPub POST

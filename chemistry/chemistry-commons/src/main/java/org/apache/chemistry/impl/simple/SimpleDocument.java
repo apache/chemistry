@@ -23,6 +23,9 @@ import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.Document;
+import org.apache.chemistry.Folder;
+import org.apache.chemistry.NameConstraintViolationException;
+import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Property;
 
 public class SimpleDocument extends SimpleObject implements Document {
@@ -93,7 +96,7 @@ public class SimpleDocument extends SimpleObject implements Document {
         } else {
             entry.setValue(Property.CONTENT_STREAM_LENGTH,
                     Integer.valueOf((int) contentStream.getLength())); // TODO
-                                                                       // Long
+            // Long
             entry.setValue(Property.CONTENT_STREAM_MIME_TYPE,
                     contentStream.getMimeType());
             entry.setValue(Property.CONTENT_STREAM_FILE_NAME,
@@ -101,6 +104,12 @@ public class SimpleDocument extends SimpleObject implements Document {
             entry.setValue(SimpleProperty.CONTENT_BYTES_KEY,
                     SimpleContentStream.getBytes(contentStream.getStream()));
         }
+    }
+
+    public Document copy(Folder folder) throws NameConstraintViolationException {
+        ObjectId id = connection.getSPI().createDocumentFromSource(this,
+                folder, null, null);
+        return new SimpleDocument((SimpleObjectEntry) id, connection);
     }
 
 }

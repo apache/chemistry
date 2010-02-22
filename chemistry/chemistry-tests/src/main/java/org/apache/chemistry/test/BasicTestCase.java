@@ -33,6 +33,7 @@ import junit.framework.TestCase;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.CMISRuntimeException;
 import org.apache.chemistry.CapabilityACL;
 import org.apache.chemistry.CapabilityChange;
 import org.apache.chemistry.CapabilityJoin;
@@ -250,6 +251,46 @@ public abstract class BasicTestCase extends TestCase {
         assertNotNull(docId);
         Document doc = (Document) conn.getObject(docId);
         assertEquals("some title", doc.getValue("title"));
+    }
+
+    public void testCopySPI() throws Exception {
+        ObjectEntry doc1 = spi.getObjectByPath("/folder 1/doc 1", null);
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put("title", "new title");
+        try {
+            ObjectId id = spi.createDocumentFromSource(doc1,
+                    repository.getInfo().getRootFolderId(), properties, null);
+            assertNotNull(id);
+            assertNotSame(id, doc1.getId());
+        } catch (CMISRuntimeException e) {
+            assertTrue(e.getMessage().contains(
+                    "AtomPub bindings do not support"));
+            return;
+        }
+        // fetch
+        ObjectEntry doc = spi.getObjectByPath("/doc 1", null);
+        assertNotNull(doc);
+        assertEquals("new title", doc.getValue("title"));
+    }
+
+    public void testCopy() throws Exception {
+        ObjectEntry foldid = spi.getObjectByPath("/folder 1", null);
+        Folder fold = (Folder) conn.getObject(foldid);
+
+        ObjectEntry docid = spi.getObjectByPath("/folder 1/folder 2/doc 2",
+                null);
+        Document doc = (Document) conn.getObject(docid);
+        try {
+            Document newdoc = doc.copy(fold);
+            assertNotSame(doc.getId(), newdoc.getId());
+        } catch (CMISRuntimeException e) {
+            assertTrue(e.getMessage().contains(
+                    "AtomPub bindings do not support"));
+            return;
+        }
+        ObjectEntry d = spi.getObjectByPath("/folder 1/doc 2", null);
+        assertNotNull(d);
+        assertEquals("doc 2 title", d.getValue("title"));
     }
 
     public void testQuery() {
