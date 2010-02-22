@@ -70,12 +70,18 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
             // repository info
             RepositoryInfoWriter.write(sw, provider);
             // collections
+            CMISCollection<?> typesCol = null;
             for (CollectionInfo ci : wi.getCollections(request)) {
+                CMISCollection<?> cmisCol = (CMISCollection<?>) ci;
+                String type = cmisCol.getType();
+                if (AtomPubCMIS.COL_TYPES.equals(type)) {
+                    typesCol = cmisCol;
+                }
                 sw.startCollection(ci.getHref(request));
                 sw.writeTitle(ci.getTitle(request));
                 sw.writeAccepts(ci.getAccepts(request));
                 sw.startElement(AtomPubCMIS.COLLECTION_TYPE);
-                sw.writeElementText(((CMISCollection<?>) ci).getType());
+                sw.writeElementText(type);
                 sw.endElement();
                 // no AtomPub categories
                 sw.endCollection();
@@ -84,14 +90,13 @@ public class CMISServiceResponse extends StreamWriterResponseContext {
             sw.startElement(AtomPub.ATOM_LINK);
             sw.writeAttribute("rel", AtomPubCMIS.LINK_TYPE_DESCENDANTS);
             sw.writeAttribute("type", AtomPubCMIS.MEDIA_TYPE_CMIS_TREE);
-            String tdurl = CMISTypesCollection.getTypeDescendantsLink(null,
-                    request);
+            String tdurl = typesCol.getTypeDescendantsLink(null, request);
             sw.writeAttribute("href", tdurl);
             sw.endElement();
             sw.startElement(AtomPub.ATOM_LINK);
             sw.writeAttribute("rel", AtomPubCMIS.LINK_FOLDER_TREE);
             sw.writeAttribute("type", AtomPubCMIS.MEDIA_TYPE_CMIS_TREE);
-            String fturl = CMISTypesCollection.getFolderTreeLink(
+            String fturl = typesCol.getFolderTreeLink(
                     info.getRootFolderId().getId(), request);
             sw.writeAttribute("href", fturl);
             sw.endElement();

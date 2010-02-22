@@ -109,6 +109,9 @@ public abstract class CMISCollection<T> extends
         Map<String, String> params = new HashMap<String, String>();
         params.put("collection", name);
         params.put("id", id); // id may be null
+        if (repository != null) {
+            params.put("repository", repository.getId());
+        }
         return request.absoluteUrlFor(TargetType.TYPE_COLLECTION, params);
     }
 
@@ -126,73 +129,66 @@ public abstract class CMISCollection<T> extends
         return request.absoluteUrlFor(TargetType.TYPE_SERVICE, null);
     }
 
-    public String getTypeLink(String tid, RequestContext request) {
+    protected String getEntrylink(String entryType, String id,
+            RequestContext request) {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("entrytype", "type");
-        params.put("id", tid);
+        params.put("entrytype", entryType);
+        params.put("id", id);
+        if (repository != null) {
+            params.put("repository", repository.getId());
+        }
         return request.absoluteUrlFor(TargetType.TYPE_ENTRY, params);
     }
 
-    public String getTypeChildrenLink(String tid, RequestContext request) {
+    protected String getCollectionLink(String collection, String id,
+            RequestContext request) {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("collection", "typechildren");
-        params.put("id", tid);
+        params.put("collection", collection);
+        params.put("id", id);
+        if (repository != null) {
+            params.put("repository", repository.getId());
+        }
         return request.absoluteUrlFor(TargetType.TYPE_COLLECTION, params);
     }
 
-    public static String getTypeDescendantsLink(String tid, RequestContext request) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("collection", "typedescendants");
-        params.put("id", tid);
-        return request.absoluteUrlFor(TargetType.TYPE_COLLECTION, params);
-    }
-
-    public String getChildrenLink(String fid, RequestContext request) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("collection", "children");
-        params.put("id", fid);
-        return request.absoluteUrlFor(TargetType.TYPE_COLLECTION, params);
-    }
-
-    public String getDescendantsLink(String fid, RequestContext request) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("collection", "descendants");
-        params.put("id", fid);
-        return request.absoluteUrlFor(TargetType.TYPE_COLLECTION, params);
-    }
-
-    public static String getFolderTreeLink(String fid, RequestContext request) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("collection", "foldertree");
-        params.put("id", fid);
-        return request.absoluteUrlFor(TargetType.TYPE_COLLECTION, params);
-    }
-
-    public String getParentsLink(String fid, RequestContext request) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("collection", "parents");
-        params.put("id", fid);
-        return request.absoluteUrlFor(TargetType.TYPE_COLLECTION, params);
-    }
-
-    public String getCheckedOutLink(RequestContext request) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("collection", "checkedout");
-        return request.absoluteUrlFor(TargetType.TYPE_COLLECTION, params);
+    public String getTypeLink(String tid, RequestContext request) {
+        return getEntrylink("type", tid, request);
     }
 
     public String getObjectLink(String id, RequestContext request) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("entrytype", "object");
-        params.put("id", id);
-        return request.absoluteUrlFor(TargetType.TYPE_ENTRY, params);
+        return getEntrylink("object", id, request);
     }
 
     public String getMediaLink(String id, RequestContext request) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("entrytype", "file");
-        params.put("id", id);
-        return request.absoluteUrlFor(TargetType.TYPE_ENTRY, params);
+        return getEntrylink("file", id, request);
+    }
+
+    public String getTypeChildrenLink(String tid, RequestContext request) {
+        return getCollectionLink("typechildren", tid, request);
+    }
+
+    public String getTypeDescendantsLink(String tid, RequestContext request) {
+        return getCollectionLink("typedescendants", tid, request);
+    }
+
+    public String getChildrenLink(String fid, RequestContext request) {
+        return getCollectionLink("children", fid, request);
+    }
+
+    public String getDescendantsLink(String fid, RequestContext request) {
+        return getCollectionLink("descendants", fid, request);
+    }
+
+    public String getFolderTreeLink(String fid, RequestContext request) {
+        return getCollectionLink("foldertree", fid, request);
+    }
+
+    public String getParentsLink(String fid, RequestContext request) {
+        return getCollectionLink("parents", fid, request);
+    }
+
+    public String getCheckedOutLink(RequestContext request) {
+        return getCollectionLink("checkedout", null, request);
     }
 
 }
