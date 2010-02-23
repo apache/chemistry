@@ -24,29 +24,27 @@
 
 package org.apache.chemistry.shell.app;
 
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Repository;
+import org.apache.chemistry.RepositoryEntry;
+import org.apache.chemistry.RepositoryManager;
 import org.apache.chemistry.atompub.client.APPConnection;
-import org.apache.chemistry.atompub.client.APPContentManager;
-import org.apache.chemistry.atompub.client.ContentManager;
 import org.apache.chemistry.shell.util.ColorHelper;
 import org.apache.chemistry.shell.util.Path;
 
 public class ChemistryRootContext extends AbstractContext {
 
-    protected Map<String, Repository> repos;
     protected String[] keys;
+
     protected String[] ls;
 
     public ChemistryRootContext(ChemistryApp app) {
         super(app, Path.ROOT);
-    }
-
-    public APPContentManager getContentManager() {
-        return ((ChemistryApp) app).getContentManager();
     }
 
     @Override
@@ -60,19 +58,23 @@ public class ChemistryRootContext extends AbstractContext {
 
     public Context getContext(String name) {
         load();
-        ContentManager cm = getContentManager();
-        if (cm == null) {
-            Console.getDefault().error("Not connected: cannot browse repository");
+        ChemistryApp app = getApplication();
+        if (!app.isConnected()) {
+            Console.getDefault().error(
+                    "Not connected: cannot browse repository");
             return null;
         }
-        Repository r = repos.get(name); // TODO  atompub client is using IDs to get repositories ...
-        Repository repo = cm.getRepository(r.getId());
-        if (repo != null) {
-            APPConnection conn = (APPConnection) repo.getConnection(null);
-            CMISObject entry = conn.getRootFolder();
-            return new ChemistryContext((ChemistryApp) app, path.append(name), conn, entry);
+        Repository repo = RepositoryManager.getInstance().getRepository(name);
+        if (repo == null) {
+            return null;
         }
-        return null;
+        Map<String, Serializable> params = new HashMap<String, Serializable>();
+        params.put(Repository.PARAM_USERNAME, app.username);
+        params.put(Repository.PARAM_PASSWORD, new String(app.password));
+        APPConnection conn = (APPConnection) repo.getConnection(params);
+        CMISObject entry = conn.getRootFolder();
+        return new ChemistryContext((ChemistryApp) app, path.append(name),
+                conn, entry);
     }
 
     public String[] ls() {
@@ -90,21 +92,24 @@ public class ChemistryRootContext extends AbstractContext {
     }
 
     protected boolean load() {
-        if (keys == null) {
-            ContentManager cm = getContentManager();
-            if (cm == null) {
-                Console.getDefault().error("Not connected: cannot browse repository");
-                return false;
-            }
-            Repository[] repos = cm.getRepositories();
-            this.repos = new HashMap<String, Repository>();
-            keys = new String[repos.length];
-            ls = new String[repos.length];
-            for (int i=0; i<repos.length; i++) {
-                keys[i] = repos[i].getName();
-                this.repos.put(repos[i].getName(), repos[i]);
-                ls[i] = ColorHelper.decorateNameByType(repos[i].getName(), "Repository");
-            }
+        if (keys != null) {
+            return true;
+        }
+        if (!getApplication().isConnected()) {
+            Console.getDefault().error(
+                    "Not connected: cannot browse repository");
+            return false;
+        }
+        Collection<RepositoryEntry> repos = RepositoryManager.getInstance().getRepositories();
+        int size = repos.size();
+        keys = new String[size];
+        ls = new String[size];
+        int i = 0;
+        for (RepositoryEntry repo : repos) {
+            String name = repo.getName();
+            keys[i] = name;
+            ls[i] = ColorHelper.decorateNameByType(name, "Repository");
+            i++;
         }
         return true;
     }
@@ -112,14 +117,10 @@ public class ChemistryRootContext extends AbstractContext {
     public void reset() {
         keys = null;
         ls = null;
-        APPContentManager cm = getContentManager();
-        if (cm != null) {
-            cm.refresh();
-        }
     }
 
     public String id() {
-        return "CMIS server: "+app.getServerUrl();
+        return "CMIS server: " + app.getServerUrl();
     }
 
 }

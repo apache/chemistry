@@ -175,7 +175,8 @@ public class APPType extends APPObjectEntry implements Type {
     protected void loadPropertyDef() {
         if (propertyDefs == null) {
             String href = APPRepository.includePropertyDefinitionsInURI(getEditLink());
-            APPType typeDef = repository.connector.getType(href, true, getId());
+            APPType typeDef = repository.typesConnector.getType(href, true,
+                    getId());
             propertyDefs = typeDef.propertyDefs == null ? new HashMap<String, PropertyDefinition>()
                     : typeDef.propertyDefs;
         }

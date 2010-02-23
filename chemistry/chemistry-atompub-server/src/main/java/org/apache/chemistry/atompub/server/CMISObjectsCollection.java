@@ -489,7 +489,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     @Override
     public ResponseContext postEntry(RequestContext request) {
         // TODO parameter versioningState
-        SPI spi = repository.getSPI();
+        SPI spi = getSPI(request);
         try {
             PropertiesAndStream posted = extractCMISProperties(request, null);
             ObjectId folderId = spi.newObjectId(id);
@@ -540,7 +540,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             Entry entry = request.getAbdera().getFactory().newEntry();
             ObjectEntry object = spi.getProperties(objectId, null);
             addEntryDetails(request, entry, null, object);
-            if (isMediaEntry(object)) {
+            if (isMediaEntry(object, spi)) {
                 addMediaContent(null, entry, object, request);
             } else {
                 addContent(entry, object, request);
@@ -570,7 +570,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
 
     @Override
     public ResponseContext putEntry(RequestContext request) {
-        SPI spi = repository.getSPI();
+        SPI spi = getSPI(request);
         try {
             // existing object
             String id = getResourceName(request);
@@ -601,7 +601,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             // refetch full object
             object = spi.getProperties(object, null);
             addEntryDetails(request, entry, null, object);
-            if (isMediaEntry(object)) {
+            if (isMediaEntry(object, spi)) {
                 addMediaContent(null, entry, object, request);
             } else {
                 addContent(entry, object, request);
@@ -631,7 +631,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     public void deleteEntry(String resourceName, RequestContext request)
             throws ResponseContextException {
         ObjectId object;
-        SPI spi = repository.getSPI();
+        SPI spi = getSPI(request);
         try {
             String oid = resourceName;
             object = spi.newObjectId(oid);
@@ -681,7 +681,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
 
     @Override
     public ResponseContext getMedia(RequestContext request) {
-        SPI spi = repository.getSPI();
+        SPI spi = getSPI(request);
         try {
             String id = getResourceName(request);
             ObjectEntry object = getEntry(id, request, spi);
@@ -712,17 +712,6 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
             return new EmptyResponseContext(400);
-        } finally {
-            spi.close();
-        }
-    }
-
-    @Override
-    public boolean isMediaEntry(ObjectEntry object)
-            throws ResponseContextException {
-        SPI spi = repository.getSPI();
-        try {
-            return isMediaEntry(object, spi);
         } finally {
             spi.close();
         }
@@ -773,7 +762,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
 
     @Override
     public ResponseContext getEntry(RequestContext request) {
-        SPI spi = repository.getSPI();
+        SPI spi = getSPI(request);
         try {
             String id = getResourceName(request);
             ObjectEntry object = getEntry(id, request, spi);
@@ -799,7 +788,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     @Override
     public ObjectEntry getEntry(String resourceName, RequestContext request)
             throws ResponseContextException {
-        SPI spi = repository.getSPI();
+        SPI spi = getSPI(request);
         try {
             return getEntry(resourceName, request, spi);
         } finally {

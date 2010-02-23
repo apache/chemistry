@@ -74,7 +74,7 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
 
     @Override
     public ResponseContext getFeed(RequestContext request) {
-        SPI spi = repository.getSPI();
+        SPI spi = getSPI(request);
         try {
             Feed feed;
             if (COLTYPE_DESCENDANTS.equals(getType())
@@ -199,7 +199,7 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
                 }
             }
 
-            if (isMediaEntry(entryObj)) {
+            if (isMediaEntry(entryObj, spi)) {
                 addMediaContent(feedIri, e, entryObj, request);
             } else {
                 addContent(e, entryObj, request);
@@ -283,7 +283,7 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
     public void putMedia(ObjectEntry entry, MimeType contentType, String slug,
             InputStream in, RequestContext request)
             throws ResponseContextException {
-        SPI spi = repository.getSPI();
+        SPI spi = getSPI(request);
         try {
             ContentStream cs = new SimpleContentStream(in,
                     contentType.toString(), slug);
@@ -311,7 +311,7 @@ public class CMISChildrenCollection extends CMISObjectsCollection {
     @Override
     public void deleteMedia(String resourceName, RequestContext request)
             throws ResponseContextException {
-        SPI spi = repository.getSPI();
+        SPI spi = getSPI(request);
         try {
             String id = getResourceName(request);
             spi.deleteContentStream(new SimpleObjectId(id));

@@ -54,7 +54,7 @@ public class CMISParentsCollection extends CMISObjectsCollection {
     @Override
     public Iterable<ObjectEntry> getEntries(RequestContext request)
             throws ResponseContextException {
-        SPI spi = repository.getSPI();
+        SPI spi = getSPI(request);
         try {
             ObjectId objectId = spi.newObjectId(id);
             Collection<ObjectEntry> parents = spi.getObjectParents(objectId,

@@ -49,12 +49,15 @@ import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
+import org.apache.chemistry.RepositoryManager;
+import org.apache.chemistry.RepositoryService;
 import org.apache.chemistry.Updatability;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.impl.simple.SimplePropertyDefinition;
 import org.apache.chemistry.impl.simple.SimpleRepository;
+import org.apache.chemistry.impl.simple.SimpleRepositoryService;
 import org.apache.chemistry.impl.simple.SimpleType;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -80,9 +83,9 @@ public abstract class AtomPubServerTestCase extends TestCase {
 
     protected static String doc3id;
 
-    public Server server;
+    protected RepositoryService repositoryService;
 
-    public Repository repository;
+    public Server server;
 
     public String base;
 
@@ -100,7 +103,8 @@ public abstract class AtomPubServerTestCase extends TestCase {
 
     @Override
     public void setUp() throws Exception {
-        repository = makeRepository(null);
+        repositoryService = new SimpleRepositoryService(makeRepository(null));
+        RepositoryManager.getInstance().registerService(repositoryService);
         startServer();
         base = "http://localhost:" + PORT + CONTEXT_PATH + SERVLET_PATH
                 + getResourcePath();
@@ -109,6 +113,8 @@ public abstract class AtomPubServerTestCase extends TestCase {
     @Override
     public void tearDown() throws Exception {
         stopServer();
+        RepositoryManager.getInstance().unregisterService(repositoryService);
+        repositoryService = null;
     }
 
     public abstract void startServer() throws Exception;

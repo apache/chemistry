@@ -27,7 +27,6 @@ import org.apache.abdera.Abdera;
 import org.apache.abdera.protocol.server.Provider;
 import org.apache.abdera.protocol.server.servlet.AbderaServlet;
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.RepositoryFactory;
 import org.apache.chemistry.atompub.server.CMISProvider;
 
 public class CMISServlet extends AbderaServlet {
@@ -63,29 +62,13 @@ public class CMISServlet extends AbderaServlet {
 
     private Repository createRepository(ServletContext context,
             Map<String, String> params) throws ServletException {
-
         String className = params.get("class");
         if (className == null) {
             String msg = "Repository factory expected in 'class' parameter.";
             throw new ServletException(msg);
         }
-        RepositoryFactory factory = null;
-
-        try {
-            Class<?> c = Class.forName(className);
-            factory = (RepositoryFactory) c.newInstance();
-        } catch (Exception e) {
-            String msg = "Unable to create repository factory class: "
-                    + className;
-            throw new ServletException(msg, e);
-        }
-
-        try {
-            return factory.create(context, params);
-        } catch (Exception e) {
-            String msg = "Unable to create repository.";
-            throw new ServletException(msg, e);
-        }
+        // TODO create repository from factory
+        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -21,6 +21,7 @@ import java.io.Reader;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.chemistry.atompub.client.APPContext;
 import org.apache.chemistry.xml.stax.StaxReader;
 
 /**
@@ -28,10 +29,10 @@ import org.apache.chemistry.xml.stax.StaxReader;
  */
 public interface FeedReader<T> {
 
-    T read(ReadContext ctx, InputStream in) throws XMLStreamException;
+    T read(APPContext ctx, InputStream in) throws XMLStreamException;
 
-    T read(ReadContext ctx, Reader reader) throws XMLStreamException;
+    T read(APPContext ctx, Reader reader) throws XMLStreamException;
 
-    T read(ReadContext ctx, StaxReader reader) throws XMLStreamException;
+    T read(APPContext ctx, StaxReader reader) throws XMLStreamException;
 
 }

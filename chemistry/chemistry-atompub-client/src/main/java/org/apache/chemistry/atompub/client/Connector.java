@@ -35,20 +35,9 @@ import org.apache.chemistry.Paging;
 import org.apache.chemistry.Tree;
 import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.atompub.AtomPub;
-import org.apache.chemistry.atompub.client.APPObjectEntry;
-import org.apache.chemistry.atompub.client.APPObjectEntryReader;
-import org.apache.chemistry.atompub.client.APPObjectEntryWriter;
-import org.apache.chemistry.atompub.client.APPObjectFeedReader;
-import org.apache.chemistry.atompub.client.APPRepository;
-import org.apache.chemistry.atompub.client.APPServiceDocumentReader;
-import org.apache.chemistry.atompub.client.APPType;
-import org.apache.chemistry.atompub.client.ContentManagerException;
-import org.apache.chemistry.atompub.client.TypeEntryReader;
-import org.apache.chemistry.atompub.client.TypeFeedReader;
 import org.apache.chemistry.atompub.client.stax.EntryReader;
 import org.apache.chemistry.atompub.client.stax.FeedReader;
 import org.apache.chemistry.atompub.client.stax.QueryWriter;
-import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.XmlObjectWriter;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.impl.simple.SimpleTree;
@@ -64,21 +53,24 @@ import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 
 /**
- * A Connector abstracts the HTTP or AtomPub operations.
+ * Abstracts the HTTP or AtomPub operations.
+ * <p>
+ * A {@link Connector} is tied to a {@link HttpClient} that itself holds
+ * potential connection authentication parameters.
  */
 public class Connector {
 
     protected final HttpClient client;
 
-    protected final ReadContext ctx;
+    protected final APPContext ctx;
 
-    public Connector(HttpClient client, ReadContext ctx) {
+    public Connector(HttpClient client, APPContext ctx) {
         this.client = client;
         this.ctx = ctx;
     }
 
-    public APPRepository[] getServiceDocument(String href) {
-        GetMethod method = new GetMethod(href);
+    public List<APPRepository> getServiceDocument(String uri) {
+        GetMethod method = new GetMethod(uri);
         try {
             client.executeMethod(method);
             int status = method.getStatusCode();

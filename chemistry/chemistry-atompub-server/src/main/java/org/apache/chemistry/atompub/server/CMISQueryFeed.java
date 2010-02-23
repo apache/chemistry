@@ -151,7 +151,7 @@ public class CMISQueryFeed extends CMISObjectsCollection {
     @Override
     public Iterable<ObjectEntry> getEntries(RequestContext request)
             throws ResponseContextException {
-        SPI spi = repository.getSPI();
+        SPI spi = getSPI(request);
         try {
             Paging paging = new Paging(maxItems, skipCount);
             Inclusion inclusion = new Inclusion(null, renditions,

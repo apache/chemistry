@@ -45,7 +45,6 @@ import org.apache.chemistry.CapabilityChange;
 import org.apache.chemistry.CapabilityJoin;
 import org.apache.chemistry.CapabilityQuery;
 import org.apache.chemistry.CapabilityRendition;
-import org.apache.chemistry.Connection;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Paging;
@@ -90,12 +89,11 @@ public class JcrRepository implements Repository, RepositoryInfo,
         this(repository, null);
     }
 
-    public SPI getSPI() {
-        // TODO parameters
-        return (SPI) getConnection(null);
+    public SPI getSPI(Map<String, Serializable> params) {
+        return getConnection(params);
     }
 
-    public Connection getConnection(Map<String, Serializable> parameters) {
+    public JcrConnection getConnection(Map<String, Serializable> params) {
         try {
             return new JcrConnection(repository.login(creds, workspace), this);
         } catch (RepositoryException e) {

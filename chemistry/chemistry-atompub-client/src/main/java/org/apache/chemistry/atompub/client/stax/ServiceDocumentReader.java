@@ -29,9 +29,9 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.chemistry.CapabilityACL;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMIS;
+import org.apache.chemistry.CapabilityACL;
 import org.apache.chemistry.CapabilityChange;
 import org.apache.chemistry.CapabilityJoin;
 import org.apache.chemistry.CapabilityQuery;
@@ -41,7 +41,7 @@ import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.URITemplate;
-import org.apache.chemistry.atompub.client.APPRepository;
+import org.apache.chemistry.atompub.client.APPContext;
 import org.apache.chemistry.atompub.client.APPRepositoryCapabilities;
 import org.apache.chemistry.atompub.client.APPRepositoryInfo;
 import org.apache.chemistry.xml.stax.ChildrenNavigator;
@@ -52,7 +52,7 @@ import org.apache.chemistry.xml.stax.StaxReader;
  */
 public abstract class ServiceDocumentReader<T extends Repository> {
 
-    protected abstract T createRepository(ReadContext ctx);
+    protected abstract T createRepository(APPContext ctx);
 
     protected abstract void addCollection(T repo, String href, String type);
 
@@ -60,17 +60,16 @@ public abstract class ServiceDocumentReader<T extends Repository> {
 
     protected abstract void setInfo(T repo, RepositoryInfo info);
 
-    @SuppressWarnings("unchecked")
-    public T[] read(ReadContext context, InputStream in) throws IOException {
+    public List<T> read(APPContext ctx, InputStream in) throws IOException {
         try {
             StaxReader reader = StaxReader.newReader(in);
             if (!reader.fwdTag("service")) {
                 throw new IOException("Invalid APP service document");
             }
-            List<Repository> repos = new ArrayList<Repository>();
+            List<T> repos = new ArrayList<T>(1);
             ChildrenNavigator workspaces = reader.getChildren("workspace");
             while (workspaces.next()) {
-                T repo = createRepository(context);
+                T repo = createRepository(ctx);
                 ChildrenNavigator children = reader.getChildren();
                 while (children.next()) {
                     QName name = reader.getName();
@@ -86,18 +85,16 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                         }
                         addCollection(repo, href, type);
                     } else if (AtomPubCMIS.REPOSITORY_INFO.equals(name)) {
-                        RepositoryInfo info = readRepositoryInfo(context,
-                                reader);
+                        RepositoryInfo info = readRepositoryInfo(ctx, reader);
                         setInfo(repo, info);
                     } else if (AtomPubCMIS.URI_TEMPLATE.equals(name)) {
-                        URITemplate uriTemplate = readURITemplate(context,
-                                reader);
+                        URITemplate uriTemplate = readURITemplate(ctx, reader);
                         addURITemplate(repo, uriTemplate);
                     }
                 }
                 repos.add(repo);
             }
-            return (T[]) repos.toArray(new APPRepository[repos.size()]);
+            return repos;
         } catch (XMLStreamException e) {
             IOException ioe = new IOException();
             ioe.initCause(e);
@@ -105,7 +102,7 @@ public abstract class ServiceDocumentReader<T extends Repository> {
         }
     }
 
-    protected RepositoryInfo readRepositoryInfo(ReadContext context,
+    protected RepositoryInfo readRepositoryInfo(APPContext ctx,
             StaxReader reader) throws XMLStreamException {
         APPRepositoryCapabilities caps = null;
         Map<String, Object> map = new HashMap<String, Object>();
@@ -155,7 +152,7 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                     }
                 }
             } else if (CMIS.REPOSITORY_SPECIFIC_INFORMATION.equals(name)) {
-                readRepositorySpecificInformation(context, reader);
+                readRepositorySpecificInformation(ctx, reader);
             } else if (CMIS.CHANGES_ON_TYPE.equals(name)) {
                 changeLogBaseTypes.add(BaseType.get(reader.getElementText()));
             } else {
@@ -172,7 +169,7 @@ public abstract class ServiceDocumentReader<T extends Repository> {
         return new APPRepositoryInfo(caps, map, changeLogBaseTypes);
     }
 
-    protected URITemplate readURITemplate(ReadContext context, StaxReader reader)
+    protected URITemplate readURITemplate(APPContext ctx, StaxReader reader)
             throws XMLStreamException {
         String type = null;
         String mediaType = null;
@@ -191,7 +188,7 @@ public abstract class ServiceDocumentReader<T extends Repository> {
         return new URITemplate(type, mediaType, template);
     }
 
-    protected void readRepositorySpecificInformation(ReadContext context,
+    protected void readRepositorySpecificInformation(APPContext ctx,
             StaxReader reader) {
         // do nothing
     }

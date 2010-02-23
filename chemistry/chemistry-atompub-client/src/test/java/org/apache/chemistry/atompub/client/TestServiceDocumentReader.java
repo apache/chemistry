@@ -19,6 +19,7 @@ package org.apache.chemistry.atompub.client;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -32,7 +33,6 @@ import org.apache.chemistry.CapabilityRendition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryInfo;
-import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.ServiceDocumentReader;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
 
@@ -41,10 +41,10 @@ public class TestServiceDocumentReader extends TestCase {
     public void testReadServiceDocument() throws Exception {
         InputStream is = getClass().getResourceAsStream("/service-document.xml");
         ServiceDocumentReader<APPRepository> reader = new APPServiceDocumentReader();
-        ReadContext ctx = new ReadContext(new APPContentManager(""));
-        Repository[] repos = reader.read(ctx, is);
-        assertEquals(1, repos.length);
-        Repository repo = repos[0];
+        APPContext ctx = new APPContext(new APPRepositoryService("", null));
+        List<APPRepository> repos = reader.read(ctx, is);
+        assertEquals(1, repos.size());
+        Repository repo = repos.get(0);
         assertEquals("test", repo.getId());
         assertEquals("testname", repo.getName());
         RepositoryInfo info = repo.getInfo();

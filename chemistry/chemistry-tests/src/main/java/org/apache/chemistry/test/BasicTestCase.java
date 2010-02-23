@@ -541,6 +541,7 @@ public abstract class BasicTestCase extends TestCase {
 
         assertNotNull("dog not found", dog);
         ContentStream cs = dog.getContentStream();
+        assertNotNull(cs);
         assertTrue(cs.getLength() != 0);
         assertEquals("dog.jpg", cs.getFileName());
         assertEquals("image/jpeg", cs.getMimeType());

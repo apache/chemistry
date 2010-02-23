@@ -24,6 +24,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.chemistry.CMIS;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
+import org.apache.chemistry.atompub.client.APPContext;
 import org.apache.chemistry.xml.stax.ChildrenNavigator;
 import org.apache.chemistry.xml.stax.StaxReader;
 
@@ -32,18 +33,18 @@ import org.apache.chemistry.xml.stax.StaxReader;
  */
 public abstract class AbstractEntryReader<T> implements EntryReader<T> {
 
-    protected abstract T createObject(ReadContext ctx);
+    protected abstract T createObject(APPContext ctx);
 
-    public T read(ReadContext ctx, InputStream in) throws XMLStreamException {
+    public T read(APPContext ctx, InputStream in) throws XMLStreamException {
         return read(ctx, StaxReader.newReader(in));
     }
 
-    public T read(ReadContext ctx, XMLStreamReader reader)
+    public T read(APPContext ctx, XMLStreamReader reader)
             throws XMLStreamException {
         return read(ctx, StaxReader.newReader(reader));
     }
 
-    public T read(ReadContext ctx, StaxReader reader) throws XMLStreamException {
+    public T read(APPContext ctx, StaxReader reader) throws XMLStreamException {
         if (!reader.getFirstTag(AtomPub.ATOM_ENTRY)) {
             return null;
         }
@@ -61,12 +62,12 @@ public abstract class AbstractEntryReader<T> implements EntryReader<T> {
         return object;
     }
 
-    protected void readCmisElement(ReadContext ctx, StaxReader reader, T object)
+    protected void readCmisElement(APPContext ctx, StaxReader reader, T object)
             throws XMLStreamException {
         // do nothing
     }
 
-    protected void readEntryElement(ReadContext ctx, StaxReader reader, T object)
+    protected void readEntryElement(APPContext ctx, StaxReader reader, T object)
             throws XMLStreamException {
         if (reader.getNamespaceURI().equals(AtomPub.ATOM_NS)) {
             readAtomElement(ctx, reader, object);
@@ -75,12 +76,12 @@ public abstract class AbstractEntryReader<T> implements EntryReader<T> {
         }
     }
 
-    protected void readAtomElement(ReadContext ctx, StaxReader reader, T object)
+    protected void readAtomElement(APPContext ctx, StaxReader reader, T object)
             throws XMLStreamException {
         // do nothing
     }
 
-    protected void readExtensionElement(ReadContext ctx, StaxReader reader,
+    protected void readExtensionElement(APPContext ctx, StaxReader reader,
             T object) throws XMLStreamException {
         // do nothing
     }

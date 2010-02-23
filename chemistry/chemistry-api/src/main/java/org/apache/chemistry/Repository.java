@@ -28,21 +28,29 @@ import java.util.Map;
  */
 public interface Repository extends RepositoryEntry, TypeManager {
 
+    /** The connection parameter key for the user name. */
+    public static final String PARAM_USERNAME = "username";
+
+    /** The connection parameter key for the user password. */
+    public static final String PARAM_PASSWORD = "password";
+
     /**
      * Gets a new connection to this repository.
      *
+     * @param params the connection parameters
      * @return the connection
      */
-    Connection getConnection(Map<String, Serializable> parameters);
+    Connection getConnection(Map<String, Serializable> params);
 
     /**
      * Gets a new connection using the SPI for this repository.
      * <p>
      * The SPI is a connection providing access to lower-level features.
      *
+     * @param params the connection parameters
      * @return the SPI connection
      */
-    SPI getSPI();
+    SPI getSPI(Map<String, Serializable> params);
 
     /**
      * Gets an extension service on this repository.

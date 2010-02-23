@@ -42,6 +42,7 @@ import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.ServiceManager;
 import org.apache.abdera.protocol.server.servlet.ServletRequestContext;
 import org.apache.chemistry.Repository;
+import org.apache.chemistry.RepositoryManager;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.server.CMISChildrenCollection;
@@ -67,9 +68,6 @@ public class AbderaResource {
     @Context
     protected UriInfo ui;
 
-    // TODO inject repository somehow
-    public static Repository repository;
-
     // TODO configure somehow
     public static PathMunger pathMunger;
 
@@ -86,6 +84,7 @@ public class AbderaResource {
 
     public AbderaResource() throws Exception {
         try {
+            Repository repository = RepositoryManager.getInstance().getDefaultRepository();
             provider = new CMISProvider(repository);
             provider.init(ServiceManager.getAbdera(),
                     new HashMap<String, String>());

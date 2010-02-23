@@ -27,6 +27,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
+import org.apache.chemistry.atompub.client.APPContext;
 import org.apache.chemistry.xml.stax.ChildrenNavigator;
 import org.apache.chemistry.xml.stax.StaxReader;
 
@@ -49,7 +50,7 @@ public abstract class AbstractFeedReader<T, E> implements FeedReader<T> {
         this.entryBuilder = entryBuilder;
     }
 
-    public T read(ReadContext ctx, File file) throws XMLStreamException,
+    public T read(APPContext ctx, File file) throws XMLStreamException,
             IOException {
         InputStream in = new FileInputStream(file);
         try {
@@ -59,7 +60,7 @@ public abstract class AbstractFeedReader<T, E> implements FeedReader<T> {
         }
     }
 
-    public T read(ReadContext ctx, URL url) throws XMLStreamException,
+    public T read(APPContext ctx, URL url) throws XMLStreamException,
             IOException {
         InputStream in = url.openStream();
         try {
@@ -69,7 +70,7 @@ public abstract class AbstractFeedReader<T, E> implements FeedReader<T> {
         }
     }
 
-    public T read(ReadContext ctx, InputStream in) throws XMLStreamException {
+    public T read(APPContext ctx, InputStream in) throws XMLStreamException {
         StaxReader xr = StaxReader.newReader(in);
         try {
             return read(ctx, xr);
@@ -78,7 +79,7 @@ public abstract class AbstractFeedReader<T, E> implements FeedReader<T> {
         }
     }
 
-    public T read(ReadContext ctx, Reader reader) throws XMLStreamException {
+    public T read(APPContext ctx, Reader reader) throws XMLStreamException {
         StaxReader xr = StaxReader.newReader(reader);
         try {
             return read(ctx, xr);
@@ -87,7 +88,7 @@ public abstract class AbstractFeedReader<T, E> implements FeedReader<T> {
         }
     }
 
-    public T read(ReadContext ctx, StaxReader reader) throws XMLStreamException {
+    public T read(APPContext ctx, StaxReader reader) throws XMLStreamException {
         if (!reader.getFirstTag(AtomPub.ATOM_FEED)) {
             throw new XMLStreamException("Parse error: Not an atom feed");
         }
@@ -116,12 +117,12 @@ public abstract class AbstractFeedReader<T, E> implements FeedReader<T> {
         return feed;
     }
 
-    protected boolean isDone(ReadContext ctx, StaxReader reader)
+    protected boolean isDone(APPContext ctx, StaxReader reader)
             throws XMLStreamException {
         return false;
     }
 
-    protected void readAtomElement(ReadContext ctx, StaxReader reader,
+    protected void readAtomElement(APPContext ctx, StaxReader reader,
             String nsUri, T feed) throws XMLStreamException {
         if (AtomPub.ATOM_LINK.equals(reader.getName())) {
             String rel = reader.getAttributeValue(AtomPub.ATOM_NS, "rel");
@@ -131,7 +132,7 @@ public abstract class AbstractFeedReader<T, E> implements FeedReader<T> {
         }
     }
 
-    protected void readExtensionElement(ReadContext ctx, StaxReader reader,
+    protected void readExtensionElement(APPContext ctx, StaxReader reader,
             String nsUri, T feed) throws XMLStreamException {
     }
 

@@ -25,8 +25,11 @@ import java.io.OutputStream;
 import javax.servlet.Servlet;
 
 import org.apache.chemistry.Repository;
+import org.apache.chemistry.RepositoryManager;
+import org.apache.chemistry.RepositoryService;
 import org.apache.chemistry.atompub.server.jaxrs.AbderaResource;
 import org.apache.chemistry.atompub.server.servlet.CMISServlet;
+import org.apache.chemistry.impl.simple.SimpleRepositoryService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -56,12 +59,18 @@ public class MainServlet {
     public static final int DEFAULT_PORT = 8082;
 
     public static void main(String[] args) throws Exception {
-        Repository repository = BasicHelper.makeSimpleRepository(ROOT_ID);
-        new MainServlet().run(args, repository, "/cmis", "/repository");
+        RepositoryService repositoryService = new SimpleRepositoryService(
+                BasicHelper.makeSimpleRepository(ROOT_ID));
+        RepositoryManager.getInstance().registerService(repositoryService);
+        try {
+            new MainServlet().run(args, "/cmis", "/repository");
+        } finally {
+            RepositoryManager.getInstance().unregisterService(repositoryService);
+        }
     }
 
-    public void run(String[] args, Repository repository, String contextPath,
-            String cmisService) throws Exception {
+    public void run(String[] args, String contextPath, String cmisService)
+            throws Exception {
         String host = DEFAULT_HOST;
         int port = DEFAULT_PORT;
         int minutes = DEFAULT_MINUTES;
@@ -92,15 +101,14 @@ public class MainServlet {
         connector.setPort(port);
         server.setConnectors(new Connector[] { connector });
         if (jaxrs) {
-            setUpJAXRS(server, contextPath, repository);
+            setUpJAXRS(server, contextPath);
         } else {
-            setUpAbderaServlet(server, contextPath, repository);
+            setUpAbderaServlet(server, contextPath);
         }
         server.start();
 
         String url = "http://" + host + ':' + port + contextPath + cmisService;
-        log.warn(getServerName(repository) + " started, AtomPub service url: "
-                + url);
+        log.warn("CMIS repository started, AtomPub service url: " + url);
         try {
             Thread.sleep(1000 * 60 * minutes);
             server.stop();
@@ -112,15 +120,12 @@ public class MainServlet {
             }
         }
 
-        log.warn(getServerName(repository) + " stopped");
+        log.warn("CMIS repository stopped");
     }
 
-    protected static String getServerName(Repository repository) {
-        return "CMIS repository " + repository.getInfo().getProductName();
-    }
-
-    protected void setUpAbderaServlet(Server server, String contextPath,
-            Repository repository) throws Exception {
+    protected void setUpAbderaServlet(Server server, String contextPath)
+            throws Exception {
+        Repository repository = RepositoryManager.getInstance().getDefaultRepository();
         Servlet servlet = new CMISServlet(repository);
         Context context = new Context(server, contextPath, Context.SESSIONS);
         context.addServlet(new ServletHolder(servlet), "/*");
@@ -131,12 +136,12 @@ public class MainServlet {
 
     protected File tmpDir;
 
-    protected void setUpJAXRS(Server server, String contextPath,
-            Repository repository) throws Exception {
+    protected void setUpJAXRS(Server server, String contextPath)
+            throws Exception {
         if (!"/cmis".equals(contextPath)) {
-            throw new RuntimeException("AbderaResource implies a context of /cmis");
+            throw new RuntimeException(
+                    "AbderaResource implies a context of /cmis");
         }
-        AbderaResource.repository = repository; // TODO inject differently
         AbderaResource.pathMunger = null; // TODO
         tmpDir = makeTmpDir();
         String webApp = makeWebApp(tmpDir);

@@ -30,21 +30,21 @@ import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Updatability;
 import org.apache.chemistry.atompub.client.APPObjectEntry.Link;
-import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.impl.simple.SimplePropertyDefinition;
 import org.apache.chemistry.impl.simple.SimpleType;
 import org.apache.chemistry.impl.simple.SimpleTypeManager;
 
 public class TestAPPObjectEntryReader extends TestCase {
 
-    protected ReadContext getReadContext() {
+    protected APPContext getAPPContext() {
         Set<BaseType> changeLogBaseTypes = new HashSet<BaseType>();
         changeLogBaseTypes.add(BaseType.DOCUMENT);
         changeLogBaseTypes.add(BaseType.FOLDER);
         APPRepositoryInfo ri = new APPRepositoryInfo(
                 new APPRepositoryCapabilities(), new HashMap<String, Object>(),
                 changeLogBaseTypes);
-        APPRepository repo = new APPRepository(new APPContentManager(null), ri);
+        APPRepository repo = new APPRepository(new APPRepositoryService(null,
+                null), ri);
 
         SimpleTypeManager tm = new SimpleTypeManager();
         PropertyDefinition psn = new SimplePropertyDefinition("string_null",
@@ -75,13 +75,13 @@ public class TestAPPObjectEntryReader extends TestCase {
         tm.addType(t);
         repo.typeManager = tm;
 
-        return new ReadContext(new APPConnection(repo));
+        return new APPContext(new APPConnection(repo, null));
     }
 
     public void testReadObjectEntry() throws Exception {
         InputStream is = getClass().getResourceAsStream("/entry.xml");
-        APPObjectEntry entry = new APPObjectEntryReader().read(
-                getReadContext(), is);
+        APPObjectEntry entry = new APPObjectEntryReader().read(getAPPContext(),
+                is);
         Link[] links = entry.getLinks();
         assertEquals(2, links.length);
         Link link = links[0];

@@ -67,7 +67,7 @@ public class CMISCheckedOutCollection extends CMISObjectsCollection {
     @Override
     public Iterable<ObjectEntry> getEntries(RequestContext request)
             throws ResponseContextException {
-        SPI spi = repository.getSPI();
+        SPI spi = getSPI(request);
         try {
             Target target = request.getTarget();
             String folderIdString = target.getParameter(AtomPubCMIS.PARAM_FOLDER_ID);

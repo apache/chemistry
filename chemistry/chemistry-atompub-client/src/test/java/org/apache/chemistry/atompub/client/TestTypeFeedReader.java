@@ -21,16 +21,14 @@ import java.io.InputStream;
 
 import junit.framework.TestCase;
 
-import org.apache.chemistry.Repository;
 import org.apache.chemistry.TypeManager;
-import org.apache.chemistry.atompub.client.stax.ReadContext;
 
 public class TestTypeFeedReader extends TestCase {
 
     public void testReadTypesFeed() throws Exception {
         InputStream is = getClass().getResourceAsStream("/types-feed.xml");
         TypeManager typeManager = new TypeFeedReader(true).read(
-                new ReadContext((Repository) null), is);
+                new APPContext((APPRepository) null), is);
         assertEquals(5, typeManager.getTypes().size());
     }
 

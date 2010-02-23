@@ -61,7 +61,6 @@ import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.URITemplate;
-import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.XmlProperty;
 import org.apache.chemistry.impl.simple.SimpleListPage;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
@@ -79,10 +78,11 @@ public class APPConnection implements Connection, SPI {
 
     protected APPFolder root;
 
-    public APPConnection(APPRepository repository) {
+    public APPConnection(APPRepository repository,
+            Map<String, Serializable> params) {
         this.repository = repository;
-        connector = new Connector(repository.getContentManager().getClient(),
-                new ReadContext(this));
+        connector = new Connector(repository.getClient(params),
+                new APPContext(this));
     }
 
     public Connection getConnection() {
@@ -102,19 +102,11 @@ public class APPConnection implements Connection, SPI {
         return repository;
     }
 
-    public Connector getConnector() {
-        return connector;
-    }
-
     public Folder getRootFolder() {
         if (root == null) {
             root = (APPFolder) getObject(repository.info.getRootFolderId());
         }
         return root;
-    }
-
-    public String getBaseUrl() {
-        return repository.cm.getBaseUrl();
     }
 
     /*

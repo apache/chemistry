@@ -15,34 +15,39 @@
  *     Bogdan Stefanescu, Nuxeo
  *     Florent Guillaume, Nuxeo
  */
-package org.apache.chemistry.atompub.client.stax;
+package org.apache.chemistry.atompub.client;
 
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.atompub.client.ContentManager;
 
 /**
- *
+ * A context for the current AtomPub operations.
+ * <p>
+ * Used to construct new objects.
  */
-public class ReadContext {
+public class APPContext {
 
-    protected Repository repository;
+    protected APPRepositoryService repositoryService;
 
-    protected Connection connection;
+    protected APPRepository repository;
 
-    protected ContentManager contentManager;
+    protected APPConnection connection;
 
-    public ReadContext(Connection connection) {
+    public APPContext(APPConnection connection) {
         this.connection = connection;
-        this.repository = connection.getRepository();
+        this.repository = (APPRepository) connection.getRepository();
     }
 
-    public ReadContext(Repository repository) {
+    public APPContext(APPRepository repository) {
         this.repository = repository;
     }
 
-    public ReadContext(ContentManager contentManager) {
-        this.contentManager = contentManager;
+    public APPContext(APPRepositoryService repositoryService) {
+        this.repositoryService = repositoryService;
+    }
+
+    public APPRepositoryService getRepositoryService() {
+        return repositoryService;
     }
 
     public Repository getRepository() {
@@ -51,10 +56,6 @@ public class ReadContext {
 
     public Connection getConnection() {
         return connection;
-    }
-
-    public ContentManager getContentManager() {
-        return contentManager;
     }
 
 }

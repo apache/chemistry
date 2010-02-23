@@ -30,10 +30,7 @@ import java.util.Map;
 
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Folder;
-import org.apache.chemistry.ObjectEntry;
-import org.apache.chemistry.Repository;
 import org.apache.chemistry.atompub.client.APPConnection;
-import org.apache.chemistry.atompub.client.APPContentManager;
 import org.apache.chemistry.shell.util.ColorHelper;
 import org.apache.chemistry.shell.util.Path;
 
@@ -41,7 +38,6 @@ public class ChemistryContext extends AbstractContext {
 
     //public static final String CONN_KEY = "chemistry.connection";
 
-    protected final APPContentManager cm;
     protected final APPConnection conn;
     protected final CMISObject entry;
 
@@ -53,32 +49,11 @@ public class ChemistryContext extends AbstractContext {
         super(app, path);
         this.conn = conn;
         this.entry = entry;
-        cm = app.getContentManager();
     }
 
     @Override
     public ChemistryApp getApplication() {
         return (ChemistryApp)app;
-    }
-
-    // Not used
-    public APPConnection getConnection() {
-        return conn;
-    }
-
-    // Not used
-    public CMISObject getEntry() {
-        return entry;
-    }
-
-    // Not used
-    public APPContentManager getContentManager() {
-        return cm;
-    }
-
-    // Not used
-    public Repository getRepository() {
-        return conn.getRepository();
     }
 
     public Context getContext(String name) {
@@ -138,27 +113,6 @@ public class ChemistryContext extends AbstractContext {
             return type.cast(entry);
         }
         return null;
-    }
-
-    // Not used
-    public CMISObject getObjectByAbsolutePath(String path) {
-        ObjectEntry entry = conn.getObjectByPath(path, null);
-        if (entry!=null) {
-            return conn.getObject(entry);
-        } else {
-            return null;
-        }
-    }
-
-    // Not used
-    public CMISObject resolveObject(String path) {
-        Path p = resolvePath(path);
-        ObjectEntry entry = conn.getObjectByPath(p.toString(), null);
-        if (entry!=null) {
-            return conn.getObject(entry);
-        } else {
-            return null;
-        }
     }
 
     public String id() {

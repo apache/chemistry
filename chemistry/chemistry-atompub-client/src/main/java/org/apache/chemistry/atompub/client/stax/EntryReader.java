@@ -21,6 +21,7 @@ import java.io.InputStream;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.chemistry.atompub.client.APPContext;
 import org.apache.chemistry.xml.stax.StaxReader;
 
 /**
@@ -28,10 +29,10 @@ import org.apache.chemistry.xml.stax.StaxReader;
  */
 public interface EntryReader<T> {
 
-    T read(ReadContext ctx, InputStream in) throws XMLStreamException;
+    T read(APPContext ctx, InputStream in) throws XMLStreamException;
 
-    T read(ReadContext ctx, XMLStreamReader xr) throws XMLStreamException;
+    T read(APPContext ctx, XMLStreamReader xr) throws XMLStreamException;
 
-    T read(ReadContext ctx, StaxReader sr) throws XMLStreamException;
+    T read(APPContext ctx, StaxReader sr) throws XMLStreamException;
 
 }

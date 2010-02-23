@@ -36,7 +36,6 @@ import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.URITemplate;
-import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.impl.simple.SimpleTypeManager;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.logging.Log;
@@ -49,9 +48,9 @@ public class APPRepository implements Repository {
 
     private static final Log log = LogFactory.getLog(APPRepository.class);
 
-    protected final APPContentManager cm;
+    protected final APPRepositoryService rs;
 
-    protected final Connector connector;
+    protected final Connector typesConnector;
 
     protected RepositoryInfo info;
 
@@ -63,13 +62,14 @@ public class APPRepository implements Repository {
 
     protected final Map<String, URITemplate> uriTemplates = new HashMap<String, URITemplate>();
 
-    public APPRepository(APPContentManager cm) {
-        this(cm, null);
+    public APPRepository(APPRepositoryService rs) {
+        this(rs, null);
     }
 
-    public APPRepository(APPContentManager cm, RepositoryInfo info) {
-        this.cm = cm;
-        connector = new Connector(cm.getClient(), new ReadContext(this));
+    public APPRepository(APPRepositoryService rs, RepositoryInfo info) {
+        this.rs = rs;
+        typesConnector = new Connector(rs.getDefaultClient(), new APPContext(
+                this));
         this.info = info;
     }
 
@@ -77,12 +77,8 @@ public class APPRepository implements Repository {
         this.info = info;
     }
 
-    public APPContentManager getContentManager() {
-        return cm;
-    }
-
-    public HttpClient client() {
-        return cm.getClient();
+    public HttpClient getClient(Map<String, Serializable> params) {
+        return rs.getClient(params);
     }
 
     public String getId() {
@@ -100,14 +96,21 @@ public class APPRepository implements Repository {
         return info.getThinClientURI();
     }
 
-    public SPI getSPI() {
+    public SPI getSPI(Map<String, Serializable> params) {
         loadTypes();
-        return new APPConnection(this);
+        return new APPConnection(this, params);
     }
 
-    public Connection getConnection(Map<String, Serializable> parameters) {
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The connection parameters should use
+     * {@link APPRepositoryService#PARAM_USERNAME} and
+     * {@link APPRepositoryService#PARAM_PASSWORD} as parameter keys.
+     */
+    public Connection getConnection(Map<String, Serializable> params) {
         loadTypes();
-        return new APPConnection(this);
+        return new APPConnection(this, params);
     }
 
     public void addCollection(String type, String href) {
@@ -216,7 +219,7 @@ public class APPRepository implements Repository {
 
     protected TypeManager readTypes(String href) throws Exception {
         href = includePropertyDefinitionsInURI(href);
-        return connector.getTypeFeed(href, true);
+        return typesConnector.getTypeFeed(href, true);
     }
 
     protected static String includePropertyDefinitionsInURI(String href) {

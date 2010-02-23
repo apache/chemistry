@@ -30,6 +30,7 @@ import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Tree;
 import org.apache.chemistry.atompub.AtomPubCMIS;
+import org.apache.chemistry.atompub.client.APPContext;
 import org.apache.chemistry.atompub.client.APPObjectFeedTreeReader;
 import org.apache.chemistry.xml.stax.ChildrenNavigator;
 import org.apache.chemistry.xml.stax.ParseException;
@@ -51,7 +52,7 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
     protected abstract void setChildren(T object, List<Tree<ObjectEntry>> tree);
 
     @Override
-    protected void readCmisElement(ReadContext ctx, StaxReader reader, T object)
+    protected void readCmisElement(APPContext ctx, StaxReader reader, T object)
             throws XMLStreamException {
         QName name = reader.getName();
         if (AtomPubCMIS.OBJECT.equals(name)) {
@@ -66,7 +67,7 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
         }
     }
 
-    protected void readCmisObject(ReadContext ctx, StaxReader reader, T object)
+    protected void readCmisObject(APPContext ctx, StaxReader reader, T object)
             throws XMLStreamException {
         ChildrenNavigator children = reader.getChildren();
         while (children.next()) {
@@ -74,7 +75,7 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
         }
     }
 
-    protected void readObjectChildElement(ReadContext ctx, StaxReader reader,
+    protected void readObjectChildElement(APPContext ctx, StaxReader reader,
             T object) throws XMLStreamException {
         if (reader.getNamespaceURI().equals(CMIS.CMIS_NS)) {
             QName name = reader.getName();
@@ -92,7 +93,7 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
         }
     }
 
-    protected void readProperties(ReadContext ctx, StaxReader reader, T object)
+    protected void readProperties(APPContext ctx, StaxReader reader, T object)
             throws XMLStreamException {
         for (PropertyIterator it = new PropertyIterator(reader); it.hasNext();) {
             XmlProperty p = it.next();
@@ -100,7 +101,7 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
         }
     }
 
-    protected void readPropertyWithType(ReadContext ctx, StaxReader reader,
+    protected void readPropertyWithType(APPContext ctx, StaxReader reader,
             T object, XmlProperty p) {
         String id = p.getId();
         PropertyDefinition def = ctx.getRepository().getPropertyDefinition(id);
@@ -111,7 +112,7 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
         setProperty(object, p);
     }
 
-    protected void readAllowableActions(ReadContext ctx, StaxReader reader,
+    protected void readAllowableActions(APPContext ctx, StaxReader reader,
             T object) throws XMLStreamException {
         Map<QName, Boolean> allowableActions = new HashMap<QName, Boolean>();
         ChildrenNavigator children = reader.getChildren();
@@ -123,22 +124,22 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
         setAllowableActions(object, allowableActions);
     }
 
-    protected void readChangeEventInfo(ReadContext ctx, StaxReader reader,
+    protected void readChangeEventInfo(APPContext ctx, StaxReader reader,
             T object) throws XMLStreamException {
         // TODO not yet implemented
     }
 
-    protected void readOtherCmisElement(ReadContext ctx, StaxReader reader,
+    protected void readOtherCmisElement(APPContext ctx, StaxReader reader,
             T object) throws XMLStreamException {
         // do nothing
     }
 
-    protected void readPathSegment(ReadContext ctx, StaxReader reader, T object)
+    protected void readPathSegment(APPContext ctx, StaxReader reader, T object)
             throws XMLStreamException {
         setPathSegment(object, reader.getElementText());
     }
 
-    protected void readChildren(ReadContext ctx, StaxReader reader, T object)
+    protected void readChildren(APPContext ctx, StaxReader reader, T object)
             throws XMLStreamException {
         // TODO better use of generics
         List<Tree<ObjectEntry>> list = new APPObjectFeedTreeReader().read(ctx, reader);

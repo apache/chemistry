@@ -52,7 +52,6 @@ public class TestAtomPubJaxrs extends AtomPubServerTestCase {
 
     @Override
     public void startServer() throws Exception {
-        AbderaResource.repository = repository; // TODO inject differently
         AbderaResource.pathMunger = null; // TODO
         server = new Server(PORT);
         server.setHandler(new WebAppContext(server, makeWar(), CONTEXT_PATH));

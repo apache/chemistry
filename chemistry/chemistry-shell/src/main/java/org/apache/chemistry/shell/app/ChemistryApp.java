@@ -24,7 +24,13 @@
 
 package org.apache.chemistry.shell.app;
 
-import org.apache.chemistry.atompub.client.APPContentManager;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.chemistry.Repository;
+import org.apache.chemistry.RepositoryManager;
+import org.apache.chemistry.atompub.client.APPRepositoryService;
 import org.apache.chemistry.shell.cmds.cmis.Cat;
 import org.apache.chemistry.shell.cmds.cmis.CreateFile;
 import org.apache.chemistry.shell.cmds.cmis.CreateFolder;
@@ -44,7 +50,7 @@ import org.apache.chemistry.shell.cmds.cmis.SetStream;
  */
 public class ChemistryApp extends AbstractApplication {
 
-    protected APPContentManager cm;
+    protected APPRepositoryService repositoryService;
 
     public ChemistryApp() {
         registry.registerCommand(new DumpTree());
@@ -58,31 +64,30 @@ public class ChemistryApp extends AbstractApplication {
         registry.registerCommand(new Remove());
         registry.registerCommand(new Cat());
         registry.registerCommand(new Put());
-        registry.registerCommand(new Query());        
+        registry.registerCommand(new Query());
     }
 
     @Override
     protected void doConnect() {
-        cm = new APPContentManager(serverUrl.toExternalForm());
-        if (username != null) {
-            cm.login(username, new String(password));
-        }
+        Map<String, Serializable> params = new HashMap<String, Serializable>();
+        params.put(Repository.PARAM_USERNAME, username);
+        params.put(Repository.PARAM_PASSWORD, new String(password));
+        repositoryService = new APPRepositoryService(
+                serverUrl.toExternalForm(), params);
+        RepositoryManager.getInstance().registerService(repositoryService);
     }
 
     public void disconnect() {
-        cm = null;
+        RepositoryManager.getInstance().unregisterService(repositoryService);
+        repositoryService = null;
     }
 
     public boolean isConnected() {
-        return cm != null;
+        return repositoryService != null;
     }
 
     public Context getRootContext() {
         return new ChemistryRootContext(this);
-    }
-
-    public APPContentManager getContentManager() {
-        return cm;
     }
 
 }

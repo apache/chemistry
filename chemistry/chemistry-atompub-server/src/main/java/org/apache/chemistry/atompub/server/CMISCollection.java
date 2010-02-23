@@ -16,6 +16,7 @@
  */
 package org.apache.chemistry.atompub.server;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ import org.apache.abdera.protocol.server.TargetType;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
 import org.apache.chemistry.Repository;
+import org.apache.chemistry.SPI;
 import org.apache.chemistry.atompub.AtomPub;
 
 /**
@@ -58,6 +60,15 @@ public abstract class CMISCollection<T> extends
     /*
      * ----- Helpers -----
      */
+
+    public SPI getSPI(RequestContext request) {
+        return repository.getSPI(getConnectionParams(request));
+    }
+
+    protected Map<String, Serializable> getConnectionParams(
+            RequestContext request) {
+        return null; // TODO username, password
+    }
 
     public static int getParameter(RequestContext request, String name, int def) {
         String value = request.getTarget().getParameter(name);

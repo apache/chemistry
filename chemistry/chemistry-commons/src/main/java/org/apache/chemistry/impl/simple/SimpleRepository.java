@@ -106,12 +106,12 @@ public class SimpleRepository extends BaseRepository {
      * ----- Repository -----
      */
 
-    public Connection getConnection(Map<String, Serializable> parameters) {
+    public Connection getConnection(Map<String, Serializable> params) {
         // TODO credentials
         return new SimpleConnection(this);
     }
 
-    public SPI getSPI() {
+    public SPI getSPI(Map<String, Serializable> params) {
         // TODO credentials
         return new SimpleConnection(this);
     }

@@ -30,7 +30,6 @@ import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.AtomPubCMIS;
 import org.apache.chemistry.atompub.client.stax.AbstractEntryReader;
-import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.xml.stax.ChildrenNavigator;
 import org.apache.chemistry.xml.stax.StaxReader;
 import org.apache.commons.logging.Log;
@@ -50,13 +49,13 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
     }
 
     @Override
-    protected APPType createObject(ReadContext ctx) {
+    protected APPType createObject(APPContext ctx) {
         APPType type = new APPType((APPRepository) ctx.getRepository());
         return type;
     }
 
     @Override
-    protected void readAtomElement(ReadContext ctx, StaxReader reader,
+    protected void readAtomElement(APPContext ctx, StaxReader reader,
             APPType object) throws XMLStreamException {
         if (AtomPub.ATOM_LINK.equals(reader.getName())) {
             String rel = reader.getAttributeValue(AtomPub.ATOM_NS, "rel");
@@ -67,7 +66,7 @@ public class TypeEntryReader extends AbstractEntryReader<APPType> {
     }
 
     @Override
-    protected void readCmisElement(ReadContext context, StaxReader reader,
+    protected void readCmisElement(APPContext ctx, StaxReader reader,
             APPType entry) throws XMLStreamException {
         if (AtomPubCMIS.TYPE.equals(reader.getName())) {
             ChildrenNavigator children = reader.getChildren();

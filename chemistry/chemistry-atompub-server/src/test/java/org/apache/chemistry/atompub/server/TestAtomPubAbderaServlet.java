@@ -18,6 +18,8 @@ package org.apache.chemistry.atompub.server;
 
 import javax.servlet.Servlet;
 
+import org.apache.chemistry.Repository;
+import org.apache.chemistry.RepositoryManager;
 import org.apache.chemistry.atompub.server.servlet.CMISServlet;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
@@ -31,6 +33,7 @@ public class TestAtomPubAbderaServlet extends AtomPubServerTestCase {
     @Override
     public void startServer() throws Exception {
         server = new Server(PORT);
+        Repository repository = RepositoryManager.getInstance().getDefaultRepository();
         Servlet servlet = new CMISServlet(repository);
         ServletHolder servletHolder = new ServletHolder(servlet);
         Context context = new Context(server, CONTEXT_PATH, Context.SESSIONS);

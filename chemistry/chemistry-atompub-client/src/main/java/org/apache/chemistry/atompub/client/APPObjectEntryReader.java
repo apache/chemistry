@@ -29,7 +29,6 @@ import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Tree;
 import org.apache.chemistry.atompub.AtomPub;
 import org.apache.chemistry.atompub.client.stax.AbstractObjectReader;
-import org.apache.chemistry.atompub.client.stax.ReadContext;
 import org.apache.chemistry.atompub.client.stax.XmlProperty;
 import org.apache.chemistry.xml.stax.StaxReader;
 
@@ -39,7 +38,7 @@ import org.apache.chemistry.xml.stax.StaxReader;
 public class APPObjectEntryReader extends AbstractObjectReader<APPObjectEntry> {
 
     @Override
-    protected APPObjectEntry createObject(ReadContext ctx) {
+    protected APPObjectEntry createObject(APPContext ctx) {
         APPConnection connection = (APPConnection) ctx.getConnection();
         return new APPObjectEntry(connection,
                 new HashMap<String, XmlProperty>(), null);
@@ -68,7 +67,7 @@ public class APPObjectEntryReader extends AbstractObjectReader<APPObjectEntry> {
     }
 
     @Override
-    protected void readAtomElement(ReadContext ctx, StaxReader reader,
+    protected void readAtomElement(APPContext ctx, StaxReader reader,
             APPObjectEntry object) throws XMLStreamException {
         QName name = reader.getName();
         if (AtomPub.ATOM_CONTENT.equals(name)) {

@@ -20,6 +20,11 @@ import java.util.Collection;
 
 /**
  * CMIS Repository Service.
+ * <p>
+ * An instance of this class is retrieved through the global
+ * {@link RepositoryManager}.
+ *
+ * @see RepositoryManager
  */
 public interface RepositoryService {
 
@@ -43,6 +48,7 @@ public interface RepositoryService {
      * Gets a repository identified by its ID.
      *
      * @param repositoryId the repository ID
+     * @return the repository, or {@code null} if not found
      */
     Repository getRepository(String repositoryId);
 
