@@ -18,6 +18,7 @@
 package org.apache.chemistry.tck.atompub.test.spec;
 
 import java.io.StringReader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -257,6 +258,11 @@ public class VersionsTest extends TCKTest {
         // updatedObject.getVersionSeriesId().getStringValue());
         Assert.assertNull(updatedObject.getVersionSeriesCheckedOutId().getStringValue());
         Assert.assertNull(updatedObject.getVersionSeriesCheckedOutBy().getStringValue());
+        
+        // There is no guarantee that the object returned by checkin is the object against which our checkin comment
+        // was recorded, so let's get the 'latest major version'
+        updatedDoc = client.getEntry(updatedDoc.getSelfLink().getHref(), Collections.singletonMap("returnVersion", "latestmajor"));
+        updatedObject = updatedDoc.getExtension(CMISConstants.OBJECT);
         Assert.assertEquals(guid, updatedObject.getCheckinComment().getStringValue());
     }
 
@@ -329,6 +335,17 @@ public class VersionsTest extends TCKTest {
         String xml = documentRes.getContentAsString();
         Assert.assertNotNull(xml);
 
+        // get all versions
+        Link allVersionsLink = document.getLink(CMISConstants.REL_VERSION_HISTORY);
+        Assert.assertNotNull(allVersionsLink);
+        Feed allVersions = client.getFeed(allVersionsLink.getHref());
+        Assert.assertNotNull(allVersions);
+        
+        // Remember the initial number of versions. This should be at least one, but may vary across repositories that
+        // may maintain a 'current' version in tandem with version history snapshots.
+        int initialVersions = allVersions.getEntries().size();
+        Assert.assertTrue(initialVersions > 0);
+        
         IRI checkedoutHREF = client.getCheckedOutCollection(client.getWorkspace());
         for (int i = 0; i < NUMBER_OF_VERSIONS; i++) {
             // checkout
@@ -355,13 +372,12 @@ public class VersionsTest extends TCKTest {
         }
 
         // get all versions
-        Link allVersionsLink = document.getLink(CMISConstants.REL_VERSION_HISTORY);
-        Assert.assertNotNull(allVersionsLink);
-        Feed allVersions = client.getFeed(allVersionsLink.getHref());
+        allVersions = client.getFeed(allVersionsLink.getHref());
         Assert.assertNotNull(allVersions);
-        Assert.assertEquals(NUMBER_OF_VERSIONS + 1 /** initial version */
-        , allVersions.getEntries().size());
-        for (int i = 0; i < NUMBER_OF_VERSIONS; i++) {
+        Assert.assertEquals(NUMBER_OF_VERSIONS + initialVersions, allVersions.getEntries().size());
+        boolean pastLatestMajor = false;
+        int versionIndex = NUMBER_OF_VERSIONS - 1;
+        for (int i = 0; i < allVersions.getEntries().size(); i++) {
             Link versionLink = allVersions.getEntries().get(i).getSelfLink();
             Assert.assertNotNull(versionLink);
             Entry version = client.getEntry(versionLink.getHref());
@@ -370,12 +386,35 @@ public class VersionsTest extends TCKTest {
             // checked-in document
             // Assert.assertEquals("Update Title checkin " + i,
             // version.getTitle());
-            Response versionContentRes = client.executeRequest(new GetRequest(version.getContentSrc().toString()), 200);
-            Assert.assertEquals("updated content checkin " + (NUMBER_OF_VERSIONS - 1 - i), versionContentRes.getContentAsString());
             CMISObject versionObject = version.getExtension(CMISConstants.OBJECT);
             Assert.assertNotNull(versionObject);
-            Assert.assertEquals("checkin" + +(NUMBER_OF_VERSIONS - 1 - i), versionObject.getCheckinComment().getStringValue());
+
+            // Validate latest major version flag
+            if (pastLatestMajor) {
+                Assert.assertFalse("More than one latest major version!", versionObject.isLatestMajorVersion()
+                        .getBooleanValue());
+            } else {
+                pastLatestMajor = versionObject.isLatestMajorVersion().getBooleanValue();
+            }
+            
+            if (versionIndex >= 0) {
+                // Validate non-initial versions have content
+                Response versionContentRes = client.executeRequest(new GetRequest(version.getContentSrc().toString()),
+                        200);
+
+                // Ensure that the latest major version and its preceding
+                // checkins match up to what we checked in
+                if (pastLatestMajor) {
+                    Assert.assertEquals("updated content checkin " + versionIndex, versionContentRes
+                            .getContentAsString());
+                    Assert.assertEquals("checkin" + versionIndex, versionObject.getCheckinComment().getStringValue());
+                    versionIndex--;
+                }
+            }
         }
+        // Make sure all versions were found
+        Assert.assertTrue("No latest major version found", pastLatestMajor);
+        Assert.assertEquals("Not all versions found", -1, versionIndex);
     }
 
 }

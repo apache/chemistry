@@ -34,7 +34,7 @@ import org.junit.Assert;
  */
 public class CMISTestFixture {
 
-    private static Long testStartTime = null;
+    private Long testStartTime = null;
 
     private CMISClient client;
     private String name;
