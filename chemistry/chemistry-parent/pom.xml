@@ -121,6 +121,16 @@
       </dependency>
       <dependency>
         <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-ws</artifactId>
+        <version>${version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-soap-server</artifactId>
+        <version>${version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry</groupId>
         <artifactId>chemistry-jcr</artifactId>
         <version>${version}</version>
       </dependency>
@@ -194,6 +204,21 @@
         <groupId>javax.ws.rs</groupId>
         <artifactId>jsr311-api</artifactId>
         <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <version>2.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-jaxws_2.1_spec</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-ws-metadata_2.0_spec</artifactId>
+        <version>1.1.2</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>

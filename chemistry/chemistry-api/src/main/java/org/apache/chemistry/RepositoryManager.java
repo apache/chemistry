@@ -29,8 +29,13 @@ public class RepositoryManager implements RepositoryService {
 
     protected static RepositoryManager instance;
 
+    protected List<Runnable> activators = new ArrayList<Runnable>(1);
+
     protected List<RepositoryService> services = new CopyOnWriteArrayList<RepositoryService>();
 
+    /**
+     * Gets the {@link RepositoryManager} singleton.
+     */
     public static RepositoryManager getInstance() {
         if (instance == null) {
             synchronized (RepositoryManager.class) {
@@ -42,6 +47,32 @@ public class RepositoryManager implements RepositoryService {
         return instance;
     }
 
+    /**
+     * Registers a {@link Runnable} that will be called the first time a request
+     * for a repository is made.
+     * <p>
+     * This can be used with a runnable that registers repositories just when
+     * they are needed.
+     */
+    public synchronized void registerActivator(Runnable activator) {
+        activators.add(activator);
+    }
+
+    protected void runActivators() {
+        if (activators.isEmpty()) {
+            return;
+        }
+        synchronized (this) {
+            for (Runnable activator : activators) {
+                activator.run();
+            }
+            activators.clear();
+        }
+    }
+
+    /**
+     * Registers a {@link RepositoryService}.
+     */
     public synchronized void registerService(RepositoryService service) {
         if (service == this) {
             // avoid stupid errors
@@ -60,6 +91,7 @@ public class RepositoryManager implements RepositoryService {
     }
 
     public Repository getDefaultRepository() {
+        runActivators();
         for (RepositoryService service : services) {
             Repository repository = service.getDefaultRepository();
             if (repository != null) {
@@ -70,6 +102,7 @@ public class RepositoryManager implements RepositoryService {
     }
 
     public Collection<RepositoryEntry> getRepositories() {
+        runActivators();
         List<RepositoryEntry> entries = new ArrayList<RepositoryEntry>(1);
         for (RepositoryService service : services) {
             entries.addAll(service.getRepositories());
@@ -78,6 +111,7 @@ public class RepositoryManager implements RepositoryService {
     }
 
     public Repository getRepository(String repositoryId) {
+        runActivators();
         for (RepositoryService service : services) {
             Repository repository = service.getRepository(repositoryId);
             if (repository != null) {

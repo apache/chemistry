@@ -14,6 +14,7 @@
    limitations under the License.
   -->
 
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -22,26 +23,31 @@
     <groupId>org.apache.chemistry</groupId>
     <artifactId>chemistry-parent</artifactId>
     <version>0.5-SNAPSHOT</version>
-    <relativePath>chemistry-parent/pom.xml</relativePath>
   </parent>
 
-  <artifactId>chemistry</artifactId>
-  <name>Chemistry</name>
-  <packaging>pom</packaging>
-  
-  <modules>
-    <module>chemistry-parent</module>
-    <module>chemistry-api</module>
-    <module>chemistry-commons</module>
-    <module>chemistry-tests</module>
-    <module>chemistry-atompub</module>
-    <module>chemistry-atompub-server</module>
-    <module>chemistry-atompub-client</module>
-    <module>chemistry-ws</module>
-    <module>chemistry-soap-server</module>
-    <module>chemistry-jcr</module>
-    <module>chemistry-tck-atompub</module>
-    <module>chemistry-shell</module>
-  </modules>
+  <artifactId>chemistry-soap-server</artifactId>
+  <name>Chemistry SOAP Server</name>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.apache.chemistry</groupId>
+      <artifactId>chemistry-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.chemistry</groupId>
+      <artifactId>chemistry-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.chemistry</groupId>
+      <artifactId>chemistry-ws</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
 </project>

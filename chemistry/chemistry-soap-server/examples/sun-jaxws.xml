@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<endpoints xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime" version="2.0">
+  <endpoint name="RepositoryService"
+      implementation="org.apache.chemistry.soap.server.RepositoryServicePortImpl"
+      url-pattern="/webservices/cmis/RepositoryService">
+    <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+      <handler-chain>
+        <handler>
+          <handler-class>org.apache.chemistry.soap.server.AuthHandler</handler-class>
+        </handler>
+      </handler-chain>
+    </handler-chains>
+  </endpoint>
+</endpoints>
