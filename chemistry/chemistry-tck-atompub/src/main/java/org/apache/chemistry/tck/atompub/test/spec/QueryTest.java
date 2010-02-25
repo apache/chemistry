@@ -104,7 +104,7 @@ public class QueryTest extends TCKTest {
         // TODO: use property query name
         String query = 
                 "SELECT * FROM cmis:folder " +
-                "WHERE cmis:ObjectId = '" + folderObject.getObjectId().getStringValue() + "'";
+                "WHERE cmis:objectId = '" + folderObject.getObjectId().getStringValue() + "'";
         String queryReq = queryDoc.replace("${STATEMENT}", query);
         queryReq = queryReq.replace("${SKIPCOUNT}", "0");
         queryReq = queryReq.replace("${MAXITEMS}", "5");
@@ -138,7 +138,7 @@ public class QueryTest extends TCKTest {
         String query =
                 "SELECT * FROM cmis:document " +
                 "WHERE IN_FOLDER('" + folderObject.getObjectId().getStringValue() + "') " + 
-                "AND cmis:Name = 'apple1'";
+                "AND cmis:name = 'apple1'";
         String queryReq = queryDoc.replace("${STATEMENT}", query);
         queryReq = queryReq.replace("${SKIPCOUNT}", "0");
         queryReq = queryReq.replace("${MAXITEMS}", "5");
@@ -171,7 +171,7 @@ public class QueryTest extends TCKTest {
         // TODO: use property query name
         String fullText = document2Object.getName().getStringValue();
         String query = 
-                "SELECT cmis:ObjectId, cmis:ObjectTypeId, cmis:Name FROM cmis:document " + 
+                "SELECT cmis:objectId, cmis:objectTypeId, cmis:name FROM cmis:document " + 
                 "WHERE CONTAINS('" + fullText + "')";
         String queryReq = queryDoc.replace("${STATEMENT}", query);
         queryReq = queryReq.replace("${SKIPCOUNT}", "0");
@@ -204,9 +204,9 @@ public class QueryTest extends TCKTest {
         // combined meta data and full text
         // TODO: use property query name
         String query = 
-                "SELECT cmis:ObjectId, cmis:ObjectTypeId, cmis:Name FROM cmis:document " + 
+                "SELECT cmis:objectId, cmis:objectTypeId, cmis:name FROM cmis:document " + 
                 "WHERE IN_FOLDER('" + folderObject.getObjectId().getStringValue() + "') " +
-                "AND cmis:Name = 'apple1' " +
+                "AND cmis:name = 'apple1' " +
                 "AND CONTAINS('apple1')";
         String queryReq = queryDoc.replace("${STATEMENT}", query);
         queryReq = queryReq.replace("${SKIPCOUNT}", "0");
@@ -239,9 +239,9 @@ public class QueryTest extends TCKTest {
         // combined meta data and full text
         // TODO: use property query name
         final String query = 
-                "SELECT cmis:ObjectId, cmis:ObjectTypeId, cmis:Name FROM cmis:document " + 
+                "SELECT cmis:objectId, cmis:objectTypeId, cmis:name FROM cmis:document " + 
                 "WHERE IN_FOLDER('" + folderObject.getObjectId().getStringValue() + "') " +
-                "AND cmis:Name = 'apple1' " +
+                "AND cmis:name = 'apple1' " +
                 "AND CONTAINS('apple1')";
         
         GatherRenditionsVisitor visitor = new GatherRenditionsVisitor(client);

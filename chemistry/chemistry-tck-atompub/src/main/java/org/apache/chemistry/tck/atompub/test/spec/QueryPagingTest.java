@@ -69,12 +69,11 @@ public class QueryPagingTest extends TCKTest {
         Assert.assertEquals(15, unread.size());
 
         // query children
-        // TODO: use property query name
         IRI queryHREF = client.getQueryCollection(client.getWorkspace());
         String queryDoc = templates.load("query.cmisquery.xml");
         CMISObject testFolderObject = searchFolder.entry.getExtension(CMISConstants.OBJECT);
         String query = 
-                "SELECT cmis:ObjectId, cmis:ObjectTypeId, cmis:Name FROM cmis:document " +
+                "SELECT cmis:objectId, cmis:objectTypeId, cmis:name FROM cmis:document " +
                 "WHERE IN_FOLDER('" + testFolderObject.getObjectId().getStringValue() + "')";
         String queryReq = queryDoc.replace("${STATEMENT}", query);
         queryReq = queryReq.replace("${SKIPCOUNT}", "0");
