@@ -13,6 +13,7 @@
  *
  * Authors:
  *     Florent Guillaume, Nuxeo
+ *     Amelie Avramo, EntropySoft
  */
 package org.apache.chemistry.atompub.server;
 
@@ -137,7 +138,11 @@ public abstract class CMISCollection<T> extends
      */
 
     public String getServiceLink(RequestContext request) {
-        return request.absoluteUrlFor(TargetType.TYPE_SERVICE, null);
+        Map<String, String> params = new HashMap<String, String>();
+        if (repository != null) {
+            params.put("repository", repository.getId());
+        }
+        return request.absoluteUrlFor(TargetType.TYPE_SERVICE, params);
     }
 
     protected String getEntrylink(String entryType, String id,
