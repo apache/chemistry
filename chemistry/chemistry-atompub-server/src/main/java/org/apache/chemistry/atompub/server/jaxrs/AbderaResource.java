@@ -18,17 +18,16 @@
 package org.apache.chemistry.atompub.server.jaxrs;
 
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -59,6 +58,9 @@ import org.apache.commons.logging.LogFactory;
 public class AbderaResource {
 
     private static final Log log = LogFactory.getLog(AbderaResource.class);
+
+    // hardcoded for buggy UriInfo.getMatchedURIs with RESTEasy
+    public String thisResourcePath = "cmis";
 
     protected CMISProvider provider;
 
@@ -99,30 +101,26 @@ public class AbderaResource {
      * <p>
      * Wrapping is needed to fixup the servlet path to include this Resource's
      * path.
-     * <p>
-     * We need to pass an explicit number of segments because
-     * UriInfo.getMatchedURIs is buggy for RESTEasy
-     * (https://jira.jboss.org/jira/browse/RESTEASY-100)
-     *
-     * @param segments the number of segments of the method invoking this, used
-     *            to determine the Resource path
      */
-    protected ServletRequestContext getRequestContext(int segments) {
+    protected ServletRequestContext getRequestContext() {
         // actual context & servlet path
         String cpath = httpRequest.getContextPath();
         String spath = httpRequest.getServletPath();
-        // find this Resource path (remove some segments from it)
-        String rpath = ui.getPath(false);
-        while (segments > 0) {
-            segments--;
-            if (rpath.contains("/")) {
-                rpath = rpath.substring(0, rpath.lastIndexOf('/'));
-            }
+        String rpath;
+        List<String> matchedURIs = ui.getMatchedURIs();
+        if (matchedURIs.size() > 1) {
+            // spec compliant
+            rpath = matchedURIs.get(matchedURIs.size() - 1);
+        } else {
+            // UriInfo.getMatchedURIs is buggy for RESTEasy
+            // (https://jira.jboss.org/jira/browse/RESTEASY-100)
+            // have to hardcode resource path
+            rpath = thisResourcePath;
         }
         // find the pretend context & servlet path
         final String contextPath;
         final String servletPath;
-        final String resourcePath = rpath;
+        final String resourcePath = '/' + rpath;
         if (pathMunger == null) {
             contextPath = cpath;
             servletPath = spath;
@@ -194,8 +192,8 @@ public class AbderaResource {
         return b.build();
     }
 
-    protected Response getAbderaFeed(int skipSegments) {
-        RequestContext requestContext = getRequestContext(skipSegments);
+    protected Response getAbderaFeed() {
+        RequestContext requestContext = getRequestContext();
         CollectionAdapter adapter = getAbderaCollectionAdapter(requestContext);
         if (adapter == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -203,8 +201,8 @@ public class AbderaResource {
         return getResponse(adapter.getFeed(requestContext));
     }
 
-    protected Response getAbderaEntry(int skipSegments) {
-        RequestContext requestContext = getRequestContext(skipSegments);
+    protected Response getAbderaEntry() {
+        RequestContext requestContext = getRequestContext();
         CollectionAdapter adapter = getAbderaCollectionAdapter(requestContext);
         if (adapter == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -212,8 +210,8 @@ public class AbderaResource {
         return getResponse(adapter.getEntry(requestContext));
     }
 
-    protected Response postAbderaEntry(int skipSegments) {
-        RequestContext requestContext = getRequestContext(skipSegments);
+    protected Response postAbderaEntry() {
+        RequestContext requestContext = getRequestContext();
         CollectionAdapter adapter = getAbderaCollectionAdapter(requestContext);
         if (adapter == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -221,8 +219,8 @@ public class AbderaResource {
         return getResponse(adapter.postEntry(requestContext));
     }
 
-    protected Response putAbderaEntry(int skipSegments) {
-        RequestContext requestContext = getRequestContext(skipSegments);
+    protected Response putAbderaEntry() {
+        RequestContext requestContext = getRequestContext();
         CollectionAdapter adapter = getAbderaCollectionAdapter(requestContext);
         if (adapter == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -230,8 +228,8 @@ public class AbderaResource {
         return getResponse(adapter.putEntry(requestContext));
     }
 
-    protected Response deleteAbderaEntry(int skipSegments) {
-        RequestContext requestContext = getRequestContext(skipSegments);
+    protected Response deleteAbderaEntry() {
+        RequestContext requestContext = getRequestContext();
         CollectionAdapter adapter = getAbderaCollectionAdapter(requestContext);
         if (adapter == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -243,7 +241,7 @@ public class AbderaResource {
     @Produces(AtomPub.MEDIA_TYPE_ATOM_SERVICE)
     @Path("repository")
     public Response doGetRepository(@Context HttpServletRequest httpRequest) {
-        RequestContext requestContext = getRequestContext(1);
+        RequestContext requestContext = getRequestContext();
         return getResponse(provider.getServiceDocument(requestContext));
     }
 
@@ -251,14 +249,14 @@ public class AbderaResource {
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
     @Path("typechildren")
     public Response doGetTypeChildrenAll() {
-        return getAbderaFeed(1);
+        return getAbderaFeed();
     }
 
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
     @Path("typechildren/{typeid}")
     public Response doGetTypeChildren() {
-        return getAbderaFeed(2);
+        return getAbderaFeed();
     }
 
     @GET
@@ -266,23 +264,21 @@ public class AbderaResource {
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
     @Path("typedescendants/{typeid}")
     public Response doGetTypeDescendants() {
-        return getAbderaFeed(2);
+        return getAbderaFeed();
     }
 
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
     @Path("type/{typeid}")
     public Response doGetType() {
-        // typeid decoded by Abdera getCollectionAdapter
-        return getAbderaEntry(2);
+        return getAbderaEntry();
     }
 
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
     @Path("children/{objectid}")
     public Response doGetChildren() {
-        // objectid decoded by Abdera getCollectionAdapter
-        return getAbderaFeed(2);
+        return getAbderaFeed();
     }
 
     @POST
@@ -292,53 +288,47 @@ public class AbderaResource {
             AtomPub.MEDIA_TYPE_ATOM_ENTRY + ";charset=UTF-8" })
     @Path("children/{objectid}")
     public Response doPostChildren() {
-        // objectid decoded by Abdera getCollectionAdapter
-        return postAbderaEntry(2);
+        return postAbderaEntry();
     }
 
     @GET
     @Produces(AtomPubCMIS.MEDIA_TYPE_CMIS_TREE)
     @Path("descendants/{objectid}")
     public Response doGetDescendants() {
-        // objectid decoded by Abdera getCollectionAdapter
-        return getAbderaFeed(2);
+        return getAbderaFeed();
     }
 
     @DELETE
     @Path("descendants/{objectid}")
     public Response doDeleteDescendants() {
-        // objectid decoded by Abdera getCollectionAdapter
-        return deleteAbderaEntry(2);
+        return deleteAbderaEntry();
     }
 
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
     @Path("foldertree/{objectid}")
     public Response doGetFolderTree() {
-        // objectid decoded by Abdera getCollectionAdapter
-        return getAbderaFeed(2);
+        return getAbderaFeed();
     }
 
     @DELETE
     @Path("foldertree/{objectid}")
     public Response doDeleteFolderTree() {
-        // objectid decoded by Abdera getCollectionAdapter
-        return deleteAbderaEntry(2);
+        return deleteAbderaEntry();
     }
 
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
     @Path("object")
     public Response doGetObjectNoId() {
-        return getAbderaEntry(1);
+        return getAbderaEntry();
     }
 
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
     @Path("object/{objectid}")
     public Response doGetObject() {
-        // objectid decoded by Abdera getCollectionAdapter
-        return getAbderaEntry(2);
+        return getAbderaEntry();
     }
 
     // TODO should we really accept AtomPub.MEDIA_TYPE_ATOM ?
@@ -347,39 +337,26 @@ public class AbderaResource {
     @Produces(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
     @Path("object/{objectid}")
     public Response doPutObject() {
-        // objectid decoded by Abdera getCollectionAdapter
-        return putAbderaEntry(2);
+        return putAbderaEntry();
     }
 
     @DELETE
     @Path("object/{objectid}")
     public Response deleteObject() {
-        // objectid decoded by Abdera getCollectionAdapter
-        return deleteAbderaEntry(2);
+        return deleteAbderaEntry();
     }
 
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_ENTRY)
     @Path("path/{path:.*}")
-    public Response doGetObjectByPath(@Encoded @PathParam("path") String path) {
-        // don't use the path argument but refetch it from the UriInfo
-        // to ensure that an initial slash isn't swallowed, which is important
-        // for the later segments count used in getRequestContext
-        path = ui.getPathParameters(false).get("path").get(0);
-        int skipSegments = 2; //
-        for (int i = 0; i < path.length(); i++) {
-            if (path.charAt(i) == '/') {
-                skipSegments++;
-            }
-        }
-        return getAbderaEntry(skipSegments);
+    public Response doGetObjectByPath() {
+        return getAbderaEntry();
     }
 
     @GET
     @Path("file/{objectid}")
     public Response doGetFile() {
-        // objectid decoded by Abdera getCollectionAdapter
-        RequestContext requestContext = getRequestContext(2);
+        RequestContext requestContext = getRequestContext();
         CMISChildrenCollection adapter = (CMISChildrenCollection) getAbderaCollectionAdapter(requestContext);
         return getResponse(adapter.getMedia(requestContext));
     }
@@ -387,8 +364,7 @@ public class AbderaResource {
     @PUT
     @Path("file/{objectid}")
     public Response doPutFile() {
-        // objectid decoded by Abdera getCollectionAdapter
-        RequestContext requestContext = getRequestContext(2);
+        RequestContext requestContext = getRequestContext();
         CMISChildrenCollection adapter = (CMISChildrenCollection) getAbderaCollectionAdapter(requestContext);
         return getResponse(adapter.putMedia(requestContext));
     }
@@ -397,7 +373,7 @@ public class AbderaResource {
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
     @Path("query")
     public Response doGetQuery() {
-        return getAbderaEntry(1);
+        return getAbderaEntry();
     }
 
     @POST
@@ -405,14 +381,14 @@ public class AbderaResource {
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
     @Path("query")
     public Response doPostQuery() {
-        return postAbderaEntry(1);
+        return postAbderaEntry();
     }
 
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
     @Path("checkedout")
     public Response doGetCheckedOut() {
-        return getAbderaFeed(1);
+        return getAbderaFeed();
     }
 
 }
