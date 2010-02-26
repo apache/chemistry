@@ -94,4 +94,6 @@ public class TypeDefinitionTest extends TCKTest {
             // TODO: test correct type for entry & properties of type
         }
     }
+    
+    // TODO: test for getTypeById uri template
 }
