@@ -101,6 +101,7 @@ public class VersionsTest extends TCKTest {
         Assert.assertNotNull(pwcObject);
         Assert.assertTrue(pwcObject.isVersionSeriesCheckedOut().getBooleanValue());
         Assert.assertEquals(docObject.getObjectId().getStringValue(), pwcObject.getVersionSeriesId().getStringValue());
+        Assert.assertEquals(docObject.getVersionSeriesId().getStringValue(), pwcObject.getVersionSeriesId().getStringValue());
         Assert.assertEquals(pwcObject.getObjectId().getStringValue(), pwcObject.getVersionSeriesCheckedOutId().getStringValue());
         Assert.assertNotNull(pwcObject.getVersionSeriesCheckedOutBy().getStringValue());
 
