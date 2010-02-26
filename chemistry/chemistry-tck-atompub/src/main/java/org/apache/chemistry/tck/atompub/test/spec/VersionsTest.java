@@ -31,7 +31,6 @@ import org.apache.chemistry.abdera.ext.CMISObject;
 import org.apache.chemistry.tck.atompub.TCKTest;
 import org.apache.chemistry.tck.atompub.http.DeleteRequest;
 import org.apache.chemistry.tck.atompub.http.GetRequest;
-import org.apache.chemistry.tck.atompub.http.PatchRequest;
 import org.apache.chemistry.tck.atompub.http.PostRequest;
 import org.apache.chemistry.tck.atompub.http.PutRequest;
 import org.apache.chemistry.tck.atompub.http.Request;
@@ -212,7 +211,7 @@ public class VersionsTest extends TCKTest {
         // String guid = GUID.generate();
         String guid = System.currentTimeMillis() + "";
         updateFile = updateFile.replace("${NAME}", guid);
-        Request updateReq = new PatchRequest(pwc.getEditLink().getHref().toString(), updateFile, CMISConstants.MIMETYPE_ENTRY);
+        Request updateReq = new PutRequest(pwc.getEditLink().getHref().toString(), updateFile, CMISConstants.MIMETYPE_ENTRY);
         Response pwcUpdatedres = client.executeRequest(updateReq, 200);
         Assert.assertNotNull(pwcUpdatedres);
         Entry updated = model.parseEntry(new StringReader(pwcUpdatedres.getContentAsString()), null);
@@ -230,7 +229,7 @@ public class VersionsTest extends TCKTest {
         Map<String, String> args2 = new HashMap<String, String>();
         args2.put("checkinComment", guid);
         args2.put("checkin", "true");
-        Request checkinReq = new PatchRequest(checkinUrl, checkinFile, CMISConstants.MIMETYPE_ENTRY).setArgs(args2);
+        Request checkinReq = new PutRequest(checkinUrl, checkinFile, CMISConstants.MIMETYPE_ENTRY).setArgs(args2);
         Response checkinRes = client.executeRequest(checkinReq, 200);
         Assert.assertNotNull(checkinRes);
         String checkinResXML = checkinRes.getContentAsString();
@@ -303,7 +302,7 @@ public class VersionsTest extends TCKTest {
         Map<String, String> args2 = new HashMap<String, String>();
         args2.put("checkinComment", guid);
         args2.put("checkin", "true");
-        Request checkinReq = new PatchRequest(checkinUrl, checkinFile, CMISConstants.MIMETYPE_ENTRY).setArgs(args2);
+        Request checkinReq = new PutRequest(checkinUrl, checkinFile, CMISConstants.MIMETYPE_ENTRY).setArgs(args2);
         Response checkinRes = client.executeRequest(checkinReq, 200);
         Assert.assertNotNull(checkinRes);
         String checkinResXML = checkinRes.getContentAsString();
