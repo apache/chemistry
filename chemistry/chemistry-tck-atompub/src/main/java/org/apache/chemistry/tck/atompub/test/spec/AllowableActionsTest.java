@@ -52,11 +52,6 @@ public class AllowableActionsTest extends TCKTest {
         Element allowableActions = model.parse(new StringReader(allowableActionsRes.getContentAsString()), null);
         Assert.assertNotNull(allowableActions);
         Assert.assertTrue(allowableActions instanceof CMISAllowableActions);
-        CMISObject childObject = folder.getExtension(CMISConstants.OBJECT);
-        Assert.assertNotNull(childObject);
-        CMISAllowableActions objectAllowableActions = childObject.getExtension(CMISConstants.ALLOWABLE_ACTIONS);
-        Assert.assertNotNull(objectAllowableActions);
-        compareAllowableActions((CMISAllowableActions) allowableActions, objectAllowableActions);
 
         // retrieve getProperties() with includeAllowableActions flag
         Map<String, String> args = new HashMap<String, String>();
@@ -80,11 +75,6 @@ public class AllowableActionsTest extends TCKTest {
         Element allowableActions = model.parse(new StringReader(allowableActionsRes.getContentAsString()), null);
         Assert.assertNotNull(allowableActions);
         Assert.assertTrue(allowableActions instanceof CMISAllowableActions);
-        CMISObject childObject = document.getExtension(CMISConstants.OBJECT);
-        Assert.assertNotNull(childObject);
-        CMISAllowableActions objectAllowableActions = childObject.getExtension(CMISConstants.ALLOWABLE_ACTIONS);
-        Assert.assertNotNull(objectAllowableActions);
-        compareAllowableActions((CMISAllowableActions) allowableActions, objectAllowableActions);
 
         // retrieve getProperties() with includeAllowableActions flag
         Map<String, String> args = new HashMap<String, String>();
