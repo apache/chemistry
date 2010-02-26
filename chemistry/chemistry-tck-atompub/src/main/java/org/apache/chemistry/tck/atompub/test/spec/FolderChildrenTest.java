@@ -140,7 +140,7 @@ public class FolderChildrenTest extends TCKTest {
         // get children with object_id only
         Link childrenLink = client.getChildrenLink(folder.entry);
         Map<String, String> args = new HashMap<String, String>();
-        args.put("filter", objectIdQueryName + " " + objectTypeIdQueryName);
+        args.put("filter", objectIdQueryName + "," + objectTypeIdQueryName);
         Feed children = client.getFeed(childrenLink.getHref(), args);
 
         for (Entry entry : children.getEntries()) {
