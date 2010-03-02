@@ -537,7 +537,8 @@ public class CMISClient {
                         mimetypeValidator = getAtomValidator();
                     }
                     else if (contentType.startsWith(CMISConstants.MIMETYPE_APP)
-                            || contentType.startsWith(CMISConstants.MIMETYPE_CMISACL)) {
+                            || contentType.startsWith(CMISConstants.MIMETYPE_CMISACL)
+                            || contentType.startsWith(CMISConstants.MIMETYPE_CMIS_ALLOWABLE_ACTIONS)) {
                         mimetypeValidator = getAppValidator();
                     }
                 } catch(SAXException e) {}
