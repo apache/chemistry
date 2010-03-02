@@ -11,15 +11,19 @@ Tests are split into the following categories...
 
 org.apache.chemistry.tck.atompub.test.schema: for testing CMIS schema and example files
 org.apache.chemistry.tck.atompub.test.spec: for testing compliance with CMIS specification
+  AccessControlListTest
   AllowableActionsTest
+  ChangeLogTest
   ContentStreamTest
   CreateTest
   DeleteTest
   FolderChildrenTest
   FolderHierarchyTest
   GetTest
+  MoveTest
   QueryPagingTest
   QueryTest
+  RelationshipsTest
   RepositoryServiceTest
   TypeDefinitionTest
   UpdateTest
@@ -108,6 +112,9 @@ chemistry.tck.validate (true=default|false) : true => validate responses against
 chemistry.tck.failOnValidationError (true|false=default) : true => fail on validation error
 chemistry.tck.traceRequests (true|false=default) : true => trace requests and responses
 chemistry.tck.deleteTestFixture (true=default|false) : true => remove test data at end of test
+chemistry.tck.type.document (cmis:document=default) : type id of created documents
+chemistry.tck.type.folder (cmis:folder=default) : type id of created folders
+chemistry.tck.type.relationship (cmis:relationship=default) : type id of created relationships
 
 
 Tck Reporting instructions
