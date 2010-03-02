@@ -44,6 +44,13 @@ public class CMISTypeDefinition extends ExtensibleElementWrapper {
     }
 
     /**
+     * @return the type identifier
+     */
+    public String getId() {
+        return getFirstChild(CMISConstants.TYPE_ID).getText();
+    }
+    
+    /**
      * Determines whether objects of this type are controllable by ACLs.
      * 
      * @return <code>true</code> if objects of this type are controllable by

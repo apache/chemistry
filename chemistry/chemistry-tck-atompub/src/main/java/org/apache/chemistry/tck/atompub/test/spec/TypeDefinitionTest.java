@@ -25,6 +25,9 @@ import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Link;
 import org.apache.chemistry.abdera.ext.CMISConstants;
+import org.apache.chemistry.abdera.ext.CMISObject;
+import org.apache.chemistry.abdera.ext.CMISTypeDefinition;
+import org.apache.chemistry.abdera.ext.CMISUriTemplate;
 import org.apache.chemistry.tck.atompub.TCKTest;
 import org.junit.Assert;
 
@@ -86,14 +89,32 @@ public class TypeDefinitionTest extends TCKTest {
         Link childrenLink = client.getChildrenLink(testFolder);
         Feed children = client.getFeed(childrenLink.getHref());
         for (Entry entry : children.getEntries()) {
+            CMISObject entryObject = entry.getExtension(CMISConstants.OBJECT);
+            Assert.assertNotNull(entryObject);
             // get type definition
             Link typeLink = entry.getLink(CMISConstants.REL_DESCRIBED_BY);
             Assert.assertNotNull(typeLink);
             Entry type = client.getEntry(typeLink.getHref());
             Assert.assertNotNull(type);
-            // TODO: test correct type for entry & properties of type
+            CMISTypeDefinition entryType = type.getExtension(CMISConstants.TYPE_DEFINITION);
+            Assert.assertNotNull(entryType);
+            assertEquals(entryObject.getObjectTypeId().getStringValue(), entryType.getId());
         }
     }
     
-    // TODO: test for getTypeById uri template
+    public void testGetTypeDefinitionById() throws Exception {
+        // construct uri for cmis:document type
+        CMISUriTemplate typeByIdTemplate = client.getTypeByIdUriTemplate(client.getWorkspace());
+        Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put("id", "cmis:document");
+        IRI typeByIdRequest = typeByIdTemplate.generateUri(variables);
+        
+        // get type definition
+        Entry typeById = client.getEntry(typeByIdRequest);
+        Assert.assertNotNull(typeById);
+        CMISTypeDefinition typeDef = typeById.getExtension(CMISConstants.TYPE_DEFINITION);
+        Assert.assertNotNull(typeDef);
+        Assert.assertEquals("cmis:document", typeDef.getId());
+    }
+    
 }
