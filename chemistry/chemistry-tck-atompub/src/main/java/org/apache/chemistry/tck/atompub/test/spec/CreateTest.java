@@ -40,7 +40,7 @@ public class CreateTest extends TCKTest
         Feed children = client.getFeed(childrenLink.getHref());
         Assert.assertNotNull(children);
         int entriesBefore = children.getEntries().size();
-        Entry folder = client.createFolder(children.getSelfLink().getHref(), "testCreateFolder");
+        Entry folder = client.createFolder(children.getSelfLink().getHref(), null, "testCreateFolder");
         Feed feedFolderAfter = client.getFeed(childrenLink.getHref());
         int entriesAfter = feedFolderAfter.getEntries().size();
         Assert.assertEquals(entriesBefore +1, entriesAfter);
@@ -57,7 +57,7 @@ public class CreateTest extends TCKTest
         Feed children = client.getFeed(childrenLink.getHref());
         Assert.assertNotNull(children);
         int entriesBefore = children.getEntries().size();
-        Entry document = client.createDocument(children.getSelfLink().getHref(), "testCreateDocumentCMISContent", "createdocumentBase64.cmisatomentry.xml");
+        Entry document = client.createDocument(children.getSelfLink().getHref(), null, "testCreateDocumentCMISContent", "createdocumentBase64.cmisatomentry.xml");
         Response documentContentRes = client.executeRequest(new GetRequest(document.getContentSrc().toString()), 200);
         String resContent = documentContentRes.getContentAsString();
         Assert.assertEquals(document.getTitle(), resContent);
@@ -77,7 +77,7 @@ public class CreateTest extends TCKTest
         Feed children = client.getFeed(childrenLink.getHref());
         Assert.assertNotNull(children);
         int entriesBefore = children.getEntries().size();
-        Entry document = client.createDocument(children.getSelfLink().getHref(), "testCreateDocumentAtomContent");
+        Entry document = client.createDocument(children.getSelfLink().getHref(), null, "testCreateDocumentAtomContent");
         Response documentContentRes = client.executeRequest(new GetRequest(document.getContentSrc().toString()), 200);
         String resContent = documentContentRes.getContentAsString();
         Assert.assertEquals(document.getTitle(), resContent);
@@ -97,7 +97,7 @@ public class CreateTest extends TCKTest
         Feed children = client.getFeed(childrenLink.getHref());
         Assert.assertNotNull(children);
         int entriesBefore = children.getEntries().size();
-        Entry document = client.createDocument(children.getSelfLink().getHref(), "Iñtërnâtiônàlizætiøn - 1.html", "createatomentry.atomentry.xml");
+        Entry document = client.createDocument(children.getSelfLink().getHref(), null, "Iñtërnâtiônàlizætiøn - 1.html", "createatomentry.atomentry.xml");
         Response documentContentRes = client.executeRequest(new GetRequest(document.getContentSrc().toString()), 200);
         String resContent = documentContentRes.getContentAsString();
         Assert.assertEquals(document.getTitle(), resContent);

@@ -32,6 +32,7 @@ import org.apache.chemistry.tck.atompub.test.spec.GetTest;
 import org.apache.chemistry.tck.atompub.test.spec.MoveTest;
 import org.apache.chemistry.tck.atompub.test.spec.QueryPagingTest;
 import org.apache.chemistry.tck.atompub.test.spec.QueryTest;
+import org.apache.chemistry.tck.atompub.test.spec.RelationshipsTest;
 import org.apache.chemistry.tck.atompub.test.spec.RepositoryServiceTest;
 import org.apache.chemistry.tck.atompub.test.spec.TypeDefinitionTest;
 import org.apache.chemistry.tck.atompub.test.spec.UpdateTest;
@@ -61,6 +62,7 @@ public class TCKTestSuite extends TestCase {
         suite.addTestSuite(QueryPagingTest.class);
         suite.addTestSuite(AllowableActionsTest.class);
         suite.addTestSuite(VersionsTest.class);
+        suite.addTestSuite(RelationshipsTest.class);
         suite.addTestSuite(AccessControlListTest.class);
         suite.addTestSuite(ChangeLogTest.class);
         

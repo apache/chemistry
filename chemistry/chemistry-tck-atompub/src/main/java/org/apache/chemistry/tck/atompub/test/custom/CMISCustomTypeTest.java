@@ -53,7 +53,7 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         Feed children = client.getFeed(childrenLink.getHref());
         assertNotNull(children);
         int entriesBefore = children.getEntries().size();
-        Entry folder = client.createFolder(children.getSelfLink().getHref(), "testCreateCustomFolder", "custom/createcustomfolder.atomentry.xml");
+        Entry folder = client.createFolder(children.getSelfLink().getHref(), null, "testCreateCustomFolder", "custom/createcustomfolder.atomentry.xml");
         Feed feedFolderAfter = client.getFeed(childrenLink.getHref());
         int entriesAfter = feedFolderAfter.getEntries().size();
         assertEquals(entriesBefore + 1, entriesAfter);
@@ -72,7 +72,7 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         Feed children = client.getFeed(childrenLink.getHref());
         assertNotNull(children);
         int entriesBefore = children.getEntries().size();
-        Entry document = client.createDocument(children.getSelfLink().getHref(), "testCreateCustomDocument", "custom/createcustomdocument.atomentry.xml");
+        Entry document = client.createDocument(children.getSelfLink().getHref(), null, "testCreateCustomDocument", "custom/createcustomdocument.atomentry.xml");
         Feed feedFolderAfter = client.getFeed(childrenLink.getHref());
         int entriesAfter = feedFolderAfter.getEntries().size();
         assertEquals(entriesBefore + 1, entriesAfter);
@@ -97,7 +97,7 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         Link childrenLink = client.getChildrenLink(testFolder);
 
         // create document for update
-        Entry document = client.createDocument(childrenLink.getHref(), "testUpdatePutCustomDocument", "custom/createcustomdocument.atomentry.xml");
+        Entry document = client.createDocument(childrenLink.getHref(), null, "testUpdatePutCustomDocument", "custom/createcustomdocument.atomentry.xml");
         assertNotNull(document);
 
         // update
@@ -137,7 +137,7 @@ public class CMISCustomTypeTest extends TCKCustomTest {
         int entriesBefore = children.getEntries().size();
 
         // create document for delete
-        Entry document = client.createDocument(childrenLink.getHref(), "testDeleteCustomDocument", "custom/createcustomdocument.atomentry.xml");
+        Entry document = client.createDocument(childrenLink.getHref(), null, "testDeleteCustomDocument", "custom/createcustomdocument.atomentry.xml");
         Response documentRes = client.executeRequest(new GetRequest(document.getSelfLink().getHref().toString()), 200);
         assertNotNull(documentRes);
 
@@ -169,17 +169,17 @@ public class CMISCustomTypeTest extends TCKCustomTest {
 
         // create documents to query
         // Standard root document
-        Entry document1 = client.createDocument(childrenLink.getHref(), "apple1");
+        Entry document1 = client.createDocument(childrenLink.getHref(), null, "apple1");
         assertNotNull(document1);
         CMISObject document1Object = document1.getExtension(CMISConstants.OBJECT);
         assertNotNull(document1Object);
         String doc2name = "name" + System.currentTimeMillis();
         // Custom documents
-        Entry document2 = client.createDocument(childrenLink.getHref(), doc2name, "custom/createcustomdocument.atomentry.xml");
+        Entry document2 = client.createDocument(childrenLink.getHref(), null, doc2name, "custom/createcustomdocument.atomentry.xml");
         assertNotNull(document2);
         CMISObject document2Object = document2.getExtension(CMISConstants.OBJECT);
         assertNotNull(document2Object);
-        Entry document3 = client.createDocument(childrenLink.getHref(), "banana1", "custom/createcustomdocument.atomentry.xml");
+        Entry document3 = client.createDocument(childrenLink.getHref(), null, "banana1", "custom/createcustomdocument.atomentry.xml");
         assertNotNull(document3);
         CMISObject document3Object = document3.getExtension(CMISConstants.OBJECT);
         assertNotNull(document3Object);
@@ -245,131 +245,6 @@ public class CMISCustomTypeTest extends TCKCustomTest {
             assertEquals(true, result2multiValues.get(0));
             assertEquals(false, result2multiValues.get(1));
         }
-    }
-
-    public void testCreateRelationship() throws Exception {
-        Entry testFolder = fixture.getTestCaseFolder();
-        Link childrenLink = client.getChildrenLink(testFolder);
-        assertNotNull(childrenLink);
-        Feed children = client.getFeed(childrenLink.getHref());
-        assertNotNull(children);
-        Entry source = client.createDocument(children.getSelfLink().getHref(), "testSource", "custom/createcustomdocument.atomentry.xml");
-        assertNotNull(source);
-        Entry target = client.createDocument(children.getSelfLink().getHref(), "testTarget", "custom/createcustomdocument.atomentry.xml");
-        assertNotNull(target);
-
-        // retrieve relationships feed on source
-        Link relsLink = source.getLink(CMISConstants.REL_RELATIONSHIPS);
-        assertNotNull(relsLink);
-        Feed relsBefore = client.getFeed(relsLink.getHref());
-        assertNotNull(relsBefore);
-        assertEquals(0, relsBefore.getEntries().size());
-
-        // create relationship between source and target documents
-        CMISObject targetObject = target.getExtension(CMISConstants.OBJECT);
-        assertNotNull(targetObject);
-        String targetId = targetObject.getObjectId().getStringValue();
-        assertNotNull(targetId);
-        Entry rel = client.createRelationship(relsLink.getHref(), "R:cmiscustom:assoc", targetId);
-        assertNotNull(rel);
-
-        // check created relationship
-        CMISObject sourceObject = source.getExtension(CMISConstants.OBJECT);
-        assertNotNull(sourceObject);
-        String sourceId = sourceObject.getObjectId().getStringValue();
-        assertNotNull(sourceId);
-        CMISObject relObject = rel.getExtension(CMISConstants.OBJECT);
-        assertNotNull(relObject);
-        assertEquals("R:cmiscustom:assoc", relObject.getObjectTypeId().getStringValue());
-        assertEquals(sourceId, relObject.getSourceId().getStringValue());
-        assertEquals(targetId, relObject.getTargetId().getStringValue());
-        assertEquals(source.getSelfLink().getHref(), rel.getLink(CMISConstants.REL_ASSOC_SOURCE).getHref());
-        assertEquals(target.getSelfLink().getHref(), rel.getLink(CMISConstants.REL_ASSOC_TARGET).getHref());
-
-        // check relationships for created item
-        Map<String, String> args = new HashMap<String, String>();
-        args.put(ARG_INCLUDE_SUB_RELATIONSHIP_TYPES, "true");
-        Feed relsAfter = client.getFeed(relsLink.getHref(), args);
-        assertNotNull(relsAfter);
-        assertEquals(1, relsAfter.getEntries().size());
-    }
-
-    public void testGetRelationship() throws Exception {
-        Entry testFolder = fixture.getTestCaseFolder();
-        Link childrenLink = client.getChildrenLink(testFolder);
-        assertNotNull(childrenLink);
-        Feed children = client.getFeed(childrenLink.getHref());
-        assertNotNull(children);
-        Entry source = client.createDocument(children.getSelfLink().getHref(), "testSource", "custom/createcustomdocument.atomentry.xml");
-        assertNotNull(source);
-        Entry target = client.createDocument(children.getSelfLink().getHref(), "testTarget", "custom/createcustomdocument.atomentry.xml");
-        assertNotNull(target);
-
-        // retrieve relationships feed on source
-        Link relsLink = source.getLink(CMISConstants.REL_RELATIONSHIPS);
-        assertNotNull(relsLink);
-
-        // create relationship between source and target documents
-        CMISObject targetObject = target.getExtension(CMISConstants.OBJECT);
-        assertNotNull(targetObject);
-        String targetId = targetObject.getObjectId().getStringValue();
-        assertNotNull(targetId);
-        Entry rel = client.createRelationship(relsLink.getHref(), "R:cmiscustom:assoc", targetId);
-        assertNotNull(rel);
-
-        // get created relationship
-        Entry relEntry = client.getEntry(rel.getSelfLink().getHref());
-        CMISObject relEntryObject = rel.getExtension(CMISConstants.OBJECT);
-        CMISObject relObject = rel.getExtension(CMISConstants.OBJECT);
-        assertNotNull(relObject);
-        assertEquals(relObject.getObjectTypeId().getStringValue(), relEntryObject.getObjectTypeId().getStringValue());
-        assertEquals(relObject.getSourceId().getStringValue(), relEntryObject.getSourceId().getStringValue());
-        assertEquals(relObject.getTargetId().getStringValue(), relEntryObject.getTargetId().getStringValue());
-        assertEquals(source.getSelfLink().getHref(), relEntry.getLink(CMISConstants.REL_ASSOC_SOURCE).getHref());
-        assertEquals(target.getSelfLink().getHref(), relEntry.getLink(CMISConstants.REL_ASSOC_TARGET).getHref());
-    }
-
-    public void testDeleteRelationship() throws Exception {
-        Entry testFolder = fixture.getTestCaseFolder();
-        Link childrenLink = client.getChildrenLink(testFolder);
-        assertNotNull(childrenLink);
-        Feed children = client.getFeed(childrenLink.getHref());
-        assertNotNull(children);
-        Entry source = client.createDocument(children.getSelfLink().getHref(), "testSource", "custom/createcustomdocument.atomentry.xml");
-        assertNotNull(source);
-        Entry target = client.createDocument(children.getSelfLink().getHref(), "testTarget", "custom/createcustomdocument.atomentry.xml");
-        assertNotNull(target);
-
-        // retrieve relationships feed on source
-        Link relsLink = source.getLink(CMISConstants.REL_RELATIONSHIPS);
-        assertNotNull(relsLink);
-        Feed relsBefore = client.getFeed(relsLink.getHref());
-        assertNotNull(relsBefore);
-        assertEquals(0, relsBefore.getEntries().size());
-
-        // create relationship between source and target documents
-        CMISObject targetObject = target.getExtension(CMISConstants.OBJECT);
-        assertNotNull(targetObject);
-        String targetId = targetObject.getObjectId().getStringValue();
-        assertNotNull(targetId);
-        Entry rel = client.createRelationship(relsLink.getHref(), "R:cmiscustom:assoc", targetId);
-        assertNotNull(rel);
-
-        // check relationships for created item
-        Map<String, String> args = new HashMap<String, String>();
-        args.put(ARG_INCLUDE_SUB_RELATIONSHIP_TYPES, "true");
-        Feed relsAfterCreate = client.getFeed(relsLink.getHref(), args);
-        assertNotNull(relsAfterCreate);
-        assertEquals(1, relsAfterCreate.getEntries().size());
-
-        // delete relationship
-        Response deleteRes = client.executeRequest(new DeleteRequest(rel.getSelfLink().getHref().toString()), 204);
-        assertNotNull(deleteRes);
-
-        // check relationships for deleted item
-        Feed relsAfterDelete = client.getFeed(relsLink.getHref(), args);
-        assertNotNull(relsAfterDelete);
-        assertEquals(0, relsAfterDelete.getEntries().size());
     }
 
 }

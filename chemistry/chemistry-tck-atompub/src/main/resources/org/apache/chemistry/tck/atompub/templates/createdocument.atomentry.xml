@@ -5,11 +5,11 @@
   <updated>2009-01-01T00:00:00Z</updated>
   <author>admin</author>
   <summary>${NAME} (summary)</summary>
-  <content type="text/html">${CONTENT}</content>
+  <content type="${CONTENTTYPE}">${CONTENT}</content>
   <cmisra:object>
     <cmis:properties>
       <cmis:propertyId propertyDefinitionId="cmis:objectTypeId">
-        <cmis:value>cmis:document</cmis:value>
+        <cmis:value>${TYPE}</cmis:value>
       </cmis:propertyId>
     </cmis:properties>
   </cmisra:object>

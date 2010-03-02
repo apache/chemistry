@@ -33,7 +33,11 @@ public class TCKOptions implements Serializable{
     public final static String PROP_FAIL_ON_VALIDATION_ERROR = "chemistry.tck.failOnValidationError";
     public final static String PROP_TRACE_REQUESTS = "chemistry.tck.traceRequests";
     public final static String PROP_DELETE_TEST_FIXTURE = "chemistry.tck.deleteTestFixture";
+    public final static String PROP_TYPE_FOLDER = "chemistry.tck.type.folder";
+    public final static String PROP_TYPE_DOCUMENT = "chemistry.tck.type.document";
+    public final static String PROP_TYPE_RELATIONSHIP = "chemistry.tck.type.relationship";
 
+    
     private static final long serialVersionUID = 5805080271712377369L;
     protected Properties properties;
     
@@ -95,6 +99,27 @@ public class TCKOptions implements Serializable{
     public boolean getDeleteTestFixture() {
         String val = properties.getProperty(PROP_DELETE_TEST_FIXTURE, "true");
         return Boolean.valueOf(val);
+    }
+
+    /**
+     * @return  folder type to create  (default: cmis:folder)
+     */
+    public String getFolderType() {
+        return properties.getProperty(PROP_TYPE_FOLDER, "cmis:folder");
+    }
+
+    /**
+     * @return  document type to create  (default: cmis:document)
+     */
+    public String getDocumentType() {
+        return properties.getProperty(PROP_TYPE_DOCUMENT, "cmis:document");
+    }
+
+    /**
+     * @return  relationship type to create  (default: cmis:relationship)
+     */
+    public String getRelationshipType() {
+        return properties.getProperty(PROP_TYPE_RELATIONSHIP, "cmis:relationship");
     }
 
     public String getConnectionFactory() {

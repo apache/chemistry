@@ -9,7 +9,7 @@
   <cmisra:object>
     <cmis:properties>
       <cmis:propertyId propertyDefinitionId="cmis:objectTypeId">
-        <cmis:value>cmis:folder</cmis:value>
+        <cmis:value>${TYPE}</cmis:value>
       </cmis:propertyId>
     </cmis:properties>
   </cmisra:object>

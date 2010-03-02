@@ -83,6 +83,12 @@ public class TCKTest extends TestCase {
         client.setFailOnValidationError(failOnValidationError);
         boolean traceRequests = options.getTraceRequests();
         client.setTrace(traceRequests);
+        String defaultFolderType = options.getFolderType();
+        client.setDefaultFolderType(defaultFolderType);
+        String defaultDocumentType = options.getDocumentType();
+        client.setDefaultDocumentType(defaultDocumentType);
+        String defaultRelationshipType = options.getRelationshipType();
+        client.setDefaultRelationshipType(defaultRelationshipType);
 
         // construct model helper
         model = new CMISAppModel();

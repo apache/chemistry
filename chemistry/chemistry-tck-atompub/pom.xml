@@ -189,6 +189,14 @@
                   <name>chemistry.tck.traceRequests</name>
                   <value>false</value>
                 </property>
+                <property>
+                  <name>chemistry.tck.type.document</name>
+                  <value>D:cmiscustom:document</value>
+                </property>
+                <property>
+                  <name>chemistry.tck.type.relationship</name>
+                  <value>R:cmiscustom:assoc</value>
+                </property>
               </systemProperties>
             </configuration>
           </plugin>
@@ -231,6 +239,14 @@
                 <property>
                   <name>chemistry.tck.traceRequests</name>
                   <value>false</value>
+                </property>
+                <property>
+                  <name>chemistry.tck.type.document</name>
+                  <value>D:cmiscustom:document</value>
+                </property>
+                <property>
+                  <name>chemistry.tck.type.relationship</name>
+                  <value>R:cmiscustom:assoc</value>
                 </property>
               </systemProperties>
             </configuration>

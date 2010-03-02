@@ -61,6 +61,15 @@ public class CMISTypeDefinition extends ExtensibleElementWrapper {
     }
 
     /**
+     * Determines whether objects of this type are creatable.
+     * 
+     * @return <code>true</code> if objects of this type are creatable
+     */
+    public boolean getCreatable() {
+        return Boolean.parseBoolean(getFirstChild(CMISConstants.TYPE_CREATABLE).getText());
+    }
+    
+    /**
      * Gets a value that indicates whether the base type for this Object-Type is
      * the Document, Folder, Relationship, or Policy base type.
      * 

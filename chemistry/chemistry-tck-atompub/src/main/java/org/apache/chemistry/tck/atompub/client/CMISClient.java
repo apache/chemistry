@@ -85,6 +85,9 @@ public class CMISClient {
     private Service cmisService = null;
     private CMISRepositoryInfo cmisRepositoryInfo = null;
 
+    private String defaultDocumentType = "cmis:document";
+    private String defaultFolderType = "cmis:folder";
+    private String defaultRelationshipType = "cmis:relationship";
 
     public CMISClient(String userId, Connection connection, String serviceUrl, TCKMessageWriter messageWriter) {
         this.userId = userId;
@@ -103,6 +106,18 @@ public class CMISClient {
 
     public void setTrace(boolean trace) {
         this.traceConnection = trace;
+    }
+    
+    public void setDefaultDocumentType(String defaultDocumentType) {
+        this.defaultDocumentType = defaultDocumentType;
+    }
+    
+    public void setDefaultFolderType(String defaultFolderType) {
+        this.defaultFolderType = defaultFolderType;
+    }
+    
+    public void setDefaultRelationshipType(String defaultRelationshipType) {
+        this.defaultRelationshipType = defaultRelationshipType;
     }
     
     public String getUserId()
@@ -345,13 +360,15 @@ public class CMISClient {
         return feed;
     }
 
-    public Entry createFolder(IRI parent, String name) throws Exception {
-        return createFolder(parent, name, null);
+    public Entry createFolder(IRI parent, String type, String name) throws Exception {
+        return createFolder(parent, type, name, null);
     }
 
-    public Entry createFolder(IRI parent, String name, String atomEntryFile) throws Exception {
+    public Entry createFolder(IRI parent, String type, String name, String atomEntryFile) throws Exception {
+        type = (type == null) ? defaultFolderType : type;
         String createFolder = templates.load(atomEntryFile == null ? "createfolder.atomentry.xml" : atomEntryFile);
         createFolder = createFolder.replace("${NAME}", name);
+        createFolder = createFolder.replace("${TYPE}", type);
         Request req = new PostRequest(parent.toString(), createFolder, CMISConstants.MIMETYPE_ENTRY);
         Response res = executeRequest(req, 201);
         Assert.assertNotNull(res);
@@ -367,28 +384,32 @@ public class CMISClient {
         return entry;
     }
 
-    public Entry createDocument(IRI parent, String name) throws Exception {
-        return createDocument(parent, name, null);
+    public Entry createDocument(IRI parent, String type, String name) throws Exception {
+        return createDocument(parent, type, name, null);
     }
 
-    public Entry createDocument(IRI parent, String name, String atomEntryFile) throws Exception {
-        return createDocument(parent, name, atomEntryFile, false);
+    public Entry createDocument(IRI parent, String type, String name, String atomEntryFile) throws Exception {
+        return createDocument(parent, type, name, atomEntryFile, false);
     }
 
-    public Entry createDocument(IRI parent, String name, String atomEntryFile, boolean expectNoContent)
+    public Entry createDocument(IRI parent, String type, String name, String atomEntryFile, boolean expectNoContent)
             throws Exception {
-        return createDocument(parent, name, atomEntryFile, expectNoContent, name, null, null);
+        return createDocument(parent, type, name, atomEntryFile, expectNoContent, name, null, null);
     }
 
-    public Entry createDocument(IRI parent, String name, String atomEntryFile, boolean expectNoContent, String content,
-            String cmisType, String cmisContentPath) throws Exception {
+    public Entry createDocument(IRI parent, String type, String name, String atomEntryFile, boolean expectNoContent, String content,
+            String contentType, String contentPath) throws Exception {
 
+        type = (type == null) ? defaultDocumentType : type;
+        
         // If no preference is expressed, use the base64 template if binary
         // content has been supplied or the basic atom entry template otherwise
         String createFile = templates
-                .load(atomEntryFile == null ? (cmisContentPath == null ? "createdocument.atomentry.xml"
+                .load(atomEntryFile == null ? (contentPath == null ? "createdocument.atomentry.xml"
                         : "createdocumentBase64.cmisatomentry.xml") : atomEntryFile);
         createFile = createFile.replace("${NAME}", name);
+        createFile = createFile.replace("${TYPE}", type);
+        createFile = createFile.replace("${CONTENTTYPE}", contentType == null ? "text/plain" : contentType);
 
         // determine if creating content via mediatype
         Entry createEntry = appModel.parseEntry(new StringReader(createFile), null);
@@ -399,11 +420,9 @@ public class CMISClient {
                     .encodeBase64(content.getBytes("UTF-8")), "8859_1"));
         }
 
-        createFile = createFile.replace("${CMISTYPE}", cmisType == null ? "text/plain" : cmisType);
-
         byte[] contentBytes = null;
-        if (cmisContentPath != null) {
-            InputStream in = getClass().getResourceAsStream('/' + cmisContentPath);
+        if (contentPath != null) {
+            InputStream in = getClass().getResourceAsStream('/' + contentPath);
             if (in != null) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
                 int bytesRead;
@@ -444,6 +463,7 @@ public class CMISClient {
     }
 
     public Entry createRelationship(IRI parent, String type, String targetId, String atomEntryFile) throws Exception {
+        type = (type == null) ? defaultRelationshipType : type;
         String createFile = templates.load(atomEntryFile);
         createFile = createFile.replace("${RELTYPE}", type);
         createFile = createFile.replace("${TARGETID}", targetId);

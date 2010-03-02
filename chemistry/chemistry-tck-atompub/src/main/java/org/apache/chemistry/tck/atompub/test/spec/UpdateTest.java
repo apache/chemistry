@@ -41,7 +41,7 @@ public class UpdateTest extends TCKTest {
         Entry document = fixture.createTestDocument("testUpdatePutCMISContent");
         String mimetype = (document.getContentMimeType() != null) ? document.getContentMimeType().toString() : null;
         if (mimetype != null) {
-            Assert.assertEquals("text/html", mimetype);
+            Assert.assertEquals("text/plain", mimetype);
         }
 
         // TODO: check for content update allowable action
@@ -76,7 +76,7 @@ public class UpdateTest extends TCKTest {
         Entry document = fixture.createTestDocument("testUpdatePutAtomContent");
         String mimetype = (document.getContentMimeType() != null) ? document.getContentMimeType().toString() : null;
         if (mimetype != null) {
-            Assert.assertEquals("text/html", mimetype);
+            Assert.assertEquals("text/plain", mimetype);
         }
 
         // TODO: check for content update allowable action

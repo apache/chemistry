@@ -58,7 +58,7 @@ public class CMISTestFixture {
             IRI rootFolderHREF = client.getRootCollection(client.getWorkspace(service));
             Assert.assertNotNull(rootFolderHREF);
             String folderName = "CMISTCK " + getStartTime() + " - " + name;
-            testCaseFolder = client.createFolder(rootFolderHREF, folderName);
+            testCaseFolder = client.createFolder(rootFolderHREF, null, folderName);
         }
         return testCaseFolder;
     }
@@ -74,8 +74,7 @@ public class CMISTestFixture {
     public Entry createTestDocument(String name, String template,
             boolean expectNoContent) throws Exception {
         Link children = client.getChildrenLink(getTestCaseFolder());
-        return client.createDocument(children.getHref(), name, template,
-                expectNoContent);
+        return client.createDocument(children.getHref(), null, name, template, expectNoContent);
     }
 
     public Entry createTestFolder(String name) throws Exception {
@@ -84,7 +83,7 @@ public class CMISTestFixture {
 
     public Entry createTestFolder(String name, String template) throws Exception {
         Link children = client.getChildrenLink(getTestCaseFolder());
-        return client.createFolder(children.getHref(), name, template);
+        return client.createFolder(children.getHref(), null, name, template);
     }
 
     public EntryTree createTestTree(String name, int depth, int docCount, String folderTemplate, String docTemplate) throws Exception {
@@ -130,10 +129,10 @@ public class CMISTestFixture {
                     content = name;
                     break;
                 }
-                docEntry.entry = client.createDocument(childrenLink.getHref(), docName, null, false, content, cmisType,
+                docEntry.entry = client.createDocument(childrenLink.getHref(), null, docName, null, false, content, cmisType,
                         cmisContentPath);
             } else {
-                docEntry.entry = client.createDocument(childrenLink.getHref(), docName, docTemplate);
+                docEntry.entry = client.createDocument(childrenLink.getHref(), null, docName, docTemplate);
             }
             docEntry.type = CMISConstants.TYPE_DOCUMENT;
             folderEntry.children.add(docEntry);
@@ -142,7 +141,7 @@ public class CMISTestFixture {
         // do deeper, if required
         if (depth > 0) {
             String folderName = name + " (child)";
-            Entry subFolder = client.createFolder(childrenLink.getHref(), folderName, folderTemplate);
+            Entry subFolder = client.createFolder(childrenLink.getHref(), null, folderName, folderTemplate);
             folderEntry.children.add(createTree(entry, subFolder, depth - 1, docCount, folderTemplate, docTemplate));
         }
 

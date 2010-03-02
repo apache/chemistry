@@ -7,13 +7,13 @@
   <summary>${NAME} (summary)</summary>
   <content type="text">Must be ignored - overridden by cmisra:content</content>
   <cmisra:content>
-    <cmisra:mediatype>${CMISTYPE}</cmisra:mediatype>
+    <cmisra:mediatype>${CONTENTTYPE}</cmisra:mediatype>
     <cmisra:base64>${CMISCONTENT}</cmisra:base64>
   </cmisra:content>
   <cmisra:object>
     <cmis:properties>
       <cmis:propertyId propertyDefinitionId="cmis:objectTypeId">
-        <cmis:value>cmis:document</cmis:value>
+        <cmis:value>${TYPE}</cmis:value>
       </cmis:propertyId>
     </cmis:properties>
   </cmisra:object>
