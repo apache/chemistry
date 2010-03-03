@@ -93,7 +93,7 @@ public class CMISProvider extends AbstractProvider {
         targetResolver.setPattern("/typechildren(\\?.*)?", //
                 TargetType.TYPE_COLLECTION);
         // per-object collections
-        targetResolver.setPattern("/parents/([^/?]+)",
+        targetResolver.setPattern("/parents/([^/?]+)(\\?.*)?",
                 TargetType.TYPE_COLLECTION, "objectid");
         targetResolver.setPattern("/children/([^/?]+)(\\?.*)?",
                 TargetType.TYPE_COLLECTION, "objectid");
@@ -101,11 +101,11 @@ public class CMISProvider extends AbstractProvider {
                 CMISObjectsCollection.TARGET_TYPE_CMIS_DESCENDANTS, "objectid");
         targetResolver.setPattern("/foldertree/([^/?]+)(\\?.*)?",
                 CMISObjectsCollection.TARGET_TYPE_CMIS_FOLDER_TREE, "objectid");
-        targetResolver.setPattern("/allversions/([^/?]+)",
+        targetResolver.setPattern("/allversions/([^/?]+)(\\?.*)?",
                 TargetType.TYPE_COLLECTION, "objectid");
-        targetResolver.setPattern("/relationships/([^/?]+)",
+        targetResolver.setPattern("/relationships/([^/?]+)(\\?.*)?",
                 TargetType.TYPE_COLLECTION, "objectid");
-        targetResolver.setPattern("/policies/([^/?]+)",
+        targetResolver.setPattern("/policies/([^/?]+)(\\?.*)?",
                 TargetType.TYPE_COLLECTION, "objectid");
         targetResolver.setPattern("/typechildren/([^/?]+)(\\?.*)?",
                 TargetType.TYPE_COLLECTION, "typeid");
