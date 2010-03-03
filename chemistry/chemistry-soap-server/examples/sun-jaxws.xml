@@ -1,8 +1,96 @@
 <?xml version="1.0"?>
 <endpoints xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime" version="2.0">
+  <endpoint name="ACLService"
+      implementation="org.apache.chemistry.soap.server.ACLServicePortImpl"
+      url-pattern="/webservices/cmis/ACLService">
+    <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+      <handler-chain>
+        <handler>
+          <handler-class>org.apache.chemistry.soap.server.AuthHandler</handler-class>
+        </handler>
+      </handler-chain>
+    </handler-chains>
+  </endpoint>
+  <endpoint name="DiscoveryService"
+      implementation="org.apache.chemistry.soap.server.DiscoveryServicePortImpl"
+      url-pattern="/webservices/cmis/DiscoveryService">
+    <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+      <handler-chain>
+        <handler>
+          <handler-class>org.apache.chemistry.soap.server.AuthHandler</handler-class>
+        </handler>
+      </handler-chain>
+    </handler-chains>
+  </endpoint>
+  <endpoint name="MultiFilingService"
+      implementation="org.apache.chemistry.soap.server.MultiFilingServicePortImpl"
+      url-pattern="/webservices/cmis/MultiFilingService">
+    <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+      <handler-chain>
+        <handler>
+          <handler-class>org.apache.chemistry.soap.server.AuthHandler</handler-class>
+        </handler>
+      </handler-chain>
+    </handler-chains>
+  </endpoint>
+  <endpoint name="NavigationService"
+      implementation="org.apache.chemistry.soap.server.NavigationServicePortImpl"
+      url-pattern="/webservices/cmis/NavigationService">
+    <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+      <handler-chain>
+        <handler>
+          <handler-class>org.apache.chemistry.soap.server.AuthHandler</handler-class>
+        </handler>
+      </handler-chain>
+    </handler-chains>
+  </endpoint>
+  <endpoint name="ObjectService"
+      implementation="org.apache.chemistry.soap.server.ObjectServicePortImpl"
+      url-pattern="/webservices/cmis/ObjectService">
+    <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+      <handler-chain>
+        <handler>
+          <handler-class>org.apache.chemistry.soap.server.AuthHandler</handler-class>
+        </handler>
+      </handler-chain>
+    </handler-chains>
+  </endpoint>
+  <endpoint name="PolicyService"
+      implementation="org.apache.chemistry.soap.server.PolicyServicePortImpl"
+      url-pattern="/webservices/cmis/PolicyService">
+    <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+      <handler-chain>
+        <handler>
+          <handler-class>org.apache.chemistry.soap.server.AuthHandler</handler-class>
+        </handler>
+      </handler-chain>
+    </handler-chains>
+  </endpoint>
+  <endpoint name="RelationshipService"
+      implementation="org.apache.chemistry.soap.server.RelationshipServicePortImpl"
+      url-pattern="/webservices/cmis/RelationshipService">
+    <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+      <handler-chain>
+        <handler>
+          <handler-class>org.apache.chemistry.soap.server.AuthHandler</handler-class>
+        </handler>
+      </handler-chain>
+    </handler-chains>
+  </endpoint>
   <endpoint name="RepositoryService"
       implementation="org.apache.chemistry.soap.server.RepositoryServicePortImpl"
       url-pattern="/webservices/cmis/RepositoryService">
+    <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+      <handler-chain>
+        <handler>
+          <handler-class>org.apache.chemistry.soap.server.AuthHandler</handler-class>
+        </handler>
+      </handler-chain>
+    </handler-chains>
+  </endpoint>
+  <endpoint name="VersioningService"
+      implementation="org.apache.chemistry.soap.server.VersioningServicePortImpl"
+      url-pattern="/webservices/cmis/VersioningService">
     <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
       <handler-chain>
         <handler>

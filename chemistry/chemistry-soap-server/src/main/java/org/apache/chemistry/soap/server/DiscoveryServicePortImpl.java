@@ -41,6 +41,7 @@ import org.apache.chemistry.ws.CmisObjectListType;
 import org.apache.chemistry.ws.CmisObjectType;
 import org.apache.chemistry.ws.DiscoveryServicePort;
 import org.apache.chemistry.ws.EnumIncludeRelationships;
+import org.apache.chemistry.ws.ObjectFactory;
 import org.apache.chemistry.ws.Query;
 import org.apache.chemistry.ws.QueryResponse;
 
@@ -52,7 +53,7 @@ endpointInterface = "org.apache.chemistry.ws.DiscoveryServicePort")
 public class DiscoveryServicePortImpl implements DiscoveryServicePort {
 
     @Resource
-    WebServiceContext wscontext;
+    private WebServiceContext wscontext;
 
     public QueryResponse query(Query parameters) throws CmisException {
         // repository
@@ -94,29 +95,16 @@ public class DiscoveryServicePortImpl implements DiscoveryServicePort {
         Inclusion inclusion = new Inclusion(null, renditions, relationships,
                 allowableActions, false, false);
 
-        // response
-        QueryResponse response = new QueryResponse();
-        CmisObjectListType objects = new CmisObjectListType();
-        response.setObjects(objects);
-
         Map<String, Serializable> params = CallContext.mapFromWebServiceContext(wscontext);
         SPI spi = repository.getSPI(params);
         try {
             ListPage<ObjectEntry> res = spi.query(statement, searchAllVersions,
                     inclusion, paging);
-            objects.setHasMoreItems(res.getHasMoreItems());
-            objects.setNumItems(BigInteger.valueOf(res.getNumItems()));
-            List<CmisObjectType> objectList = objects.getObjects();
-            for (ObjectEntry entry : res) {
-                CmisObjectType object = new CmisObjectType();
-                ChemistryHelper.chemistryToJAXB(entry, object);
-                objectList.add(object);
-            }
+
+            return ChemistryHelper.convertQuery(res);
         } finally {
             spi.close();
         }
-
-        return response;
     }
 
     public void getContentChanges(String repositoryId,
