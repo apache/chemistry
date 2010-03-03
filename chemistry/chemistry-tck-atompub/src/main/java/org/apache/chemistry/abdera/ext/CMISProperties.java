@@ -49,10 +49,16 @@ public class CMISProperties extends ExtensibleElementWrapper {
      * @return list of property ids
      */
     public List<String> getIds() {
-        List<CMISProperty> props = getElements();
-        List<String> ids = new ArrayList<String>(props.size());
-        for (CMISProperty prop : props) {
-            ids.add(prop.getId());
+        List<Element> elements = getElements();
+        List<String> ids = new ArrayList<String>(elements.size());
+        for (Element element : elements) {
+            if (element instanceof CMISProperty) {
+                ids.add(((CMISProperty)element).getId());
+            }
+            else {
+                // Allow for other extension elements
+                break;
+            }
         }
         return ids;
     }
