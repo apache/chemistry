@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
@@ -62,7 +63,7 @@ public class APPObjectEntry implements ObjectEntry {
 
     protected ContentStream localContentStream = REMOTE_CONTENT_STREAM;
 
-    protected Map<QName, Boolean> allowableActions;
+    protected Set<QName> allowableActions;
 
     protected String remoteContentHref;
 
@@ -112,22 +113,19 @@ public class APPObjectEntry implements ObjectEntry {
 
     protected APPObjectEntry(APPRepository repository,
             APPConnection connection, Map<String, XmlProperty> properties,
-            Map<QName, Boolean> allowableActions) {
+            Set<QName> allowableActions) {
         this.repository = repository;
         this.connection = connection;
         this.properties = properties;
-        if (allowableActions == null) {
-            allowableActions = Collections.emptyMap();
-        } else {
-            allowableActions = Collections.unmodifiableMap(allowableActions);
+        if (allowableActions != null) {
+            allowableActions = Collections.unmodifiableSet(allowableActions);
         }
         this.allowableActions = allowableActions;
         links = new ArrayList<Link>();
     }
 
     public APPObjectEntry(APPConnection connection,
-            Map<String, XmlProperty> properties,
-            Map<QName, Boolean> allowableActions) {
+            Map<String, XmlProperty> properties, Set<QName> allowableActions) {
         this((APPRepository) connection.getRepository(), connection,
                 properties, allowableActions);
     }
@@ -296,7 +294,11 @@ public class APPObjectEntry implements ObjectEntry {
     // return null;
     // }
 
-    public Map<QName, Boolean> getAllowableActions() {
+    public void setAllowableActions(Set<QName> allowableActions) {
+        this.allowableActions = allowableActions;
+    }
+
+    public Set<QName> getAllowableActions() {
         return allowableActions;
     }
 

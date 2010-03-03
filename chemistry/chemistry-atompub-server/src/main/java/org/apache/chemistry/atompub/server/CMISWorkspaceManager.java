@@ -102,6 +102,9 @@ public class CMISWorkspaceManager extends AbstractWorkspaceManager {
         if (paths.startsWith("/query/") || paths.startsWith("/query?")) {
             return new CMISQueryFeed(repository);
         }
+        if (paths.startsWith("/allowableactions/")) {
+            return new CMISAllowableActionsEntry(repository);
+        }
         return null;
     }
 

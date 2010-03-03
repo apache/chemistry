@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.jcr.Item;
 import javax.jcr.Node;
@@ -72,8 +73,8 @@ public abstract class JcrObjectEntry implements ObjectEntry {
         return connection;
     }
 
-    public Map<QName, Boolean> getAllowableActions() {
-        throw new UnsupportedOperationException();
+    public Set<QName> getAllowableActions() {
+        throw null;
     }
 
     public String getPathSegment() {

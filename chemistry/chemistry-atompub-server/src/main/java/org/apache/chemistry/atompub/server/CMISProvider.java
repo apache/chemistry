@@ -69,7 +69,7 @@ public class CMISProvider extends AbstractProvider {
         targetResolver.setPattern("/object(?:/?)([^/?]*)(\\?.*)?",
                 TargetType.TYPE_ENTRY, "objectid");
         targetResolver.setPattern("/allowableactions/([^/?]+)",
-                TargetType.TYPE_ENTRY, "objectid"); // XXX entry?
+                TargetType.TYPE_ENTRY, "objectid");
         targetResolver.setPattern("/type/([^/?]+)(\\?.*)?",
                 TargetType.TYPE_ENTRY, "typeid");
         targetResolver.setPattern("/path/([^?]*)(\\?.*)?",

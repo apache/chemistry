@@ -20,7 +20,7 @@ package org.apache.chemistry.atompub.client;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -51,8 +51,8 @@ public class APPObjectEntryReader extends AbstractObjectReader<APPObjectEntry> {
 
     @Override
     protected void setAllowableActions(APPObjectEntry object,
-            Map<QName, Boolean> allowableActions) {
-        object.allowableActions = Collections.unmodifiableMap(allowableActions);
+            Set<QName> allowableActions) {
+        object.allowableActions = Collections.unmodifiableSet(allowableActions);
     }
 
     @Override

@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -318,14 +319,16 @@ public interface SPI {
     /**
      * Gets the allowable actions.
      * <p>
-     * Returns the list of allowable actions on an object based on the current
+     * Returns the set of allowable actions on an object based on the current
      * user's context, subject to any access constraints that are currently
      * imposed by the repository.
      *
      * @param object the object
-     * @return the allowable actions
+     * @return the set of allowable actions
+     * @see AllowableAction
+     * @see AllowableAction#DEFAULT
      */
-    Collection<QName> getAllowableActions(ObjectId object);
+    Set<QName> getAllowableActions(ObjectId object);
 
     // TODO 1.0 getObject
 

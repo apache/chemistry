@@ -295,7 +295,9 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             entry.addLink(getParentsLink(oid, request), AtomPub.LINK_UP,
                     AtomPub.MEDIA_TYPE_ATOM_FEED, null, null, -1);
         }
-        // entry.addLink("XXX", CMIS.LINK_ALLOWABLE_ACTIONS);
+        entry.addLink(getAllowableActionsLink(oid, request),
+                AtomPubCMIS.LINK_ALLOWABLE_ACTIONS,
+                AtomPubCMIS.MEDIA_TYPE_CMIS_ALLOWABLE_ACTIONS, null, null, -1);
         // entry.addLink("XXX", CMIS.LINK_RELATIONSHIPS);
 
         Type objectType = repository.getType(typeId);

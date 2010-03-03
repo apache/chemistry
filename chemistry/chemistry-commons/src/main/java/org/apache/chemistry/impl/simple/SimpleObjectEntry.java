@@ -19,10 +19,13 @@ package org.apache.chemistry.impl.simple;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.apache.chemistry.AllowableAction;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ChangeInfo;
 import org.apache.chemistry.Connection;
@@ -145,9 +148,11 @@ public class SimpleObjectEntry implements ObjectEntry {
         }
     }
 
-    public Map<QName, Boolean> getAllowableActions() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+    public Set<QName> getAllowableActions() {
+        // TODO see SimpleConnection.getAllowableActions
+        Set<QName> set = new HashSet<QName>();
+        set.add(AllowableAction.CAN_UPDATE_PROPERTIES);
+        return set;
     }
 
     public Collection<ObjectEntry> getRelationships() {

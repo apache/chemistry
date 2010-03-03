@@ -22,7 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Set;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.chemistry.ConstraintViolationException;
@@ -184,6 +186,11 @@ public class Connector {
         }
 
     }
+
+    public Set<QName> getAllowableActions(String href) {
+        return getObject(href, "", new AllowableActionsReader());
+    }
+
 
     public APPObjectEntry putEntry(String href, Header header,
             APPObjectEntry entry) {

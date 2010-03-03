@@ -18,9 +18,9 @@
  */
 package org.apache.chemistry.atompub.client.stax;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -44,7 +44,7 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
     protected abstract void setProperty(T object, XmlProperty p);
 
     protected abstract void setAllowableActions(T object,
-            Map<QName, Boolean> allowableActions);
+            Set<QName> allowableActions);
 
     protected abstract void setPathSegment(T object, String pathSegment);
 
@@ -114,12 +114,12 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
 
     protected void readAllowableActions(APPContext ctx, StaxReader reader,
             T object) throws XMLStreamException {
-        Map<QName, Boolean> allowableActions = new HashMap<QName, Boolean>();
+        Set<QName> allowableActions = new HashSet<QName>();
         ChildrenNavigator children = reader.getChildren();
         while (children.next()) {
-            QName qname = reader.getName();
-            Boolean bool = Boolean.valueOf(reader.getElementText());
-            allowableActions.put(qname, bool);
+            if (Boolean.parseBoolean(reader.getElementText())) {
+                allowableActions.add(reader.getName());
+            }
         }
         setAllowableActions(object, allowableActions);
     }
@@ -142,7 +142,8 @@ public abstract class AbstractObjectReader<T> extends AbstractEntryReader<T> {
     protected void readChildren(APPContext ctx, StaxReader reader, T object)
             throws XMLStreamException {
         // TODO better use of generics
-        List<Tree<ObjectEntry>> list = new APPObjectFeedTreeReader().read(ctx, reader);
+        List<Tree<ObjectEntry>> list = new APPObjectFeedTreeReader().read(ctx,
+                reader);
         setChildren(object, list);
     }
 

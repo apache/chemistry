@@ -179,6 +179,10 @@ public abstract class CMISCollection<T> extends
         return getEntrylink("file", id, request);
     }
 
+    public String getAllowableActionsLink(String id, RequestContext request) {
+        return getEntrylink("allowableactions", id, request);
+    }
+
     public String getTypeChildrenLink(String tid, RequestContext request) {
         return getCollectionLink("typechildren", tid, request);
     }

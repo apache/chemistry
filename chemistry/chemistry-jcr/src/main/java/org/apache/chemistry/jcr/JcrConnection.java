@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -265,9 +266,9 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<QName> getAllowableActions(ObjectId objectId) {
+    public Set<QName> getAllowableActions(ObjectId objectId) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     public Collection<ObjectEntry> getAppliedPolicies(ObjectId objectId,

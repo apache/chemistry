@@ -19,6 +19,9 @@ package org.apache.chemistry.atompub.abdera;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
 
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Element;
@@ -34,7 +37,9 @@ import org.apache.chemistry.atompub.AtomPubCMIS;
  */
 public class ObjectElement extends ExtensibleElementWrapper {
 
-    protected final PropertiesElement properties;
+    protected PropertiesElement properties;
+
+    protected AllowableActionsElement allowableActions;
 
     /**
      * Constructor used when parsing XML.
@@ -51,9 +56,8 @@ public class ObjectElement extends ExtensibleElementWrapper {
      */
     public ObjectElement(Factory factory, ObjectEntry object, Type type) {
         super(factory, AtomPubCMIS.OBJECT);
-        properties = new PropertiesElement(getFactory());
-        addExtension(properties);
         setProperties(object.getValues(), type);
+        setAllowableActions(object.getAllowableActions());
     }
 
     public Map<String, Serializable> getProperties(String typeId) {
@@ -64,10 +68,20 @@ public class ObjectElement extends ExtensibleElementWrapper {
     }
 
     public void setProperties(Map<String, Serializable> values, Type type) {
+        properties = new PropertiesElement(getFactory());
+        addExtension(properties);
         properties.setProperties(values, type);
     }
 
-    // TODO allowable actions
+    public void setAllowableActions(Set<QName> aa) {
+        if (aa == null) {
+            allowableActions = null;
+        } else {
+            allowableActions = new AllowableActionsElement(getFactory());
+            addExtension(allowableActions);
+            allowableActions.setAllowableActions(aa);
+        }
+    }
 
     // TODO change event info
 

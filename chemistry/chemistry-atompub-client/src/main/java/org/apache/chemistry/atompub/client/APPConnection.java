@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
@@ -81,8 +82,8 @@ public class APPConnection implements Connection, SPI {
     public APPConnection(APPRepository repository,
             Map<String, Serializable> params) {
         this.repository = repository;
-        connector = new Connector(repository.getClient(params),
-                new APPContext(this));
+        connector = new Connector(repository.getClient(params), new APPContext(
+                this));
     }
 
     public Connection getConnection() {
@@ -289,23 +290,30 @@ public class APPConnection implements Connection, SPI {
      * ----- Object Services -----
      */
 
-    // TODO add hints about what we'd like to fetch from the entry (stream,
-    // props, etc.)
-    protected APPObjectEntry getObjectEntry(ObjectId objectId) {
+    protected APPObjectEntry getObjectEntryOrNull(ObjectId objectId) {
         if (objectId instanceof APPObjectEntry) {
             return (APPObjectEntry) objectId;
         } else if (objectId instanceof APPObject) {
             return ((APPObject) objectId).getEntry();
+        } else {
+            return null;
+        }
+    }
+
+    protected APPObjectEntry getObjectEntry(ObjectId objectId) {
+        return getObjectEntry(objectId, null);
+    }
+
+    protected APPObjectEntry getObjectEntry(ObjectId objectId,
+            Inclusion inclusion) {
+        APPObjectEntry entry = getObjectEntryOrNull(objectId);
+        if (entry != null) {
+            return entry;
         }
         URITemplate uriTemplate = repository.getURITemplate(AtomPubCMIS.URITMPL_OBJECT_BY_ID);
         String href = uriTemplate.template;
         href = replace(href, AtomPubCMIS.PARAM_ID, objectId.getId());
-        href = replace(href, AtomPubCMIS.PARAM_FILTER, "");
-        href = replace(href, AtomPubCMIS.PARAM_RENDITION_FILTER, "");
-        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS, "");
-        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, "");
-        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_POLICY_IDS, "");
-        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_ACL, "");
+        href = replaceInclusion(href, inclusion);
         return connector.getEntry(href, objectId.getId());
     }
 
@@ -315,6 +323,25 @@ public class APPConnection implements Connection, SPI {
             throw new IllegalArgumentException("Not a folder: " + objectId);
         }
         return entry;
+    }
+
+    protected String replaceInclusion(String href, Inclusion inclusion) {
+        if (inclusion == null) {
+            inclusion = new Inclusion(null, null, null, false, false, false);
+        }
+        href = replace(href, AtomPubCMIS.PARAM_FILTER,
+                inclusion.properties == null ? "" : inclusion.properties);
+        href = replace(href, AtomPubCMIS.PARAM_RENDITION_FILTER,
+                inclusion.renditions == null ? "" : inclusion.renditions);
+        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS,
+                RelationshipDirection.toInclusion(inclusion.relationships));
+        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS,
+                Boolean.toString(inclusion.allowableActions));
+        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_POLICY_IDS,
+                Boolean.toString(inclusion.policies));
+        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_ACL,
+                Boolean.toString(inclusion.acls));
+        return href;
     }
 
     protected String replace(String template, String param, String value) {
@@ -409,9 +436,25 @@ public class APPConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<QName> getAllowableActions(ObjectId object) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+    public Set<QName> getAllowableActions(ObjectId object) {
+        APPObjectEntry entry = getObjectEntryOrNull(object);
+        if (entry != null && entry.getAllowableActions() == null) {
+            // use the allowable action link
+            String href = entry.getLink(AtomPubCMIS.LINK_ALLOWABLE_ACTIONS);
+            if (href == null) {
+                throw new CMISRuntimeException("Missing allowableactions link");
+            }
+            Set<QName> allowableActions = connector.getAllowableActions(href);
+            entry.setAllowableActions(allowableActions);
+            return allowableActions;
+        }
+        if (entry == null) {
+            // fetch including allowableActions
+            Inclusion inclusion = new Inclusion(null, null, null, true, false,
+                    false);
+            entry = getObjectEntry(object, inclusion);
+        }
+        return entry.getAllowableActions();
     }
 
     public ObjectEntry getProperties(ObjectId object, Inclusion inclusion) {
@@ -445,12 +488,7 @@ public class APPConnection implements Connection, SPI {
         String encodedPath = path.replace(" ", "%20");
         String href = uriTemplate.template;
         href = replace(href, AtomPubCMIS.PARAM_PATH, encodedPath);
-        href = replace(href, AtomPubCMIS.PARAM_FILTER, "");
-        href = replace(href, AtomPubCMIS.PARAM_RENDITION_FILTER, "");
-        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_RELATIONSHIPS, "");
-        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_ALLOWABLE_ACTIONS, "");
-        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_POLICY_IDS, "");
-        href = replace(href, AtomPubCMIS.PARAM_INCLUDE_ACL, "");
+        href = replaceInclusion(href, inclusion);
         try {
             return connector.getEntry(href, path);
             // TODO fill current

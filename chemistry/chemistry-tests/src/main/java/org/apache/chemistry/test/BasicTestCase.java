@@ -29,8 +29,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
+import javax.xml.namespace.QName;
+
 import junit.framework.TestCase;
 
+import org.apache.chemistry.AllowableAction;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.CMISRuntimeException;
@@ -56,6 +59,7 @@ import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Tree;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.atompub.client.APPObjectEntry;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
 import org.apache.chemistry.util.GregorianCalendar;
@@ -770,6 +774,37 @@ public abstract class BasicTestCase extends TestCase {
         assertNull(d);
         d = spi.getObjectByPath("/folder 1/doc 3", null);
         assertNotNull(d);
+    }
+
+    public void testObjectAllowableActions() throws Exception {
+        ObjectEntry fold = spi.getObjectByPath("/folder 1", null);
+        Set<QName> aa = fold.getAllowableActions();
+        assertNotNull(aa);
+        assertTrue(aa.contains(AllowableAction.CAN_UPDATE_PROPERTIES));
+    }
+
+    public void testAllowableActionsSPI() throws Exception {
+        ObjectEntry foldentry = spi.getObjectByPath("/folder 1", null);
+        // fetch from existing entry
+        assertNotNull(foldentry.getAllowableActions());
+        Set<QName> aa = spi.getAllowableActions(foldentry);
+        assertNotNull(aa);
+        assertTrue(aa.contains(AllowableAction.CAN_UPDATE_PROPERTIES));
+
+        // check can refetch part of entry if missing aa
+        if (foldentry instanceof APPObjectEntry) {
+            ((APPObjectEntry) foldentry).setAllowableActions(null);
+            aa = spi.getAllowableActions(foldentry);
+            assertNotNull(aa);
+            assertTrue(aa.contains(AllowableAction.CAN_UPDATE_PROPERTIES));
+            assertNotNull(foldentry.getAllowableActions());
+        }
+
+        // fetch from just id
+        ObjectId foldid = spi.newObjectId(foldentry.getId());
+        aa = spi.getAllowableActions(foldid);
+        assertNotNull(aa);
+        assertTrue(aa.contains(AllowableAction.CAN_UPDATE_PROPERTIES));
     }
 
 }

@@ -22,16 +22,18 @@ import javax.xml.namespace.QName;
 
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Element;
-import org.apache.abdera.model.ExtensibleElementWrapper;
+import org.apache.abdera.parser.stax.FOMExtensibleElement;
+import org.apache.axiom.om.OMContainer;
+import org.apache.axiom.om.OMFactory;
 import org.apache.chemistry.CMIS;
 
 /**
- * Abdera ElementWrapper for an AtomPub cmis:allowableActions element.
+ * FOM extensible element for a cmis:allowableActions document.
  */
-public class AllowableActionsElement extends ExtensibleElementWrapper {
+public class AllowableActionsDocument extends FOMExtensibleElement {
 
-    public AllowableActionsElement(Factory factory) {
-        super(factory, CMIS.ALLOWABLE_ACTIONS);
+    public AllowableActionsDocument(OMContainer parent, Factory factory) {
+        super(CMIS.ALLOWABLE_ACTIONS, parent, (OMFactory) factory);
     }
 
     public void setAllowableActions(Set<QName> set) {

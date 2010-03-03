@@ -19,6 +19,7 @@ package org.apache.chemistry;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -114,8 +115,10 @@ public interface ObjectEntry extends ObjectId {
 
     /**
      * The allowable actions, if fetched.
+     *
+     * @return a set of allowable actions, or {@code null} if not fecthed
      */
-    Map<QName, Boolean> getAllowableActions();
+    Set<QName> getAllowableActions();
 
     /**
      * The relationships in relation to this document, if fetched.
