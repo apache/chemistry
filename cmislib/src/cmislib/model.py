@@ -2167,11 +2167,11 @@ class CmisObject(object):
                 I could do a lookup to the type definition, but that doesn't
                 seem worth the performance hit
                 """
-                if isinstance(propValue, str):
-                    propElementName = 'cmis:propertyString'
-                    propValueStr = propValue
-                elif isinstance(propValue, CmisId):
+                if isinstance(propValue, CmisId):
                     propElementName = 'cmis:propertyId'
+                    propValueStr = propValue
+                elif isinstance(propValue, str):
+                    propElementName = 'cmis:propertyString'
                     propValueStr = propValue
                 elif isinstance(propValue, datetime.datetime):
                     propElementName = 'cmis:propertyDateTime'
@@ -2583,15 +2583,20 @@ class Folder(CmisObject):
         """
         Creates a new :class:`Folder` using the properties provided.
         Right now I expect a property called 'cmis:name' but I don't
-        complain if it isn't there (although the CMIS provider will)
+        complain if it isn't there (although the CMIS provider will). If a
+        cmis:name property isn't provided, the value passed in to the name
+        argument will be used.
 
-        See CMIS specification document 2.2.4.3 createFolder
+        To specify a custom folder type, pass in a property called
+        cmis:objectTypeId set to the :class:`CmisId` representing the type ID
+        of the instance you want to create. If you do not pass in an object
+        type ID, an instance of 'cmis:folder' will be created.
 
         >>> subFolder = folder.createFolder('someSubfolder')
         >>> subFolder.getName()
         u'someSubfolder'
 
-        The following optional arguments are not yet supported:
+        The following optional arguments are not supported:
          - policies
          - addACEs
          - removeACEs
@@ -2653,6 +2658,11 @@ class Folder(CmisObject):
         >>> subFolder.createDocument('logo.png', props, contentFile=f)
         <cmislib.model.Document object at 0x10410fa10>
         >>> f.close()
+
+        To specify a custom object type, pass in a property called
+        cmis:objectTypeId set to the :class:`CmisId` representing the type ID
+        of the instance you want to create. If you do not pass in an object
+        type ID, an instance of 'cmis:document' will be created.
 
         The following optional arguments are not yet supported:
          - versioningState
