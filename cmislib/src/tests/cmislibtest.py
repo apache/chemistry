@@ -466,6 +466,64 @@ class FolderTest(CmisTestBase):
         self.assert_('cmis:name' in props)
         self.assert_(props['cmis:name'] != None)
 
+    def testPropertyFilter(self):
+        '''Test the properties filter'''
+        # names of folders and test docs
+        testFolderName = self._testFolder.getName()
+        parentFolderName = 'testGetObjectByPath folder'
+        subFolderName = 'subfolder'
+
+        # create the folder structure
+        parentFolder = self._testFolder.createFolder(parentFolderName)
+        subFolder = parentFolder.createFolder(subFolderName)
+
+        # test when used with getObjectByPath
+        searchFolder = self._repo.getObjectByPath(settings.TEST_ROOT_PATH + \
+                        "/".join([testFolderName, parentFolderName, subFolderName]), \
+                        filter='cmis:objectId,cmis:objectTypeId,cmis:baseTypeId')
+        self.assertEquals(subFolder.getObjectId(), searchFolder.getObjectId())        
+        self.assertTrue(searchFolder.getProperties().has_key('cmis:objectId'))
+        self.assertTrue(searchFolder.getProperties().has_key('cmis:objectTypeId'))
+        self.assertTrue(searchFolder.getProperties().has_key('cmis:baseTypeId'))
+        self.assertFalse(searchFolder.getProperties().has_key('cmis:name'))
+
+        # test when used with getObjectByPath + reload
+        searchFolder = self._repo.getObjectByPath(settings.TEST_ROOT_PATH + \
+                        "/".join([testFolderName, parentFolderName, subFolderName]), \
+                        filter='cmis:objectId,cmis:objectTypeId,cmis:baseTypeId')
+        searchFolder.reload()
+        self.assertEquals(subFolder.getObjectId(), searchFolder.getObjectId())
+        self.assertTrue(searchFolder.getProperties().has_key('cmis:objectId'))
+        self.assertTrue(searchFolder.getProperties().has_key('cmis:objectTypeId'))
+        self.assertTrue(searchFolder.getProperties().has_key('cmis:baseTypeId'))
+        self.assertFalse(searchFolder.getProperties().has_key('cmis:name'))
+
+        # test when used with getObject
+        searchFolder = self._repo.getObject(subFolder.getObjectId(), \
+                        filter='cmis:objectId,cmis:objectTypeId,cmis:baseTypeId')
+        self.assertEquals(subFolder.getObjectId(), searchFolder.getObjectId())
+        self.assertTrue(searchFolder.getProperties().has_key('cmis:objectId'))
+        self.assertTrue(searchFolder.getProperties().has_key('cmis:objectTypeId'))
+        self.assertTrue(searchFolder.getProperties().has_key('cmis:baseTypeId'))
+        self.assertFalse(searchFolder.getProperties().has_key('cmis:name'))
+
+        # test when used with getObject + reload
+        searchFolder = self._repo.getObject(subFolder.getObjectId(), \
+                        filter='cmis:objectId,cmis:objectTypeId,cmis:baseTypeId')
+        searchFolder.reload()
+        self.assertEquals(subFolder.getObjectId(), searchFolder.getObjectId())
+        self.assertTrue(searchFolder.getProperties().has_key('cmis:objectId'))
+        self.assertTrue(searchFolder.getProperties().has_key('cmis:objectTypeId'))
+        self.assertTrue(searchFolder.getProperties().has_key('cmis:baseTypeId'))
+        self.assertFalse(searchFolder.getProperties().has_key('cmis:name'))
+
+        # test that you can do a reload with a reset filter
+        searchFolder.reload(filter='*')
+        self.assertTrue(searchFolder.getProperties().has_key('cmis:objectId'))
+        self.assertTrue(searchFolder.getProperties().has_key('cmis:objectTypeId'))
+        self.assertTrue(searchFolder.getProperties().has_key('cmis:baseTypeId'))
+        self.assertTrue(searchFolder.getProperties().has_key('cmis:name'))
+
     def testUpdateProperties(self):
         '''Create a test folder, then update its properties'''
         folderName = 'testUpdateProperties folder'

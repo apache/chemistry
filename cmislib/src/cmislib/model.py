@@ -891,9 +891,9 @@ class Repository(object):
          - includeAllowableActions
         """
 
-        return getSpecializedObject(CmisObject(self._cmisClient, self, objectId, **kwargs))
+        return getSpecializedObject(CmisObject(self._cmisClient, self, objectId, **kwargs), **kwargs)
 
-    def getObjectByPath(self, path):
+    def getObjectByPath(self, path, **kwargs):
 
         """
         Returns an object given the path to the object.
@@ -921,17 +921,30 @@ class Repository(object):
               '{includeRelationships}': 'false',
               '{includeACL}': 'false',
               '{renditionFilter}': ''}
+
+        options = {}
+        addOptions = {} # args specified, but not in the template
+        for k, v in kwargs.items():
+            pKey = "{" + k + "}"
+            if template.find(pKey) >= 0:
+                options[pKey] = toCMISValue(v)
+            else:
+                addOptions[k] = toCMISValue(v)
+
+        # merge the templated args with the default params
+        params.update(options)
+
         byObjectPathUrl = multiple_replace(params, template)
 
         # do a GET against the URL
-        result = self._cmisClient.get(byObjectPathUrl)
+        result = self._cmisClient.get(byObjectPathUrl, **addOptions)
         if type(result) == HTTPError:
             raise CmisException(result.code)
 
         # instantiate CmisObject objects with the results and return the list
         entryElements = result.getElementsByTagNameNS(ATOM_NS, 'entry')
         assert(len(entryElements) == 1), "Expected entry element in result from calling %s" % byObjectPathUrl
-        return getSpecializedObject(CmisObject(self._cmisClient, self, xmlDoc=entryElements[0]))
+        return getSpecializedObject(CmisObject(self._cmisClient, self, xmlDoc=entryElements[0], **kwargs), **kwargs)
 
     def query(self, statement, **kwargs):
 
@@ -1565,6 +1578,11 @@ class CmisObject(object):
         """
         Fetches the latest representation of this object from the CMIS service.
         Some methods, like :class:`^Document.checkout` do this for you.
+
+        If you call reload with a properties filter, the filter will be in
+        effect on subsequent calls until the filter argument is changed. To
+        reset to the full list of properties, call reload with filter set to
+        '*'. 
         """
 
         if kwargs:
@@ -1742,7 +1760,7 @@ class CmisObject(object):
                 self.reload()
             propertiesElement = self.xmlDoc.getElementsByTagNameNS(CMIS_NS, 'properties')[0]
             #cpattern = re.compile(r'^property([\w]*)')
-            for node in [e for e in propertiesElement.childNodes if e.nodeType == e.ELEMENT_NODE]:
+            for node in [e for e in propertiesElement.childNodes if e.nodeType == e.ELEMENT_NODE and e.namespaceURI == CMIS_NS]:
                 #propertyId, propertyString, propertyDateTime
                 #propertyType = cpattern.search(node.localName).groups()[0]
                 propertyName = node.attributes['propertyDefinitionId'].value
