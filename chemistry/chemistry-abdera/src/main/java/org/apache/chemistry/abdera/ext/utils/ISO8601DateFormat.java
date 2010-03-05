@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.chemistry.tck.atompub.utils;
+package org.apache.chemistry.abdera.ext.utils;
 
 import java.util.Calendar;
 import java.util.Date;

@@ -21,7 +21,7 @@ import java.util.Date;
 
 import javax.xml.namespace.QName;
 
-import org.apache.chemistry.tck.atompub.utils.ISO8601DateFormat;
+import org.apache.chemistry.abdera.ext.utils.ISO8601DateFormat;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.ExtensibleElementWrapper;
