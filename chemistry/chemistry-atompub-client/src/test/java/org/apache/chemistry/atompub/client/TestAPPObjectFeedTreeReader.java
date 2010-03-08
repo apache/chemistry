@@ -69,11 +69,13 @@ public class TestAPPObjectFeedTreeReader extends TestCase {
         List<Tree<ObjectEntry>> list = new APPObjectFeedTreeReader().read(
                 getAPPContext(), is);
         assertEquals(2, list.size());
+
         Tree<ObjectEntry> tree = list.get(0);
         assertEquals(3, tree.size());
         assertEquals(1, tree.getChildren().size());
         assertEquals(2, tree.getChildren().get(0).size());
         assertEquals(1, tree.getChildren().get(0).getChildren().size());
+
         tree = list.get(1);
         assertEquals(3, tree.size());
         assertEquals(2, tree.getChildren().size());

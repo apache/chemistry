@@ -44,9 +44,11 @@ public class TestServiceDocumentReader extends TestCase {
         APPContext ctx = new APPContext(new APPRepositoryService("", null));
         List<APPRepository> repos = reader.read(ctx, is);
         assertEquals(1, repos.size());
+
         Repository repo = repos.get(0);
         assertEquals("test", repo.getId());
         assertEquals("testname", repo.getName());
+
         RepositoryInfo info = repo.getInfo();
         assertEquals("Repository test", info.getDescription());
         assertEquals("Apache Test", info.getVendorName());
@@ -56,10 +58,12 @@ public class TestServiceDocumentReader extends TestCase {
         assertEquals("20091027-test", info.getLatestChangeLogToken());
         assertEquals("1.0-test", info.getVersionSupported());
         assertFalse(info.isChangeLogIncomplete());
+
         Set<BaseType> clbt = info.getChangeLogBaseTypes();
         Set<BaseType> clbtExpected = new HashSet<BaseType>(Arrays.asList(
                 BaseType.FOLDER, BaseType.DOCUMENT));
         assertEquals(clbtExpected, clbt);
+
         RepositoryCapabilities cap = info.getCapabilities();
         assertEquals(CapabilityACL.MANAGE, cap.getACLCapability());
         assertFalse(cap.isAllVersionsSearchable());
