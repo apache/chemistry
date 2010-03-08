@@ -52,6 +52,17 @@ STRING_LIT:
 "abc'" FAIL
 "'ab'c'" FAIL
 
+BOOL_LIT:
+"TRUE" OK
+"true" OK
+"FALSE" OK
+"false" OK
+
+TIME_LIT:
+"TIMESTAMP '2010-01-01Z01:01:01.000Z'" OK
+"timestamp   '123'" OK
+"TIMESTAMP 123" FAIL
+
 // ----- Parser tests -----
 
 literal:

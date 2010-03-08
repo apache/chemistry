@@ -90,6 +90,7 @@ CONTAINS : ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('S'|'
 SCORE : ('S'|'s')('C'|'c')('O'|'o')('R'|'r')('E'|'e');
 IN_FOLDER : ('I'|'i')('N'|'n')'_'('F'|'f')('O'|'o')('L'|'l')('D'|'d')('E'|'e')('R'|'r');
 IN_TREE : ('I'|'i')('N'|'n')'_'('T'|'t')('R'|'r')('E'|'e')('E'|'e');
+TIMESTAMP : 'TIMESTAMP'|'timestamp';
 
 STAR : '*';
 LPAR : '(';
@@ -103,13 +104,17 @@ GT : '>';
 LTEQ : '<=';
 GTEQ : '>=';
 
-ID :
-    ('a'..'z'|'A'..'Z'|'_')
-    ('a'..'z'|'A'..'Z'|'_'|'0'..'9'|':')*
-    ;
+BOOL_LIT : 'TRUE' | 'true' | 'FALSE' | 'false';
 
 NUM_LIT : '0' | '-'? ('1'..'9')('0'..'9')*;
 
 STRING_LIT : '\'' (~'\''|'\'\'')* '\'';
 
 WS : ( ' ' | '\t' | '\r'? '\n' )+ { $channel=HIDDEN; };
+
+TIME_LIT : TIMESTAMP WS STRING_LIT;
+
+ID :
+    ('a'..'z'|'A'..'Z'|'_')
+    ('a'..'z'|'A'..'Z'|'_'|'0'..'9'|':')*
+    ;

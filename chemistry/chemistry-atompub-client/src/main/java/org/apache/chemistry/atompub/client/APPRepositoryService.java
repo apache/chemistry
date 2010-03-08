@@ -82,12 +82,12 @@ public class APPRepositoryService implements RepositoryService {
         repos = connector.getServiceDocument(url);
     }
 
-    public Repository getDefaultRepository() throws ContentManagerException {
+    public Repository getDefaultRepository() {
         loadRepositories();
         return repos.size() == 0 ? null : repos.get(0);
     }
 
-    public Repository getRepository(String id) throws ContentManagerException {
+    public Repository getRepository(String id) {
         loadRepositories();
         for (Repository repository : repos) {
             if (repository.getId().equals(id)) {

@@ -26,6 +26,7 @@ import junit.framework.TestCase;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.CMISRuntimeException;
 import org.apache.chemistry.CapabilityJoin;
 import org.apache.chemistry.CapabilityQuery;
 import org.apache.chemistry.Connection;
@@ -41,6 +42,7 @@ import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.Updatability;
+import org.apache.chemistry.util.GregorianCalendar;
 
 public class TestSimpleRepository extends TestCase {
 
@@ -61,11 +63,15 @@ public class TestSimpleRepository extends TestCase {
                 "def:date", null, "date", "Date", "", false,
                 PropertyType.DATETIME, false, null, false, false, null,
                 Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
+        PropertyDefinition d4 = new SimplePropertyDefinition("bool",
+                "def:bool", null, "bool", "Bool", "", false,
+                PropertyType.BOOLEAN, false, null, false, false, null,
+                Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
         SimpleType mt1 = new SimpleType("doc", BaseType.DOCUMENT.getId(),
                 "doc", null, "Doc", "My Doc Type", BaseType.DOCUMENT, "", true,
                 true, true, true, true, true, true, true,
                 ContentStreamPresence.ALLOWED, null, null, Arrays.asList(d1,
-                        d2, d3));
+                        d2, d3, d4));
         SimpleType mt2 = new SimpleType("fold", BaseType.FOLDER.getId(),
                 "fold", null, "Fold", "My Folder Type", BaseType.FOLDER, "",
                 true, true, true, true, true, true, false, false,
@@ -185,7 +191,7 @@ public class TestSimpleRepository extends TestCase {
         Connection conn = repo.getConnection(null);
         Folder root = conn.getRootFolder();
         Document d1 = root.newDocument("doc");
-        assertEquals(SimpleType.PROPS_DOCUMENT_BASE.size() + 3,
+        assertEquals(SimpleType.PROPS_DOCUMENT_BASE.size() + 4,
                 d1.getType().getPropertyDefinitions().size());
 
         d1.save();
@@ -265,6 +271,9 @@ public class TestSimpleRepository extends TestCase {
         Connection conn = repo.getConnection(null);
         Folder root = conn.getRootFolder();
         Document d1 = root.newDocument("doc");
+        d1.setValue("date",
+                GregorianCalendar.fromAtomPub("2010-01-01T01:01:01.000Z"));
+        d1.setValue("bool", Boolean.TRUE);
         d1.save();
 
         Collection<CMISObject> res = conn.query("SELECT * FROM cmis:folder",
@@ -286,6 +295,23 @@ public class TestSimpleRepository extends TestCase {
         res = conn.query("SELECT * FROM doc WHERE cmis:objectId <> '123'",
                 false);
         assertEquals(1, res.size());
+
+        res = conn.query("SELECT * FROM doc WHERE bool = true", false);
+        assertEquals(1, res.size());
+        res = conn.query("SELECT * FROM doc WHERE bool <> FALSE", false);
+        assertEquals(1, res.size());
+
+        res = conn.query(
+                "SELECT * FROM doc WHERE date <> TIMESTAMP '1999-09-09T01:01:01Z'",
+                false);
+        assertEquals(1, res.size());
+        try {
+            res = conn.query(
+                    "SELECT * FROM doc WHERE date <> TIMESTAMP 'foobar'", false);
+            fail();
+        } catch (CMISRuntimeException e) {
+            // ok
+        }
     }
 
 }

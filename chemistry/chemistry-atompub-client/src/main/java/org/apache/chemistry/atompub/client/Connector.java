@@ -27,6 +27,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.chemistry.CMISRuntimeException;
 import org.apache.chemistry.ConstraintViolationException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Inclusion;
@@ -77,13 +78,13 @@ public class Connector {
             client.executeMethod(method);
             int status = method.getStatusCode();
             if (status >= HttpStatus.SC_BAD_REQUEST) {
-                throw new ContentManagerException(
+                throw new CMISRuntimeException(
                         "Remote server returned error code: " + status);
             }
             return new APPServiceDocumentReader().read(ctx,
                     method.getResponseBodyAsStream());
         } catch (IOException e) {
-            throw new ContentManagerException(e);
+            throw new CMISRuntimeException(e);
         } finally {
             method.releaseConnection();
         }
@@ -109,14 +110,14 @@ public class Connector {
             client.executeMethod(method);
             int status = method.getStatusCode();
             if (status >= HttpStatus.SC_BAD_REQUEST) {
-                throw new ContentManagerException(
+                throw new CMISRuntimeException(
                         "Remote server returned error code: " + status);
             }
             return reader.read(ctx, method.getResponseBodyAsStream());
         } catch (IOException e) {
-            throw new ContentManagerException(e);
+            throw new CMISRuntimeException(e);
         } catch (XMLStreamException e) {
-            throw new ContentManagerException(e);
+            throw new CMISRuntimeException(e);
         } finally {
             method.releaseConnection();
         }
@@ -150,14 +151,14 @@ public class Connector {
                 throw new ConstraintViolationException(msg);
             }
             if (status >= HttpStatus.SC_BAD_REQUEST) {
-                throw new ContentManagerException(
+                throw new CMISRuntimeException(
                         "Remote server returned error code: " + status);
             }
             return reader.read(ctx, method.getResponseBodyAsStream());
         } catch (IOException e) {
-            throw new ContentManagerException(e);
+            throw new CMISRuntimeException(e);
         } catch (XMLStreamException e) {
-            throw new ContentManagerException(e);
+            throw new CMISRuntimeException(e);
         } finally {
             method.releaseConnection();
         }
@@ -174,7 +175,7 @@ public class Connector {
                 throw new ConstraintViolationException("No content stream");
             }
             if (status >= HttpStatus.SC_BAD_REQUEST) {
-                throw new ContentManagerException(
+                throw new CMISRuntimeException(
                         "Remote server returned error code: " + status);
             }
             InputStream is = method.getResponseBodyAsStream();
@@ -190,7 +191,6 @@ public class Connector {
     public Set<QName> getAllowableActions(String href) {
         return getObject(href, "", new AllowableActionsReader());
     }
-
 
     public APPObjectEntry putEntry(String href, Header header,
             APPObjectEntry entry) {
@@ -222,7 +222,7 @@ public class Connector {
             client.executeMethod(method);
             int status = method.getStatusCode();
             if (status >= HttpStatus.SC_BAD_REQUEST) {
-                throw new ContentManagerException(
+                throw new CMISRuntimeException(
                         "Remote server returned error code: " + status);
             }
             if (requestEntity instanceof InputStreamRequestEntity) {
@@ -233,9 +233,9 @@ public class Connector {
                         method.getResponseBodyAsStream());
             }
         } catch (IOException e) {
-            throw new ContentManagerException(e);
+            throw new CMISRuntimeException(e);
         } catch (XMLStreamException e) {
-            throw new ContentManagerException(e);
+            throw new CMISRuntimeException(e);
         } finally {
             method.releaseConnection();
         }
@@ -256,7 +256,7 @@ public class Connector {
             client.executeMethod(method);
             int status = method.getStatusCode();
             if (status != HttpStatus.SC_CREATED) {
-                throw new ContentManagerException(
+                throw new CMISRuntimeException(
                         "Remote server returned error code: " + status);
             }
             APPObjectEntry newEntry = new APPObjectEntryReader().read(ctx,
@@ -265,7 +265,7 @@ public class Connector {
             Header loc = method.getResponseHeader("Location");
             Header cloc = method.getResponseHeader("Content-Location");
             if (loc == null) {
-                throw new ContentManagerException(
+                throw new CMISRuntimeException(
                         "Remote server failed to return a Location header");
             }
             if (newEntry == null || !loc.equals(cloc)) {
@@ -275,16 +275,16 @@ public class Connector {
                 // ok
                 newEntry = getEntry(loc.getValue(), loc.getValue());
                 if (newEntry == null) {
-                    throw new ContentManagerException(
+                    throw new CMISRuntimeException(
                             "Remote server failed to return an entry for Location: "
                                     + loc);
                 }
             }
             return newEntry;
         } catch (IOException e) {
-            throw new ContentManagerException(e);
+            throw new CMISRuntimeException(e);
         } catch (XMLStreamException e) {
-            throw new ContentManagerException(e);
+            throw new CMISRuntimeException(e);
         } finally {
             method.releaseConnection();
         }
@@ -301,15 +301,15 @@ public class Connector {
             client.executeMethod(method);
             int status = method.getStatusCode();
             if (status >= HttpStatus.SC_BAD_REQUEST) {
-                throw new ContentManagerException(
+                throw new CMISRuntimeException(
                         "Remote server returned error code: " + status);
             }
             return new APPObjectFeedReader().read(ctx,
                     method.getResponseBodyAsStream());
         } catch (IOException e) {
-            throw new ContentManagerException(e);
+            throw new CMISRuntimeException(e);
         } catch (XMLStreamException e) {
-            throw new ContentManagerException(e);
+            throw new CMISRuntimeException(e);
         } finally {
             method.releaseConnection();
         }
@@ -331,11 +331,11 @@ public class Connector {
                         method.getStatusLine().getReasonPhrase());
             }
             if (status >= HttpStatus.SC_BAD_REQUEST) {
-                throw new ContentManagerException(
+                throw new CMISRuntimeException(
                         "Remote server returned error code: " + status);
             }
         } catch (IOException e) {
-            throw new ContentManagerException(e);
+            throw new CMISRuntimeException(e);
         } finally {
             method.releaseConnection();
         }

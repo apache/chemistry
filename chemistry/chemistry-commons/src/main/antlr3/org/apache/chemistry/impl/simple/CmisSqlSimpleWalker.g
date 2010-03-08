@@ -49,6 +49,7 @@ options {
 package org.apache.chemistry.impl.simple;
 
 import org.apache.chemistry.impl.simple.SimpleData;
+import org.apache.chemistry.util.GregorianCalendar;
 }
 
 @members {
@@ -260,6 +261,20 @@ literal returns [Object value]:
         {
             String s = $STRING_LIT.text;
             $value = s.substring(1, s.length() - 1);
+        }
+    | TIME_LIT
+        {
+            String s = $TIME_LIT.text;
+            s = s.substring(s.indexOf('\'') + 1, s.length() - 1);
+            try {
+                $value = GregorianCalendar.fromAtomPub(s);
+            } catch (IllegalArgumentException e) {
+                throw new UnwantedTokenException(Token.INVALID_TOKEN_TYPE, input);
+            }
+        }
+    | BOOL_LIT
+        {
+            $value = Boolean.valueOf($BOOL_LIT.text);
         }
     ;
 

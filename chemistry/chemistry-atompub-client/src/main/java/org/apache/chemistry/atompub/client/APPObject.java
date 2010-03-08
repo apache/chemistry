@@ -223,18 +223,14 @@ public abstract class APPObject extends BaseObject {
     }
 
     public void save() {
-        try {
-            if (entry.isCreation()) {
-                create();
-            } else {
-                update();
-            }
-        } catch (ContentManagerException e) { // TODO
-            throw new RuntimeException(e);
+        if (entry.isCreation()) {
+            create();
+        } else {
+            update();
         }
     }
 
-    protected void create() throws ContentManagerException {
+    protected void create() {
         // this link value is local, set by APPConnection#newDocument
         String href = entry.getLink(AtomPub.LINK_UP);
         if (href == null) {
@@ -246,7 +242,7 @@ public abstract class APPObject extends BaseObject {
         entry = entry.connection.connector.postEntry(href, null, entry);
     }
 
-    protected void update() throws ContentManagerException {
+    protected void update() {
         String href = entry.getEditLink();
         if (href == null) {
             throw new CMISRuntimeException("Missing edit link");

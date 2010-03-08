@@ -179,6 +179,8 @@ comp_op:
 literal:
       NUM_LIT
     | STRING_LIT
+    | TIME_LIT
+    | BOOL_LIT
     ;
 
 in_predicate:
