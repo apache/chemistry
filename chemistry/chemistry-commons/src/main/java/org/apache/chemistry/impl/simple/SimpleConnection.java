@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +42,6 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.apache.chemistry.ACE;
 import org.apache.chemistry.ACLPropagation;
-import org.apache.chemistry.AllowableAction;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.CMISRuntimeException;
@@ -481,10 +479,7 @@ public class SimpleConnection implements Connection, SPI {
     }
 
     public Set<QName> getAllowableActions(ObjectId object) {
-        // TODO see SimpleObjectEntry.getAllowableActions
-        Set<QName> set = new HashSet<QName>();
-        set.add(AllowableAction.CAN_UPDATE_PROPERTIES);
-        return set;
+        return getProperties(object, null).getAllowableActions();
     }
 
     public ObjectEntry getProperties(ObjectId object, Inclusion inclusion) {

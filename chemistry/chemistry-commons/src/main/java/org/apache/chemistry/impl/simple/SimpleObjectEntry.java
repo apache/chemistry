@@ -149,9 +149,49 @@ public class SimpleObjectEntry implements ObjectEntry {
     }
 
     public Set<QName> getAllowableActions() {
-        // TODO see SimpleConnection.getAllowableActions
+        boolean canWrite = true;
+        boolean isFolder = getBaseType() == BaseType.FOLDER;
         Set<QName> set = new HashSet<QName>();
-        set.add(AllowableAction.CAN_UPDATE_PROPERTIES);
+        set.add(AllowableAction.CAN_GET_OBJECT_PARENTS);
+        set.add(AllowableAction.CAN_GET_PROPERTIES);
+        if (isFolder) {
+            set.add(AllowableAction.CAN_GET_DESCENDANTS);
+            set.add(AllowableAction.CAN_GET_FOLDER_PARENT);
+            set.add(AllowableAction.CAN_GET_FOLDER_TREE);
+            set.add(AllowableAction.CAN_GET_CHILDREN);
+        } else {
+            set.add(AllowableAction.CAN_GET_CONTENT_STREAM);
+        }
+        if (canWrite) {
+            if (isFolder) {
+                set.add(AllowableAction.CAN_CREATE_DOCUMENT);
+                set.add(AllowableAction.CAN_CREATE_FOLDER);
+                set.add(AllowableAction.CAN_CREATE_RELATIONSHIP);
+                set.add(AllowableAction.CAN_DELETE_TREE);
+                set.add(AllowableAction.CAN_ADD_OBJECT_TO_FOLDER);
+                set.add(AllowableAction.CAN_REMOVE_OBJECT_FROM_FOLDER);
+            } else {
+                set.add(AllowableAction.CAN_SET_CONTENT_STREAM);
+                set.add(AllowableAction.CAN_DELETE_CONTENT_STREAM);
+            }
+            set.add(AllowableAction.CAN_UPDATE_PROPERTIES);
+            set.add(AllowableAction.CAN_MOVE_OBJECT);
+            set.add(AllowableAction.CAN_DELETE_OBJECT);
+        }
+        if (Boolean.FALSE.booleanValue()) {
+            // TODO
+            set.add(AllowableAction.CAN_GET_RENDITIONS);
+            set.add(AllowableAction.CAN_CHECK_OUT);
+            set.add(AllowableAction.CAN_CANCEL_CHECK_OUT);
+            set.add(AllowableAction.CAN_CHECK_IN);
+            set.add(AllowableAction.CAN_GET_ALL_VERSIONS);
+            set.add(AllowableAction.CAN_GET_OBJECT_RELATIONSHIPS);
+            set.add(AllowableAction.CAN_APPLY_POLICY);
+            set.add(AllowableAction.CAN_REMOVE_POLICY);
+            set.add(AllowableAction.CAN_GET_APPLIED_POLICIES);
+            set.add(AllowableAction.CAN_GET_ACL);
+            set.add(AllowableAction.CAN_APPLY_ACL);
+        }
         return set;
     }
 
