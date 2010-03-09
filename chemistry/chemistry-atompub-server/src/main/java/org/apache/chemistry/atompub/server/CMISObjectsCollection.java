@@ -551,8 +551,10 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
             return buildCreateEntryResponse(link, entry);
         } catch (ResponseContextException e) {
             return createErrorResponse(e);
+        } catch (IllegalArgumentException e) {
+           return createErrorResponse(new ResponseContextException(400, e));
         } catch (ConstraintViolationException e) {
-            return createErrorResponse(new ResponseContextException(400, e));
+            return createErrorResponse(new ResponseContextException(409, e));
         } catch (CMISRuntimeException e) {
             return createErrorResponse(new ResponseContextException(500, e));
         } catch (Exception e) {
