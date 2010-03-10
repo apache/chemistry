@@ -71,7 +71,8 @@ public class ChemistryApp extends AbstractApplication {
     protected void doConnect() {
         Map<String, Serializable> params = new HashMap<String, Serializable>();
         params.put(Repository.PARAM_USERNAME, username);
-        params.put(Repository.PARAM_PASSWORD, new String(password));
+        params.put(Repository.PARAM_PASSWORD, password == null ? null
+                : new String(password));
         repositoryService = new APPRepositoryService(
                 serverUrl.toExternalForm(), params);
         RepositoryManager.getInstance().registerService(repositoryService);
