@@ -14,6 +14,7 @@
  * Authors:
  *     Bogdan Stefanescu, Nuxeo
  *     Florent Guillaume, Nuxeo
+ *     Michael Durig, Day
  */
 package org.apache.chemistry.atompub.client.stax;
 
@@ -155,8 +156,14 @@ public abstract class ServiceDocumentReader<T extends Repository> {
                 readRepositorySpecificInformation(ctx, reader);
             } else if (CMIS.CHANGES_ON_TYPE.equals(name)) {
                 changeLogBaseTypes.add(BaseType.get(reader.getElementText()));
+            } else if (CMIS.ACL_CAPABILITY.equals(name)) {
+                // TODO implement ACL capabilities
             } else {
-                map.put(name.getLocalPart(), reader.getElementText());
+                try {
+                    map.put(name.getLocalPart(), reader.getElementText());
+                } catch (XMLStreamException e) {
+                    // ignore unknown tag containing non-text
+                }
             }
         }
         if (changeLogBaseTypes.isEmpty()) {
