@@ -64,7 +64,14 @@ public class ChemistryRootContext extends AbstractContext {
                     "Not connected: cannot browse repository");
             return null;
         }
-        Repository repo = RepositoryManager.getInstance().getRepository(name);
+        // lookup repository by name
+        Repository repo = null;
+        for (RepositoryEntry re : RepositoryManager.getInstance().getRepositories()) {
+            if (re.getName().equals(name)) {
+                repo = RepositoryManager.getInstance().getRepository(re.getId());
+                break;
+            }
+        }
         if (repo == null) {
             return null;
         }
