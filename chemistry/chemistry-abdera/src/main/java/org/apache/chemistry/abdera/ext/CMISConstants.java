@@ -287,8 +287,8 @@ public interface CMISConstants {
     public static final String PROP_VERSION_SERIES_CHECKED_OUT_ID = "cmis:versionSeriesCheckedOutId";
     public static final String PROP_CHECKIN_COMMENT = "cmis:checkinComment";
     public static final String PROP_CONTENT_STREAM_LENGTH = "cmis:contentStreamLength";
-    public static final String PROP_CONTENT_STREAM_MIMETYPE = "cmis:contentStreamMimetype";
-    public static final String PROP_CONTENT_STREAM_FILENAME = "cmis:contentStreamFilename";
+    public static final String PROP_CONTENT_STREAM_MIMETYPE = "cmis:contentStreamMimeType";
+    public static final String PROP_CONTENT_STREAM_FILENAME = "cmis:contentStreamFileName";
     public static final String PROP_CONTENT_STREAM_ID = "cmis:contentStreamId";
     public static final String PROP_PATH = "cmis:path";
     public static final String PROP_SOURCE_ID = "cmis:sourceId";
