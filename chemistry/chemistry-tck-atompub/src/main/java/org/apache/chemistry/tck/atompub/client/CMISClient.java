@@ -458,14 +458,15 @@ public class CMISClient {
         return entry;
     }
 
-    public Entry createRelationship(IRI parent, String type, String targetId) throws Exception {
-        return createRelationship(parent, type, targetId, "createrelationship.atomentry.xml");
+    public Entry createRelationship(IRI parent, String type, String sourceId, String targetId) throws Exception {
+        return createRelationship(parent, type, sourceId, targetId, "createrelationship.atomentry.xml");
     }
 
-    public Entry createRelationship(IRI parent, String type, String targetId, String atomEntryFile) throws Exception {
+    public Entry createRelationship(IRI parent, String type, String sourceId, String targetId, String atomEntryFile) throws Exception {
         type = (type == null) ? defaultRelationshipType : type;
         String createFile = templates.load(atomEntryFile);
         createFile = createFile.replace("${RELTYPE}", type);
+        createFile = createFile.replace("${SOURCEID}", sourceId);
         createFile = createFile.replace("${TARGETID}", targetId);
         Request req = new PostRequest(parent.toString(), createFile, CMISConstants.MIMETYPE_ENTRY);
         Response res = executeRequest(req, 201);

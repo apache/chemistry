@@ -5,6 +5,9 @@
       <cmis:propertyId propertyDefinitionId="cmis:objectTypeId">
         <cmis:value>${RELTYPE}</cmis:value>
       </cmis:propertyId>
+      <cmis:propertyId propertyDefinitionId="cmis:sourceId">
+        <cmis:value>${SOURCEID}</cmis:value>
+      </cmis:propertyId>
       <cmis:propertyId propertyDefinitionId="cmis:targetId">
         <cmis:value>${TARGETID}</cmis:value>
       </cmis:propertyId>

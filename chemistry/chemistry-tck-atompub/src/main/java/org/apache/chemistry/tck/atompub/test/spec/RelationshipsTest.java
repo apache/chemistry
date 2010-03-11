@@ -100,18 +100,18 @@ public class RelationshipsTest extends TCKTest {
         assertEquals(0, relsBefore.getEntries().size());
 
         // create relationship between source and target documents
-        CMISObject targetObject = target.getExtension(CMISConstants.OBJECT);
-        assertNotNull(targetObject);
-        String targetId = targetObject.getObjectId().getStringValue();
-        assertNotNull(targetId);
-        Entry rel = client.createRelationship(relsLink.getHref(), options.getRelationshipType(), targetId);
-        assertNotNull(rel);
-
-        // check created relationship
         CMISObject sourceObject = source.getExtension(CMISConstants.OBJECT);
         assertNotNull(sourceObject);
         String sourceId = sourceObject.getObjectId().getStringValue();
         assertNotNull(sourceId);
+        CMISObject targetObject = target.getExtension(CMISConstants.OBJECT);
+        assertNotNull(targetObject);
+        String targetId = targetObject.getObjectId().getStringValue();
+        assertNotNull(targetId);
+        Entry rel = client.createRelationship(relsLink.getHref(), options.getRelationshipType(), sourceId, targetId);
+        assertNotNull(rel);
+
+        // check created relationship
         CMISObject relObject = rel.getExtension(CMISConstants.OBJECT);
         assertNotNull(relObject);
         assertEquals(options.getRelationshipType(), relObject.getObjectTypeId().getStringValue());
@@ -144,11 +144,15 @@ public class RelationshipsTest extends TCKTest {
         assertNotNull(relsLink);
 
         // create relationship between source and target documents
+        CMISObject sourceObject = source.getExtension(CMISConstants.OBJECT);
+        assertNotNull(sourceObject);
+        String sourceId = sourceObject.getObjectId().getStringValue();
+        assertNotNull(sourceId);
         CMISObject targetObject = target.getExtension(CMISConstants.OBJECT);
         assertNotNull(targetObject);
         String targetId = targetObject.getObjectId().getStringValue();
         assertNotNull(targetId);
-        Entry rel = client.createRelationship(relsLink.getHref(), options.getRelationshipType(), targetId);
+        Entry rel = client.createRelationship(relsLink.getHref(), options.getRelationshipType(), sourceId, targetId);
         assertNotNull(rel);
 
         // get created relationship
@@ -182,11 +186,15 @@ public class RelationshipsTest extends TCKTest {
         assertEquals(0, relsBefore.getEntries().size());
 
         // create relationship between source and target documents
+        CMISObject sourceObject = source.getExtension(CMISConstants.OBJECT);
+        assertNotNull(sourceObject);
+        String sourceId = sourceObject.getObjectId().getStringValue();
+        assertNotNull(sourceId);
         CMISObject targetObject = target.getExtension(CMISConstants.OBJECT);
         assertNotNull(targetObject);
         String targetId = targetObject.getObjectId().getStringValue();
         assertNotNull(targetId);
-        Entry rel = client.createRelationship(relsLink.getHref(), options.getRelationshipType(), targetId);
+        Entry rel = client.createRelationship(relsLink.getHref(), options.getRelationshipType(), sourceId, targetId);
         assertNotNull(rel);
 
         // check relationships for created item
