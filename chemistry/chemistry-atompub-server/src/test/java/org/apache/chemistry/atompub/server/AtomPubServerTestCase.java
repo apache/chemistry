@@ -83,6 +83,8 @@ public abstract class AtomPubServerTestCase extends TestCase {
 
     protected static String doc3id;
 
+    protected static String doc4id;
+
     protected RepositoryService repositoryService;
 
     public Server server;
@@ -187,6 +189,15 @@ public abstract class AtomPubServerTestCase extends TestCase {
         doc3.setContentStream(cs);
         doc3.save();
         doc3id = doc3.getId();
+
+        Document doc4 = folder2.newDocument("doc");
+        doc4.setName("doc4");
+        doc4.setValue("title", "doc 4 title");
+        cs = new SimpleContentStream(TEST_FILE_CONTENT.getBytes("UTF-8"),
+                "invalid_mime", "doc4.txt");
+        doc4.setContentStream(cs);
+        doc4.save();
+        doc4id = doc4.getId();
 
         conn.close();
         return repo;
@@ -450,6 +461,17 @@ public abstract class AtomPubServerTestCase extends TestCase {
                 method.getResponseHeader("Content-Length").getValue());
         body = method.getResponseBody();
         assertEquals(TEST_FILE_CONTENT2, new String(body, "UTF-8"));
+        method.releaseConnection();
+    }
+
+    public void testBadContentType() throws Exception {
+        HttpMethod method = new GetMethod(base + "/file/" + doc4id);
+        int status = new HttpClient().executeMethod(method);
+        assertEquals(HttpStatus.SC_OK, status);
+        assertEquals("application/octet-stream", method.getResponseHeader(
+                "Content-Type").getValue());
+        byte[] body = method.getResponseBody();
+        assertEquals(TEST_FILE_CONTENT, new String(body, "UTF-8"));
         method.releaseConnection();
     }
 

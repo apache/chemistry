@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.activation.MimeType;
 import javax.xml.namespace.QName;
 
 import org.apache.abdera.factory.Factory;
@@ -552,7 +553,7 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
         } catch (ResponseContextException e) {
             return createErrorResponse(e);
         } catch (IllegalArgumentException e) {
-           return createErrorResponse(new ResponseContextException(400, e));
+            return createErrorResponse(new ResponseContextException(400, e));
         } catch (ConstraintViolationException e) {
             return createErrorResponse(new ResponseContextException(409, e));
         } catch (CMISRuntimeException e) {
@@ -758,7 +759,17 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     @Override
     public String getContentType(ObjectEntry object) {
         try {
-            return (String) object.getValue(Property.CONTENT_STREAM_MIME_TYPE);
+            String mimeType = (String) object.getValue(Property.CONTENT_STREAM_MIME_TYPE);
+            // make sure it's a valid MIME type otherwise Abdera will throw
+            try {
+                new MimeType(mimeType).toString();
+            } catch (Exception e) {
+                log.error("Object " + object.getId() + " has invalid "
+                        + Property.CONTENT_STREAM_MIME_TYPE + " '" + mimeType
+                        + "', will be served as 'application/octet-stream'");
+                mimeType = "application/octet-stream";
+            }
+            return mimeType;
         } catch (IllegalArgumentException e) {
             return null;
         }
