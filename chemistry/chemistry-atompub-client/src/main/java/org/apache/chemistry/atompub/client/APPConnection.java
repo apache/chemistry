@@ -349,7 +349,12 @@ public class APPConnection implements Connection, SPI {
     }
 
     public CMISObject getObject(ObjectId object) {
-        APPObjectEntry entry = getObjectEntry(object);
+        APPObjectEntry entry;
+        try {
+            entry = getObjectEntry(object);
+        } catch (ObjectNotFoundException e) {
+            return null;
+        }
         Type type = getRepository().getType(entry.getTypeId());
         switch (entry.getBaseType()) {
         case DOCUMENT:
@@ -459,7 +464,12 @@ public class APPConnection implements Connection, SPI {
 
     public ObjectEntry getProperties(ObjectId object, Inclusion inclusion) {
         // TODO inclusion
-        APPObjectEntry current = getObjectEntry(object);
+        APPObjectEntry current;
+        try {
+            current = getObjectEntry(object);
+        } catch (ObjectNotFoundException e) {
+            return null;
+        }
         String href = current.getLink(AtomPub.LINK_SELF);
         try {
             return connector.getEntry(href, object.getId());
