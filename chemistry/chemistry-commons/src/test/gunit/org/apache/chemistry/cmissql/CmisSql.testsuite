@@ -37,13 +37,27 @@ ID:
 NUM_LIT:
 "123" OK
 "0" OK
-"-0" FAIL
+"-0" OK
 "1" OK
 "-1" OK
 "-123" OK
-"0123" FAIL
-"-0123" FAIL
+"0123" OK
+"-0123" OK
 "123abc" FAIL
+"123E" FAIL
+"123.456" OK
+"+123.456" OK
+"-123.456" OK
+".456" OK
+"+.456" OK
+"-.456" OK
+"123." OK
+"+123." OK
+"-123." OK
+"+123.456E78" OK
+"-123.456E-78" OK
+".456E78" OK
+"+123.E+78" OK
 
 STRING_LIT:
 "'abc'" OK
@@ -69,10 +83,11 @@ literal:
 "123" OK
 "-123" OK
 "0" OK
-"0123" FAIL
+"0123" OK
 "abc123" OK
 "123abc" FAIL
 "'abc'" OK
+"123.345E78" OK
 
 order_by_clause:
 "ORDER BY foo" -> (ORDER_BY (COL foo) ASC)

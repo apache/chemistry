@@ -106,7 +106,11 @@ GTEQ : '>=';
 
 BOOL_LIT : 'TRUE' | 'true' | 'FALSE' | 'false';
 
-NUM_LIT : '0' | '-'? ('1'..'9')('0'..'9')*;
+fragment Sign : ('+'|'-')?;
+fragment Digits : ('0'..'9')+;
+fragment ExactNumLit : Digits DOT Digits | Digits DOT | DOT Digits | Digits;
+fragment ApproxNumLit : ExactNumLit ('e'|'E') Sign Digits;
+NUM_LIT : Sign (ExactNumLit | ApproxNumLit);
 
 STRING_LIT : '\'' (~'\''|'\'\'')* '\'';
 

@@ -18,6 +18,7 @@
 package org.apache.chemistry.impl.simple;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -67,11 +68,15 @@ public class TestSimpleRepository extends TestCase {
                 "def:bool", null, "bool", "Bool", "", false,
                 PropertyType.BOOLEAN, false, null, false, false, null,
                 Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
+        PropertyDefinition d5 = new SimplePropertyDefinition("dec", "def:dec",
+                null, "dec", "Decimal", "", false, PropertyType.DECIMAL, false,
+                null, false, false, null, Updatability.READ_WRITE, true, true,
+                0, null, null, -1, null);
         SimpleType mt1 = new SimpleType("doc", BaseType.DOCUMENT.getId(),
                 "doc", null, "Doc", "My Doc Type", BaseType.DOCUMENT, "", true,
                 true, true, true, true, true, true, true,
                 ContentStreamPresence.ALLOWED, null, null, Arrays.asList(d1,
-                        d2, d3, d4));
+                        d2, d3, d4, d5));
         SimpleType mt2 = new SimpleType("fold", BaseType.FOLDER.getId(),
                 "fold", null, "Fold", "My Folder Type", BaseType.FOLDER, "",
                 true, true, true, true, true, true, false, false,
@@ -191,7 +196,7 @@ public class TestSimpleRepository extends TestCase {
         Connection conn = repo.getConnection(null);
         Folder root = conn.getRootFolder();
         Document d1 = root.newDocument("doc");
-        assertEquals(SimpleType.PROPS_DOCUMENT_BASE.size() + 4,
+        assertEquals(SimpleType.PROPS_DOCUMENT_BASE.size() + 5,
                 d1.getType().getPropertyDefinitions().size());
 
         d1.save();
@@ -274,6 +279,7 @@ public class TestSimpleRepository extends TestCase {
         d1.setValue("date",
                 GregorianCalendar.fromAtomPub("2010-01-01T01:01:01.000Z"));
         d1.setValue("bool", Boolean.TRUE);
+        d1.setValue("dec", BigDecimal.valueOf(123.456));
         d1.save();
 
         Collection<CMISObject> res = conn.query("SELECT * FROM cmis:folder",
@@ -299,6 +305,11 @@ public class TestSimpleRepository extends TestCase {
         res = conn.query("SELECT * FROM doc WHERE bool = true", false);
         assertEquals(1, res.size());
         res = conn.query("SELECT * FROM doc WHERE bool <> FALSE", false);
+        assertEquals(1, res.size());
+
+        res = conn.query("SELECT * FROM doc WHERE dec = 123.456", false);
+        assertEquals(1, res.size());
+        res = conn.query("SELECT * FROM doc WHERE dec <> 123", false);
         assertEquals(1, res.size());
 
         res = conn.query(

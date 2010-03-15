@@ -48,6 +48,8 @@ options {
  */
 package org.apache.chemistry.impl.simple;
 
+import java.math.BigDecimal;
+
 import org.apache.chemistry.impl.simple.SimpleData;
 import org.apache.chemistry.util.GregorianCalendar;
 }
@@ -255,7 +257,11 @@ arg returns [Object value]
 literal returns [Object value]:
       NUM_LIT
         {
-            $value = Long.valueOf($NUM_LIT.text);
+            try {
+                $value = Long.valueOf($NUM_LIT.text);
+            } catch (NumberFormatException e) {
+                $value = new BigDecimal($NUM_LIT.text);
+            }
         }
     | STRING_LIT
         {
