@@ -253,6 +253,14 @@ public abstract class AtomPubServerTestCase extends TestCase {
         resp.release();
     }
 
+    public void testParents() throws Exception {
+        ClientResponse resp = client.get(base + "/parents/" + doc2id);
+        assertEquals(HttpStatus.SC_OK, resp.getStatus());
+        Element ch = resp.getDocument().getRoot();
+        assertNotNull(ch);
+        resp.release();
+    }
+
     public void testChildren() throws Exception {
         ClientResponse resp = client.get(base + "/children/" + rootFolderId);
         assertEquals(HttpStatus.SC_OK, resp.getStatus());

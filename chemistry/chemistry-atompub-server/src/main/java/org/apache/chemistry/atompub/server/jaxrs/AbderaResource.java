@@ -276,6 +276,13 @@ public class AbderaResource {
 
     @GET
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
+    @Path("parents/{objectid}")
+    public Response doGetParents() {
+        return getAbderaFeed();
+    }
+
+    @GET
+    @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
     @Path("children/{objectid}")
     public Response doGetChildren() {
         return getAbderaFeed();
