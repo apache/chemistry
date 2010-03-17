@@ -760,14 +760,16 @@ public abstract class CMISObjectsCollection extends CMISCollection<ObjectEntry> 
     public String getContentType(ObjectEntry object) {
         try {
             String mimeType = (String) object.getValue(Property.CONTENT_STREAM_MIME_TYPE);
-            // make sure it's a valid MIME type otherwise Abdera will throw
-            try {
-                new MimeType(mimeType).toString();
-            } catch (Exception e) {
-                log.error("Object " + object.getId() + " has invalid "
-                        + Property.CONTENT_STREAM_MIME_TYPE + " '" + mimeType
-                        + "', will be served as 'application/octet-stream'");
-                mimeType = "application/octet-stream";
+            if (mimeType != null) {
+                // make sure it's a valid MIME type otherwise Abdera will throw
+                try {
+                    new MimeType(mimeType).toString();
+                } catch (Exception e) {
+                    log.error("Object " + object.getId() + " has invalid "
+                            + Property.CONTENT_STREAM_MIME_TYPE + " '" + mimeType
+                            + "', will be served as 'application/octet-stream'");
+                    mimeType = "application/octet-stream";
+                }
             }
             return mimeType;
         } catch (IllegalArgumentException e) {
