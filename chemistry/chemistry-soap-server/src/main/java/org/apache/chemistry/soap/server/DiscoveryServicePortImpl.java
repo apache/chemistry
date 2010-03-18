@@ -18,7 +18,6 @@ package org.apache.chemistry.soap.server;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -38,10 +37,8 @@ import org.apache.chemistry.SPI;
 import org.apache.chemistry.ws.CmisException;
 import org.apache.chemistry.ws.CmisExtensionType;
 import org.apache.chemistry.ws.CmisObjectListType;
-import org.apache.chemistry.ws.CmisObjectType;
 import org.apache.chemistry.ws.DiscoveryServicePort;
 import org.apache.chemistry.ws.EnumIncludeRelationships;
-import org.apache.chemistry.ws.ObjectFactory;
 import org.apache.chemistry.ws.Query;
 import org.apache.chemistry.ws.QueryResponse;
 
@@ -56,54 +53,61 @@ public class DiscoveryServicePortImpl implements DiscoveryServicePort {
     private WebServiceContext wscontext;
 
     public QueryResponse query(Query parameters) throws CmisException {
-        // repository
-        String repositoryId = parameters.getRepositoryId();
-        Repository repository = RepositoryManager.getInstance().getRepository(
-                repositoryId);
-        if (repository == null) {
-            return null; // TODO fault
-        }
-
-        // parameters
-        String statement = parameters.getStatement();
-        JAXBElement<Boolean> searchAllVersionsB = parameters.getSearchAllVersions();
-        boolean searchAllVersions = searchAllVersionsB == null ? false
-                : searchAllVersionsB.getValue().booleanValue();
-
-        JAXBElement<BigInteger> maxItemsBI = parameters.getMaxItems();
-        int maxItems = maxItemsBI == null || maxItemsBI.getValue() == null
-                || maxItemsBI.getValue().intValue() < 0 ? 0
-                : maxItemsBI.getValue().intValue();
-        JAXBElement<BigInteger> skipCountBI = parameters.getSkipCount();
-        int skipCount = skipCountBI == null || skipCountBI.getValue() == null
-                || skipCountBI.getValue().intValue() < 0 ? 0
-                : skipCountBI.getValue().intValue();
-        Paging paging = new Paging(maxItems, skipCount);
-
-        JAXBElement<Boolean> includeAllowableActions = parameters.getIncludeAllowableActions();
-        boolean allowableActions = includeAllowableActions == null
-                || includeAllowableActions.getValue() == null ? false
-                : includeAllowableActions.getValue().booleanValue();
-        JAXBElement<EnumIncludeRelationships> includeRelationships = parameters.getIncludeRelationships();
-        RelationshipDirection relationships = includeRelationships == null
-                || includeRelationships.getValue() == null ? null
-                : RelationshipDirection.fromInclusion(includeRelationships.getValue().name());
-        JAXBElement<String> renditionFilter = parameters.getRenditionFilter();
-        String renditions = renditionFilter == null
-                || renditionFilter.getValue() == null ? null
-                : renditionFilter.getValue();
-        Inclusion inclusion = new Inclusion(null, renditions, relationships,
-                allowableActions, false, false);
-
-        Map<String, Serializable> params = CallContext.mapFromWebServiceContext(wscontext);
-        SPI spi = repository.getSPI(params);
+        SPI spi = null;
         try {
+            // repository
+            String repositoryId = parameters.getRepositoryId();
+            Repository repository = RepositoryManager.getInstance().getRepository(
+                    repositoryId);
+            if (repository == null) {
+                String msg = "Unknown repository: " + repositoryId;
+                throw new CmisException(msg, null, null);
+            }
+
+            // parameters
+            String statement = parameters.getStatement();
+            JAXBElement<Boolean> searchAllVersionsB = parameters.getSearchAllVersions();
+            boolean searchAllVersions = searchAllVersionsB == null ? false
+                    : searchAllVersionsB.getValue().booleanValue();
+
+            JAXBElement<BigInteger> maxItemsBI = parameters.getMaxItems();
+            int maxItems = maxItemsBI == null || maxItemsBI.getValue() == null
+                    || maxItemsBI.getValue().intValue() < 0 ? 0
+                    : maxItemsBI.getValue().intValue();
+            JAXBElement<BigInteger> skipCountBI = parameters.getSkipCount();
+            int skipCount = skipCountBI == null
+                    || skipCountBI.getValue() == null
+                    || skipCountBI.getValue().intValue() < 0 ? 0
+                    : skipCountBI.getValue().intValue();
+            Paging paging = new Paging(maxItems, skipCount);
+
+            JAXBElement<Boolean> includeAllowableActions = parameters.getIncludeAllowableActions();
+            boolean allowableActions = includeAllowableActions == null
+                    || includeAllowableActions.getValue() == null ? false
+                    : includeAllowableActions.getValue().booleanValue();
+            JAXBElement<EnumIncludeRelationships> includeRelationships = parameters.getIncludeRelationships();
+            RelationshipDirection relationships = includeRelationships == null
+                    || includeRelationships.getValue() == null ? null
+                    : RelationshipDirection.fromInclusion(includeRelationships.getValue().name());
+            JAXBElement<String> renditionFilter = parameters.getRenditionFilter();
+            String renditions = renditionFilter == null
+                    || renditionFilter.getValue() == null ? null
+                    : renditionFilter.getValue();
+            Inclusion inclusion = new Inclusion(null, renditions,
+                    relationships, allowableActions, false, false);
+
+            Map<String, Serializable> params = CallContext.mapFromWebServiceContext(wscontext);
+            spi = repository.getSPI(params);
             ListPage<ObjectEntry> res = spi.query(statement, searchAllVersions,
                     inclusion, paging);
 
             return ChemistryHelper.convertQuery(res);
+        } catch (Exception e) {
+            throw ChemistryHelper.convert(e);
         } finally {
-            spi.close();
+            if (spi != null) {
+                spi.close();
+            }
         }
     }
 

@@ -16,14 +16,25 @@
  */
 package org.apache.chemistry.soap.server;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.jws.WebService;
+import javax.xml.namespace.QName;
 import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceContext;
 
+import org.apache.chemistry.ContentStream;
+import org.apache.chemistry.Inclusion;
+import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.RelationshipDirection;
+import org.apache.chemistry.Repository;
+import org.apache.chemistry.RepositoryManager;
+import org.apache.chemistry.SPI;
 import org.apache.chemistry.ws.CmisAccessControlListType;
 import org.apache.chemistry.ws.CmisAllowableActionsType;
 import org.apache.chemistry.ws.CmisContentStreamType;
@@ -128,16 +139,52 @@ public class ObjectServicePortImpl implements ObjectServicePort {
 
     public CmisAllowableActionsType getAllowableActions(String repositoryId,
             String objectId, CmisExtensionType extension) throws CmisException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        SPI spi = null;
+        try {
+            Repository repository = RepositoryManager.getInstance().getRepository(
+                    repositoryId);
+            if (repository == null) {
+                String msg = "Unknown repository: " + repositoryId;
+                throw new CmisException(msg, null, null);
+            }
+            Map<String, Serializable> params = CallContext.mapFromWebServiceContext(wscontext);
+            spi = repository.getSPI(params);
+            Set<QName> res = spi.getAllowableActions(spi.newObjectId(objectId));
+            return ChemistryHelper.convert(res);
+        } catch (Exception e) {
+            throw ChemistryHelper.convert(e);
+        } finally {
+            if (spi != null) {
+                spi.close();
+            }
+        }
     }
 
     public CmisContentStreamType getContentStream(String repositoryId,
             String objectId, String streamId, BigInteger offset,
             BigInteger length, CmisExtensionType extension)
             throws CmisException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        SPI spi = null;
+        try {
+            Repository repository = RepositoryManager.getInstance().getRepository(
+                    repositoryId);
+            if (repository == null) {
+                String msg = "Unknown repository: " + repositoryId;
+                throw new CmisException(msg, null, null);
+            }
+
+            Map<String, Serializable> params = CallContext.mapFromWebServiceContext(wscontext);
+            spi = repository.getSPI(params);
+            ContentStream cs = spi.getContentStream(spi.newObjectId(objectId),
+                    streamId);
+            return ChemistryHelper.convert(cs);
+        } catch (Exception e) {
+            throw ChemistryHelper.convert(e);
+        } finally {
+            if (spi != null) {
+                spi.close();
+            }
+        }
     }
 
     public CmisObjectType getObject(String repositoryId, String objectId,
@@ -146,8 +193,33 @@ public class ObjectServicePortImpl implements ObjectServicePort {
             String renditionFilter, Boolean includePolicyIds,
             Boolean includeACL, CmisExtensionType extension)
             throws CmisException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        SPI spi = null;
+        try {
+            Repository repository = RepositoryManager.getInstance().getRepository(
+                    repositoryId);
+            if (repository == null) {
+                String msg = "Unknown repository: " + repositoryId;
+                throw new CmisException(msg, null, null);
+            }
+            RelationshipDirection inclrel = ChemistryHelper.convert(includeRelationships);
+            boolean inclaa = Boolean.TRUE.equals(includeAllowableActions);
+            boolean incpol = Boolean.TRUE.equals(includePolicyIds);
+            boolean incacls = Boolean.TRUE.equals(includeACL);
+            Inclusion inclusion = new Inclusion(filter, renditionFilter,
+                    inclrel, inclaa, incpol, incacls);
+
+            Map<String, Serializable> params = CallContext.mapFromWebServiceContext(wscontext);
+            spi = repository.getSPI(params);
+            ObjectEntry entry = spi.getProperties(spi.newObjectId(objectId),
+                    inclusion);
+            return ChemistryHelper.convert(entry);
+        } catch (Exception e) {
+            throw ChemistryHelper.convert(e);
+        } finally {
+            if (spi != null) {
+                spi.close();
+            }
+        }
     }
 
     public CmisObjectType getObjectByPath(String repositoryId, String path,
@@ -156,15 +228,60 @@ public class ObjectServicePortImpl implements ObjectServicePort {
             String renditionFilter, Boolean includePolicyIds,
             Boolean includeACL, CmisExtensionType extension)
             throws CmisException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        SPI spi = null;
+        try {
+            Repository repository = RepositoryManager.getInstance().getRepository(
+                    repositoryId);
+            if (repository == null) {
+                String msg = "Unknown repository: " + repositoryId;
+                throw new CmisException(msg, null, null);
+            }
+            RelationshipDirection inclrel = ChemistryHelper.convert(includeRelationships);
+            boolean inclaa = Boolean.TRUE.equals(includeAllowableActions);
+            boolean incpol = Boolean.TRUE.equals(includePolicyIds);
+            boolean incacls = Boolean.TRUE.equals(includeACL);
+            Inclusion inclusion = new Inclusion(filter, renditionFilter,
+                    inclrel, inclaa, incpol, incacls);
+
+            Map<String, Serializable> params = CallContext.mapFromWebServiceContext(wscontext);
+            spi = repository.getSPI(params);
+            ObjectEntry entry = spi.getObjectByPath(path, inclusion);
+            return ChemistryHelper.convert(entry);
+        } catch (Exception e) {
+            throw ChemistryHelper.convert(e);
+        } finally {
+            if (spi != null) {
+                spi.close();
+            }
+        }
     }
 
     public CmisPropertiesType getProperties(String repositoryId,
             String objectId, String filter, CmisExtensionType extension)
             throws CmisException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        SPI spi = null;
+        try {
+            Repository repository = RepositoryManager.getInstance().getRepository(
+                    repositoryId);
+            if (repository == null) {
+                String msg = "Unknown repository: " + repositoryId;
+                throw new CmisException(msg, null, null);
+            }
+
+            Inclusion inclusion = new Inclusion(filter, null, null, false,
+                    false, false);
+            Map<String, Serializable> params = CallContext.mapFromWebServiceContext(wscontext);
+            spi = repository.getSPI(params);
+            ObjectEntry entry = spi.getProperties(spi.newObjectId(objectId),
+                    inclusion);
+            return ChemistryHelper.convertProperties(entry);
+        } catch (Exception e) {
+            throw ChemistryHelper.convert(e);
+        } finally {
+            if (spi != null) {
+                spi.close();
+            }
+        }
     }
 
     public List<CmisRenditionType> getRenditions(String repositoryId,
@@ -193,8 +310,34 @@ public class ObjectServicePortImpl implements ObjectServicePort {
     public void updateProperties(String repositoryId, Holder<String> objectId,
             Holder<String> changeToken, CmisPropertiesType properties,
             Holder<CmisExtensionType> extension) throws CmisException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        SPI spi = null;
+        try {
+            Repository repository = RepositoryManager.getInstance().getRepository(
+                    repositoryId);
+            if (repository == null) {
+                String msg = "Unknown repository: " + repositoryId;
+                throw new CmisException(msg, null, null);
+            }
+            if (objectId == null || objectId.value == null) {
+                String msg = "Missing objectId";
+                throw new CmisException(msg, null, null);
+            }
+            String id = objectId.value;
+            String token = changeToken == null ? null : changeToken.value;
+            Map<String, Serializable> params = CallContext.mapFromWebServiceContext(wscontext);
+            spi = repository.getSPI(params);
+
+            Map<String, Serializable> props = ChemistryHelper.convert(
+                    properties, repository);
+
+            spi.updateProperties(spi.newObjectId(id), token, props);
+        } catch (Exception e) {
+            throw ChemistryHelper.convert(e);
+        } finally {
+            if (spi != null) {
+                spi.close();
+            }
+        }
     }
 
 }

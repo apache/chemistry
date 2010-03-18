@@ -330,7 +330,26 @@ public interface SPI {
      */
     Set<QName> getAllowableActions(ObjectId object);
 
-    // TODO 1.0 getObject
+    /**
+     * Gets an object.
+     * <p>
+     * Returns the properties of an object, and optionally associated
+     * information.
+     * <p>
+     * The content stream of the object is not returned, use
+     * {@link #getContentStream} for that.
+     * <p>
+     * If the passed object is an {@link ObjectEntry}, the repository
+     * implementation may fill it with additional data and return the same
+     * object.
+     *
+     * @param object the object
+     * @param inclusion the {@link Inclusion}s to have in the result
+     * @return the object, or {@code null} if the object is not found
+     *
+     * @throws FilterNotValidException if the filter is not valid
+     */
+    ObjectEntry getObject(ObjectId object, Inclusion inclusion);
 
     /**
      * Gets the properties of an object.
@@ -346,10 +365,8 @@ public interface SPI {
      * object.
      *
      * @param object the object
-     * @param inclusion the {@link Inclusion#properties properties},
-     *            {@link Inclusion#allowableActions allowable actions} and
-     *            {@link Inclusion#relationships relationships} to include in
-     *            the result
+     * @param inclusion the {@link Inclusion#properties properties} to include
+     *            in the result
      * @return the properties of the object, or {@code null} if the object is
      *         not found
      *

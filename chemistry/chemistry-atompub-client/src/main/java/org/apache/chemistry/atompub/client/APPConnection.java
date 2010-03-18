@@ -462,6 +462,10 @@ public class APPConnection implements Connection, SPI {
         return entry.getAllowableActions();
     }
 
+    public ObjectEntry getObject(ObjectId objectId, Inclusion inclusion) {
+        return getProperties(objectId, inclusion);
+    }
+
     public ObjectEntry getProperties(ObjectId object, Inclusion inclusion) {
         // TODO inclusion
         APPObjectEntry current;

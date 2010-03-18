@@ -482,6 +482,10 @@ public class SimpleConnection implements Connection, SPI {
         return getProperties(object, null).getAllowableActions();
     }
 
+    public ObjectEntry getObject(ObjectId objectId, Inclusion inclusion) {
+        return getProperties(objectId, inclusion);
+    }
+
     public ObjectEntry getProperties(ObjectId object, Inclusion inclusion) {
         // TODO filter, includeAllowableActions, includeRelationships
         SimpleData data = repository.datas.get(object.getId());

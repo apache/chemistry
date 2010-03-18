@@ -368,6 +368,10 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
+    public ObjectEntry getObject(ObjectId objectId, Inclusion inclusion) {
+        return getProperties(objectId, inclusion);
+    }
+
     public ObjectEntry getProperties(ObjectId objectId, Inclusion inclusion) {
 
         try {
