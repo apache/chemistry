@@ -142,7 +142,14 @@ public class RelationshipsTest extends TCKTest {
         // retrieve relationships feed on source
         Link relsLink = source.getLink(CMISConstants.REL_RELATIONSHIPS);
         assertNotNull(relsLink);
-
+        
+        // retrieve all relationships
+        Map<String, String> args = new HashMap<String, String>();
+        args.put("includeSubRelationshipTypes", "true");
+        Feed relsBeforeCreate = client.getFeed(relsLink.getHref(), args);
+        assertNotNull(relsBeforeCreate);
+        assertEquals(0, relsBeforeCreate.getEntries().size());
+        
         // create relationship between source and target documents
         CMISObject sourceObject = source.getExtension(CMISConstants.OBJECT);
         assertNotNull(sourceObject);
@@ -154,6 +161,12 @@ public class RelationshipsTest extends TCKTest {
         assertNotNull(targetId);
         Entry rel = client.createRelationship(relsLink.getHref(), options.getRelationshipType(), sourceId, targetId);
         assertNotNull(rel);
+
+        // retrieve all relationships
+        args.put("relationshipType", options.getRelationshipType());
+        Feed relsAfterCreate = client.getFeed(relsLink.getHref(), args);
+        assertNotNull(relsAfterCreate);
+        assertEquals(1, relsAfterCreate.getEntries().size());
 
         // get created relationship
         Entry relEntry = client.getEntry(rel.getSelfLink().getHref());
