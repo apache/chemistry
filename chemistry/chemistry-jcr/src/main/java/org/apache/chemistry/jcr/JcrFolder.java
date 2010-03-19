@@ -1,12 +1,9 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,55 +12,76 @@
  * limitations under the License.
  *
  * Authors:
- *     Dominique Pfister, Day
- *     Michael Mertins, Saperion
+ *     Florent Guillaume, Nuxeo
  */
 package org.apache.chemistry.jcr;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
-import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
-import org.apache.chemistry.ChangeInfo;
-import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.Property;
 import org.apache.chemistry.Unfiling;
+import org.apache.chemistry.UpdateConflictException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jackrabbit.JcrConstants;
 
-public class JcrFolder extends JcrObjectEntry implements Folder {
+/**
+ * Folder implementation.
+ */
+class JcrFolder extends JcrObject implements Folder {
 
+    /**
+     * Logger.
+     */
     private static final Log log = LogFactory.getLog(JcrFolder.class);
 
-    public JcrFolder(Node node, JcrConnection connection) {
-        super(node, connection);
+    /**
+     * Create a new instance of this class.
+     *
+     * @param entry object entry
+     */
+    public JcrFolder(JcrObjectEntry entry) {
+        super(entry);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Collection<ObjectId> deleteTree(Unfiling unfiling)
+            throws UpdateConflictException {
+        return connection.getSPI().deleteTree(this, unfiling, true);
+    }
+
+    /**
+     * Return all children of this folder.
+     *
+     * @return list of children
+     */
     public List<CMISObject> getChildren() {
         try {
             List<CMISObject> result = new ArrayList<CMISObject>();
 
-            NodeIterator iter = node.getNodes();
+            NodeIterator iter = entry.getNode().getNodes();
             while (iter.hasNext()) {
                 Node child = iter.nextNode();
-                CMISObject entry;
-                if (JcrCmisMap.isNodeDocument(child)) {
-                    entry = new JcrDocument(child, connection);
-                } else {
-                    entry = new JcrFolder(child, connection);
+                if (JcrCmisMap.isInternal(child)) {
+                    continue;
                 }
-                result.add(entry);
+                JcrObjectEntry entry = new JcrObjectEntry(child, connection);
+                result.add(JcrObject.construct(entry));
             }
             return result;
         } catch (RepositoryException e) {
@@ -73,73 +91,121 @@ public class JcrFolder extends JcrObjectEntry implements Folder {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Document newDocument(String typeId) {
-        return new JcrNewDocument(node, connection);
+        return connection.newDocument(typeId, this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Folder newFolder(String typeId) {
-        return new JcrNewFolder(node, connection);
+        return connection.newFolder(typeId, this);
     }
 
-    public Folder getParent() {
-        try {
-            if (node.getDepth() > 0) {
-                return new JcrFolder(node.getParent(), connection);
-            }
-        } catch (RepositoryException e) {
-            String msg = "Unable to get parent.";
-            log.error(msg, e);
-        }
-        return null;
-    }
-
-    public void save() {
-        throw new UnsupportedOperationException();
-    }
-
-    public void setName(String id) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void setValue(String id, Serializable value) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void setValues(Map<String, Serializable> values) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Folder getFolder() {
-        return this;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public void add(CMISObject object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void remove(CMISObject object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectId> deleteTree(Unfiling unfiling) {
-        delete();
-        return Collections.emptySet();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void save() {
+        if (entry.isNew()) {
+            add();
+        } else {
+            update();
+        }
     }
 
-    public BaseType getBaseType() {
-        return BaseType.FOLDER;
+    /**
+     * Add a new folder.
+     */
+    protected void add() {
+        Session session = null;
+
+        try {
+            String parentId = (String) entry.getValue(Property.PARENT_ID);
+            if (parentId == null) {
+                parentId = connection.getRepository().getInfo().getRootFolderId().getId();
+            }
+            String name = getName();
+            if (name == null) {
+                name = "Untitled";
+            }
+
+            session = connection.getSession();
+            Node parent = session.getNodeByIdentifier(parentId);
+            Node node = parent.addNode(name, JcrConstants.NT_FOLDER);
+            node.addMixin(JcrRepository.MIX_UNSTRUCTURED);
+
+            Map<String, Serializable> values = entry.getValues();
+            for (String key : values.keySet()) {
+                if (!key.startsWith(JcrRepository.CMIS_PREFIX)) {
+                    node.setProperty(key, values.get(key).toString());
+                }
+            }
+            node.setProperty(Property.TYPE_ID, entry.getTypeId());
+
+            parent.getSession().save();
+            entry.setNode(node);
+
+        } catch (RepositoryException e) {
+            log.error("Unable to add folder.", e);
+
+            if (session != null) {
+                try {
+                    session.refresh(false);
+                } catch (RepositoryException e2) {
+                    log.error("Error while refreshing session.", e2);
+                }
+            }
+        }
     }
 
-    public ChangeInfo getChangeInfo() {
-        return null;
-    }
+    /**
+     * Update an existing folder.
+     */
+    protected void update() {
+        Session session = null;
 
-    public ContentStream getContentStream(String contentStreamId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
+        try {
+            Node node = entry.getNode();
+            session = node.getSession();
 
+            Map<String, Serializable> values = entry.getValues();
+            for (String key : values.keySet()) {
+                if (!key.startsWith(JcrRepository.CMIS_PREFIX)) {
+                    node.setProperty(key, values.get(key).toString());
+                }
+            }
+            session.save();
+
+        } catch (RepositoryException e) {
+            log.error("Unable to update folder.", e);
+
+            if (session != null) {
+                try {
+                    session.refresh(false);
+                } catch (RepositoryException e2) {
+                    log.error("Error while refreshing session.", e2);
+                }
+            }
+        }
+    }
 }

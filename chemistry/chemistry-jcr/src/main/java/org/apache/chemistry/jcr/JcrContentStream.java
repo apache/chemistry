@@ -16,7 +16,6 @@
  */
 package org.apache.chemistry.jcr;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import javax.jcr.Node;
@@ -27,26 +26,47 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.JcrConstants;
 
-public class JcrContentStream implements ContentStream {
+/**
+ * Implementation of a content stream.
+ */
+class JcrContentStream implements ContentStream {
 
-    private static final Log log = LogFactory.getLog(JcrFolder.class);
+    /**
+     * Logger.
+     */
+    private static final Log log = LogFactory.getLog(JcrContentStream.class);
 
+    /**
+     * Content node of type <b>nt:resource</b>.
+     */
     private final Node content;
 
-    public JcrContentStream(Node content) {
+    /**
+     * Filename.
+     */
+    private final String filename;
+
+    /**
+     * Create a new instance of this class.
+     *
+     * @param content content node
+     * @param filename content stream file name
+     */
+    public JcrContentStream(Node content, String filename) {
         this.content = content;
+        this.filename = filename;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String getFileName() {
-        try {
-            return content.getName();
-        } catch (RepositoryException e) {
-            String msg = "Unable to get node name.";
-            log.error(msg, e);
-        }
-        return null;
+        return filename;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLength() {
         try {
             javax.jcr.Property data = content.getProperty(JcrConstants.JCR_DATA);
@@ -58,6 +78,9 @@ public class JcrContentStream implements ContentStream {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String getMimeType() {
         try {
             javax.jcr.Property mimetype = content.getProperty(JcrConstants.JCR_MIMETYPE);
@@ -69,10 +92,13 @@ public class JcrContentStream implements ContentStream {
         return null;
     }
 
-    public InputStream getStream() throws IOException {
+    /**
+     * {@inheritDoc}
+     */
+    public InputStream getStream() {
         try {
             javax.jcr.Property data = content.getProperty(JcrConstants.JCR_DATA);
-            return data.getStream();
+            return data.getBinary().getStream();
         } catch (RepositoryException e) {
             String msg = "Unable to get stream.";
             log.error(msg, e);

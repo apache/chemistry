@@ -23,20 +23,14 @@ package org.apache.chemistry.jcr;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.jcr.NamespaceException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
-import javax.jcr.nodetype.NoSuchNodeTypeException;
-import javax.jcr.nodetype.NodeType;
-import javax.jcr.nodetype.NodeTypeIterator;
-import javax.jcr.nodetype.NodeTypeManager;
 
 import org.apache.chemistry.ACLCapabilityType;
 import org.apache.chemistry.BaseType;
@@ -45,182 +39,163 @@ import org.apache.chemistry.CapabilityChange;
 import org.apache.chemistry.CapabilityJoin;
 import org.apache.chemistry.CapabilityQuery;
 import org.apache.chemistry.CapabilityRendition;
-import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectId;
-import org.apache.chemistry.Paging;
-import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
-import org.apache.chemistry.RepositoryEntry;
 import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.SPI;
-import org.apache.chemistry.Type;
-import org.apache.chemistry.impl.simple.SimpleListPage;
+import org.apache.chemistry.impl.base.BaseRepository;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
+import org.apache.chemistry.impl.simple.SimpleType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Document;
 
-public class JcrRepository implements Repository, RepositoryInfo,
+/**
+ * Repository implementation that exposes a JCR repository.
+ */
+public class JcrRepository extends BaseRepository implements Repository, RepositoryInfo,
         RepositoryCapabilities {
 
+    /**
+     * CMIS property prefix (&quot;cmis:&quot;).
+     */
+    public static final String CMIS_PREFIX = "cmis:";
+
+    /**
+     * Mixin to add in order to add custom properties (&quot;mix:unstructured&quot;).
+     */
+    public static final String MIX_UNSTRUCTURED = "mix:unstructured";
+
+    /**
+     * Logger.
+     */
     private static final Log log = LogFactory.getLog(JcrRepository.class);
 
+    /**
+     * JCR repository.
+     */
     private final javax.jcr.Repository repository;
 
-    private final String workspace;
+    /**
+     * Workspace to login to.
+     */
+    private String workspace;
 
-    private final SimpleCredentials creds;
+    /**
+     * Credentials to use when connecting.
+     */
+    private SimpleCredentials creds;
 
-    public JcrRepository(javax.jcr.Repository repository, String workspace,
-            SimpleCredentials creds) {
+    /**
+     * Root folder id.
+     */
+    private ObjectId rootFolderId;
+
+    /**
+     * Flag indicating whether the repository has registered <b>cmis</b> prefix.
+     */
+    private Boolean hasCmisPrefix;
+
+    /**
+     * Create a new instance of this class.
+     *
+     * @param repository JCR repository
+     * @param types types to add (in testing)
+     */
+    public JcrRepository(javax.jcr.Repository repository, Collection<SimpleType> types) {
+        super("chemistry-jcr");
+
         this.repository = repository;
-        this.workspace = workspace;
-        this.creds = creds;
+
+        addTypes(getDefaultTypes());
+        if (types != null) {
+            addTypes(types);
+        }
     }
 
-    public JcrRepository(javax.jcr.Repository repository, String workspace) {
-        this.repository = repository;
-        this.workspace = workspace;
-        this.creds = new SimpleCredentials("admin", "admin".toCharArray());
-    }
-
+    /**
+     * Create a new instance of this class.
+     *
+     * @param repository JCR repository
+     */
     public JcrRepository(javax.jcr.Repository repository) {
         this(repository, null);
     }
 
+    /**
+     * Set workspace to use when connecting.
+     *
+     * @param workspace workspace
+     */
+    public void setWorkspace(String workspace) {
+        this.workspace = workspace;
+    }
+
+    /**
+     * Set credentials to use when connecting.
+     *
+     * @param creds credentials
+     */
+    public void setCredentials(SimpleCredentials creds) {
+        this.creds = creds;
+    }
+
+    /**
+     * Set root folder id.
+     *
+     * @param rootFolderId root folder id
+     */
+    public void setRootNodeId(String id) {
+        this.rootFolderId = new SimpleObjectId(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public SPI getSPI(Map<String, Serializable> params) {
         return getConnection(params);
     }
 
-    public JcrConnection getConnection(Map<String, Serializable> params) {
+    /**
+     * {@inheritDoc}
+     */
+    public synchronized JcrConnection getConnection(Map<String, Serializable> params) {
         try {
-            return new JcrConnection(repository.login(creds, workspace), this);
+            Session session = repository.login(creds, workspace);
+            if (rootFolderId == null) {
+                rootFolderId = new SimpleObjectId(session.getRootNode().getIdentifier());
+            }
+            return new JcrConnection(session, this);
         } catch (RepositoryException e) {
             String msg = "Unable to open connection.";
             throw new RuntimeException(msg, e);
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public <T> T getExtension(Class<T> klass) {
         return null;
     }
 
-    public RepositoryInfo getInfo() {
-        return this;
-    }
-
-    public void addType(Type type) {
-        throw new UnsupportedOperationException("Cannot add types");
-    }
-
-    public Type getType(String typeId) {
-        try {
-            Session session = repository.login(creds, workspace);
-
-            // TODO fetch the types only once, include other types
-            NodeTypeManager ntmgr = session.getWorkspace().getNodeTypeManager();
-            NodeType nt = ntmgr.getNodeType(typeId);
-
-            BaseType baseType = BaseType.FOLDER;
-            if (JcrCmisMap.isBaseTypeDocument(nt.getName())) {
-                baseType = BaseType.DOCUMENT;
-            }
-            return new JcrType(nt, baseType);
-        } catch (NoSuchNodeTypeException e) {
-            return null;
-        } catch (RepositoryException e) {
-            String msg = "Unable get type: " + typeId;
-            log.error(msg, e);
-        }
-        return null;
-    }
-
-    public PropertyDefinition getPropertyDefinition(String id) {
-        // TODO improve by caching
-        for (Type type : getTypes()) {
-            PropertyDefinition pdef = type.getPropertyDefinition(id);
-            if (pdef != null) {
-                return pdef;
-            }
-        }
-        return null;
-    }
-
-    public Collection<Type> getTypes() {
-        return getTypeDescendants(null, -1, true);
-    }
-
-    public Collection<Type> getTypeDescendants(String typeId) {
-        Collection<Type> list = getTypeDescendants(typeId, -1, true);
-        if (typeId != null) {
-            // add the type itself as first element
-            Type type = getType(typeId);
-            ((LinkedList<Type>) list).addFirst(type);
-        }
-        return list;
-    }
-
-    public ListPage<Type> getTypeChildren(String typeId,
-            boolean includePropertyDefinitions, Paging paging) {
-        // TODO proper children
-        List<Type> list = getTypeDescendants(typeId, -1, true);
-        return new SimpleListPage<Type>(list);
-    }
-
-    public List<Type> getTypeDescendants(String typeId, int depth,
-            boolean includePropertyDefinitions) {
-
-        // TODO depth, includePropertyDefinitions
-
-        try {
-            List<Type> result = new LinkedList<Type>();
-
-            Session session = repository.login(creds, workspace);
-
-            NodeTypeManager ntmgr = session.getWorkspace().getNodeTypeManager();
-            if (typeId != null) {
-                // check existence
-                ntmgr.getNodeType(typeId);
-            }
-
-            NodeTypeIterator nodeTypes = ntmgr.getAllNodeTypes();
-            while (nodeTypes.hasNext()) {
-                NodeType nodeType = nodeTypes.nextNodeType();
-                if (nodeType.isMixin()) {
-                    // Mixing Types will be ignored
-                    continue;
-                }
-                BaseType baseType = BaseType.FOLDER;
-                if (JcrCmisMap.isBaseTypeDocument(nodeType.getName())) {
-                    baseType = BaseType.DOCUMENT;
-                }
-                // If typeId is provided, only the descendants are returned,
-                // otherwise all types are returned.
-                // TODO proper hierarchy of types
-                if (typeId == null) {
-                    result.add(new JcrType(nodeType, baseType));
-                }
-            }
-
-            return result;
-        } catch (NoSuchNodeTypeException e) {
-            throw new IllegalArgumentException("No such type: " + typeId);
-        } catch (RepositoryException e) {
-            String msg = "Unable to retrieve node types.";
-            log.error(msg, e);
-        }
-        return null;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public String getId() {
         return getName();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String getName() {
         return repository.getDescriptor(javax.jcr.Repository.REP_NAME_DESC);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public URI getThinClientURI() {
         URI uri = null;
         try {
@@ -235,10 +210,9 @@ public class JcrRepository implements Repository, RepositoryInfo,
 
     // ---------------------------------------------------------- RepositoryInfo
 
-    public RepositoryCapabilities getCapabilities() {
-        return this;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public Set<BaseType> getChangeLogBaseTypes() {
         // TODO-0.63 TCK checks 0.62 schema which has minOccurs=1
         Set<BaseType> changeLogBaseTypes = new HashSet<BaseType>();
@@ -249,107 +223,201 @@ public class JcrRepository implements Repository, RepositoryInfo,
         return changeLogBaseTypes;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isChangeLogIncomplete() {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String getLatestChangeLogToken() {
         return "";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public ACLCapabilityType getACLCapabilityType() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String getDescription() {
         return getName();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String getProductName() {
         return repository.getDescriptor(javax.jcr.Repository.REP_NAME_DESC);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String getProductVersion() {
         return repository.getDescriptor(javax.jcr.Repository.REP_VERSION_DESC);
     }
 
-    public Collection<RepositoryEntry> getRelatedRepositories() {
-        return Collections.emptySet();
-    }
-
-    public Document getRepositorySpecificInformation() {
-        return null;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public ObjectId getRootFolderId() {
-        return new SimpleObjectId(JcrObjectEntry.escape("/"));
+        if (rootFolderId == null) {
+            Session session = null;
+
+            try {
+                session = repository.login(creds, workspace);
+                rootFolderId = new SimpleObjectId(session.getRootNode().getIdentifier());
+            } catch (RepositoryException e) {
+                log.error("Unable to determine root folder id.", e);
+            } finally {
+                if (session != null) {
+                    session.logout();
+                }
+            }
+        }
+        return rootFolderId;
     }
 
+    /**
+     * Return a flag indicating whether the <b>cmis</b> prefix is registered.
+     *
+     * @return <code>true</code> if <b>cmis</b> is registered;
+     *         <code>false</code> otherwise
+     */
+    public synchronized boolean hasCmisPrefix() {
+        if (hasCmisPrefix == null) {
+            Session session = null;
+
+            try {
+                session = repository.login(creds, workspace);
+                String uri = session.getWorkspace().getNamespaceRegistry().getURI("cmis");
+                hasCmisPrefix = uri != null;
+            } catch (NamespaceException e) {
+                hasCmisPrefix = Boolean.FALSE;
+            } catch (RepositoryException e) {
+                log.error("Unable to determine check namespace prefix: cmis.", e);
+            } finally {
+                if (session != null) {
+                    session.logout();
+                }
+            }
+        }
+        return hasCmisPrefix.booleanValue();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public String getVendorName() {
         return repository.getDescriptor(javax.jcr.Repository.REP_VENDOR_DESC);
     }
 
-    public String getVersionSupported() {
-        return "1.0";
-    }
-
     // -------------------------------------------------- RepositoryCapabilities
 
+    /**
+     * {@inheritDoc}
+     */
     public CapabilityJoin getJoinCapability() {
         return CapabilityJoin.NONE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public CapabilityQuery getQueryCapability() {
         return CapabilityQuery.BOTH_SEPARATE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public CapabilityRendition getRenditionCapability() {
         return CapabilityRendition.NONE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public CapabilityChange getChangeCapability() {
         return CapabilityChange.NONE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean hasMultifiling() {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean hasUnfiling() {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean hasVersionSpecificFiling() {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isAllVersionsSearchable() {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean hasGetDescendants() {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean hasGetFolderTree() {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isContentStreamUpdatableAnytime() {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isPWCSearchable() {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isPWCUpdatable() {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public CapabilityACL getACLCapability() {
-        // TODO Auto-generated method stub
         return CapabilityACL.NONE;
     }
 }

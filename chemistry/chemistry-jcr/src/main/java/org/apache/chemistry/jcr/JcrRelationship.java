@@ -10,20 +10,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Authors:
+ *     Florent Guillaume, Nuxeo
  */
+package org.apache.chemistry.jcr;
 
-<nt='http://www.jcp.org/jcr/nt/1.0'>
-<mix='http://www.jcp.org/jcr/mix/1.0'>
-<cmis='cmis'>
+import org.apache.chemistry.Relationship;
 
 /**
- * This mixin is used to store unstructured content. It allows any number of
- * child nodes or properties with any names. It also allows multiple nodes having
- * the same name as well as both multi-value and single-value properties with any
- * names. This node type also supports client-orderable child nodes.
+ * Relationship implementation.
  */
-[mix:unstructured]
-  mixin orderable
-  - * (UNDEFINED) multiple
-  - * (UNDEFINED)
-  + * (nt:base) = nt:unstructured multiple VERSION
+public class JcrRelationship extends JcrObject implements Relationship {
+
+    public JcrRelationship(JcrObjectEntry entry) {
+        super(entry);
+    }
+
+}

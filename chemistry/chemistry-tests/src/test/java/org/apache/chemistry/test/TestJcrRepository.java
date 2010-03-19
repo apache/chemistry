@@ -20,19 +20,32 @@ package org.apache.chemistry.test;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
 
+import javax.jcr.Node;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.jcr.Workspace;
+import javax.jcr.nodetype.NodeTypeManager;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CapabilityQuery;
+import org.apache.chemistry.ContentStreamPresence;
+import org.apache.chemistry.Property;
+import org.apache.chemistry.PropertyDefinition;
+import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.jcr.JcrObjectEntry;
+import org.apache.chemistry.Updatability;
+import org.apache.chemistry.impl.simple.SimplePropertyDefinition;
+import org.apache.chemistry.impl.simple.SimpleType;
 import org.apache.chemistry.jcr.JcrRepository;
 import org.apache.commons.io.FileUtils;
-import org.apache.jackrabbit.api.JackrabbitNodeTypeManager;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.apache.jackrabbit.commons.cnd.CndImporter;
 import org.apache.jackrabbit.core.TransientRepository;
+import org.apache.jackrabbit.core.config.RepositoryConfig;
 
 /**
  * Test on a Jackrabbit repository.
@@ -43,41 +56,87 @@ public class TestJcrRepository extends BasicTestCase {
 
     private static final String NODETYPES_CND = "/nodetypes.cnd";
 
+    private static final String REPOSITORY_XML = "/repository.xml";
+
     protected JackrabbitRepository jackrabbitRepo;
+
+    protected Session session;
 
     @Override
     public Repository makeRepository() throws Exception {
         File dir = new File(DIRECTORY);
         FileUtils.deleteDirectory(dir);
         dir.mkdirs();
-        String config = new File(dir, "repository.xml").toString();
+
+        InputStream xml = getClass().getResourceAsStream(REPOSITORY_XML);
         String home = new File(dir, "repository").toString();
 
-        jackrabbitRepo = new TransientRepository(config, home);
-        Session session = jackrabbitRepo.login(new SimpleCredentials("userid",
-                "".toCharArray()));
+        RepositoryConfig config = RepositoryConfig.create(xml, home);
+        jackrabbitRepo = new TransientRepository(config);
+
+        session = jackrabbitRepo.login(new SimpleCredentials("userid", "".toCharArray()));
         Workspace workspace = session.getWorkspace();
         String workspaceName = workspace.getName();
+
         // add mix:unstructured if needed
-        JackrabbitNodeTypeManager ntm = (JackrabbitNodeTypeManager) workspace.getNodeTypeManager();
-        if (!ntm.hasNodeType(JcrObjectEntry.MIX_UNSTRUCTURED)) {
+        NodeTypeManager ntm = workspace.getNodeTypeManager();
+        if (!ntm.hasNodeType(JcrRepository.MIX_UNSTRUCTURED)) {
             InputStream is = getClass().getResourceAsStream(NODETYPES_CND);
-            ntm.registerNodeTypes(is, JackrabbitNodeTypeManager.TEXT_X_JCR_CND);
+            try {
+                CndImporter.registerNodeTypes(new InputStreamReader(is), session);
+            } finally {
+                is.close();
+            }
         }
-        session.logout();
+
+        // create root folder for tests
+        Node testRoot = session.getRootNode().addNode("testroot", JcrConstants.NT_FOLDER);
+        testRoot.addMixin(JcrRepository.MIX_UNSTRUCTURED);
+        testRoot.setProperty(Property.TYPE_ID, JcrRepository.ROOT_TYPE_ID);
+        testRoot.setProperty(Property.BASE_TYPE_ID, BaseType.FOLDER.getId());
+        session.save();
+        String rootNodeId = testRoot.getIdentifier();
 
         expectedRepositoryId = "Jackrabbit";
         expectedRepositoryName = "Jackrabbit";
         expectedRepositoryDescription = "Jackrabbit";
         expectedRepositoryVendor = "Apache Software Foundation";
         expectedRepositoryProductName = "Jackrabbit";
-        expectedRepositoryProductVersion = "1.6.0";
+        expectedRepositoryProductVersion = "2.0.0";
         expectedCapabilityHasGetDescendants = false;
+        expectedCapabilityHasGetFolderTree = false;
         expectedCapabilityHasMultifiling = true;
         expectedCapabilityQuery = CapabilityQuery.BOTH_SEPARATE;
         expectedCapabilityHasUnfiling = true;
-        expectedRootTypeId = "rep:root";
-        Repository repo = new JcrRepository(jackrabbitRepo, workspaceName);
+        rootFolderName = "testroot";
+
+        PropertyDefinition p1 = new SimplePropertyDefinition("title",
+                "def:title", null, "title", "Title", "", false,
+                PropertyType.STRING, false, null, false, false, "(no title)",
+                Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
+        PropertyDefinition p2 = new SimplePropertyDefinition("description",
+                "def:description", null, "description", "Description", "",
+                false, PropertyType.STRING, false, null, false, false, "",
+                Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
+        PropertyDefinition p3 = new SimplePropertyDefinition("date",
+                "def:date", null, "date", "Date", "", false,
+                PropertyType.DATETIME, false, null, false, false, null,
+                Updatability.READ_WRITE, true, true, 0, null, null, -1, null);
+        SimpleType dt = new SimpleType("doc", BaseType.DOCUMENT.getId(), "doc",
+                null, "Doc", "My Doc Type", BaseType.DOCUMENT, "", true, true,
+                true, true, true, true, true, true,
+                ContentStreamPresence.ALLOWED, null, null, Arrays.asList(p1,
+                        p2, p3));
+        SimpleType ft = new SimpleType("fold", BaseType.FOLDER.getId(), "fold",
+                null, "Fold", "My Folder Type", BaseType.FOLDER, "", true,
+                true, true, true, true, true, false, false,
+                ContentStreamPresence.NOT_ALLOWED, null, null, Arrays.asList(
+                        p1, p2));
+
+        JcrRepository repo = new JcrRepository(jackrabbitRepo, Arrays.asList(dt, ft));
+        repo.setRootNodeId(rootNodeId);
+        repo.setWorkspace(workspaceName);
+        repo.setCredentials(new SimpleCredentials("admin", "admin".toCharArray()));
         BasicHelper.populateRepository(repo);
         return repo;
     }
@@ -85,6 +144,7 @@ public class TestJcrRepository extends BasicTestCase {
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
+        session.logout();
         jackrabbitRepo.shutdown();
     }
 

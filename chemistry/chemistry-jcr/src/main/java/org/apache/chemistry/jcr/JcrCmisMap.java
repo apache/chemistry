@@ -16,13 +16,17 @@
  */
 package org.apache.chemistry.jcr;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Hashtable;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.apache.chemistry.Property;
+import org.apache.chemistry.PropertyType;
 import org.apache.jackrabbit.JcrConstants;
 
 /**
@@ -140,6 +144,43 @@ public class JcrCmisMap {
     }
 
     /**
+     * Checks if a JCR node is a document.
+     *
+     * @param node the JCR node
+     * @return {@code true} if the node is a document
+     */
+    public static boolean isNodeFolder(Node node) {
+        for (String nodeTypeName : folderNtList) {
+            try {
+                if (node.isNodeType(nodeTypeName)) {
+                    return true;
+                }
+            } catch (RepositoryException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether a JCR node is an internal node, e.g. <b>jcr:system</b>
+     *
+     * @param node node
+     * @return <code>true</code> if the node is internal;
+     *         <code>false</code> otherwise
+     */
+    public static boolean isInternal(Node node) {
+        try {
+            return node.getName().equals(JcrConstants.JCR_SYSTEM);
+        } catch (RepositoryException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * Checks if a JCR name corresponds to a date.
      */
     public static boolean isDate(String s) {
@@ -183,4 +224,64 @@ public class JcrCmisMap {
         }
     }
 
+    /**
+     * Convert a JCR value to a serializable
+     *
+     * @param pd property definition
+     * @param value JCR value
+     * @return serializable
+     * @throws RepositoryException if accessing the value fails
+     */
+    public static Serializable valueToSerializable(PropertyType pd, javax.jcr.Value value)
+            throws RepositoryException {
+
+        switch (pd.ordinal()) {
+        case PropertyType.BOOLEAN_ORD:
+            return Boolean.valueOf(value.getBoolean());
+        case PropertyType.DATETIME_ORD:
+            return value.getDate();
+        case PropertyType.DECIMAL_ORD:
+            return value.getDecimal();
+        case PropertyType.INTEGER_ORD:
+            return Integer.valueOf((int) value.getLong());
+        case PropertyType.HTML_ORD:
+        case PropertyType.ID_ORD:
+        case PropertyType.STRING_ORD:
+        case PropertyType.URI_ORD:
+            return value.getString();
+        default:
+            throw new AssertionError("Unexpected property type ordinal: " + pd.ordinal());
+        }
+    }
+
+    /**
+     * Convert a JCR value to a serializable
+     *
+     * @param pd property definition
+     * @param value JCR value
+     * @return serializable
+     * @throws RepositoryException if accessing the value fails
+     */
+    public static javax.jcr.Value serializableToValue(PropertyType pd, Serializable v,
+                javax.jcr.ValueFactory f)
+            throws RepositoryException {
+
+        switch (pd.ordinal()) {
+        case PropertyType.BOOLEAN_ORD:
+            return f.createValue(((Boolean) v).booleanValue());
+        case PropertyType.DATETIME_ORD:
+            return f.createValue((Calendar) v);
+        case PropertyType.DECIMAL_ORD:
+            return f.createValue((BigDecimal) v);
+        case PropertyType.INTEGER_ORD:
+            return f.createValue(((Integer) v).longValue());
+        case PropertyType.HTML_ORD:
+        case PropertyType.ID_ORD:
+        case PropertyType.STRING_ORD:
+        case PropertyType.URI_ORD:
+            return f.createValue((String) v);
+        default:
+            throw new AssertionError("Unexpected property type ordinal: " + pd.ordinal());
+        }
+    }
 }

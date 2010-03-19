@@ -23,16 +23,20 @@ package org.apache.chemistry.jcr;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.Workspace;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
@@ -40,8 +44,11 @@ import javax.xml.namespace.QName;
 
 import org.apache.chemistry.ACE;
 import org.apache.chemistry.ACLPropagation;
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
+import org.apache.chemistry.ConstraintViolationException;
+import org.apache.chemistry.ContentAlreadyExistsException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
@@ -50,85 +57,183 @@ import org.apache.chemistry.ListPage;
 import org.apache.chemistry.NameConstraintViolationException;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.ObjectNotFoundException;
 import org.apache.chemistry.Paging;
 import org.apache.chemistry.Policy;
+import org.apache.chemistry.Property;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.Rendition;
-import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Tree;
+import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.impl.simple.SimpleListPage;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jackrabbit.JcrConstants;
 
-public class JcrConnection implements Connection, SPI {
+/**
+ * Connection implementation.
+ */
+class JcrConnection implements Connection, SPI {
 
+    /**
+     * Logger.
+     */
     private static final Log log = LogFactory.getLog(JcrConnection.class);
 
+    /**
+     * JCR session.
+     */
     private final Session session;
 
+    /**
+     * Repository implementation.
+     */
     private final JcrRepository repository;
 
+    /**
+     * Root folder id.
+     */
+    private final ObjectId rootFolderId;
+
+    /**
+     * Create a new instance of this class.
+     *
+     * @param session session
+     * @param repository repository implementation
+     */
     public JcrConnection(Session session, JcrRepository repository) {
         this.session = session;
         this.repository = repository;
+        rootFolderId = repository.getRootFolderId();
     }
 
+    /**
+     * Return the root folder id.
+     *
+     * @return root folder id
+     */
+    public ObjectId getRootFolderId() {
+        return rootFolderId;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public void close() {
         session.logout();
     }
 
-    public CMISObject getObject(ObjectId objectId) {
-        try {
-            String relPath = JcrObjectEntry.getPath(objectId.getId()).substring(
-                    1);
-            if (relPath.equals("")) {
-                return getRootFolder();
-            } else {
-                Node node = session.getRootNode().getNode(relPath);
-                if (JcrCmisMap.isNodeDocument(node)) {
-                    return new JcrDocument(node, this);
-                } else {
-                    return new JcrFolder(node, this);
-                }
-            }
-        } catch (RepositoryException e) {
-            String msg = "Unable to get object: " + objectId;
-            log.error(msg, e);
+    /**
+     * Return an entry for a given object id. If the object id is a <code>JcrObject</code>
+     * derived class, the entry inside that object will be returned
+     *
+     * @param objectId object id
+     * @return entry or <code>null</code>
+     */
+    private JcrObjectEntry getEntry(ObjectId objectId) {
+        if (objectId instanceof JcrObject) {
+            return ((JcrObject) objectId).getEntry();
         }
-        return null;
+        try {
+            String id = objectId.getId();
+            if (rootFolderId.getId().equals(id)) {
+                return new JcrObjectEntry(getRootNode(), JcrRepository.ROOT_TYPE, this);
+            } else {
+                Node node = session.getNodeByIdentifier(id);
+                return new JcrObjectEntry(node, this);
+            }
+        } catch (ItemNotFoundException e) {
+            /* item was not found */
+            return null;
+        } catch (RepositoryException e) {
+            String msg = "Unable to get entry with id: " + objectId;
+            if (e.getMessage().startsWith("invalid identifier:")) {
+                /* treat this as if item was not found */
+                log.info(msg, e);
+            } else {
+                log.error(msg, e);
+            }
+            return null;
+        }
     }
 
-    public Repository getRepository() {
+    /**
+     * {@inheritDoc}
+     */
+    public JcrObject getObject(ObjectId objectId) {
+        if (objectId instanceof JcrObject) {
+            return (JcrObject) objectId;
+        }
+        JcrObjectEntry entry = getEntry(objectId);
+        if (entry == null) {
+            return null;
+        }
+        return JcrObject.construct(entry);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public JcrRepository getRepository() {
         return repository;
     }
 
-    public Folder getRootFolder() {
-        try {
-            return new JcrFolder(session.getRootNode(), this);
-        } catch (RepositoryException e) {
-            String msg = "Unable to get root entry.";
-            log.error(msg, e);
+    /**
+     * {@inheritDoc}
+     */
+    private Node getRootNode() throws RepositoryException {
+        if (rootFolderId == null) {
+            return session.getRootNode();
+        } else {
+            return session.getNodeByIdentifier(rootFolderId.getId());
         }
-        return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Folder getRootFolder() {
+        return (Folder) getObject(rootFolderId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public SPI getSPI() {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Document newDocument(String typeId, Folder folder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        Type type = repository.getType(typeId);
+        if (type == null || type.getBaseType() != BaseType.DOCUMENT) {
+            throw new IllegalArgumentException(typeId);
+        }
+        JcrObjectEntry entry = new JcrObjectEntry(type, this);
+        if (folder != null) {
+            entry.setValue(Property.PARENT_ID, folder.getId());
+        }
+        return new JcrDocument(entry);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Folder newFolder(String typeId, Folder folder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        Type type = repository.getType(typeId);
+        if (type == null || type.getBaseType() != BaseType.FOLDER) {
+            throw new IllegalArgumentException(typeId);
+        }
+        JcrObjectEntry entry = new JcrObjectEntry(type, this);
+        if (folder != null) {
+            entry.setValue(Property.PARENT_ID, folder.getId());
+        }
+        return new JcrFolder(entry);
     }
 
     public Policy newPolicy(String typeId, Folder folder) {
@@ -141,6 +246,9 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Collection<CMISObject> query(String statement,
             boolean searchAllVersions) {
         ListPage<ObjectEntry> entries = query(statement, searchAllVersions,
@@ -153,14 +261,20 @@ public class JcrConnection implements Connection, SPI {
         return objects;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public ObjectEntry newObjectEntry(String typeId) {
-        if (JcrCmisMap.isBaseTypeDocument(typeId)) {
-            return new JcrDocument(null, this);
-        } else {
-            return new JcrFolder(null, this);
+        Type type = repository.getType(typeId);
+        if (type == null) {
+            throw new IllegalArgumentException(typeId);
         }
+        return new JcrObjectEntry(type, this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public ObjectId newObjectId(String id) {
         return new SimpleObjectId(id);
     }
@@ -195,23 +309,75 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId createDocumentFromSource(ObjectId source, ObjectId folder,
+    /**
+     * {@inheritDoc}
+     *
+     * TODO versioningState
+     */
+    public ObjectId createDocumentFromSource(ObjectId sourceId, ObjectId folderId,
             Map<String, Serializable> properties,
             VersioningState versioningState)
             throws NameConstraintViolationException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+
+        JcrFolder folder = getFolder(folderId);
+        JcrDocument source = getDocument(sourceId);
+
+        try {
+            String sourcePath = source.getEntry().getNode().getPath();
+            String sourceName = null;
+            if (properties != null) {
+                sourceName = (String) properties.get(Property.NAME);
+            }
+            if (sourceName == null) {
+                sourceName = source.getEntry().getNode().getName();
+            }
+            StringBuilder b = new StringBuilder(folder.getEntry().getNode().getPath());
+            if (b.charAt(b.length() - 1) != '/') {
+                b.append('/');
+            }
+            b.append(sourceName);
+            String destPath = b.toString();
+
+            Workspace workspace = session.getWorkspace();
+            workspace.copy(sourcePath, destPath);
+            String id = session.getNode(destPath).getIdentifier();
+
+            JcrObject object = getObject(newObjectId(id));
+            if (!(object instanceof JcrDocument)) {
+                log.error("Target object not found after copying");
+                return null;
+            }
+            if (properties != null) {
+                object.setValues(properties);
+                object.save();
+            }
+            return object;
+
+        } catch (RepositoryException e) {
+            log.error("Unable to copy.", e);
+        }
+        return null;
     }
 
-    // TODO add IOException to throws clause
+    /**
+     * {@inheritDoc}
+     */
     public ObjectId createDocument(Map<String, Serializable> properties,
             ObjectId folderId, ContentStream contentStream,
             VersioningState versioningState)
             throws NameConstraintViolationException {
 
         try {
-            JcrFolder folder = (JcrFolder) getObject(folderId);
-            Document doc = folder.newDocument(null);
+            String typeId = (String) properties.remove(Property.TYPE_ID);
+            if (typeId == null) {
+                // use a default type, useful for pure AtomPub POST
+                typeId = BaseType.DOCUMENT.getId();
+            }
+            Folder folder = null;
+            if (folderId != null) {
+                folder = getFolder(folderId);
+            }
+            Document doc = newDocument(typeId, folder);
             doc.setValues(properties);
             if (contentStream != null) {
                 doc.setName(contentStream.getFileName());
@@ -219,7 +385,7 @@ public class JcrConnection implements Connection, SPI {
                 doc.setContentStream(contentStream);
             }
             doc.save();
-            return new SimpleObjectId(doc.getId());
+            return doc;
         } catch (Exception e) {
             String msg = "Unable to create document.";
             log.error(msg, e);
@@ -227,10 +393,28 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public ObjectId createFolder(Map<String, Serializable> properties,
             ObjectId folderId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+
+        String typeId = (String) properties.get(Property.TYPE_ID);
+        if (typeId == null) {
+            throw new IllegalArgumentException("Missing object type id");
+        }
+        Type type = repository.getType(typeId);
+        if (type == null || type.getBaseType() != BaseType.FOLDER) {
+            throw new IllegalArgumentException(typeId);
+        }
+        JcrObjectEntry entry = new JcrObjectEntry(type, this);
+        entry.setValues(properties);
+        if (folderId != null) {
+            entry.setValue(Property.PARENT_ID, folderId.getId());
+        }
+        JcrFolder folder = new JcrFolder(entry);
+        folder.save();
+        return folder;
     }
 
     public ObjectId createPolicy(Map<String, Serializable> properties,
@@ -244,20 +428,95 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public ObjectId deleteContentStream(ObjectId documentId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        JcrDocument doc = getDocument(documentId);
+        try {
+            doc.setContentStream(null);
+        } catch (IOException e) {
+            /* this should not happen */
+            log.error("Unexpected I/O exception while deleting the content stream.", e);
+        }
+        return doc;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void deleteObject(ObjectId objectId, boolean allVersions) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        JcrObject object = getObject(objectId);
+        if (object == null) {
+            throw new ObjectNotFoundException(objectId.getId());
+        }
+        if (rootFolderId.equals(objectId)) {
+            throw new ConstraintViolationException("Unable to delete root folder");
+        }
+        if (object instanceof JcrFolder) {
+            JcrFolder folder = (JcrFolder) object;
+            if (folder.getChildren().size() > 0) {
+                String msg = "Folder not empty: " + objectId;
+                throw new ConstraintViolationException(msg);
+            }
+        }
+
+        Session session = null;
+
+        try {
+            Node node = object.getEntry().getNode();
+            session = node.getSession();
+
+            node.remove();
+            session.save();
+
+        } catch (RepositoryException e) {
+            log.error("Unable to delete object: " + objectId, e);
+
+            if (session != null) {
+                try {
+                    session.refresh(false);
+                } catch (RepositoryException e2) {
+                    log.error("Error while refreshing session.", e2);
+                }
+            }
+        }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Collection<ObjectId> deleteTree(ObjectId folderId,
             Unfiling unfiling, boolean continueOnFailure) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+
+        if (rootFolderId.getId().equals(folderId.getId())) {
+            throw new ConstraintViolationException("Unable to delete root folder");
+        }
+        JcrFolder folder = getFolder(folderId);
+
+        Session session = null;
+
+        try {
+            Node node = folder.getEntry().getNode();
+            session = node.getSession();
+
+            node.remove();
+            session.save();
+
+        } catch (RepositoryException e) {
+            log.error("Unable to delete folder: " + folderId, e);
+
+            if (session != null) {
+                try {
+                    session.refresh(false);
+                } catch (RepositoryException e2) {
+                    log.error("Error while refreshing session.", e2);
+                }
+            }
+        }
+
+        Collection<ObjectId> result = Collections.emptyList();
+        return result;
     }
 
     public Collection<ObjectEntry> getAllVersions(String versionSeriesId,
@@ -267,8 +526,7 @@ public class JcrConnection implements Connection, SPI {
     }
 
     public Set<QName> getAllowableActions(ObjectId objectId) {
-        // TODO Auto-generated method stub
-        return null;
+        return getProperties(objectId, null).getAllowableActions();
     }
 
     public Collection<ObjectEntry> getAppliedPolicies(ObjectId objectId,
@@ -283,16 +541,23 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public ListPage<ObjectEntry> getChildren(ObjectId folderId,
             Inclusion inclusion, String orderBy, Paging paging) {
 
         try {
-            Node node = session.getRootNode();
-            String relPath = JcrObjectEntry.getPath(folderId.getId()).substring(
-                    1);
-            if (!relPath.equals("")) {
-                node = node.getNode(relPath);
+            JcrObjectEntry entry = getEntry(folderId);
+            if (entry == null) {
+                throw new ObjectNotFoundException(folderId.getId());
             }
+            if (entry.getBaseType() != BaseType.FOLDER) {
+                throw new IllegalArgumentException("Not a folder: " + folderId);
+            }
+
+            Node node = entry.getNode();
+
             NodeIterator iter;
             if (inclusion == null || inclusion.properties == null) {
                 iter = node.getNodes();
@@ -308,11 +573,10 @@ public class JcrConnection implements Connection, SPI {
             SimpleListPage<ObjectEntry> result = new SimpleListPage<ObjectEntry>();
             while (result.size() < maxItems && iter.hasNext()) {
                 Node child = iter.nextNode();
-                if (JcrCmisMap.isNodeDocument(child)) {
-                    result.add(new JcrDocument(child, this));
-                } else {
-                    result.add(new JcrFolder(child, this));
+                if (JcrCmisMap.isInternal(child)) {
+                    continue;
                 }
+                result.add(new JcrObjectEntry(child, this));
             }
             result.setHasMoreItems(iter.hasNext());
             result.setNumItems((int) iter.getSize());
@@ -325,24 +589,16 @@ public class JcrConnection implements Connection, SPI {
         return null;
     }
 
-    public Connection getConnection() {
-        return this;
-    }
-
+    /**
+     * {@inheritDoc}
+     *
+     * TODO contentStreamId
+     */
     public ContentStream getContentStream(ObjectId documentId,
             String contentStreamId) throws IOException {
-        // TODO contentStreamId
-        try {
-            String relPath = JcrObjectEntry.getPath(documentId.getId()).substring(
-                    1);
-            Node node = session.getRootNode().getNode(relPath);
-            JcrDocument document = new JcrDocument(node, this);
-            return document.getContentStream();
-        } catch (RepositoryException e) {
-            String msg = "Unable to get object: " + documentId;
-            log.error(msg, e);
-        }
-        return null;
+
+        JcrDocument doc = getDocument(documentId);
+        return doc.getContentStream();
     }
 
     public Tree<ObjectEntry> getFolderTree(ObjectId folderId, int depth,
@@ -357,68 +613,135 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public ObjectEntry getFolderParent(ObjectId folderId, String filter) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        JcrObjectEntry entry = getEntry(folderId);
+        if (entry == null) {
+            throw new ObjectNotFoundException(folderId.getId());
+        }
+        String parentId = (String) entry.getValue(Property.PARENT_ID);
+        if (parentId == null) {
+            // TODO: test case expects null, but javadoc says
+            //       to throw IllegalArgumentException
+            return null;
+        }
+        JcrObjectEntry parent = getEntry(newObjectId(parentId));
+        parent.loadValues();
+        return parent;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Collection<ObjectEntry> getObjectParents(ObjectId objectId,
             String filter) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+
+        // TODO JCR 2.0: add support for shareable nodes
+        Collection<ObjectEntry> result;
+        ObjectEntry parent = getFolderParent(objectId, filter);
+        if (parent == null) {
+            result = Collections.emptyList();
+        } else {
+            result = Arrays.asList(new ObjectEntry[] { parent });
+        }
+        return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public ObjectEntry getObject(ObjectId objectId, Inclusion inclusion) {
         return getProperties(objectId, inclusion);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public ObjectEntry getProperties(ObjectId objectId, Inclusion inclusion) {
-
-        try {
-            String relPath = JcrObjectEntry.getPath(objectId.getId()).substring(
-                    1);
-            if (relPath.equals("")) {
-                return (ObjectEntry) getRootFolder();
-            } else {
-                Node node = session.getRootNode().getNode(relPath);
-                if (JcrCmisMap.isNodeDocument(node)) {
-                    return new JcrDocument(node, this);
-                } else {
-                    return new JcrFolder(node, this);
-                }
-            }
-        } catch (RepositoryException e) {
-            String msg = "Unable to get object: " + objectId;
-            log.error(msg, e);
-        }
-        return null;
+        return getEntry(objectId);
     }
 
-    public ObjectEntry getObjectByPath(String path, Inclusion inclusion) {
+    /**
+     * {@inheritDoc}
+     */
+    public JcrObjectEntry getObjectByPath(String path, Inclusion inclusion) {
         try {
+            Node node = getRootNode();
             if (path == null || path.equals("") || path.equals("/")) {
-                return (ObjectEntry) getRootFolder();
-            } else {
-                if (path.startsWith("/")) {
-                    path = path.substring(1);
-                }
-                Node node = session.getRootNode().getNode(path);
-                if (node.isNodeType(JcrConstants.NT_FOLDER)) {
-                    return new JcrFolder(node, this);
-                } else if (node.isNodeType(JcrConstants.NT_FILE)) {
-                    return new JcrDocument(node, this);
-                }
+                return new JcrObjectEntry(node, JcrRepository.ROOT_TYPE, this);
             }
+            node = node.getNode(path.substring(1));
+            return new JcrObjectEntry(node, this);
+        } catch (PathNotFoundException e) {
+            log.info("Requested object does not exist: " + path);
         } catch (RepositoryException e) {
-            String msg = "Unable to get object: " + path;
-            log.error(msg, e);
+            log.error("Unable to get object: " + path, e);
         }
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Folder getFolder(String path) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        JcrObjectEntry entry = (JcrObjectEntry) getObjectByPath(path, null);
+        if (entry == null) {
+            return null;
+        }
+        if (entry.getBaseType() != BaseType.FOLDER) {
+            throw new IllegalArgumentException("Not a folder: " + path);
+        }
+        return (Folder) JcrObject.construct(entry);
+    }
+
+    /**
+     * Return a folder given its object id.
+     *
+     * @param objectId object id
+     * @return folder
+     * @throws ObjectNotFoundException if the object is not found
+     * @throws IllegalArgumentException if the object is not a folder
+     */
+    private JcrFolder getFolder(ObjectId objectId)
+            throws ObjectNotFoundException, IllegalArgumentException {
+
+        if (objectId instanceof JcrFolder) {
+            return (JcrFolder) objectId;
+        }
+        JcrObject o = getObject(objectId);
+        if (o == null) {
+            throw new ObjectNotFoundException("Folder not found: " + objectId);
+        }
+        if (!(o instanceof JcrFolder)) {
+            throw new IllegalArgumentException("Not a folder: " + objectId);
+        }
+        return (JcrFolder) o;
+    }
+
+    /**
+     * Return a document given its object id.
+     *
+     * @param objectId object id
+     * @return document
+     * @throws ObjectNotFoundException if the object is not found
+     * @throws IllegalArgumentException if the object is not a document
+     */
+    private JcrDocument getDocument(ObjectId objectId)
+            throws ObjectNotFoundException, IllegalArgumentException {
+
+        if (objectId instanceof JcrDocument) {
+            return (JcrDocument) objectId;
+        }
+        JcrObject o = getObject(objectId);
+        if (o == null) {
+            throw new ObjectNotFoundException("Document not found: " + objectId);
+        }
+        if (!(o instanceof JcrDocument)) {
+            throw new IllegalArgumentException("Not a document: " + objectId);
+        }
+        return (JcrDocument) o;
     }
 
     public Map<String, Serializable> getPropertiesOfLatestVersion(
@@ -427,34 +750,75 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public ListPage<ObjectEntry> getRelationships(ObjectId objectId,
             String typeId, boolean includeSubRelationshipTypes,
             Inclusion inclusion, Paging paging) {
         return SimpleListPage.emptyList();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public ListPage<Rendition> getRenditions(ObjectId object,
             Inclusion inclusion, Paging paging) {
         return SimpleListPage.emptyList();
     }
 
-    public boolean hasContentStream(ObjectId document) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+    /**
+     * {@inheritDoc}
+     */
+    public boolean hasContentStream(ObjectId documentId) {
+        return getDocument(documentId).getContentStream() != null;
     }
 
-    public ObjectId moveObject(ObjectId objectId, ObjectId targetFolderId,
+    /**
+     * {@inheritDoc}
+     */
+    public ObjectId moveObject(ObjectId documentId, ObjectId targetFolderId,
             ObjectId sourceFolderId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+
+        JcrFolder folder = getFolder(targetFolderId);
+        JcrDocument source = getDocument(documentId);
+
+        if (sourceFolderId != null) {
+            if (!source.getParent().getId().equals(sourceFolderId.getId())) {
+                throw new IllegalArgumentException("Source folder is not the parent of the document");
+            }
+        }
+
+        try {
+            String sourcePath = source.getEntry().getNode().getPath();
+            String sourceName = source.getName();
+            String destPath = folder.getEntry().getNode().getPath() + "/" + sourceName;
+
+            Workspace workspace = session.getWorkspace();
+            workspace.move(sourcePath, destPath);
+
+            JcrObject object = getObject(documentId);
+            if (!(object instanceof JcrDocument)) {
+                log.error("Target object not found after moving");
+                return null;
+            }
+            return object;
+
+        } catch (RepositoryException e) {
+            log.error("Unable to move.", e);
+        }
+        return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public ListPage<ObjectEntry> query(String statement,
             boolean searchAllVersions, Inclusion inclusion, Paging paging) {
 
         try {
             QueryManager qm = session.getWorkspace().getQueryManager();
-            QueryResult qr = qm.createQuery(statement, Query.SQL).execute();
+            QueryResult qr = qm.createQuery(statement, Query.JCR_SQL2).execute();
             NodeIterator iter = qr.getNodes();
             if (iter.hasNext() && paging != null) {
                 iter.skip(paging.skipCount);
@@ -465,11 +829,10 @@ public class JcrConnection implements Connection, SPI {
             SimpleListPage<ObjectEntry> result = new SimpleListPage<ObjectEntry>();
             while (result.size() < maxItems && iter.hasNext()) {
                 Node child = iter.nextNode();
-                if (child.isNodeType(JcrConstants.NT_FOLDER)) {
-                    result.add(new JcrFolder(child, this));
-                } else if (child.isNodeType(JcrConstants.NT_FILE)) {
-                    result.add(new JcrDocument(child, this));
+                if (JcrCmisMap.isInternal(child)) {
+                    continue;
                 }
+                result.add(new JcrObjectEntry(child, this));
             }
             result.setHasMoreItems(iter.hasNext());
             result.setNumItems((int) iter.getSize());
@@ -478,8 +841,8 @@ public class JcrConnection implements Connection, SPI {
         } catch (RepositoryException e) {
             String msg = "Unable to execute query.";
             log.error(msg, e);
+            return new SimpleListPage<ObjectEntry>();
         }
-        return null;
     }
 
     public void removeObjectFromFolder(ObjectId objectId, ObjectId folderId) {
@@ -492,18 +855,38 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId setContentStream(ObjectId documentId,
-            ContentStream contentStream, boolean overwrite) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+    /**
+     * {@inheritDoc}
+     */
+    public ObjectId setContentStream(ObjectId documentId, ContentStream cs, boolean overwrite)
+            throws ContentAlreadyExistsException, IOException {
+
+        JcrDocument doc = getDocument(documentId);
+        if (!overwrite && doc.getContentStream() != null) {
+            throw new ContentAlreadyExistsException("Document already has a content stream: " + documentId);
+        }
+        doc.setContentStream(cs);
+        return doc;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public ObjectId updateProperties(ObjectId objectId, String changeToken,
             Map<String, Serializable> properties) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+
+        JcrObject object = getObject(objectId);
+        if (object == null) {
+            return null;
+        }
+        object.setValues(properties);
+        object.save();
+        return object;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public ListPage<ObjectEntry> getChangeLog(String changeLogToken,
             boolean includeProperties, Paging paging,
             String[] latestChangeLogToken) {
@@ -524,4 +907,10 @@ public class JcrConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Internal: return session associated with this connection.
+     */
+    Session getSession() {
+        return session;
+    }
 }

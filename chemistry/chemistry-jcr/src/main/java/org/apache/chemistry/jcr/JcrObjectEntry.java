@@ -1,12 +1,9 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,554 +12,489 @@
  * limitations under the License.
  *
  * Authors:
- *     Dominique Pfister, Day
- *     Michael Mertins, Saperion
+ *     Florent Guillaume, Nuxeo
  */
 package org.apache.chemistry.jcr;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.net.URI;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.jcr.Item;
 import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
-import javax.jcr.Value;
 import javax.xml.namespace.QName;
 
-import org.apache.chemistry.Connection;
-import org.apache.chemistry.Document;
-import org.apache.chemistry.Folder;
+import org.apache.chemistry.AllowableAction;
+import org.apache.chemistry.BaseType;
+import org.apache.chemistry.ChangeInfo;
+import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ObjectEntry;
-import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
-import org.apache.chemistry.PropertyType;
-import org.apache.chemistry.Relationship;
-import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Type;
-import org.apache.chemistry.Updatability;
-import org.apache.chemistry.impl.simple.SimplePropertyDefinition;
+import org.apache.chemistry.impl.base.BaseRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jackrabbit.JcrConstants;
 
-public abstract class JcrObjectEntry implements ObjectEntry {
+/**
+ * JCR implementation of an {@link ObjectEntry}.
+ * <p>
+ * This implementation doesn't do type validation when values are set.
+ */
+class JcrObjectEntry implements ObjectEntry {
 
-    public static final String MIX_UNSTRUCTURED = "mix:unstructured";
-
+    /**
+     * Logger.
+     */
     private static final Log log = LogFactory.getLog(JcrObjectEntry.class);
 
-    protected Node node;
+    /**
+     * Values.
+     */
+    private Map<String, Serializable> values;
 
-    protected final JcrConnection connection;
+    /**
+     * Associated JCR node, <code>null</code> if this is a new node.
+     */
+    private Node node;
 
+    /**
+     * Type, <code>null</code> if this hasn't been computed yet.
+     */
+    private Type type;
+
+    /**
+     * JCR connection.
+     */
+    private final JcrConnection connection;
+
+    /**
+     * Create a new instance of this class. Used for existing objects.
+     *
+     * @param node JCR node
+     * @param connection JCR connection
+     */
     public JcrObjectEntry(Node node, JcrConnection connection) {
+        this(node, null, connection);
+    }
+
+    /**
+     * Create a new instance of this class. Used for existing objects.
+     *
+     * @param node JCR node
+     * @param type type that should override type saved in JCR properties
+     * @param connection JCR connection
+     */
+    public JcrObjectEntry(Node node, Type type, JcrConnection connection) {
         this.node = node;
+        this.type = type;
         this.connection = connection;
     }
 
-    public Connection getConnection() {
-        return connection;
+    /**
+     * Constructor used for new object entries.
+     *
+     * @param type type
+     * @param connection connection
+     */
+    public JcrObjectEntry(Type type, JcrConnection connection) {
+        this.type = type;
+        this.connection = connection;
     }
 
-    public Set<QName> getAllowableActions() {
-        throw null;
-    }
-
-    public String getPathSegment() {
-        return null;
-    }
-
-    public Boolean getBoolean(String id) {
-        try {
-            return Boolean.valueOf(node.getProperty(JcrCmisMap.cmisToJcr(id)).getBoolean());
-        } catch (PathNotFoundException e) {
-            /* property does not exist */
-        } catch (RepositoryException e) {
-            String msg = "Unable to get boolean value: " + id;
-            log.error(msg, e);
-        }
-        return null;
-    }
-
-    public Boolean[] getBooleans(String id) {
-        try {
-            Value[] values = node.getProperty(JcrCmisMap.cmisToJcr(id)).getValues();
-            Boolean[] result = new Boolean[values.length];
-            for (int i = 0; i < values.length; i++) {
-                result[i] = Boolean.valueOf(values[i].getBoolean());
-            }
-            return result;
-        } catch (PathNotFoundException e) {
-            /* property does not exist */
-        } catch (RepositoryException e) {
-            String msg = "Unable to get boolean values: " + id;
-            log.error(msg, e);
-        }
-        return null;
-    }
-
-    public String getChangeToken() {
-        return getString(Property.CHANGE_TOKEN);
-    }
-
-    public String getCheckInComment() {
-        return getString(Property.CHECK_IN_COMMENT);
-    }
-
-    public String getCreatedBy() {
-        return getString(Property.CREATED_BY);
-    }
-
-    public Calendar getCreationDate() {
-        return getDateTime(Property.CREATION_DATE);
-    }
-
-    public Calendar getDateTime(String id) {
-        try {
-            return node.getProperty(JcrCmisMap.cmisToJcr(id)).getDate();
-        } catch (PathNotFoundException e) {
-            /* property does not exist */
-        } catch (RepositoryException e) {
-            String msg = "Unable to get date time value: " + id;
-            log.error(msg, e);
-        }
-        return null;
-    }
-
-    public Calendar[] getDateTimes(String id) {
-        try {
-            Value[] values = node.getProperty(JcrCmisMap.cmisToJcr(id)).getValues();
-            Calendar[] result = new Calendar[values.length];
-            for (int i = 0; i < values.length; i++) {
-                result[i] = values[i].getDate();
-            }
-            return result;
-        } catch (PathNotFoundException e) {
-            /* property does not exist */
-        } catch (RepositoryException e) {
-            String msg = "Unable to get date time values: " + id;
-            log.error(msg, e);
-        }
-        return null;
-    }
-
-    public BigDecimal getDecimal(String id) {
-        try {
-            return new BigDecimal(node.getProperty(JcrCmisMap.cmisToJcr(id)).getDouble());
-        } catch (PathNotFoundException e) {
-            /* property does not exist */
-        } catch (RepositoryException e) {
-            String msg = "Unable to get decimal value: " + id;
-            log.error(msg, e);
-        }
-        return null;
-    }
-
-    public BigDecimal[] getDecimals(String id) {
-        try {
-            Value[] values = node.getProperty(JcrCmisMap.cmisToJcr(id)).getValues();
-            BigDecimal[] result = new BigDecimal[values.length];
-            for (int i = 0; i < values.length; i++) {
-                result[i] = new BigDecimal(values[i].getDouble());
-            }
-            return result;
-        } catch (PathNotFoundException e) {
-            /* property does not exist */
-        } catch (RepositoryException e) {
-            String msg = "Unable to get decimal values: " + id;
-            log.error(msg, e);
-        }
-        return null;
-    }
-
-    public Document getDocument() {
-        throw new UnsupportedOperationException();
-    }
-
-    public Folder getFolder() {
-        throw new UnsupportedOperationException();
-    }
-
-    public String getHTML(String id) {
-        return (String) getValue(id);
-    }
-
-    public String[] getHTMLs(String id) {
-        return (String[]) getValue(id);
-    }
-
-    public String getId(String id) {
-        try {
-            javax.jcr.Property prop = node.getProperty(JcrCmisMap.cmisToJcr(id));
-            return getItemId(prop);
-        } catch (PathNotFoundException e) {
-            /* property does not exist */
-        } catch (RepositoryException e) {
-            String msg = "Unable to get item path: " + id;
-            log.error(msg, e);
-        }
-        return null;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public String getId() {
+        if (isNew()) {
+            return null;
+        }
         try {
-            return getItemId(node);
+            return node.getIdentifier();
         } catch (RepositoryException e) {
-            String msg = "Unable to get item path.";
-            log.error(msg, e);
+            log.error("Unable to retrieve identifier", e);
+            return null;
         }
-        return null;
     }
 
-    public String[] getIds(String id) {
-        return (String[]) getValue(id);
-    }
-
-    public Integer getInteger(String id) {
-        try {
-            return Integer.valueOf((int) node.getProperty(JcrCmisMap.cmisToJcr(id)).getLong());
-        } catch (PathNotFoundException e) {
-            /* property does not exist */
-        } catch (RepositoryException e) {
-            String msg = "Unable to get integer value: " + id;
-            log.error(msg, e);
-        }
-        return null;
-    }
-
-    public Integer[] getIntegers(String id) {
-        try {
-            Value[] values = node.getProperty(JcrCmisMap.cmisToJcr(id)).getValues();
-            Integer[] result = new Integer[values.length];
-            for (int i = 0; i < values.length; i++) {
-                result[i] = Integer.valueOf((int) values[i].getLong());
-            }
-            return result;
-        } catch (PathNotFoundException e) {
-            /* property does not exist */
-        } catch (RepositoryException e) {
-            String msg = "Unable to get integer values: " + id;
-            log.error(msg, e);
-        }
-        return null;
-    }
-
-    public Calendar getLastModificationDate() {
-        return getDateTime(Property.LAST_MODIFICATION_DATE);
-    }
-
-    public String getLastModifiedBy() {
-        return getString(Property.LAST_MODIFIED_BY);
-    }
-
-    public String getName() {
-        try {
-            return node.getName();
-        } catch (RepositoryException e) {
-            String msg = "Unable to get node name.";
-            log.error(msg, e);
-        }
-        return null;
-    }
-
-    public Policy getPolicy() {
-        throw new UnsupportedOperationException();
-    }
-
-    // TODO use the definition inside SimpleType
-    private static final SimplePropertyDefinition PROP_TYPE_ID = new SimplePropertyDefinition(
-            Property.TYPE_ID, "def:typeid", null, Property.TYPE_ID, "Type ID",
-            "", false, PropertyType.ID, false, null, false, true, null,
-            Updatability.READ_ONLY, true, true, 0, null, null, -1, null);
-
-    public Map<String, Property> getProperties() {
-        Map<String, Property> properties = new HashMap<String, Property>();
-        for (PropertyDefinition pd : getType().getPropertyDefinitions()) {
-            String id = pd.getId();
-            if ("*".equals(id)) {
-                // residual property
-                continue;
-            }
-            properties.put(id, getProperty(id));
-        }
-        // TODO return other virtual properties and provide helper class
-        properties.put(Property.TYPE_ID, new Property() {
-
-            public PropertyDefinition getDefinition() {
-                return PROP_TYPE_ID;
-            }
-
-            public Serializable getValue() {
-                return getTypeId();
-            }
-
-            public void setValue(Serializable value) {
-            }
-        });
-        return properties;
-    }
-
-    public Property getProperty(String id) {
-        try {
-            return new JcrProperty(node.getProperty(JcrCmisMap.cmisToJcr(id)));
-        } catch (PathNotFoundException e) {
-            /* property does not exist */
-        } catch (RepositoryException e) {
-            String msg = "Unable to get property: " + id;
-            log.error(msg, e);
-        }
-        return null;
-    }
-
-    public Relationship getRelationship() {
-        throw new UnsupportedOperationException();
-    }
-
-    public Collection<ObjectEntry> getRelationships() {
-        return Collections.emptyList();
-    }
-
-    public String getString(String id) {
-        try {
-            return node.getProperty(JcrCmisMap.cmisToJcr(id)).getString();
-        } catch (PathNotFoundException e) {
-            /* property does not exist */
-        } catch (RepositoryException e) {
-            String msg = "Unable to get string value: " + id;
-            log.error(msg, e);
-        }
-        return null;
-    }
-
-    public String[] getStrings(String id) {
-        try {
-            Value[] values = node.getProperty(JcrCmisMap.cmisToJcr(id)).getValues();
-            String[] result = new String[values.length];
-            for (int i = 0; i < values.length; i++) {
-                result[i] = values[i].getString();
-            }
-            return result;
-        } catch (PathNotFoundException e) {
-            /* property does not exist */
-        } catch (RepositoryException e) {
-            String msg = "Unable to get string values: " + id;
-            log.error(msg, e);
-        }
-        return null;
-    }
-
-    public Type getType() {
-        try {
-            return new JcrType(node.getPrimaryNodeType(), getBaseType());
-        } catch (RepositoryException e) {
-            String msg = "Unable to get primary node type.";
-            log.error(msg, e);
-        }
-        return null;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public String getTypeId() {
-        return getType().getId();
-    }
-
-    public URI getURI(String id) {
-        return (URI) getValue(id);
-    }
-
-    public URI[] getURIs(String id) {
-        return (URI[]) getValue(id);
-    }
-
-    public Serializable getValue(String id) {
-        String name = JcrCmisMap.cmisToJcr(id);
+        if (type != null) {
+            return type.getId();
+        }
         try {
-            if (node.hasProperty(name)) {
-                if (JcrCmisMap.isArray(name)) {
-                    // TODO: Array handling doesn't work yet
-                    // i.e. for (Value v : node.getProperty(name).getValues();
-                } else {
-                    Value value = node.getProperty(name).getValue();
-                    if (JcrCmisMap.isDate(name)) {
-                        return value.getDate();
-                    } else if (JcrCmisMap.isBool(name)) {
-                        return value.getBoolean();
-                    } else if (JcrCmisMap.isInt(name)) {
-                        return value.getLong();
-                    } else {
-                        return value.getString();
-                    }
-                }
+            if (hasCmisPrefix() && node.hasProperty(Property.TYPE_ID)) {
+                return node.getProperty(Property.TYPE_ID).getString();
             }
-        } catch (PathNotFoundException e) {
-            /* property does not exist */
+            String nt = node.getPrimaryNodeType().getName();
+            if (JcrCmisMap.isBaseTypeFolder(nt)) {
+                return BaseType.FOLDER.getId();
+            } else {
+                return BaseType.DOCUMENT.getId();
+            }
         } catch (RepositoryException e) {
-            String msg = "Unable to get value: " + id;
-            log.error(msg, e);
+            log.error("Unable to get type id", e);
+            return BaseType.DOCUMENT.getId();
+        }
+    }
+
+    /**
+     * Load the type unless done.
+     */
+    private synchronized Type getType() {
+        if (type == null) {
+            String typeId = getTypeId();
+            type = connection.getRepository().getType(typeId);
+            if (type == null) {
+                log.warn("Actual object type not registered: " + typeId);
+                type = BaseRepository.DOCUMENT_TYPE;
+            }
+        }
+        return type;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public BaseType getBaseType() {
+        return getType().getBaseType();
+    }
+
+    /**
+     * Return this object's name.
+     *
+     * @return name or <code>null</code> if this object is new
+     */
+    private String getName() {
+        if (!isNew()) {
+            try {
+                return node.getName();
+            } catch (RepositoryException e) {
+                log.error("Unable to get node name", e);
+            }
         }
         return null;
     }
 
-    public Map<String, Serializable> getValues() {
-        Map<String, Serializable> values = new HashMap<String, Serializable>();
-        for (PropertyDefinition def : getType().getPropertyDefinitions()) {
-            String id = def.getId();
-            values.put(JcrCmisMap.cmisToJcr(id), getValue(id));
+    /**
+     * Return this object's path.
+     *
+     * @return path or <code>null</code> if this object is new
+     */
+    private String getPath() {
+        if (!isNew()) {
+            try {
+                return node.getPath();
+            } catch (RepositoryException e) {
+                log.error("Unable to get node name", e);
+            }
         }
+        return null;
+    }
+
+    /**
+     * Return this object's path.
+     *
+     * @return path or <code>null</code> if this object is new
+     */
+    private String getParentId() {
+        if (!isNew() && !connection.getRootFolderId().getId().equals(getId())) {
+            try {
+                return node.getParent().getIdentifier();
+            } catch (RepositoryException e) {
+                log.error("Unable to get node name", e);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public ChangeInfo getChangeInfo() {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getPathSegment() {
+        if (isNew()) {
+            return null;
+        }
+        return (String) getValue(Property.NAME);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Map<String, Serializable> getValues() {
+        loadValues();
         return values;
     }
 
-    public String getVersionLabel() {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * {@inheritDoc}
+     */
+    public Serializable getValue(String id) {
+        loadValues();
+        return values.get(id);
     }
 
-    public String getVersionSeriesCheckedOutBy() {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * {@inheritDoc}
+     */
+    public void setValue(String id, Serializable value) {
+        loadValues();
+        if (value == null) {
+            values.remove(id);
+        } else {
+            values.put(id, value);
+        }
     }
 
-    public String getVersionSeriesCheckedOutId() {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * {@inheritDoc}
+     */
+    public void setValues(Map<String, Serializable> values) {
+        loadValues();
+        // don't use putAll as we want to check for nulls
+        for (String id : values.keySet()) {
+            setValue(id, values.get(id));
+        }
     }
 
-    public String getVersionSeriesId() {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * Load values unless already done.
+     */
+    synchronized void loadValues() {
+        if (values == null) {
+            values = new HashMap<String, Serializable>();
+
+            loadPropertyValues(values);
+
+            values.put(Property.TYPE_ID, getTypeId());
+            values.put(Property.BASE_TYPE_ID, getBaseType().getId());
+
+            if (!isNew()) {
+                values.put(Property.ID, getId());
+                values.put(Property.NAME, getName());
+                values.put(Property.PATH, getPath());
+
+                String parentId = getParentId();
+                if (parentId != null) {
+                    values.put(Property.PARENT_ID, parentId);
+                }
+                loadContentStreamValues(values);
+            }
+        }
     }
 
-    public String getXML(String id) {
-        return (String) getValue(id);
+    /**
+     * Load values from the underlying JCR node.
+     *
+     * @param values map to populate with entries
+     */
+    private void loadPropertyValues(Map<String, Serializable> values) {
+        if (isNew()) {
+            return;
+        }
+        /* Load JCR property values that are included in this
+         * type's property definitions
+         */
+        Type type = connection.getRepository().getType(getTypeId());
+        for (PropertyDefinition pd : type.getPropertyDefinitions()) {
+            String id = pd.getId();
+            try {
+                if (id.startsWith(JcrRepository.CMIS_PREFIX) && !hasCmisPrefix()) {
+                    continue;
+                }
+                if (node.hasProperty(id)) {
+                    values.put(id, JcrCmisMap.valueToSerializable(
+                            pd.getType(),
+                            node.getProperty(id).getValue()));
+                }
+            } catch (RepositoryException e) {
+                log.error("Unable to load property: " + id, e);
+            }
+        }
     }
 
-    public String[] getXMLs(String id) {
-        return (String[]) getValue(id);
-    }
-
-    public boolean hasContentStream() {
-        return false;
-    }
-
-    public boolean isImmutable() {
-        return false;
-    }
-
-    public boolean isLatestMajorVersion() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean isLatestVersion() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean isMajorVersion() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean isVersionSeriesCheckedOut() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public void applyPolicy(Policy policy) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void delete() {
+    /**
+     * Load content stream values from the underlying JCR node.
+     *
+     * @param values map to populate with entries
+     */
+    private void loadContentStreamValues(Map<String, Serializable> values) {
+        if (isNew() || getBaseType() != BaseType.DOCUMENT) {
+            return;
+        }
         try {
-            Node parent = node.getParent();
-            node.remove();
-            parent.save();
+            Node content = node.getNode(JcrConstants.JCR_CONTENT);
+            String filename = getName();
+            if (hasCmisPrefix() && node.hasProperty(Property.CONTENT_STREAM_FILE_NAME)) {
+                filename = node.getProperty(Property.CONTENT_STREAM_FILE_NAME).getString();
+            }
+            JcrContentStream cs = new JcrContentStream(content, filename);
+            if (cs.getLength() != 0) {
+                values.put(Property.CONTENT_STREAM_FILE_NAME, cs.getFileName());
+                values.put(Property.CONTENT_STREAM_MIME_TYPE, cs.getMimeType());
+                values.put(Property.CONTENT_STREAM_LENGTH, Integer.valueOf((int) cs.getLength()));
+            }
         } catch (RepositoryException e) {
-            String msg = "Unable to delete object.";
+            String msg = "Unable to inspect jcr:content sub node.";
             log.error(msg, e);
         }
     }
 
-    public Collection<Folder> getParents() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public Collection<Policy> getPolicies() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public List<Relationship> getRelationships(RelationshipDirection direction,
-            String typeId, boolean includeSubRelationshipTypes) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void move(Folder targetFolder, Folder sourceFolder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void removePolicy(Policy policy) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void unfile() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public static String getItemId(Item item) throws RepositoryException {
-        return escape(item.getPath());
-    }
-
-    public static String getPath(String id) {
-        return unescape(id);
-    }
-
-    public static String escape(String s) {
-        StringBuffer result = new StringBuffer();
-
-        char[] ach = s.toCharArray();
-        for (char c : ach) {
-            String esc = Integer.toHexString(c);
-            int len = esc.length();
-            if (len > 2) {
-                esc = esc.substring(len - 2);
-            } else if (len < 2) {
-                result.append('0');
+    /**
+     * {@inheritDoc}
+     */
+    public Set<QName> getAllowableActions() {
+        boolean canWrite = true;
+        boolean isFolder = getBaseType() == BaseType.FOLDER;
+        Set<QName> set = new HashSet<QName>();
+        set.add(AllowableAction.CAN_GET_OBJECT_PARENTS);
+        set.add(AllowableAction.CAN_GET_PROPERTIES);
+        if (isFolder) {
+            set.add(AllowableAction.CAN_GET_DESCENDANTS);
+            set.add(AllowableAction.CAN_GET_FOLDER_PARENT);
+            set.add(AllowableAction.CAN_GET_FOLDER_TREE);
+            set.add(AllowableAction.CAN_GET_CHILDREN);
+        } else {
+            set.add(AllowableAction.CAN_GET_CONTENT_STREAM);
+        }
+        if (canWrite) {
+            if (isFolder) {
+                set.add(AllowableAction.CAN_CREATE_DOCUMENT);
+                set.add(AllowableAction.CAN_CREATE_FOLDER);
+                set.add(AllowableAction.CAN_CREATE_RELATIONSHIP);
+                set.add(AllowableAction.CAN_DELETE_TREE);
+                set.add(AllowableAction.CAN_ADD_OBJECT_TO_FOLDER);
+                set.add(AllowableAction.CAN_REMOVE_OBJECT_FROM_FOLDER);
+            } else {
+                set.add(AllowableAction.CAN_SET_CONTENT_STREAM);
+                set.add(AllowableAction.CAN_DELETE_CONTENT_STREAM);
             }
-            result.append(esc);
+            set.add(AllowableAction.CAN_UPDATE_PROPERTIES);
+            set.add(AllowableAction.CAN_MOVE_OBJECT);
+            set.add(AllowableAction.CAN_DELETE_OBJECT);
         }
-        return result.toString();
+        if (Boolean.FALSE.booleanValue()) {
+            // TODO
+            set.add(AllowableAction.CAN_GET_RENDITIONS);
+            set.add(AllowableAction.CAN_CHECK_OUT);
+            set.add(AllowableAction.CAN_CANCEL_CHECK_OUT);
+            set.add(AllowableAction.CAN_CHECK_IN);
+            set.add(AllowableAction.CAN_GET_ALL_VERSIONS);
+            set.add(AllowableAction.CAN_GET_OBJECT_RELATIONSHIPS);
+            set.add(AllowableAction.CAN_APPLY_POLICY);
+            set.add(AllowableAction.CAN_REMOVE_POLICY);
+            set.add(AllowableAction.CAN_GET_APPLIED_POLICIES);
+            set.add(AllowableAction.CAN_GET_ACL);
+            set.add(AllowableAction.CAN_APPLY_ACL);
+        }
+        return set;
     }
 
-    public static String unescape(String s) {
-        StringBuffer result = new StringBuffer();
-
-        char[] ach = s.toCharArray();
-        int i = 0;
-
-        while (i < ach.length) {
-            char c = (char) Integer.parseInt(s.substring(i, i + 2), 16);
-            result.append(c);
-            i += 2;
-        }
-        return result.toString();
+    public Collection<ObjectEntry> getRelationships() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
-    protected void setNode(Node node) {
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + getTypeId() + ',' + getId()
+                + ')';
+    }
+
+    /**
+     * Return the node representing this entry.
+     *
+     * @return node or <code>null</code> if this entry is new
+     */
+    Node getNode() {
+        return node;
+    }
+
+    /**
+     * Set the node representing this entry. Done after saving a node
+     * for the first time. Populate the missing values in our values
+     * array.
+     *
+     * @param node node
+     */
+    synchronized void setNode(Node node) {
         this.node = node;
+
+        if (values != null) {
+            values.put(Property.ID, getId());
+            values.put(Property.NAME, getName());
+            values.put(Property.PATH, getPath());
+
+            String parentId = getParentId();
+            if (parentId != null) {
+                values.put(Property.PARENT_ID, parentId);
+            }
+        }
+    }
+
+    /**
+     * Update the internal content stream properties after a content stream
+     * has been written.
+     *
+     * @param cs content stream or <code>null</code>
+     */
+    synchronized void setContentStream(ContentStream cs) {
+        if (values != null) {
+            if (cs == null) {
+                values.remove(Property.CONTENT_STREAM_FILE_NAME);
+                values.remove(Property.CONTENT_STREAM_MIME_TYPE);
+                values.remove(Property.CONTENT_STREAM_LENGTH);
+            } else {
+                String filename = cs.getFileName();
+                if (filename == null) {
+                    filename = (String) getValue(Property.NAME);
+                }
+                values.put(Property.CONTENT_STREAM_FILE_NAME, filename);
+                values.put(Property.CONTENT_STREAM_MIME_TYPE, cs.getMimeType());
+                values.put(Property.CONTENT_STREAM_LENGTH, Integer.valueOf((int) cs.getLength()));
+            }
+        }
+    }
+
+    /**
+     * Return a flag indicating whether this entry is new.
+     *
+     * @return <code>true</code> if this entry is new;
+     *         <code>false</code> otherwise
+     */
+    public boolean isNew() {
+        return node == null;
+    }
+
+    /**
+     * Return the JCR connection.
+     *
+     * @return connection
+     */
+    JcrConnection getConnection() {
+        return connection;
+    }
+
+    /**
+     * Return a flag indicating whether the namespace prefix <b>cmis</b> is known to
+     * the repository.
+     *
+     * @return namespace URI
+     */
+    boolean hasCmisPrefix() {
+        return connection.getRepository().hasCmisPrefix();
     }
 }
