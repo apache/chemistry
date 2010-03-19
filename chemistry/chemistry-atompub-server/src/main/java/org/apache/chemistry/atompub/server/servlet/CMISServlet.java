@@ -16,12 +16,8 @@
  */
 package org.apache.chemistry.atompub.server.servlet;
 
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 import org.apache.abdera.Abdera;
 import org.apache.abdera.protocol.server.Provider;
@@ -33,7 +29,7 @@ public class CMISServlet extends AbderaServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private Repository repository;
+    protected Repository repository;
 
     /**
      * Empty constructor required by servlet spec.
@@ -46,38 +42,20 @@ public class CMISServlet extends AbderaServlet {
     }
 
     @Override
-    public void init() throws ServletException {
-        if (repository == null) {
-            Map<String, String> params = new HashMap<String, String>();
-            @SuppressWarnings("unchecked")
-            Enumeration<String> names = getInitParameterNames();
-            while (names.hasMoreElements()) {
-                String name = names.nextElement();
-                params.put(name, getInitParameter(name));
-            }
-            repository = createRepository(getServletContext(), params);
-        }
-        super.init();
-    }
-
-    private Repository createRepository(ServletContext context,
-            Map<String, String> params) throws ServletException {
-        String className = params.get("class");
-        if (className == null) {
-            String msg = "Repository factory expected in 'class' parameter.";
-            throw new ServletException(msg);
-        }
-        // TODO create repository from factory
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     protected Provider createProvider() {
-        Provider provider = new CMISProvider(repository);
+        Provider provider = new CMISProvider(getRepository());
         Abdera abdera = new Abdera();
         Map<String, String> properties = new HashMap<String, String>();
         provider.init(abdera, properties);
         return provider;
     }
 
+    /**
+     * Return the repository. Allows subclasses to create the repository if necessary.
+     *
+     * @return repository
+     */
+    protected Repository getRepository() {
+        return repository;
+    }
 }
