@@ -73,13 +73,13 @@ import org.apache.commons.io.IOUtils;
  */
 public abstract class BasicTestCase extends TestCase {
 
-    public static final String ROOT_FOLDER_NAME = ""; // not in spec
-
     public Repository repository;
 
     public Connection conn;
 
     public SPI spi;
+
+    public String rootFolderName = ""; // not in spec
 
     public String expectedRepositoryId = "test";
 
@@ -95,6 +95,8 @@ public abstract class BasicTestCase extends TestCase {
     public String expectedRepositoryProductVersion = "0.5-SNAPSHOT";
 
     public boolean expectedCapabilityHasGetDescendants = true;
+
+    public boolean expectedCapabilityHasGetFolderTree = true;
 
     public boolean expectedCapabilityHasMultifiling = false;
 
@@ -175,7 +177,7 @@ public abstract class BasicTestCase extends TestCase {
         assertTrue(cap.isContentStreamUpdatableAnytime());
         assertEquals(expectedCapabilityHasGetDescendants,
                 cap.hasGetDescendants());
-        assertFalse(cap.hasGetFolderTree());
+        assertEquals(expectedCapabilityHasGetFolderTree, cap.hasGetFolderTree());
         assertEquals(expectedCapabilityHasMultifiling, cap.hasMultifiling());
         assertFalse(cap.isPWCSearchable());
         assertFalse(cap.isPWCUpdatable());
@@ -195,7 +197,7 @@ public abstract class BasicTestCase extends TestCase {
         assertNotNull(rootType);
         assertEquals(expectedRootTypeId, rootType.getId());
         assertEquals(expectedRootTypeId, root.getTypeId());
-        assertEquals(ROOT_FOLDER_NAME, root.getName());
+        assertEquals(rootFolderName, root.getName());
         assertNull(root.getParent());
         Map<String, Property> props = root.getProperties();
         assertNotNull(props);
@@ -367,7 +369,7 @@ public abstract class BasicTestCase extends TestCase {
 
     public void testGetObjectByPath() {
         Folder root = conn.getRootFolder();
-        assertEquals(ROOT_FOLDER_NAME, root.getName());
+        assertEquals(rootFolderName, root.getName());
         assertNotNull(spi.getObjectByPath("/", null));
         assertNotNull(spi.getObjectByPath("/folder 1", null));
         assertNotNull(spi.getObjectByPath("/folder 1/doc 1", null));
@@ -444,6 +446,11 @@ public abstract class BasicTestCase extends TestCase {
     }
 
     public void testGetFolderTree() {
+        // check whether repository supports this feature
+        RepositoryInfo info = repository.getInfo();
+        if (!info.getCapabilities().hasGetFolderTree()) {
+            return;
+        }
         Folder root = conn.getRootFolder();
         Tree<ObjectEntry> desc = spi.getFolderTree(root, 4, null);
         assertEquals(2, desc.size());
@@ -464,6 +471,11 @@ public abstract class BasicTestCase extends TestCase {
     }
 
     public void testGetDescendants() {
+        // check whether repository supports this feature
+        RepositoryInfo info = repository.getInfo();
+        if (!info.getCapabilities().hasGetDescendants()) {
+            return;
+        }
         Folder root = conn.getRootFolder();
         Tree<ObjectEntry> desc = spi.getDescendants(root, 4, null, null);
         assertEquals(6, desc.size());
@@ -484,6 +496,12 @@ public abstract class BasicTestCase extends TestCase {
     }
 
     public void testTrees() throws Exception {
+        // check whether repository supports this feature
+        RepositoryInfo info = repository.getInfo();
+        if (!info.getCapabilities().hasGetDescendants()) {
+            return;
+        }
+
         Tree<ObjectEntry> desc;
 
         Folder root = conn.getRootFolder();

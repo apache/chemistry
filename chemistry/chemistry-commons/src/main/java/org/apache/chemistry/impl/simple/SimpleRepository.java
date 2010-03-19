@@ -193,7 +193,7 @@ public class SimpleRepository extends BaseRepository {
     }
 
     public boolean hasGetFolderTree() {
-        return false;
+        return true;
     }
 
     public boolean isContentStreamUpdatableAnytime() {
