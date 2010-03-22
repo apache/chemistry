@@ -67,47 +67,51 @@ public class AuthHandler implements SOAPHandler<SOAPMessageContext> {
     }
 
     protected boolean handleInboundMessage(SOAPMessageContext soapContext) {
-        CallContext callContext = new CallContext();
-        try {
-            extractUsernamePassword(soapContext, callContext);
-        } catch (NoSuchElementException e) {
-            // cannot get UsernameToken
-            callContext.setUsername("");
-            callContext.setPassword("");
-        }
+        CallContext callContext = extractUsernamePassword(soapContext);
         callContext.setInMessageContext(soapContext);
         return true; // continue processing
     }
 
     /**
      * Gets the username and password from the UsernameToken on the
-     * {@link SOAPMessageContext} and stores them in the {@link CallContext}.
-     *
-     * @throws NoSuchElementException if the token cannot be found
+     * {@link SOAPMessageContext} and returns a {@link CallContext}.
      */
-    protected void extractUsernamePassword(SOAPMessageContext soapContext,
-            CallContext callContext) throws NoSuchElementException {
+    protected CallContext extractUsernamePassword(SOAPMessageContext soapContext) {
         SOAPHeader sh;
         try {
             sh = soapContext.getMessage().getSOAPHeader();
         } catch (SOAPException e) {
             throw new RuntimeException("Cannot get SOAP header", e);
         }
-        // NoSuchElementException may be thrown by next()
-        SOAPElement security = (SOAPElement) sh.getChildElements(WSSE_SECURITY).next();
-        SOAPElement token = (SOAPElement) security.getChildElements(
-                WSSE_USERNAME_TOKEN).next();
-        SOAPElement usernameElement = (SOAPElement) token.getChildElements(
-                WSSE_USERNAME).next();
-        SOAPElement passwordElement = (SOAPElement) token.getChildElements(
-                WSSE_PASSWORD).next();
-        String username = usernameElement.getValue();
-        String password = passwordElement.getValue();
-        if (username == null || password == null) {
-            throw new NoSuchElementException();
+        String username = "";
+        String password = "";
+        try {
+            // NoSuchElementException may be thrown by next()
+            SOAPElement security = (SOAPElement) sh.getChildElements(
+                    WSSE_SECURITY).next();
+            SOAPElement token = (SOAPElement) security.getChildElements(
+                    WSSE_USERNAME_TOKEN).next();
+            try {
+                SOAPElement usernameElement = (SOAPElement) token.getChildElements(
+                        WSSE_USERNAME).next();
+                username = usernameElement.getTextContent();
+            } catch (NoSuchElementException e) {
+                // skip
+            }
+            try {
+                SOAPElement passwordElement = (SOAPElement) token.getChildElements(
+                        WSSE_PASSWORD).next();
+                password = passwordElement.getTextContent();
+            } catch (NoSuchElementException e) {
+                // skip
+            }
+        } catch (NoSuchElementException e) {
+            // no wsse:Security or wsse:UsernameToken
         }
+        CallContext callContext = new CallContext();
         callContext.setUsername(username);
         callContext.setPassword(password);
+        return callContext;
     }
 
     protected boolean handleOutboundMessage(SOAPMessageContext soapContext) {
