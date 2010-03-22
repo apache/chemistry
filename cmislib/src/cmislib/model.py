@@ -1337,11 +1337,11 @@ class ResultSet():
 
     def __iter__(self):
         ''' Iterator for the result set '''
-        return self.getResults().itervalues()
+        return iter(self.getResults())
 
     def __getitem__(self, index):
         ''' Getter for the result set '''
-        return self.getResults().values()[index]
+        return self.getResults()[index]
 
     def __len__(self):
         ''' Len method for the result set '''
@@ -1411,16 +1411,22 @@ class ResultSet():
 
         if self._xmlDoc:
             entryElements = self._xmlDoc.getElementsByTagNameNS(ATOM_NS, 'entry')
-            entries = {}
+            entries = []
             for entryElement in entryElements:
                 cmisObject = getSpecializedObject(CmisObject(self._cmisClient,
                                                              self._repository,
                                                              xmlDoc=entryElement))
-                entries[cmisObject.getObjectId()] = cmisObject
+                entries.append(cmisObject)
 
             self._results = entries
 
         return self._results
+
+    def hasObject(self, objectId):
+        for obj in self.getResults():
+            if obj.id == objectId:
+                return True
+        return False
 
     def getFirst(self):
 
@@ -3765,7 +3771,7 @@ def parsePropValue(value, nodeName):
     if nodeName == 'propertyId':
         return CmisId(value)
     elif nodeName == 'propertyString':
-        return str(value)
+        return value
     elif nodeName == 'propertyBoolean':
         bDict = {'false': False, 'true': True}
         return bDict[value.lower()]

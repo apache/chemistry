@@ -477,6 +477,11 @@ class FolderTest(CmisTestBase):
         parentFolder = self._testFolder.createFolder(parentFolderName)
         subFolder = parentFolder.createFolder(subFolderName)
 
+        # Per CMIS-170, CMIS providers are not required to filter the
+        # properties returned. So these tests will check only for the presence
+        # of the properties asked for, not the absence of properties that
+        # should be filtered if the server chooses to do so.
+
         # test when used with getObjectByPath
         searchFolder = self._repo.getObjectByPath(settings.TEST_ROOT_PATH + \
                         "/".join([testFolderName, parentFolderName, subFolderName]), \
@@ -485,7 +490,6 @@ class FolderTest(CmisTestBase):
         self.assertTrue(searchFolder.getProperties().has_key('cmis:objectId'))
         self.assertTrue(searchFolder.getProperties().has_key('cmis:objectTypeId'))
         self.assertTrue(searchFolder.getProperties().has_key('cmis:baseTypeId'))
-        self.assertFalse(searchFolder.getProperties().has_key('cmis:name'))
 
         # test when used with getObjectByPath + reload
         searchFolder = self._repo.getObjectByPath(settings.TEST_ROOT_PATH + \
@@ -496,7 +500,6 @@ class FolderTest(CmisTestBase):
         self.assertTrue(searchFolder.getProperties().has_key('cmis:objectId'))
         self.assertTrue(searchFolder.getProperties().has_key('cmis:objectTypeId'))
         self.assertTrue(searchFolder.getProperties().has_key('cmis:baseTypeId'))
-        self.assertFalse(searchFolder.getProperties().has_key('cmis:name'))
 
         # test when used with getObject
         searchFolder = self._repo.getObject(subFolder.getObjectId(), \
@@ -505,7 +508,6 @@ class FolderTest(CmisTestBase):
         self.assertTrue(searchFolder.getProperties().has_key('cmis:objectId'))
         self.assertTrue(searchFolder.getProperties().has_key('cmis:objectTypeId'))
         self.assertTrue(searchFolder.getProperties().has_key('cmis:baseTypeId'))
-        self.assertFalse(searchFolder.getProperties().has_key('cmis:name'))
 
         # test when used with getObject + reload
         searchFolder = self._repo.getObject(subFolder.getObjectId(), \
@@ -515,7 +517,6 @@ class FolderTest(CmisTestBase):
         self.assertTrue(searchFolder.getProperties().has_key('cmis:objectId'))
         self.assertTrue(searchFolder.getProperties().has_key('cmis:objectTypeId'))
         self.assertTrue(searchFolder.getProperties().has_key('cmis:baseTypeId'))
-        self.assertFalse(searchFolder.getProperties().has_key('cmis:name'))
 
         # test that you can do a reload with a reset filter
         searchFolder.reload(filter='*')
@@ -568,16 +569,18 @@ class FolderTest(CmisTestBase):
                           firstFolder.createFolder,
                           'bad parent')
 
-    def testDuplicateFolder(self):
-        '''Try to create a folder that already exists'''
-        folderName = 'testDupFolder folder'
-        firstFolder = self._testFolder.createFolder(folderName)
-        self.assert_('cmis:objectId' in firstFolder.getProperties())
-        # really, this needs to be ContentAlreadyExistsException but
-        # not all CMIS providers report it as such
-        self.assertRaises(CmisException,
-                          self._testFolder.createFolder,
-                          folderName)
+# Per CMIS-169, nothing in the spec says that an exception should be thrown
+# when a duplicate folder is created, so this test is really not necessary.
+#    def testDuplicateFolder(self):
+#        '''Try to create a folder that already exists'''
+#        folderName = 'testDupFolder folder'
+#        firstFolder = self._testFolder.createFolder(folderName)
+#        self.assert_('cmis:objectId' in firstFolder.getProperties())
+#        # really, this needs to be ContentAlreadyExistsException but
+#        # not all CMIS providers report it as such
+#        self.assertRaises(CmisException,
+#                          self._testFolder.createFolder,
+#                          folderName)
 
 
 class ChangeEntryTest(CmisTestBase):
@@ -1159,7 +1162,7 @@ def isInResultSet(resultSet, targetDoc):
     """
     done = False
     while not done:
-        if resultSet.getResults().has_key(targetDoc.getObjectId()):
+        if resultSet.hasObject(targetDoc.getObjectId()):
             return True
         if resultSet.hasNext():
             resultSet.getNext()
