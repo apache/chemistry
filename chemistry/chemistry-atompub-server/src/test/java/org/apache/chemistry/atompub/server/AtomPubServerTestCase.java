@@ -231,6 +231,13 @@ public abstract class AtomPubServerTestCase extends TestCase {
         el = resp.getDocument().getRoot();
         assertNotNull(el);
         resp.release();
+
+        resp = client.get(base + "/typedescendants");
+        assertEquals(HttpStatus.SC_OK, resp.getStatus());
+        el = resp.getDocument().getRoot();
+        assertNotNull(el);
+        resp.release();
+
         resp = client.get(base + "/typedescendants/doc");
         assertEquals(HttpStatus.SC_OK, resp.getStatus());
         el = resp.getDocument().getRoot();

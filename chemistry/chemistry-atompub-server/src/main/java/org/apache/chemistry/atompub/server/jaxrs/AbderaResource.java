@@ -262,6 +262,14 @@ public class AbderaResource {
     @GET
     // TODO produces tree
     @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
+    @Path("typedescendants")
+    public Response doGetTypeDescendantsAll() {
+        return getAbderaFeed();
+    }
+
+    @GET
+    // TODO produces tree
+    @Produces(AtomPub.MEDIA_TYPE_ATOM_FEED)
     @Path("typedescendants/{typeid}")
     public Response doGetTypeDescendants() {
         return getAbderaFeed();
