@@ -1588,7 +1588,7 @@ class CmisObject(object):
         If you call reload with a properties filter, the filter will be in
         effect on subsequent calls until the filter argument is changed. To
         reset to the full list of properties, call reload with filter set to
-        '*'. 
+        '*'.
         """
 
         if kwargs:
@@ -3731,7 +3731,7 @@ class ChangeEntryResultSet(ResultSet):
 
 
 class CmisId(str):
-    
+
     """
     This is a marker class to be used for Strings that are used as CMIS ID's.
     Making the objects instances of this class makes it easier to create the

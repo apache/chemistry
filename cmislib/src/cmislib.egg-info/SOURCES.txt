@@ -28,7 +28,7 @@ src/data/repositoryInfo.filenet.xml
 src/data/repositoryInfo.nuxeo.xml
 src/data/repositoryInfo.xml
 src/data/rootFolder.xml
-src/data/type.cmis:document.xml
+src/data/type.cmis_document.xml
 src/data/types.chemistry.xml
 src/data/types.filenet.xml
 src/data/types.xml

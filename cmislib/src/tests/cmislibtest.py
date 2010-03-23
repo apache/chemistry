@@ -486,7 +486,7 @@ class FolderTest(CmisTestBase):
         searchFolder = self._repo.getObjectByPath(settings.TEST_ROOT_PATH + \
                         "/".join([testFolderName, parentFolderName, subFolderName]), \
                         filter='cmis:objectId,cmis:objectTypeId,cmis:baseTypeId')
-        self.assertEquals(subFolder.getObjectId(), searchFolder.getObjectId())        
+        self.assertEquals(subFolder.getObjectId(), searchFolder.getObjectId())
         self.assertTrue(searchFolder.getProperties().has_key('cmis:objectId'))
         self.assertTrue(searchFolder.getProperties().has_key('cmis:objectTypeId'))
         self.assertTrue(searchFolder.getProperties().has_key('cmis:baseTypeId'))
