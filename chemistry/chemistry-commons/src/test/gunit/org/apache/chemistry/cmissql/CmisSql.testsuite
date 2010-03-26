@@ -150,6 +150,7 @@ query:
 "SELECT * FROM Document" -> (SELECT * (FROM (TABLE Document)))
 "SELECT a, b, c FROM Document" -> (SELECT (LIST (COL a) (COL b) (COL c)) (FROM (TABLE Document)))
 "SELECT a, b FROM Document ORDER BY a, b" -> (SELECT (LIST (COL a) (COL b)) (FROM (TABLE Document)) (ORDER_BY (COL a) ASC (COL b) ASC))
+"SELECT DISTINCT a, b, c FROM Document" -> (SELECT DISTINCT (LIST (COL a) (COL b) (COL c)) (FROM (TABLE Document)))
 
 
 // Examples from the specs.

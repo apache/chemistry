@@ -64,7 +64,7 @@ package org.apache.chemistry.cmissql;
     }
 }
 
-query: SELECT^ select_list from_clause where_clause? order_by_clause?;
+query: SELECT^ DISTINCT? select_list from_clause where_clause? order_by_clause?;
 
 select_list
     : STAR

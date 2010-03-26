@@ -99,11 +99,11 @@ public class SimpleObjectEntry implements ObjectEntry {
 
     // TODO add a getPath method to the SPI
     protected String getPath(Connection connection) {
+        if (getId() == null) {
+            return null;
+        }
         ObjectEntry parent;
         if (getBaseType() == BaseType.FOLDER) {
-            if (getId() == null) {
-                return null;
-            }
             parent = connection.getSPI().getFolderParent(this, null);
         } else {
             Collection<ObjectEntry> parents = connection.getSPI().getObjectParents(

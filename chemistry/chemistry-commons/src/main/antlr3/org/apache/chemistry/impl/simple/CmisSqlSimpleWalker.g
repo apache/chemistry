@@ -77,8 +77,9 @@ query [SimpleData d, SimpleConnection conn] returns [String tableName, boolean m
     data = $d;
     connection = $conn;
 }:
-    ^(SELECT select_list from_clause where_clause order_by_clause?)
+    ^(SELECT DISTINCT? select_list from_clause where_clause order_by_clause?)
     {
+        // TODO distinct
         $tableName = $from_clause.tableName;
         $matches = $where_clause.matches;
     }

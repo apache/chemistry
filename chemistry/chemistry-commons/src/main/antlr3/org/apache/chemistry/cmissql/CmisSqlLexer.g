@@ -63,6 +63,7 @@ package org.apache.chemistry.cmissql;
 // ----- Generic SQL -----
 
 SELECT : ('S'|'s')('E'|'e')('L'|'l')('E'|'e')('C'|'c')('T'|'t');
+DISTINCT : ('D'|'d')('I'|'i')('S'|'s')('T'|'t')('I'|'i')('N'|'n')('C'|'c')('T'|'t');
 FROM : ('F'|'f')('R'|'r')('O'|'o')('M'|'m');
 AS : ('A'|'a')('S'|'s');
 JOIN : ('J'|'j')('O'|'o')('I'|'i')('N'|'n');
