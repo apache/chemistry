@@ -42,6 +42,7 @@ import org.junit.Assert;
 public class RelationshipsTest extends TCKTest {
 
     public static final String ARG_INCLUDE_SUB_RELATIONSHIP_TYPES = "includeSubRelationshipTypes";
+    public static final String ARG_RELATIONSHIP_TYPE_ID = "typeId";
 
     
     @Override
@@ -145,7 +146,7 @@ public class RelationshipsTest extends TCKTest {
         
         // retrieve all relationships
         Map<String, String> args = new HashMap<String, String>();
-        args.put("includeSubRelationshipTypes", "true");
+        args.put(ARG_INCLUDE_SUB_RELATIONSHIP_TYPES, "true");
         Feed relsBeforeCreate = client.getFeed(relsLink.getHref(), args);
         assertNotNull(relsBeforeCreate);
         assertEquals(0, relsBeforeCreate.getEntries().size());
@@ -163,7 +164,7 @@ public class RelationshipsTest extends TCKTest {
         assertNotNull(rel);
 
         // retrieve all relationships
-        args.put("relationshipType", options.getRelationshipType());
+        args.put(ARG_RELATIONSHIP_TYPE_ID, options.getRelationshipType());
         Feed relsAfterCreate = client.getFeed(relsLink.getHref(), args);
         assertNotNull(relsAfterCreate);
         assertEquals(1, relsAfterCreate.getEntries().size());
