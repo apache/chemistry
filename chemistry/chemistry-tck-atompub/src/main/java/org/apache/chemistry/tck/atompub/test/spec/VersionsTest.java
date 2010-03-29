@@ -243,9 +243,7 @@ public class VersionsTest extends TCKTest {
         // test checked-in doc has new updates
         Entry checkedIn = model.parseEntry(new StringReader(checkinResXML), null);
         Entry updatedDoc = client.getEntry(checkedIn.getSelfLink().getHref());
-        // TODO: issue with updating name on PWC and it not reflecting on
-        // checked-in document
-        // Assert.assertEquals("Updated Title " + guid, updatedDoc.getTitle());
+        Assert.assertEquals("Updated Title " + guid, updatedDoc.getTitle());
         Assert.assertEquals("text/plain", updatedDoc.getContentMimeType().toString());
         Response updatedContentRes = client.executeRequest(new GetRequest(updatedDoc.getContentSrc().toString()), 200);
         Assert.assertEquals("updated content " + guid, updatedContentRes.getContentAsString());
