@@ -366,7 +366,7 @@ class JcrConnection implements Connection, SPI {
             VersioningState versioningState)
             throws NameConstraintViolationException {
 
-        String typeId = (String) properties.remove(Property.TYPE_ID);
+        String typeId = (String) properties.get(Property.TYPE_ID);
         if (typeId == null) {
             // use a default type, useful for pure AtomPub POST
             typeId = BaseType.DOCUMENT.getId();
