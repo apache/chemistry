@@ -145,15 +145,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <!-- excluded until tests pass -->
-            <exclude>**/TestJcrRepository.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 

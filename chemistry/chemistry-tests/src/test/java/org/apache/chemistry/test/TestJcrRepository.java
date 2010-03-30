@@ -142,6 +142,12 @@ public class TestJcrRepository extends BasicTestCase {
     }
 
     @Override
+    public void testQuery() {
+        // Overridden to be skipped, because we deliberately did
+        // not configure a search manager in our repository.xml
+    }
+
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
         session.logout();
