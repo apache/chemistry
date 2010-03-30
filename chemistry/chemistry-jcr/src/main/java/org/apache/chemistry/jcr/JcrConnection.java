@@ -61,12 +61,14 @@ import org.apache.chemistry.ObjectNotFoundException;
 import org.apache.chemistry.Paging;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
+import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.Rendition;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Tree;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
+import org.apache.chemistry.Updatability;
 import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.impl.simple.SimpleListPage;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
@@ -686,7 +688,7 @@ class JcrConnection implements Connection, SPI {
      * {@inheritDoc}
      */
     public Folder getFolder(String path) {
-        JcrObjectEntry entry = (JcrObjectEntry) getObjectByPath(path, null);
+        JcrObjectEntry entry = getObjectByPath(path, null);
         if (entry == null) {
             return null;
         }
@@ -879,7 +881,29 @@ class JcrConnection implements Connection, SPI {
         if (object == null) {
             return null;
         }
-        object.setValues(properties);
+
+        Type type = object.getType();
+        for (String key : properties.keySet()) {
+            if (key.equals(Property.ID) || key.equals(Property.TYPE_ID)) {
+                continue;
+            }
+
+            PropertyDefinition pd = type.getPropertyDefinition(key);
+            Updatability updatability = pd.getUpdatability();
+            if (updatability == Updatability.ON_CREATE || updatability == Updatability.READ_ONLY) {
+                // ignore attempts to write a read-only prop, as clients
+                // may want to take an existing entry, change a few values,
+                // and write the new one
+                continue;
+            }
+            Serializable value = properties.get(key);
+            if (value == null && pd.isRequired()) {
+                    throw new RuntimeException("Required property: " + key); // TODO
+            } else {
+                object.getProperty(key).setValue(value);
+            }
+        }
+
         object.save();
         return object;
     }
