@@ -50,7 +50,6 @@ import org.apache.chemistry.Connection;
 import org.apache.chemistry.ConstraintViolationException;
 import org.apache.chemistry.ContentAlreadyExistsException;
 import org.apache.chemistry.ContentStream;
-import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ListPage;
@@ -61,14 +60,12 @@ import org.apache.chemistry.ObjectNotFoundException;
 import org.apache.chemistry.Paging;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
-import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.Rendition;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Tree;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
-import org.apache.chemistry.Updatability;
 import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.impl.simple.SimpleListPage;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
@@ -197,8 +194,8 @@ class JcrConnection implements Connection, SPI {
     /**
      * {@inheritDoc}
      */
-    public Folder getRootFolder() {
-        return (Folder) getObject(rootFolderId);
+    public JcrFolder getRootFolder() {
+        return (JcrFolder) getObject(rootFolderId);
     }
 
     /**
@@ -211,7 +208,7 @@ class JcrConnection implements Connection, SPI {
     /**
      * {@inheritDoc}
      */
-    public Document newDocument(String typeId, Folder folder) {
+    public JcrDocument newDocument(String typeId, Folder folder) {
         Type type = repository.getType(typeId);
         if (type == null || type.getBaseType() != BaseType.DOCUMENT) {
             throw new IllegalArgumentException(typeId);
@@ -226,7 +223,7 @@ class JcrConnection implements Connection, SPI {
     /**
      * {@inheritDoc}
      */
-    public Folder newFolder(String typeId, Folder folder) {
+    public JcrFolder newFolder(String typeId, Folder folder) {
         Type type = repository.getType(typeId);
         if (type == null || type.getBaseType() != BaseType.FOLDER) {
             throw new IllegalArgumentException(typeId);
@@ -369,30 +366,29 @@ class JcrConnection implements Connection, SPI {
             VersioningState versioningState)
             throws NameConstraintViolationException {
 
-        try {
-            String typeId = (String) properties.remove(Property.TYPE_ID);
-            if (typeId == null) {
-                // use a default type, useful for pure AtomPub POST
-                typeId = BaseType.DOCUMENT.getId();
-            }
-            Folder folder = null;
-            if (folderId != null) {
-                folder = getFolder(folderId);
-            }
-            Document doc = newDocument(typeId, folder);
-            doc.setValues(properties);
-            if (contentStream != null) {
-                doc.setName(contentStream.getFileName());
-                doc.setValue("title", contentStream.getFileName());
-                doc.setContentStream(contentStream);
-            }
-            doc.save();
-            return doc;
-        } catch (Exception e) {
-            String msg = "Unable to create document.";
-            log.error(msg, e);
+        String typeId = (String) properties.remove(Property.TYPE_ID);
+        if (typeId == null) {
+            // use a default type, useful for pure AtomPub POST
+            typeId = BaseType.DOCUMENT.getId();
         }
-        return null;
+        Folder folder = null;
+        if (folderId != null) {
+            folder = getFolder(folderId);
+        }
+        JcrDocument doc = newDocument(typeId, folder);
+        doc.setProperties(properties);
+
+        if (contentStream != null) {
+            doc.setName(contentStream.getFileName());
+            try {
+                doc.setContentStream(contentStream);
+            } catch (IOException e) {
+                log.error("I/O exception while setting the content stream.", e);
+                return null;
+            }
+        }
+        doc.save();
+        return doc;
     }
 
     /**
@@ -405,16 +401,12 @@ class JcrConnection implements Connection, SPI {
         if (typeId == null) {
             throw new IllegalArgumentException("Missing object type id");
         }
-        Type type = repository.getType(typeId);
-        if (type == null || type.getBaseType() != BaseType.FOLDER) {
-            throw new IllegalArgumentException(typeId);
-        }
-        JcrObjectEntry entry = new JcrObjectEntry(type, this);
-        entry.setValues(properties);
+        Folder parent = null;
         if (folderId != null) {
-            entry.setValue(Property.PARENT_ID, folderId.getId());
+            parent = getFolder(folderId);
         }
-        JcrFolder folder = new JcrFolder(entry);
+        JcrFolder folder = newFolder(typeId, parent);
+        folder.setProperties(properties);
         folder.save();
         return folder;
     }
@@ -687,7 +679,7 @@ class JcrConnection implements Connection, SPI {
     /**
      * {@inheritDoc}
      */
-    public Folder getFolder(String path) {
+    public JcrFolder getFolder(String path) {
         JcrObjectEntry entry = getObjectByPath(path, null);
         if (entry == null) {
             return null;
@@ -695,7 +687,7 @@ class JcrConnection implements Connection, SPI {
         if (entry.getBaseType() != BaseType.FOLDER) {
             throw new IllegalArgumentException("Not a folder: " + path);
         }
-        return (Folder) JcrObject.construct(entry);
+        return (JcrFolder) JcrObject.construct(entry);
     }
 
     /**
@@ -881,29 +873,7 @@ class JcrConnection implements Connection, SPI {
         if (object == null) {
             return null;
         }
-
-        Type type = object.getType();
-        for (String key : properties.keySet()) {
-            if (key.equals(Property.ID) || key.equals(Property.TYPE_ID)) {
-                continue;
-            }
-
-            PropertyDefinition pd = type.getPropertyDefinition(key);
-            Updatability updatability = pd.getUpdatability();
-            if (updatability == Updatability.ON_CREATE || updatability == Updatability.READ_ONLY) {
-                // ignore attempts to write a read-only prop, as clients
-                // may want to take an existing entry, change a few values,
-                // and write the new one
-                continue;
-            }
-            Serializable value = properties.get(key);
-            if (value == null && pd.isRequired()) {
-                    throw new RuntimeException("Required property: " + key); // TODO
-            } else {
-                object.getProperty(key).setValue(value);
-            }
-        }
-
+        object.setProperties(properties);
         object.save();
         return object;
     }

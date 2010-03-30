@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
@@ -34,6 +35,7 @@ import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.Updatability;
 import org.apache.chemistry.UpdateConflictException;
 import org.apache.chemistry.impl.base.BaseObject;
 import org.apache.chemistry.impl.simple.SimpleProperty;
@@ -201,6 +203,37 @@ abstract class JcrObject extends BaseObject {
             throw new IllegalArgumentException(id);
         }
         return new SimpleProperty(entry, id, propertyDefinition);
+    }
+
+    /**
+     * Set properties on this object, skipping read-only and on-create properties.
+     *
+     * Note: caller has to call <code>save</code> on this object to persist changes.
+     *
+     * @param properties properties to set
+     */
+    protected void setProperties(Map<String, Serializable> properties) {
+        Type type = getType();
+        for (String key : properties.keySet()) {
+            if (key.equals(Property.ID) || key.equals(Property.TYPE_ID)) {
+                continue;
+            }
+
+            PropertyDefinition pd = type.getPropertyDefinition(key);
+            Updatability updatability = pd.getUpdatability();
+            if (updatability == Updatability.ON_CREATE || updatability == Updatability.READ_ONLY) {
+                // ignore attempts to write a read-only prop, as clients
+                // may want to take an existing entry, change a few values,
+                // and write the new one
+                continue;
+            }
+            Serializable value = properties.get(key);
+            if (value == null && pd.isRequired()) {
+                    throw new RuntimeException("Required property: " + key); // TODO
+            } else {
+                getProperty(key).setValue(value);
+            }
+        }
     }
 
     /**

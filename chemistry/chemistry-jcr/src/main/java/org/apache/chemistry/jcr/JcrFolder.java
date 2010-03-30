@@ -28,7 +28,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.apache.chemistry.CMISObject;
-import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Property;
@@ -94,14 +93,14 @@ class JcrFolder extends JcrObject implements Folder {
     /**
      * {@inheritDoc}
      */
-    public Document newDocument(String typeId) {
+    public JcrDocument newDocument(String typeId) {
         return connection.newDocument(typeId, this);
     }
 
     /**
      * {@inheritDoc}
      */
-    public Folder newFolder(String typeId) {
+    public JcrFolder newFolder(String typeId) {
         return connection.newFolder(typeId, this);
     }
 
