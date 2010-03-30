@@ -826,8 +826,8 @@ public abstract class BasicTestCase extends TestCase {
     }
 
     /**
-     * Update properties of a folder, including read-only properties. These should
-     * be silently ignored.
+     * Update properties of a folder and a document, including read-only properties.
+     * These should be silently ignored.
      *
      * @see http://issues.apache.org/jira/browse/CMIS-186
      * @throws Exception
@@ -841,6 +841,19 @@ public abstract class BasicTestCase extends TestCase {
         spi.updateProperties(ob, null, properties);
         // refetch
         ob = spi.getProperties(ob, null);
+        assertEquals("new descr", ob.getValue("description"));
+
+        ob = spi.getObjectByPath("/folder 1/doc 1", null);
+        assertEquals("doc 1 title", ob.getValue("title"));
+        assertEquals("The doc 1 descr", ob.getValue("description"));
+        // update
+        properties = new HashMap<String, Serializable>();
+        properties.put("description", "new descr");
+        properties.put(Property.LAST_MODIFICATION_DATE, Calendar.getInstance());
+        spi.updateProperties(ob, null, properties);
+        // refetch
+        ob = spi.getProperties(ob, null);
+        assertEquals("doc 1 title", ob.getValue("title"));
         assertEquals("new descr", ob.getValue("description"));
     }
 
