@@ -825,4 +825,23 @@ public abstract class BasicTestCase extends TestCase {
         assertTrue(aa.contains(AllowableAction.CAN_UPDATE_PROPERTIES));
     }
 
+    /**
+     * Update properties of a folder, including read-only properties. These should
+     * be silently ignored.
+     *
+     * @see http://issues.apache.org/jira/browse/CMIS-186
+     * @throws Exception
+     */
+    public void testUpdateReadOnlyProperty() throws Exception {
+        ObjectEntry ob = spi.getObjectByPath("/folder 1", null);
+        // update
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put("description", "new descr");
+        properties.put(Property.PATH, ob.getValue(Property.PATH));
+        spi.updateProperties(ob, null, properties);
+        // refetch
+        ob = spi.getProperties(ob, null);
+        assertEquals("new descr", ob.getValue("description"));
+    }
+
 }
