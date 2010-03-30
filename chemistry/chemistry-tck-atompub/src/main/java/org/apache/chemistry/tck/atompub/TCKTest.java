@@ -20,7 +20,7 @@ package org.apache.chemistry.tck.atompub;
 import junit.framework.TestCase;
 import junit.framework.TestResult;
 
-import org.apache.chemistry.tck.atompub.client.CMISAppModel;
+import org.apache.chemistry.abdera.ext.utils.CMISAppModel;
 import org.apache.chemistry.tck.atompub.client.CMISClient;
 import org.apache.chemistry.tck.atompub.fixture.CMISTestFixture;
 import org.apache.chemistry.tck.atompub.http.Connection;

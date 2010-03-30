@@ -34,7 +34,7 @@ import org.apache.chemistry.abdera.ext.CMISConstants;
 import org.apache.chemistry.abdera.ext.CMISObject;
 import org.apache.chemistry.abdera.ext.CMISRepositoryInfo;
 import org.apache.chemistry.abdera.ext.CMISTypeDefinition;
-import org.apache.chemistry.tck.atompub.client.CMISAppModel;
+import org.apache.chemistry.abdera.ext.utils.CMISAppModel;
 import org.apache.chemistry.tck.atompub.client.CMISClient;
 import org.apache.chemistry.tck.atompub.fixture.EntryTree.TreeVisitor;
 import org.apache.chemistry.tck.atompub.http.GetRequest;

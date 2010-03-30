@@ -17,6 +17,15 @@
 package org.apache.chemistry.abdera.ext;
 
 import org.apache.abdera.util.AbstractExtensionFactory;
+import org.apache.chemistry.abdera.ext.CMISChoice.CMISChoiceBoolean;
+import org.apache.chemistry.abdera.ext.CMISChoice.CMISChoiceString;
+import org.apache.chemistry.abdera.ext.CMISChoice.CMISChoiceInteger;
+import org.apache.chemistry.abdera.ext.CMISChoice.CMISChoiceDecimal;
+import org.apache.chemistry.abdera.ext.CMISChoice.CMISChoiceUri;
+import org.apache.chemistry.abdera.ext.CMISChoice.CMISChoiceHtml;
+import org.apache.chemistry.abdera.ext.CMISChoice.CMISChoiceId;
+import org.apache.chemistry.abdera.ext.CMISChoice.CMISChoiceDateTime;
+
 import org.apache.chemistry.abdera.ext.CMISProperty.CMISPropertyBoolean;
 import org.apache.chemistry.abdera.ext.CMISProperty.CMISPropertyDateTime;
 import org.apache.chemistry.abdera.ext.CMISProperty.CMISPropertyDecimal;
@@ -102,6 +111,14 @@ public class CMISExtensionFactory extends AbstractExtensionFactory implements CM
         addImpl(CAN_GET_ACL, CMISAllowableAction.class);
         addImpl(CAN_APPLY_ACL, CMISAllowableAction.class);
         addImpl(CHILDREN, CMISChildren.class);
+        addImpl(PROPDEF_STRING_CHOICE, CMISChoiceString.class);
+        addImpl(PROPDEF_BOOLEAN_CHOICE, CMISChoiceBoolean.class);
+        addImpl(PROPDEF_INTEGER_CHOICE, CMISChoiceInteger.class);
+        addImpl(PROPDEF_DECIMAL_CHOICE, CMISChoiceDecimal.class);
+        addImpl(PROPDEF_DATETIME_CHOICE, CMISChoiceDateTime.class);
+        addImpl(PROPDEF_ID_CHOICE, CMISChoiceId.class);
+        addImpl(PROPDEF_URI_CHOICE, CMISChoiceUri.class);
+        addImpl(PROPDEF_HTML_CHOICE, CMISChoiceHtml.class);
     }
 
 }

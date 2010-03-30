@@ -31,7 +31,7 @@ import org.apache.chemistry.abdera.ext.CMISAccessControlList;
 import org.apache.chemistry.abdera.ext.CMISChangeEventInfo;
 import org.apache.chemistry.abdera.ext.CMISConstants;
 import org.apache.chemistry.abdera.ext.CMISObject;
-import org.apache.chemistry.tck.atompub.client.CMISAppModel;
+import org.apache.chemistry.abdera.ext.utils.CMISAppModel;
 import org.apache.chemistry.tck.atompub.client.CMISClient;
 import org.apache.chemistry.tck.atompub.fixture.EntryTree.TreeVisitor;
 import org.apache.chemistry.tck.atompub.http.GetRequest;

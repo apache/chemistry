@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 import org.apache.abdera.model.Entry;
 import org.apache.chemistry.abdera.ext.CMISConstants;
 import org.apache.chemistry.abdera.ext.CMISContent;
-import org.apache.chemistry.tck.atompub.client.CMISAppModel;
+import org.apache.chemistry.abdera.ext.utils.CMISAppModel;
 import org.apache.chemistry.tck.atompub.utils.ResourceLoader;
 
 public class CMISContentTest extends TestCase {

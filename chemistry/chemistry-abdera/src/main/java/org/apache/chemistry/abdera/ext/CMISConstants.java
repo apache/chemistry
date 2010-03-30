@@ -92,7 +92,7 @@ public interface CMISConstants {
 
     // ACL Capabilities
     public static final QName ACL_CAPABILITY = new QName(CMIS_NS, "aclCapability");
-    public static final QName ACL_SUPPORTED_PERMISSIONS  = new QName(CMIS_NS, "supportedPermissions");
+    public static final QName ACL_SUPPORTED_PERMISSIONS = new QName(CMIS_NS, "supportedPermissions");
     public static final QName ACL_PROPAGATION = new QName(CMIS_NS, "propagation");
     public static final QName ACL_PERMISSIONS = new QName(CMIS_NS, "permissions");
     public static final QName ACL_PERMISSION = new QName(CMIS_NS, "permission");
@@ -136,6 +136,8 @@ public interface CMISConstants {
     public static final QName TYPE_CREATABLE = new QName(CMIS_NS, "creatable");
     public static final QName TYPE_FILEABLE = new QName(CMIS_NS, "fileable");
     public static final QName TYPE_QUERYABLE = new QName(CMIS_NS, "queryable");
+    public static final QName TYPE_VERSIONABLE = new QName(CMIS_NS, "versionable");
+    public static final QName TYPE_CONTENT_STREAM_ALLOWED = new QName(CMIS_NS, "contentStreamAllowed");
     public static final QName TYPE_CONTROLLABLE_POLICY = new QName(CMIS_NS, "controllablePolicy");
     public static final QName TYPE_CONTROLLABLE_ACL = new QName(CMIS_NS, "controllableACL");
     public static final QName TYPE_FULL_TEXT_INDEXED = new QName(CMIS_NS, "fulltextIndexed");
@@ -164,8 +166,19 @@ public interface CMISConstants {
     public static final QName PROPDEF_REQUIRED = new QName(CMIS_NS, "required");
     public static final QName PROPDEF_QUERYABLE = new QName(CMIS_NS, "queryable");
     public static final QName PROPDEF_ORDERABLE = new QName(CMIS_NS, "orderable");
-    public static final QName PROPDEF_CHOICES = new QName(CMIS_NS, "choices");
-    public static final QName PROPDEF_CHOICES_DISPLAY_NAME = new QName(CMIS_NS, "displayName");
+
+    // Property definition choices constants
+    public static final QName PROPDEF_CHOICE_DISPLAY_NAME = new QName(CMIS_NS, "displayName");
+    public static final QName PROPDEF_CHOICE_VALUE = new QName(CMIS_NS, "value");
+    public static final QName PROPDEF_STRING_CHOICE = new QName(CMIS_NS, "choiceString");
+    public static final QName PROPDEF_INTEGER_CHOICE = new QName(CMIS_NS, "choiceInteger");
+    public static final QName PROPDEF_DECIMAL_CHOICE = new QName(CMIS_NS, "choiceDecimal");
+    public static final QName PROPDEF_DATETIME_CHOICE = new QName(CMIS_NS, "choiceDateTime");
+    public static final QName PROPDEF_BOOLEAN_CHOICE = new QName(CMIS_NS, "choiceBoolean");
+    public static final QName PROPDEF_URI_CHOICE = new QName(CMIS_NS, "choiceUri");
+    public static final QName PROPDEF_HTML_CHOICE = new QName(CMIS_NS, "choiceHtml");
+    public static final QName PROPDEF_ID_CHOICE = new QName(CMIS_NS, "choiceId");
+
     public static final QName PROPDEF_OPEN_CHOICE = new QName(CMIS_NS, "openChoice");
     public static final QName PROPDEF_DEFAULT_VALUE = new QName(CMIS_NS, "defaultValue");
     
@@ -272,7 +285,7 @@ public interface CMISConstants {
     public static final String CHANGE_TYPE_UPDATED = "updated";
     public static final String CHANGE_TYPE_DELETED = "deleted";
     public static final String CHANGE_TYPE_SECURITY = "security";
-    
+
     // CMIS Type Names
     public static final String TYPE_DOCUMENT = "cmis:document";
     public static final String TYPE_FOLDER = "cmis:folder";

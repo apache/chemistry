@@ -14,13 +14,11 @@
  * Authors:
  *     David Caruana, Alfresco
  */
-package org.apache.chemistry.tck.atompub.client;
+package org.apache.chemistry.abdera.ext.utils;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
@@ -83,7 +81,7 @@ public class CMISAppModel {
     public Service parseService(Reader doc, String base) {
         Element root = parse(doc, base);
         if (!Service.class.isAssignableFrom(root.getClass())) {
-            throw new RuntimeException(HttpServletResponse.SC_BAD_REQUEST + "Expected APP Service, but recieved " + root.getClass());
+            throw new RuntimeException("Bad Input. Expected APP Service, but recieved " + root.getClass());
         }
 
         return (Service) root;
@@ -97,7 +95,7 @@ public class CMISAppModel {
     public Entry parseEntry(Reader doc, String base) {
         Element root = parse(doc, base);
         if (!Entry.class.isAssignableFrom(root.getClass())) {
-            throw new RuntimeException(HttpServletResponse.SC_BAD_REQUEST + "Expected Atom Entry, but recieved " + root.getClass());
+            throw new RuntimeException("Bad Input. Expected Atom Entry, but recieved " + root.getClass());
         }
 
         return (Entry) root;
@@ -111,7 +109,7 @@ public class CMISAppModel {
     public Feed parseFeed(Reader doc, String base) {
         Element root = parse(doc, base);
         if (!Feed.class.isAssignableFrom(root.getClass())) {
-            throw new RuntimeException(HttpServletResponse.SC_BAD_REQUEST + "Expected Atom Feed, but recieved " + root.getClass());
+            throw new RuntimeException("Bad Input. Expected Atom Feed, but recieved " + root.getClass());
         }
 
         return (Feed) root;
