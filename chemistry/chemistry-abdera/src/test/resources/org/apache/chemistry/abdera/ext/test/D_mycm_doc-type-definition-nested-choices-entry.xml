@@ -397,41 +397,41 @@
 			<cmis:queryable>true</cmis:queryable>
 			<cmis:orderable>false</cmis:orderable>
 			<cmis:openChoice>false</cmis:openChoice>
-			<cmis:choiceString cmis:displayName="Europe">
+			<cmis:choiceString displayName="Europe">
 				<cmis:value>EU</cmis:value>
-				<cmis:choiceString cmis:displayName="Europe">
+				<cmis:choiceString displayName="Italy">
 					<cmis:value>IT</cmis:value>
 				</cmis:choiceString>
-				<cmis:choiceString cmis:displayName="Netherlands">
+				<cmis:choiceString displayName="Netherlands">
 					<cmis:value>NL</cmis:value>
 				</cmis:choiceString>
-				<cmis:choiceString cmis:displayName="United Kingdom">
+				<cmis:choiceString displayName="United Kingdom">
 					<cmis:value>UK</cmis:value>
 				</cmis:choiceString>
 			</cmis:choiceString>
-			<cmis:choiceString cmis:displayName="Australia">
+			<cmis:choiceString displayName="Australia">
 				<cmis:value>AU</cmis:value>
 			</cmis:choiceString>
-			<cmis:choiceString cmis:displayName="America">
+			<cmis:choiceString displayName="America">
 				<cmis:value>AM</cmis:value>
-				<cmis:choiceString cmis:displayName="North America">
+				<cmis:choiceString displayName="North America">
 					<cmis:value>NA</cmis:value>
-					<cmis:choiceString cmis:displayName="United States of America">
+					<cmis:choiceString displayName="United States of America">
 						<cmis:value>USA</cmis:value>
 					</cmis:choiceString>
-					<cmis:choiceString cmis:displayName="Mexico">
+					<cmis:choiceString displayName="Mexico">
 						<cmis:value>MX</cmis:value>
 					</cmis:choiceString>
-					<cmis:choiceString cmis:displayName="Jamaica">
+					<cmis:choiceString displayName="Jamaica">
 						<cmis:value>JA</cmis:value>
 					</cmis:choiceString>
 				</cmis:choiceString>
-				<cmis:choiceString cmis:displayName="South America">
+				<cmis:choiceString displayName="South America">
                     <cmis:value>SA</cmis:value>
-                    <cmis:choiceString cmis:displayName="Brasil">
+                    <cmis:choiceString displayName="Brasil">
                         <cmis:value>BR</cmis:value>
                     </cmis:choiceString>
-                    <cmis:choiceString cmis:displayName="Argentina">
+                    <cmis:choiceString displayName="Argentina">
                         <cmis:value>AR</cmis:value>
                     </cmis:choiceString>
                 </cmis:choiceString>

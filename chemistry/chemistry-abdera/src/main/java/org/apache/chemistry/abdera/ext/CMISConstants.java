@@ -168,7 +168,7 @@ public interface CMISConstants {
     public static final QName PROPDEF_ORDERABLE = new QName(CMIS_NS, "orderable");
 
     // Property definition choices constants
-    public static final QName PROPDEF_CHOICE_DISPLAY_NAME = new QName(CMIS_NS, "displayName");
+    public static final QName PROPDEF_CHOICE_DISPLAY_NAME = new QName(null, "displayName");
     public static final QName PROPDEF_CHOICE_VALUE = new QName(CMIS_NS, "value");
     public static final QName PROPDEF_STRING_CHOICE = new QName(CMIS_NS, "choiceString");
     public static final QName PROPDEF_INTEGER_CHOICE = new QName(CMIS_NS, "choiceInteger");

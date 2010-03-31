@@ -330,14 +330,14 @@
 			<cmis:queryable>true</cmis:queryable>
 			<cmis:orderable>false</cmis:orderable>
 			<cmis:openChoice>false</cmis:openChoice>
-			<cmis:choiceString cmis:displayName="Company private">
+			<cmis:choiceString displayName="Company private">
 				<cmis:value>Company private</cmis:value>
 
 			</cmis:choiceString>
-			<cmis:choiceString cmis:displayName="Public">
+			<cmis:choiceString displayName="Public">
 				<cmis:value>Public</cmis:value>
 			</cmis:choiceString>
-			<cmis:choiceString cmis:displayName="Confidential">
+			<cmis:choiceString displayName="Confidential">
 				<cmis:value>Confidential</cmis:value>
 			</cmis:choiceString>
 		</cmis:propertyStringDefinition>
