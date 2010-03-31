@@ -185,10 +185,13 @@ public interface CMISConstants {
     // Integer specific defs
     public static final QName PROPDEF_INT_MIN_VALUE = new QName(CMIS_NS, "minValue");
     public static final QName PROPDEF_INT_MAX_VALUE = new QName(CMIS_NS, "maxValue");
+    // Integer specific defs
+    public static final QName PROPDEF_DECIMAL_PRECISION = new QName(CMIS_NS, "precision");
+
     // Date specific defs
     public static final QName PROPDEF_DATE_RESOLUTION = new QName(CMIS_NS, "resolution");
     // String specific defs
-    public static final QName PROPDEF_STRING_RESOLUTION = new QName(CMIS_NS, "maxLength");
+    public static final QName PROPDEF_STRING_MAX_LENGTH = new QName(CMIS_NS, "maxLength");
     
     // CMIS Number of Items
     public static final QName NUM_ITEMS = new QName(CMISRA_NS, "numItems");

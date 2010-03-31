@@ -65,7 +65,7 @@ public class TestAppModel extends TestCase {
      * Tests constants for the type definition entry parsing
      */
     public void testTypeDefinitionConstants() {
-        CMISTypeDefinition type = loadCustomTypeDefinition();
+        CMISTypeDefinition type = loadTypeDefinition("/org/apache/chemistry/abdera/ext/test/D_mycm_doc-type-definition-entry.xml");
         assertNotNull(type);
         assertTrue(type.getCreatable());
         assertTrue(type.getFileable());
@@ -90,7 +90,7 @@ public class TestAppModel extends TestCase {
      * Tests constants for the property definition entry parsing
      */
     public void testPropertyDefinitionConstants() {
-        CMISTypeDefinition type = loadCustomTypeDefinition();
+        CMISTypeDefinition type = loadTypeDefinition("/org/apache/chemistry/abdera/ext/test/D_mycm_doc-type-definition-entry.xml");
         assertNotNull(type);
         CMISPropertyDefinition property = type.getPropertyDefinition("mycm:privacy");
         assertNotNull(property);
@@ -111,12 +111,26 @@ public class TestAppModel extends TestCase {
         assertEquals("readwrite", property.getUpdatability());
         assertEquals(CMISConstants.PROP_TYPE_STRING, property.getPropertyType());
     }
-
+    
+    /**
+     * Tests string property definition specific constants and behavior
+     */
+    public void testPropertyStringDefinition() {
+        CMISTypeDefinition type = loadTypeDefinition("/org/apache/chemistry/abdera/ext/test/D_mycm_doc-type-definition-string-max-length-entry.xml");
+        assertNotNull(type);
+        CMISPropertyDefinition property = type.getPropertyDefinition("mycm:limited");
+        assertNotNull(property);
+        assertEquals("Limited info", property.getDisplayName());
+        assertTrue(property instanceof CMISPropertyStringDefinition);
+        assertNotNull(((CMISPropertyStringDefinition) property).getMaxLength());
+        assertEquals(new Integer(128),((CMISPropertyStringDefinition) property).getMaxLength());
+    }
+    
     /**
      * Tests property definition choices parsing with no nested choices
      */
     public void testGetChoices() {
-        CMISTypeDefinition typeDefinition = loadCustomTypeDefinition();
+        CMISTypeDefinition typeDefinition = loadTypeDefinition("/org/apache/chemistry/abdera/ext/test/D_mycm_doc-type-definition-entry.xml");
         assertNotNull(typeDefinition);
         CMISPropertyDefinition propertyDefinition = typeDefinition.getPropertyDefinition("mycm:privacy");
         assertNotNull(propertyDefinition);
@@ -138,7 +152,7 @@ public class TestAppModel extends TestCase {
      * Tests property definition choices parsing with with nested choices
      */
     public void testGetNestedChoices() {
-        CMISTypeDefinition typeDefinition = loadTypeDefinitionWithNestedChoices();
+        CMISTypeDefinition typeDefinition = loadTypeDefinition("/org/apache/chemistry/abdera/ext/test/D_mycm_doc-type-definition-nested-choices-entry.xml");
         assertNotNull(typeDefinition);
         CMISPropertyDefinition propertyDefinition = typeDefinition.getPropertyDefinition("mycm:privacy");
         assertNotNull(propertyDefinition);
@@ -184,10 +198,15 @@ public class TestAppModel extends TestCase {
         assertEquals(choices.size(), 13);
     }
 
-    private CMISTypeDefinition loadCustomTypeDefinition() {
+    
+    /*
+     * Utility private methods
+     */
+    
+    private CMISTypeDefinition loadTypeDefinition(String resourcePath) {
         String typeDefinitionEntry = null;
         try {
-            typeDefinitionEntry = load("/org/apache/chemistry/abdera/ext/test/D_mycm_doc-type-definition-entry.xml");
+            typeDefinitionEntry = load(resourcePath);
         } catch (IOException e) {
             fail("Test atom entry not found");
         }
@@ -196,18 +215,7 @@ public class TestAppModel extends TestCase {
         return type;
     }
 
-    private CMISTypeDefinition loadTypeDefinitionWithNestedChoices() {
-        String typeDefinitionEntry = null;
-        try {
-            typeDefinitionEntry = load("/org/apache/chemistry/abdera/ext/test/D_mycm_doc-type-definition-nested-choices-entry.xml");
-        } catch (IOException e) {
-            fail("Test atom entry not found");
-        }
-        Entry entry = model.parseEntry(new StringReader(typeDefinitionEntry), null);
-        CMISTypeDefinition type = entry.getExtension(CMISConstants.TYPE_DEFINITION);
-        return type;
-    }
-
+    
     /**
      * Load text from file specified by class path
      * 

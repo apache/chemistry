@@ -279,8 +279,8 @@ public abstract class CMISPropertyDefinition extends ExtensibleElementWrapper {
          * 
          * @return resolution AKA max length
          */
-        public Integer getResolution() {
-            Element child = getFirstChild(CMISConstants.PROPDEF_STRING_RESOLUTION);
+        public Integer getMaxLength() {
+            Element child = getFirstChild(CMISConstants.PROPDEF_STRING_MAX_LENGTH);
             if (child != null) {
                 return Integer.parseInt(child.getText());
             }
@@ -327,6 +327,18 @@ public abstract class CMISPropertyDefinition extends ExtensibleElementWrapper {
             return null;
         }
 
+        /**
+         * Gets the property's precision
+         * 
+         * @return max value
+         */
+        public String getPrecision() {
+            Element child = getFirstChild(CMISConstants.PROPDEF_DECIMAL_PRECISION);
+            if (child != null) {
+                return child.getText();
+            }
+            return null;
+        }
     }
 
     /**
