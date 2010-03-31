@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.nodetype.NodeType;
 import javax.xml.namespace.QName;
 
 import org.apache.chemistry.AllowableAction;
@@ -132,14 +133,19 @@ class JcrObjectEntry implements ObjectEntry {
             if (hasCmisPrefix() && node.hasProperty(Property.TYPE_ID)) {
                 return node.getProperty(Property.TYPE_ID).getString();
             }
-            String nt = node.getPrimaryNodeType().getName();
-            if (JcrCmisMap.isBaseTypeFolder(nt)) {
+            NodeType nt = node.getPrimaryNodeType();
+            if (JcrCmisMap.isBaseTypeFolder(nt.getName())) {
                 return BaseType.FOLDER.getId();
-            } else {
-                return BaseType.DOCUMENT.getId();
             }
+            /* check supertypes of this type as well */
+            for (NodeType superType : nt.getSupertypes()) {
+                if (JcrCmisMap.isBaseTypeFolder(superType.getName())) {
+                    return BaseType.FOLDER.getId();
+                }
+            }
+            return BaseType.DOCUMENT.getId();
         } catch (RepositoryException e) {
-            log.error("Unable to get type id", e);
+            log.error("Unable to inspect type hierarchy", e);
             return BaseType.DOCUMENT.getId();
         }
     }
@@ -336,6 +342,9 @@ class JcrObjectEntry implements ObjectEntry {
             return;
         }
         try {
+            if (!node.hasNode(JcrConstants.JCR_CONTENT)) {
+                return;
+            }
             Node content = node.getNode(JcrConstants.JCR_CONTENT);
             String filename = getName();
             if (hasCmisPrefix() && node.hasProperty(Property.CONTENT_STREAM_FILE_NAME)) {
