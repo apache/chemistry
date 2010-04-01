@@ -14,6 +14,7 @@
  * Authors:
  *     Florent Guillaume, Nuxeo
  *     Amelie Avramo, EntropySoft
+ *     Michael Durig, Day
  */
 package org.apache.chemistry.atompub.server;
 
@@ -153,7 +154,7 @@ public class CMISQueryFeed extends CMISObjectsCollection {
             throws ResponseContextException {
         SPI spi = getSPI(request);
         try {
-            Paging paging = new Paging(maxItems, skipCount);
+            Paging paging = new Paging(maxItems == -1 ? 0 : maxItems, skipCount);
             Inclusion inclusion = new Inclusion(null, renditions,
                     relationships, allowableActions, policies, acls);
             ListPage<ObjectEntry> results = spi.query(statement,
