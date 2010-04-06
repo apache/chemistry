@@ -20,7 +20,6 @@
  *	from client-side java script code.	   
  *	 
  */
-
 CMISClient = function (url) {
 	this.CMIS_SERVICE_URL=url;
 	this.info = this.getRepositoryInfo();
@@ -33,7 +32,6 @@ CMISClient.NAME_OF_THIS_FILE = "cmisclient.js";
 CMISClient.trim = function(s) {
 	return s.replace(/^\s*/, "").replace(/\s*$/, "");
 }
-	
 
 /** implements transformation from an xml document to a reasonable js object 
 essentially poor mans jquery
@@ -41,16 +39,12 @@ essentially poor mans jquery
 CMISClient.flatten = function(elem, obj) {
 	if (!obj) obj=new Object();
 	var i=0;
-	while (i<elem.childNodes.length) {
-		
-		/* iterate through all the child nodes of the atom structure */
-		
-		var child=elem.childNodes[i];
-		
-		var value="";
-		
-		switch (child.nodeType) {
+	while (i<elem.childNodes.length) {		
+		/* iterate through all the child nodes of the atom structure */		
+		var child=elem.childNodes[i];		
+		var value="";		
 
+		switch (child.nodeType) {
 			/* found an element */
 			case Node.ELEMENT_NODE:
 				if (child.attributes.length==0 && child.childNodes.length==1 && child.childNodes[0].nodeType==Node.TEXT_NODE && child.childNodes[0].nodeValue) {
@@ -58,7 +52,6 @@ CMISClient.flatten = function(elem, obj) {
 					obj[child.nodeName]=this.trim(child.childNodes[0].nodeValue);
 				} else {
 					if (!obj[child.nodeName]) {
-
 						/* proper substructure without same name sibling */
 						obj[child.nodeName]=new Object();
 						this.flatten(child, obj[child.nodeName]);
@@ -74,7 +67,6 @@ CMISClient.flatten = function(elem, obj) {
 				}
 				break;
 
-
 			case Node.TEXT_NODE:
 				/* cdata in unexpected place */
 				var val=CMISClient.trim(child.nodeValue);
@@ -83,21 +75,15 @@ CMISClient.flatten = function(elem, obj) {
 				}
 
 				break;
-
-		}
-		
-		
-		
+		}		
 		i++;
 	}
 	var i=0;
 	if (elem.attributes) {
 		while (i<elem.attributes.length) {
-
 			/* place attribute values with their names */
 			var child=elem.attributes[i];
 			obj[child.nodeName]=child.nodeValue;
-
 			i++;
 		}
 	}
@@ -165,7 +151,6 @@ CMISClient.prototype.getFolder = function(url) {
 		if (a.indexOf("link")==0) {
 			
 		}
-
 	}
 
 	return(res);
@@ -179,7 +164,7 @@ CMISClient.prototype.getRepositoryInfo = function() {
 	/* could not connect */
 	if (htcon.status != 200) { 
 		return null;
-		}
+	}
 		
 	var doc=htcon.responseXML;
 	var flatres=CMISClient.flatten(doc);
@@ -215,8 +200,7 @@ CMISClient.prototype.getRepositoryInfo = function() {
 }
 	
 /**
- *	Get an XMLHttpRequest in a portable way
- *
+ * Get an XMLHttpRequest in a portable way.
  */
 CMISClient.prototype.getXHR = function () {
 	var xhr=null;
@@ -256,7 +240,7 @@ CMISClient.prototype.getXHR = function () {
 }
 
 /**
- * HTTP GET XHR Helper
+ * HTTP GET XHR Helper.
  * @param {String} url The URL
  * @return the XHR object, use .responseText for the data
  * @type String
@@ -273,8 +257,8 @@ CMISClient.prototype.httpGet = function(url) {
 }
 	
 /**
- * Produces a "sort-of-json" string representation of a object
- * for debugging purposes only
+ * Produces a "sort-of-json" string representation of a object.
+ * For debugging purposes only.
  * @param {Object} obj The object
  * @param {int} level The indentation level
  * @return The result
