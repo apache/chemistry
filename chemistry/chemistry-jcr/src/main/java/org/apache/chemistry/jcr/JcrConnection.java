@@ -254,8 +254,7 @@ class JcrConnection implements Connection, SPI {
                 null, new Paging(Integer.MAX_VALUE, 0));
         List<CMISObject> objects = new ArrayList<CMISObject>(entries.size());
         for (ObjectEntry entry : entries) {
-            // cast entries, they are all JcrFolder or JcrDocument
-            objects.add((CMISObject) entry);
+            objects.add(JcrObject.construct((JcrObjectEntry) entry));
         }
         return objects;
     }
@@ -826,7 +825,9 @@ class JcrConnection implements Connection, SPI {
                 if (JcrCmisMap.isInternal(child)) {
                     continue;
                 }
-                result.add(new JcrObjectEntry(child, this));
+                JcrObjectEntry entry = new JcrObjectEntry(child, this);
+                entry.loadValues();
+                result.add(entry);
             }
             result.setHasMoreItems(iter.hasNext());
             result.setNumItems((int) iter.getSize());
