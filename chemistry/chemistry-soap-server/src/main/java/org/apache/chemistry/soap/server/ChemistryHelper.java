@@ -68,6 +68,8 @@ import org.apache.chemistry.Type;
 import org.apache.chemistry.Updatability;
 import org.apache.chemistry.UpdateConflictException;
 import org.apache.chemistry.VersioningException;
+import org.apache.chemistry.VersioningState;
+import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.ws.CmisAllowableActionsType;
 import org.apache.chemistry.ws.CmisContentStreamType;
 import org.apache.chemistry.ws.CmisException;
@@ -102,6 +104,7 @@ import org.apache.chemistry.ws.EnumIncludeRelationships;
 import org.apache.chemistry.ws.EnumPropertyType;
 import org.apache.chemistry.ws.EnumServiceException;
 import org.apache.chemistry.ws.EnumUpdatability;
+import org.apache.chemistry.ws.EnumVersioningState;
 import org.apache.chemistry.ws.ObjectFactory;
 import org.apache.chemistry.ws.QueryResponse;
 
@@ -297,6 +300,24 @@ public class ChemistryHelper {
         }
     }
 
+    public static VersioningState convert(EnumVersioningState versioningState) {
+        if (versioningState == null) {
+            return null;
+        }
+        switch (versioningState) {
+        case NONE:
+            return null;
+        case CHECKEDOUT:
+            return VersioningState.CHECKED_OUT;
+        case MINOR:
+            return VersioningState.MINOR;
+        case MAJOR:
+            return VersioningState.MAJOR;
+        default:
+            throw new RuntimeException(versioningState.name());
+        }
+    }
+
     public static CmisAllowableActionsType convert(Set<QName> set) {
         if (set == null) {
             return null;
@@ -380,6 +401,9 @@ public class ChemistryHelper {
     }
 
     public static CmisTypeDefinitionListType convert(ListPage<Type> ctl) {
+        if (ctl == null) {
+            return null;
+        }
         CmisTypeDefinitionListType tl = factory.createCmisTypeDefinitionListType();
         for (Type ct : ctl) {
             tl.getTypes().add(convert(ct));
@@ -390,6 +414,9 @@ public class ChemistryHelper {
     }
 
     public static List<CmisTypeContainer> convert(Collection<Type> ctl) {
+        if (ctl == null) {
+            return null;
+        }
         List<CmisTypeContainer> list = new ArrayList<CmisTypeContainer>(
                 ctl.size());
         // for (Type ct : ctl) {
@@ -403,6 +430,35 @@ public class ChemistryHelper {
         object.setProperties(convertProperties(entry));
         // object.setAllowableActions(null);
         return object;
+    }
+
+    public static ContentStream convert(CmisContentStreamType contentStream) {
+        if (contentStream == null) {
+            return null;
+        }
+        DataHandler dataHandler = contentStream.getStream();
+        InputStream stream;
+        if (dataHandler == null) {
+            stream = null;
+        } else {
+            try {
+                // if (dh instanceof StreamingDataHandler) {
+                // stream = ((StreamingDataHandler) dh).readOnce();
+                // } else {
+                stream = contentStream.getStream().getInputStream();
+            } catch (IOException e) {
+                throw new RuntimeException("Could not get the stream: "
+                        + e.getMessage(), e);
+            }
+        }
+        String mimeType = contentStream.getMimeType();
+        String filename = contentStream.getFilename();
+        try {
+            return new SimpleContentStream(stream, mimeType, filename);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not get the stream: "
+                    + e.getMessage(), e);
+        }
     }
 
     public static CmisObjectInFolderType convertInFolder(ObjectEntry entry) {
@@ -560,10 +616,16 @@ public class ChemistryHelper {
     }
 
     public static Calendar convert(XMLGregorianCalendar value) {
+        if (value == null) {
+            return null;
+        }
         return value.toGregorianCalendar();
     }
 
     public static Calendar[] convert(List<XMLGregorianCalendar> values) {
+        if (values == null) {
+            return null;
+        }
         List<Calendar> list = new ArrayList<Calendar>(values.size());
         for (XMLGregorianCalendar value : values) {
             list.add(convert(value));
@@ -572,10 +634,16 @@ public class ChemistryHelper {
     }
 
     public static Long convert(BigInteger value) {
+        if (value == null) {
+            return null;
+        }
         return Long.valueOf(value.longValue());
     }
 
     public static Long[] convert(List<BigInteger> values) {
+        if (values == null) {
+            return null;
+        }
         List<Long> list = new ArrayList<Long>(values.size());
         for (BigInteger value : values) {
             list.add(convert(value));

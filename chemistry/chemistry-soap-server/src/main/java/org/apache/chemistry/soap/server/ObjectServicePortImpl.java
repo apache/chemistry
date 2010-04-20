@@ -31,10 +31,12 @@ import javax.xml.ws.WebServiceContext;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryManager;
 import org.apache.chemistry.SPI;
+import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.ws.CmisAccessControlListType;
 import org.apache.chemistry.ws.CmisAllowableActionsType;
 import org.apache.chemistry.ws.CmisContentStreamType;
@@ -70,8 +72,32 @@ public class ObjectServicePortImpl implements ObjectServicePort {
             CmisAccessControlListType removeACEs,
             Holder<CmisExtensionType> extension, Holder<String> objectId)
             throws CmisException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        SPI spi = null;
+        try {
+            Repository repository = RepositoryManager.getInstance().getRepository(
+                    repositoryId);
+            if (repository == null) {
+                String msg = "Unknown repository: " + repositoryId;
+                throw new CmisException(msg, null, null);
+            }
+            Map<String, Serializable> params = CallContext.mapFromWebServiceContext(wscontext);
+            spi = repository.getSPI(params);
+            Map<String, Serializable> props = ChemistryHelper.convert(
+                    properties, repository);
+            ContentStream cs = ChemistryHelper.convert(contentStream);
+            VersioningState vs = ChemistryHelper.convert(versioningState);
+
+            ObjectId id = spi.createDocument(props, spi.newObjectId(folderId),
+                    cs, vs);
+
+            objectId.value = id.getId();
+        } catch (Exception e) {
+            throw ChemistryHelper.convert(e);
+        } finally {
+            if (spi != null) {
+                spi.close();
+            }
+        }
     }
 
     public void createDocumentFromSource(String repositoryId, String sourceId,
