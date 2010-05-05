@@ -1,1 +1,0 @@
-call runcmd.bat --Binding=AtomPub --Command=CreateDocument --RepositoryId=A1 --ContentSizeInKB=25
