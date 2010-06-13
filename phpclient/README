@@ -1,0 +1,30 @@
+To Run this example execute the following
+
+php -f cmis_ls.php <rest-endpoint> <username> <password> <folderpath> [debug option 1|2]
+
+Notes:
+ + The if the folder path has spaces in it you must URL encode the folder path i.e. /Data Dictionary --> /Data+Dictionary
+ + The debug option can be omitted. If it is 1 the program will display all of the arrays associated with the objects that
+   are returned.  If the debug option is 2 or more, then the XML returned will also be displayed
+ + This will not work on Pre CMIS-1.0 repositories
+ + There is virtually no error checking.
+ + Your version of php must support DOMDocument and curl
+
+Example Runs
+php -f cmis_ls.php   http://cmis.alfresco.com/service/api/cmis  admin admin /
+php -f cmis_ls.php   http://cmis.alfresco.com/service/api/cmis  admin admin /Data+Dictionary 1
+
+
+The cmis_repository_wrapper.php library provided the following functionality
++ Encapsulates access to a CMIS 1.0 compliant repository
++ Provides utilities for getting information out of:
+  + Workspace (the repositoryInfo)
+  + Object Entries
+  + Non-Hierarchical Object feeds
+
+More information will be on the Wiki for this Google Code Project and on
+the author's blog http://oldschooltechie.com/
+
+
+==============
+Adding Calls that mimick the domain model
