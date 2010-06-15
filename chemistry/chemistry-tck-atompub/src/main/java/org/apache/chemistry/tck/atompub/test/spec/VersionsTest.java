@@ -17,11 +17,6 @@
  */
 package org.apache.chemistry.tck.atompub.test.spec;
 
-import java.io.StringReader;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
@@ -36,6 +31,11 @@ import org.apache.chemistry.tck.atompub.http.PutRequest;
 import org.apache.chemistry.tck.atompub.http.Request;
 import org.apache.chemistry.tck.atompub.http.Response;
 import org.junit.Assert;
+
+import java.io.StringReader;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -100,7 +100,7 @@ public class VersionsTest extends TCKTest {
         CMISObject pwcObject = pwc.getExtension(CMISConstants.OBJECT);
         Assert.assertNotNull(pwcObject);
         Assert.assertTrue(pwcObject.isVersionSeriesCheckedOut().getBooleanValue());
-        Assert.assertEquals(docObject.getObjectId().getStringValue(), pwcObject.getVersionSeriesId().getStringValue());
+        Assert.assertEquals(docObject.getVersionSeriesId().getStringValue(), pwcObject.getVersionSeriesId().getStringValue());
         Assert.assertEquals(docObject.getVersionSeriesId().getStringValue(), pwcObject.getVersionSeriesId().getStringValue());
         Assert.assertEquals(pwcObject.getObjectId().getStringValue(), pwcObject.getVersionSeriesCheckedOutId().getStringValue());
         Assert.assertNotNull(pwcObject.getVersionSeriesCheckedOutBy().getStringValue());
@@ -114,7 +114,7 @@ public class VersionsTest extends TCKTest {
         CMISObject pwcGetObject = pwc.getExtension(CMISConstants.OBJECT);
         Assert.assertNotNull(pwcGetObject);
         Assert.assertTrue(pwcGetObject.isVersionSeriesCheckedOut().getBooleanValue());
-        Assert.assertEquals(docObject.getObjectId().getStringValue(), pwcGetObject.getVersionSeriesId().getStringValue());
+        Assert.assertEquals(docObject.getVersionSeriesId().getStringValue(), pwcGetObject.getVersionSeriesId().getStringValue());
         Assert.assertEquals(pwcGetObject.getObjectId().getStringValue(), pwcGetObject.getVersionSeriesCheckedOutId().getStringValue());
         Assert.assertNotNull(pwcGetObject.getVersionSeriesCheckedOutBy().getStringValue());
 
@@ -256,7 +256,7 @@ public class VersionsTest extends TCKTest {
         // updatedObject.getVersionSeriesId().getStringValue());
         Assert.assertNull(updatedObject.getVersionSeriesCheckedOutId().getStringValue());
         Assert.assertNull(updatedObject.getVersionSeriesCheckedOutBy().getStringValue());
-        
+
         // There is no guarantee that the object returned by checkin is the object against which our checkin comment
         // was recorded, so let's get the 'latest major version'
         updatedDoc = client.getEntry(updatedDoc.getSelfLink().getHref(), Collections.singletonMap("returnVersion", "latestmajor"));
@@ -338,12 +338,12 @@ public class VersionsTest extends TCKTest {
         Assert.assertNotNull(allVersionsLink);
         Feed allVersions = client.getFeed(allVersionsLink.getHref());
         Assert.assertNotNull(allVersions);
-        
+
         // Remember the initial number of versions. This should be at least one, but may vary across repositories that
         // may maintain a 'current' version in tandem with version history snapshots.
         int initialVersions = allVersions.getEntries().size();
         Assert.assertTrue(initialVersions > 0);
-        
+
         IRI checkedoutHREF = client.getCheckedOutCollection(client.getWorkspace());
         for (int i = 0; i < NUMBER_OF_VERSIONS; i++) {
             // checkout
@@ -394,7 +394,7 @@ public class VersionsTest extends TCKTest {
             } else {
                 pastLatestMajor = versionObject.isLatestMajorVersion().getBooleanValue();
             }
-            
+
             if (versionIndex >= 0) {
                 // Validate non-initial versions have content
                 Response versionContentRes = client.executeRequest(new GetRequest(version.getContentSrc().toString()),

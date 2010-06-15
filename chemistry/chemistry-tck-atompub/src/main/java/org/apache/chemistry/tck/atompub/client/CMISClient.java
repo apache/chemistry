@@ -17,21 +17,6 @@
  */
 package org.apache.chemistry.tck.atompub.client;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.validation.Validator;
-
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.Collection;
 import org.apache.abdera.model.Element;
@@ -60,6 +45,21 @@ import org.junit.Assert;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.validation.Validator;
 
 
 /**
@@ -108,19 +108,19 @@ public class CMISClient {
     public void setTrace(boolean trace) {
         this.traceConnection = trace;
     }
-    
+
     public void setDefaultDocumentType(String defaultDocumentType) {
         this.defaultDocumentType = defaultDocumentType;
     }
-    
+
     public void setDefaultFolderType(String defaultFolderType) {
         this.defaultFolderType = defaultFolderType;
     }
-    
+
     public void setDefaultRelationshipType(String defaultRelationshipType) {
         this.defaultRelationshipType = defaultRelationshipType;
     }
-    
+
     public String getUserId()
     {
         return this.userId;
@@ -243,7 +243,7 @@ public class CMISClient {
     public CMISUriTemplate getTypeByIdUriTemplate(Workspace workspace) {
         return getUriTemplate(workspace, CMISConstants.URI_TYPE_BY_ID);
     }
-    
+
     public Link getLink(Workspace workspace, String rel, String... matchesMimetypes)
     {
         List<Link> links = workspace.getExtensions(Constants.LINK);
@@ -296,7 +296,7 @@ public class CMISClient {
         }
         return null;
     }
-    
+
     public Link getLink(Entry entry, String rel, String... matchesMimetypes) {
         return getLink(entry.getLinks(rel), matchesMimetypes);
     }
@@ -320,14 +320,14 @@ public class CMISClient {
     public Link getFolderParentLink(Entry entry) {
         return getLink(entry, CMISConstants.REL_UP, CMISConstants.MIMETYPE_ENTRY);
     }
-    
+
     public List<Link> getRenditionLinks(Entry entry) {
         return entry.getLinks(CMISConstants.REL_ALTERNATE);
     }
-    
+
     public Link getChangesLink(Workspace workspace) {
         return getLink(workspace, CMISConstants.REL_CHANGES, CMISConstants.MIMETYPE_FEED);
-    }    
+    }
 
     public Entry getEntry(IRI href) throws Exception {
         return getEntry(href, null);
@@ -380,7 +380,7 @@ public class CMISClient {
         // Assert.assertEquals(name + " (summary)", entry.getSummary());
         CMISObject object = entry.getExtension(CMISConstants.OBJECT);
         Assert.assertEquals(CMISConstants.TYPE_FOLDER, object.getBaseTypeId().getStringValue());
-        String testFolderHREF = (String) res.getHeader("Location");
+        String testFolderHREF = res.getHeader("Location");
         Assert.assertNotNull(testFolderHREF);
         return entry;
     }
@@ -402,7 +402,7 @@ public class CMISClient {
             String contentType, String contentPath) throws Exception {
 
         type = (type == null) ? defaultDocumentType : type;
-        
+
         // If no preference is expressed, use the base64 template if binary
         // content has been supplied or the basic atom entry template otherwise
         String createFile = templates
@@ -454,7 +454,7 @@ public class CMISClient {
         }
         CMISObject object = entry.getExtension(CMISConstants.OBJECT);
         Assert.assertEquals(CMISConstants.TYPE_DOCUMENT, object.getBaseTypeId().getStringValue());
-        String testFileHREF = (String) res.getHeader("Location");
+        String testFileHREF = res.getHeader("Location");
         Assert.assertNotNull(testFileHREF);
         return entry;
     }
@@ -466,6 +466,7 @@ public class CMISClient {
     public Entry createRelationship(IRI parent, String type, String sourceId, String targetId, String atomEntryFile) throws Exception {
         type = (type == null) ? defaultRelationshipType : type;
         String createFile = templates.load(atomEntryFile);
+        createFile = createFile.replace("${NAME}", sourceId + "_" +targetId);
         createFile = createFile.replace("${RELTYPE}", type);
         createFile = createFile.replace("${SOURCEID}", sourceId);
         createFile = createFile.replace("${TARGETID}", targetId);
@@ -478,7 +479,7 @@ public class CMISClient {
         CMISObject object = entry.getExtension(CMISConstants.OBJECT);
         Assert.assertEquals(CMISConstants.TYPE_RELATIONSHIP, object.getBaseTypeId().getStringValue());
         Assert.assertEquals(targetId, object.getTargetId().getStringValue());
-        String testFileHREF = (String) res.getHeader("Location");
+        String testFileHREF = res.getHeader("Location");
         Assert.assertNotNull(testFileHREF);
         return entry;
     }
@@ -602,7 +603,7 @@ public class CMISClient {
      * @throws IOException
      * @throws ParserConfigurationException
      */
-    private void assertValid(String xml, Validator validator) throws IOException, ParserConfigurationException {
+    public void assertValid(String xml, Validator validator) throws IOException, ParserConfigurationException {
         if (validate) {
             try {
                 Document document = cmisValidator.getDocumentBuilder().parse(new InputSource(new StringReader(xml)));

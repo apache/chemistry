@@ -22,8 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.transform.stream.StreamSource;
-
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Link;
@@ -72,9 +70,7 @@ public class ManageAccessControlListVisitor implements TreeVisitor {
 
         // Check whether apply ACL is an allowable action
         CMISAllowableActions objectAllowableActions = childObject.getExtension(CMISConstants.ALLOWABLE_ACTIONS);
-        Assert.assertNotNull(objectAllowableActions);
-        boolean canApplyACL = objectAllowableActions.isAllowed("canApplyACL");
-
+        boolean canApplyACL = (objectAllowableActions == null) ? true : objectAllowableActions.isAllowed("canApplyACL");
         // Check whether the typedef allows ACL management
         Link typeLink = entry.entry.getLink(CMISConstants.REL_DESCRIBED_BY);
         Assert.assertNotNull(typeLink);
@@ -141,7 +137,7 @@ public class ManageAccessControlListVisitor implements TreeVisitor {
     /**
      * Gets the set of base types that we have not been able to handle, and thus
      * do not expect to show in the change log.
-     * 
+     *
      * @return the rejected types
      */
     public Set<String> getRejectedTypes() {
@@ -151,7 +147,7 @@ public class ManageAccessControlListVisitor implements TreeVisitor {
     /**
      * Chooses a repository permission to add to an ACL for a given principal.
      * Tries to find one that would result in a new entry.
-     * 
+     *
      * @param repositoryPermissions
      *            the repository permissions. Permissions are removed as they
      *            are used
@@ -162,7 +158,7 @@ public class ManageAccessControlListVisitor implements TreeVisitor {
      *            the current state of the ACL. Tries to avoid creating an ACE
      *            that is already present. The ace with the chosen permission is
      *            added to this set
-     * 
+     *
      * @return an ACE with the chosen permission or <code>null</code> if it was
      *         not possible to choose one< object>
      */
@@ -188,7 +184,7 @@ public class ManageAccessControlListVisitor implements TreeVisitor {
     /**
      * Adds an ACE for the given principal and permission to the given ACL if it
      * does not already exist.
-     * 
+     *
      * @param principalId
      *            the principal id. If <code>null</code> the method returns
      *            immediately.
@@ -197,7 +193,7 @@ public class ManageAccessControlListVisitor implements TreeVisitor {
      *            added to this set
      * @param permission
      *            the permission
-     * 
+     *
      * @return an ACE with the permission if it did not already exist in the ACL
      *         or <code>null</code> otherwise
      */
@@ -217,7 +213,7 @@ public class ManageAccessControlListVisitor implements TreeVisitor {
 
     /**
      * Applies the given ACL using the CMIS API.
-     * 
+     *
      * @param accessControlListLink
      *            the access control list link
      * @param hashedACL
@@ -226,9 +222,9 @@ public class ManageAccessControlListVisitor implements TreeVisitor {
      *            Minimum expected result status code
      * @param expectedStatusMax
      *            Maximum expected result status code
-     * 
+     *
      * @return the resulting access control list
-     * 
+     *
      * @throws Exception
      *             on error
      */
@@ -244,7 +240,7 @@ public class ManageAccessControlListVisitor implements TreeVisitor {
         }
         buff.append("</cmis:acl>");
         String req = buff.toString();
-        client.getAppValidator().validate(new StreamSource(new StringReader(req)));
+        client.assertValid(req, client.getAppValidator());
         Request putReq = new PutRequest(accessControlListLink.getHref().toString(), req, CMISConstants.MIMETYPE_CMISACL);
         Response aclRes = client.executeRequest(putReq, expectedStatusMin, expectedStatusMax);
         Assert.assertNotNull(aclRes);
