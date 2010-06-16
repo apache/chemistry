@@ -40,8 +40,6 @@
     <module>chemistry-ws</module>
     <module>chemistry-soap-server</module>
     <module>chemistry-jcr</module>
-    <module>chemistry-abdera</module>
-    <module>chemistry-tck-atompub</module>
     <module>chemistry-shell</module>
   </modules>
 
